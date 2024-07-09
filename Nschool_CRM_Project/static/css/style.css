@@ -1,3 +1,6 @@
+/* Add this CSS to your style.css */
+
+/* General styles */
 body {
     margin: 0;
     font-family: 'Poppins', sans-serif;
@@ -10,8 +13,6 @@ body {
     padding: 0;
     background-color: #c72571;
     height: 100vh;
-    /* position: fixed; */
-    /* width: 16.666%; */
 }
 
 .sidenav ul {
@@ -99,13 +100,27 @@ body {
     transform: rotate(90deg);
 }
 
+.dropdown:hover .bi-caret-right-fill {
+    fill: #c72571;
+}
+
 .images {
     width: 40px;
     height: 40px;
 }
 
-/* navbar */
+/* Flexbox for dropdown items */
+.sidenav .dropdown > a {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
 
+.sidenav .right_arrow {
+    margin-left: auto;
+}
+
+/* Navbar */
 .bi-list {
     margin: 20px;
 }

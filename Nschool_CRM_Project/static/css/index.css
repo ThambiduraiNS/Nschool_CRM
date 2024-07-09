@@ -1,3 +1,6 @@
+/* Add this CSS to your style.css */
+
+/* General styles */
 body {
     margin: 0;
     font-family: 'Poppins', sans-serif;
@@ -12,35 +15,25 @@ body {
     height: 100vh;
 }
 
+.sidenav ul {
+    padding: 0;
+}
+
 .sidenav ul li a {
     color: #fff;
+    text-decoration: none;
+    display: block;
+    padding: 10px 16px;
 }
 
 .sidenav .brand {
     text-align: center;
     font-size: 24px;
-    margin-bottom: 15px;
-    padding: 10px 0;
-    color: #fff;
+    margin-bottom: 5px;
     display: block;
+    padding: 10px 0;
+    background-color: #b31d5d;
 }
-
-/* General Menu Styling */
-
-.sidenav .menus {
-    padding-left: 10px;
-    font-size: 14px;
-    font-weight: bold;
-}
-
-/* Active State */
-
-.active {
-    background-color: #ffffff;
-    color: #c72571;
-}
-
-/* Dashboard */
 
 .dashboard {
     font-size: 14px;
@@ -53,45 +46,61 @@ body {
     fill: #fff;
 }
 
-/* Dropdown Styling */
-
-.dropdown-menu {
-    background-color: #c72571;
-    width: 100%;
-    padding: 0;
-    border: none;
-}
-
-.dropdown-item {
-    color: #fff;
-    padding-left: 40px;
-}
-
-.dropdown-item:hover {
-    background-color: #ffffff;
-    color: #c72571;
-}
-
 .dropdown-toggle::after {
-    margin-left: auto;
-    rotate: 90deg;
+    rotate: -90deg;
 }
 
-.btn:hover {
+.dropdown-toggle.show::after {
+    rotate: 0deg;
+}
+
+.btn:hover,
+.dropdown-menu a:hover {
     background-color: #fff;
     color: #c72571;
 }
 
+.btn-check:focus+.btn,
 .btn:focus {
     box-shadow: none;
 }
 
-/* Icons Styling */
+.sidenav li .menus {
+    padding-left: 10px;
+    font-size: 12px;
+    font-weight: bold;
+}
 
-.bi-caret-right-fill,
-.bi-caret-right-fill.show {
+.sidenav ul .new, .sidenav ul .manage {
+    font-size: 12px;
+    padding: 5px 0px 5px 54px;
+}
+
+.active {
+    background-color: #ffffff;
+    color: #c72571;
+}
+
+.dropdown-menu {
+    background-color: #c72571;
+    width: calc(100% - 40px); /* Adjust width to match parent */
+    padding: 0;
+    margin-left: 40px; /* Align with parent padding */
+    position: absolute; /* Ensure dropdowns don't push content down */
+    z-index: 1000; /* Ensure dropdown is above other content */
+}
+
+.dropdown-menu a {
+    color: #fff;
+}
+
+.bi-caret-right-fill {
     fill: #fff;
-    rotate: 90deg;
+}
+
+.dropdown:hover .right_arrow,
+.dropdown:hover .arrow_user {
+    transform: rotate(90deg);
 }
 
 .dropdown:hover .bi-caret-right-fill {
@@ -99,6 +108,60 @@ body {
 }
 
 .images {
-    width: 50px;
-    height: 50px;
+    width: 40px;
+    height: 40px;
+}
+
+/* Flexbox for dropdown items */
+.sidenav .dropdown > a {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.sidenav .right_arrow {
+    margin-left: auto;
+}
+
+/* Navbar */
+.bi-list {
+    margin: 20px;
+}
+
+.user-div {
+    font-size: 12px;
+}
+
+.dropdown-div {
+    padding: 0px;
+    margin: 0px;
+}
+
+.dropdown-div li .admin {
+    font-size: 10px;
+}
+
+/* Mobile responsiveness */
+@media screen and (max-width: 900px) {
+    .sidenav {
+        width: 100%;
+        height: auto;
+        position: relative;
+    }
+
+    .sidenav ul li a {
+        float: left;
+        padding: 15px;
+    }
+
+    .content {
+        margin-left: 0;
+    }
+}
+
+@media screen and (max-width: 400px) {
+    .sidenav ul li a {
+        text-align: center;
+        float: none;
+    }
 }
