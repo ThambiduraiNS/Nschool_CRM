@@ -1,0 +1,149 @@
+body {
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+    box-sizing: border-box;
+}
+
+.sidenav {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    background-color: #c72571;
+    height: 100vh;
+    /* position: fixed; */
+    /* width: 16.666%; */
+}
+
+.sidenav ul {
+    padding: 0;
+}
+
+.sidenav ul li a {
+    color: #fff;
+    text-decoration: none;
+    display: block;
+    padding: 10px 16px;
+}
+
+.sidenav .brand {
+    text-align: center;
+    font-size: 24px;
+    margin-bottom: 5px;
+    display: block;
+    padding: 10px 0;
+    background-color: #b31d5d;
+}
+
+.dashboard {
+    font-size: 14px;
+    font-weight: 600;
+    color: #fff;
+}
+
+.bi-columns-gap {
+    width: 12px;
+    fill: #fff;
+}
+
+.dropdown-toggle::after {
+    rotate: -90deg;
+}
+
+.dropdown-toggle.show::after {
+    rotate: 0deg;
+}
+
+.btn:hover,
+.dropdown-menu a:hover {
+    background-color: #fff;
+    color: #c72571;
+}
+
+.btn-check:focus+.btn,
+.btn:focus {
+    box-shadow: none;
+}
+
+.sidenav li .menus {
+    padding-left: 10px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.sidenav ul .new, .sidenav ul .manage {
+    font-size: 12px;
+    padding: 5px 0px 5px 54px;
+}
+
+.active {
+    background-color: #ffffff;
+    color: #c72571;
+}
+
+.dropdown-menu {
+    background-color: #c72571;
+    width: 100%;
+    padding: 0 0 0 40px;
+}
+
+.dropdown-menu a {
+    color: #fff;
+}
+
+.bi-caret-right-fill {
+    fill: #fff;
+}
+
+.dropdown:hover .right_arrow,
+.dropdown:hover .arrow_user {
+    transform: rotate(90deg);
+}
+
+.images {
+    width: 40px;
+    height: 40px;
+}
+
+/* navbar */
+
+.bi-list {
+    margin: 20px;
+}
+
+.user-div {
+    font-size: 12px;
+}
+
+.dropdown-div {
+    padding: 0px;
+    margin: 0px;
+}
+
+.dropdown-div li .admin {
+    font-size: 10px;
+}
+
+/* Mobile responsiveness */
+@media screen and (max-width: 900px) {
+    .sidenav {
+        width: 100%;
+        height: auto;
+        position: relative;
+    }
+
+    .sidenav ul li a {
+        float: left;
+        padding: 15px;
+    }
+
+    .content {
+        margin-left: 0;
+    }
+}
+
+@media screen and (max-width: 400px) {
+    .sidenav ul li a {
+        text-align: center;
+        float: none;
+    }
+}

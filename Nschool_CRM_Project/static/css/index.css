@@ -1,0 +1,104 @@
+body {
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+    box-sizing: border-box;
+}
+
+.sidenav {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    background-color: #c72571;
+    height: 100vh;
+}
+
+.sidenav ul li a {
+    color: #fff;
+}
+
+.sidenav .brand {
+    text-align: center;
+    font-size: 24px;
+    margin-bottom: 15px;
+    padding: 10px 0;
+    color: #fff;
+    display: block;
+}
+
+/* General Menu Styling */
+
+.sidenav .menus {
+    padding-left: 10px;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+/* Active State */
+
+.active {
+    background-color: #ffffff;
+    color: #c72571;
+}
+
+/* Dashboard */
+
+.dashboard {
+    font-size: 14px;
+    font-weight: 600;
+    color: #fff;
+}
+
+.bi-columns-gap {
+    width: 12px;
+    fill: #fff;
+}
+
+/* Dropdown Styling */
+
+.dropdown-menu {
+    background-color: #c72571;
+    width: 100%;
+    padding: 0;
+    border: none;
+}
+
+.dropdown-item {
+    color: #fff;
+    padding-left: 40px;
+}
+
+.dropdown-item:hover {
+    background-color: #ffffff;
+    color: #c72571;
+}
+
+.dropdown-toggle::after {
+    margin-left: auto;
+    rotate: 90deg;
+}
+
+.btn:hover {
+    background-color: #fff;
+    color: #c72571;
+}
+
+.btn:focus {
+    box-shadow: none;
+}
+
+/* Icons Styling */
+
+.bi-caret-right-fill,
+.bi-caret-right-fill.show {
+    fill: #fff;
+    rotate: 90deg;
+}
+
+.dropdown:hover .bi-caret-right-fill {
+    fill: #c72571;
+}
+
+.images {
+    width: 50px;
+    height: 50px;
+}
