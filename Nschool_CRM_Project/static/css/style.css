@@ -11,6 +11,9 @@ body {
     padding: 0;
     background-color: #c72571;
     height: 100vh;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: #c72571;
 }
 
 .sidenav ul {
@@ -33,6 +36,10 @@ body {
     background-color: #b31d5d;
 }
 
+li .brand:hover {
+    color: #fff;
+}
+
 .dashboard {
     font-size: 14px;
     font-weight: 600;
@@ -45,9 +52,25 @@ body {
 }
 
 .btn:hover,
-.dropdown-menu a:hover {
+.dropdown-menu a:hover{
     background-color: #fff;
     color: #c72571;
+}
+
+.btn-div {
+    border-radius: 0px;
+}
+
+li a:hover {
+    background-color: #fff;
+}
+
+li a:hover .dashboard {
+    color: #c72571;
+}
+
+li a:hover .bi-columns-gap {
+    fill: #c72571;
 }
 
 .dropdown:hover .bi-caret-right-fill {
@@ -67,7 +90,7 @@ body {
 
 .sidenav ul .new, .sidenav ul .manage {
     font-size: 12px;
-    padding: 5px 0px 5px 10px;
+    padding: 5px 0px 5px 52px;
 }
 
 .active {
@@ -77,9 +100,10 @@ body {
 
 .dropdown-menu {
     background-color: #c72571;
-    width: calc(100% - 40px); /* Adjust width to match parent */
+    /* width: calc(100% - 40px); Adjust width to match parent */
+    width: 100%;
     padding: 0;
-    margin-left: 40px; /* Align with parent padding */
+    /* margin-left: 40px; Align with parent padding */
     display: none; /* Start with dropdowns hidden */
     position: relative; /* Ensure dropdowns don't overlap other content */
 }
@@ -90,6 +114,7 @@ body {
 
 .bi-caret-right-fill {
     fill: #fff;
+    width: 12px;
     transition: transform 0.3s ease;
 }
 
@@ -101,7 +126,11 @@ body {
     display: block; /* Show dropdown when active */
 }
 
-.dropdown.show .bi-caret-right-fill {
+.dropdown-menu.show {
+    border: none;
+}
+
+.dropdown .arrow_user .bi-caret-right-fill {
     rotate: 90deg; /* Rotate arrow when dropdown is active */
 }
 
@@ -119,7 +148,7 @@ body {
 
 .sidenav .right_arrow {
     margin-left: auto;
-    transition: transform 0.3s ease;
+    transition: transform 0.3s ease-out;
 }
 
 /* Navbar */

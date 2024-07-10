@@ -28,7 +28,7 @@
                     </li>
                     <li class="nav-item">
                         <div class="dropdown">
-                            <a class="btn w-100 text-start" href="#" role="button" onclick="toggleDropdown(this)">
+                            <a class="btn btn-div w-100 text-start" href="#" role="button" onclick="toggleDropdown(this)">
                                 {% bs_icon 'person' %} <span class="menus">User</span> <span class="right_arrow">{% bs_icon 'caret-right-fill' %}</span>
                             </a>
                             <ul class="dropdown-menu dropdown-content">
@@ -39,7 +39,7 @@
                     </li>
                     <li class="nav-item">
                         <div class="dropdown">
-                            <a class="btn w-100 text-start" href="#" role="button" onclick="toggleDropdown(this)">
+                            <a class="btn btn-div w-100 text-start" href="#" role="button" onclick="toggleDropdown(this)">
                                 {% bs_icon 'book' %} <span class="menus">Course</span> <span class="right_arrow">{% bs_icon 'caret-right-fill' %}</span>
                             </a>
                             <ul class="dropdown-menu dropdown-content">
@@ -50,7 +50,7 @@
                     </li>
                     <li class="nav-item">
                         <div class="dropdown">
-                            <a class="btn w-100 text-start" href="#" role="button" onclick="toggleDropdown(this)">
+                            <a class="btn btn-div w-100 text-start" href="#" role="button" onclick="toggleDropdown(this)">
                                 {% bs_icon 'person' %} <span class="menus">Enquiry</span> <span class="right_arrow">{% bs_icon 'caret-right-fill' %}</span>
                             </a>
                             <ul class="dropdown-menu dropdown-content">
@@ -61,7 +61,7 @@
                     </li>
                     <li class="nav-item">
                         <div class="dropdown">
-                            <a class="btn w-100 text-start" href="#" role="button" onclick="toggleDropdown(this)">
+                            <a class="btn btn-div w-100 text-start" href="#" role="button" onclick="toggleDropdown(this)">
                                 {% bs_icon 'person-plus' %} <span class="menus">Enrollment</span> <span class="right_arrow">{% bs_icon 'caret-right-fill' %}</span>
                             </a>
                             <ul class="dropdown-menu dropdown-content">
@@ -72,7 +72,7 @@
                     </li>
                     <li class="nav-item">
                         <div class="dropdown">
-                            <a class="btn w-100 text-start" href="#" role="button" onclick="toggleDropdown(this)">
+                            <a class="btn btn-div w-100 text-start" href="#" role="button" onclick="toggleDropdown(this)">
                                 {% bs_icon 'file-earmark-check' %} <span class="menus">Attendance</span> <span class="right_arrow">{% bs_icon 'caret-right-fill' %}</span>
                             </a>
                             <ul class="dropdown-menu dropdown-content">
@@ -83,7 +83,7 @@
                     </li>
                     <li class="nav-item">
                         <div class="dropdown">
-                            <a class="btn w-100 text-start" href="#" role="button" onclick="toggleDropdown(this)">
+                            <a class="btn btn-div w-100 text-start" href="#" role="button" onclick="toggleDropdown(this)">
                                 {% bs_icon 'currency-rupee' %} <span class="menus">Payment</span> <span class="right_arrow">{% bs_icon 'caret-right-fill' %}</span>
                             </a>
                             <ul class="dropdown-menu dropdown-content">
@@ -94,7 +94,7 @@
                     </li>
                     <li class="nav-item">
                         <div class="dropdown">
-                            <a class="btn w-100 text-start" href="#" role="button" onclick="toggleDropdown(this)">
+                            <a class="btn btn-div w-100 text-start" href="#" role="button" onclick="toggleDropdown(this)">
                                 {% bs_icon 'trophy' %} <span class="menus">Placement</span> <span class="right_arrow">{% bs_icon 'caret-right-fill' %}</span>
                             </a>
                             <ul class="dropdown-menu dropdown-content">
@@ -105,7 +105,7 @@
                     </li>
                     <li class="nav-item">
                         <div class="dropdown">
-                            <a class="btn w-100 text-start" href="#" role="button" onclick="toggleDropdown(this)">
+                            <a class="btn btn-div w-100 text-start" href="#" role="button" onclick="toggleDropdown(this)">
                                 {% bs_icon 'people-fill' %} <span class="menus">Staff</span> <span class="right_arrow">{% bs_icon 'caret-right-fill' %}</span>
                             </a>
                             <ul class="dropdown-menu dropdown-content">
@@ -116,7 +116,7 @@
                     </li>
                     <li class="nav-item">
                         <div class="dropdown">
-                            <a class="btn w-100 text-start" href="#" role="button" onclick="toggleDropdown(this)">
+                            <a class="btn btn-div w-100 text-start" href="#" role="button" onclick="toggleDropdown(this)">
                                 {% bs_icon 'file-earmark-plus' %} <span class="menus">Report</span> <span class="right_arrow">{% bs_icon 'caret-right-fill' %}</span>
                             </a>
                             <ul class="dropdown-menu dropdown-content">
@@ -154,7 +154,31 @@
     </div>
 
     <script>
+        // function toggleDropdown(element) {
+        //     const dropdownMenu = element.nextElementSibling;
+        //     dropdownMenu.classList.toggle('show');
+        //     const rightArrow = element.querySelector('.right_arrow');
+        //     rightArrow.classList.toggle('arrow_user');
+        // }
+
         function toggleDropdown(element) {
+            // Close all dropdowns
+            const allDropdowns = document.querySelectorAll('.dropdown-menu');
+            allDropdowns.forEach(dropdown => {
+                if (dropdown !== element.nextElementSibling) {
+                    dropdown.classList.remove('show');
+                }
+            });
+
+            // Close all arrows
+            const allArrows = document.querySelectorAll('.right_arrow');
+            allArrows.forEach(arrow => {
+                if (arrow !== element.querySelector('.right_arrow')) {
+                    arrow.classList.remove('arrow_user');
+                }
+            });
+
+            // Toggle the clicked dropdown and arrow
             const dropdownMenu = element.nextElementSibling;
             dropdownMenu.classList.toggle('show');
             const rightArrow = element.querySelector('.right_arrow');

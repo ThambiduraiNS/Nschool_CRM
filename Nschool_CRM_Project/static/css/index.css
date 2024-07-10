@@ -11,6 +11,9 @@ body {
     padding: 0;
     background-color: #c72571;
     height: 100vh;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: #c72571;
 }
 
 .sidenav ul {
@@ -33,6 +36,10 @@ body {
     background-color: #b31d5d;
 }
 
+li .brand:hover {
+    color: #fff;
+}
+
 .dashboard {
     font-size: 14px;
     font-weight: 600;
@@ -50,6 +57,22 @@ body {
     color: #c72571;
 }
 
+.btn-div {
+    border-radius: 0px;
+}
+
+li a:hover {
+    background-color: #fff;
+}
+
+li a:hover .dashboard {
+    color: #c72571;
+}
+
+li a:hover .bi-columns-gap {
+    fill: #c72571;
+}
+
 .dropdown:hover .bi-caret-right-fill {
     fill: #c72571;
 }
@@ -65,9 +88,10 @@ body {
     font-weight: bold;
 }
 
-.sidenav ul .new, .sidenav ul .manage {
-    font-size: 12px;
-    padding: 5px 0px 5px 10px;
+.sidenav ul .new,
+.sidenav ul .manage {
+    font-size: 11px;
+    padding: 5px 0px 5px 52px;
 }
 
 .active {
@@ -77,11 +101,14 @@ body {
 
 .dropdown-menu {
     background-color: #c72571;
-    width: calc(100% - 40px); /* Adjust width to match parent */
+    /* width: calc(100% - 40px); Adjust width to match parent */
+    width: 100%;
     padding: 0;
-    margin-left: 40px; /* Align with parent padding */
-    display: none; /* Start with dropdowns hidden */
-    position: relative; /* Ensure dropdowns don't overlap other content */
+    /* margin-left: 40px; Align with parent padding */
+    display: none;
+    /* Start with dropdowns hidden */
+    position: relative;
+    /* Ensure dropdowns don't overlap other content */
 }
 
 .dropdown-menu a {
@@ -90,19 +117,65 @@ body {
 
 .bi-caret-right-fill {
     fill: #fff;
+    width: 12px;
     transition: transform 0.3s ease;
+    rotate: -90deg;
 }
 
 .arrow_user {
     transition: transform 0.3s ease;
 }
 
-.dropdown.show .dropdown-menu {
-    display: block; /* Show dropdown when active */
+/*--------------------------------- dropdown ----------------------- */
+
+/* .dropdown a{
+    -webkit-transition: all .25s ease;
+    -o-transition: all .25s ease;
+    transition: all .25s ease;
 }
 
-.show .bi-caret-right-fill {
-    transform: rotate(90deg); /* Rotate arrow when dropdown is active */
+.dropdown-menu a {
+    -webkit-transition: all 0.25s ease;
+    -o-transition: all 0.25s ease;
+    transition: all 0.25s ease;
+} */
+
+/* .dropdown-menu {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease-out, padding 0.3s ease-out;
+    padding-top: 0;
+    padding-bottom: 0;
+    color: green;
+} */
+
+.dropdown-menu.show {
+    max-height: 500px; /* Adjust as needed */
+    padding-top: 0.3rem; /* Adjust as needed */
+    padding-bottom: 0.5rem; /* Adjust as needed */
+    transition: all 5s;
+}
+/* ---------------------------- */
+.nav .nav-item .dropdown a {
+    transition: all .2s ease-in-out;
+}
+/* -------------------------------- */
+
+
+/* ------------------------------------------------------------------ */
+
+.dropdown.show .dropdown-menu {
+    display: block;
+    /* Show dropdown when active */
+}
+
+.dropdown-menu.show {
+    border: none;
+}
+
+.dropdown .arrow_user .bi-caret-right-fill {
+    rotate: 90deg;
+    /* Rotate arrow when dropdown is active */
 }
 
 .images {
@@ -111,7 +184,7 @@ body {
 }
 
 /* Flexbox for dropdown items */
-.sidenav .dropdown > a {
+.sidenav .dropdown>a {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -119,7 +192,7 @@ body {
 
 .sidenav .right_arrow {
     margin-left: auto;
-    transition: transform 0.3s ease;
+    transition: transform 0.3s ease-out;
 }
 
 /* Navbar */
