@@ -7,3 +7,74 @@
     text-decoration: none;
     font-weight: 600;
 }
+
+.user-para {
+    color: #333;
+    font-size: 14px;
+    margin-top: 10px;
+}
+
+h5::before {
+    content: "";
+    display: block;
+    border-top: 5px solid #842029;
+    margin-bottom: 1px;
+    width: 28px;
+    border-radius: 5px;
+}
+
+/* Styles for the floating label */
+.floating-label {
+    position: absolute;
+    pointer-events: none;
+    left: 20px;
+    top: 10px;
+    transition: 0.2s ease all;
+    font-size: 14px;
+    color: #888;
+}
+
+
+.user-input-wrp input {
+    width: 100%;
+    padding: 10px;
+    border: 2px solid #842029;
+    border-radius: 5px;
+    font-size: 16px;
+    outline: none;
+}
+
+/* When the input field is focused */
+.user-input-wrp input:focus ~ .floating-label {
+    top: -12px;
+    font-size: 14px;
+    color: #333;
+    background-color: #ffffff;
+}
+
+/* When there is content in the input field */
+.user-input-wrp input:not(:placeholder-shown) ~ .floating-label {
+    top: -12px;
+    font-size: 14px;
+    color: #333;
+    background-color: #ffffff;
+}
+
+/* When the input field is not focused and empty */
+.user-input-wrp input:not(:focus):placeholder-shown ~ .floating-label {
+    top: 13px;
+    font-size: 14px;
+    color: #888;
+    
+}
+
+.user-input-wrp {
+    position: relative;
+    margin: 20px 0;
+}
+
+.form-control:focus {
+    border-color: #842029 !important;
+    border: 2px solid #842029;
+    box-shadow: 0 0 0 0 #842029 !important;
+}

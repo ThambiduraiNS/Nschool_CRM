@@ -4,6 +4,8 @@
 {% load bootstrap_icons %}
 
 
+{% block title %}User Module{% endblock %}
+
 {% block css %}
 <link rel="stylesheet" href="{% static '/css/user_module.css' %}">
 <link rel="stylesheet" href="{% static '/css/header.css' %}">
@@ -32,10 +34,37 @@
                 </div>
 
 
-                <div class="row">
-                    <div class="col border bg-white rounded mt-4 ms-4 mb-2 px-4">
+                <div class="row m-0 p-0">
+                    <div class="col border bg-white rounded mt-2 ms-4 mb-2 px-4">
 
-                        
+                        <div class="row m-0 p-0">
+                            
+                            <div class="col-12 mt-4">
+                                <h5 class="fw-bold">New User</h5>
+                                <p class="user-para">Use the below form to update your profile</p>
+                            </div>
+                            <div class="row d-flex justify-content-between">
+                                <div class="col-6">
+                                    <div class="user-input-wrp me-4">
+                                        <input type="text" name="username" id="username" class="form-control" aria-label="Username" placeholder=" " autocomplete="off" autofocus>
+                                        <label class="floating-label">Name</label>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="user-input-wrp ms-4">
+                                        <input type="email" name="email" id="email" class="form-control" aria-label="email" placeholder=" " autocomplete="off" autofocus>
+                                        <label class="floating-label">E-Mail-ID</label>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+
+                                </div>
+                            </div>
+                            <!-- <div class="col"></div>
+                            <div class="col"></div>
+                            <div class="col"></div>
+                            <div class="col"></div> -->
+                        </div>
 
                     </div>
                 </div>
