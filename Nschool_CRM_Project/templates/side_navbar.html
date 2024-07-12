@@ -1,0 +1,144 @@
+{% load static %}
+{% load bootstrap_icons %}
+
+{% block css %}
+
+<link rel="stylesheet" href="{% static '/css/index.css' %}">
+
+{% endblock %}
+
+
+{% block content %}
+
+    <div class="col-2 sidenav m-0 p-0" id="sidenav">
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a class="nav-link" href="#">{% bs_icon 'columns-gap' %} 
+                    <span class="menus dashboard">DashBoard</span></a>
+            </li>
+            <li class="nav-item">
+                <div class="dropdown">
+                    <a class="btn btn-div w-100 text-start" href="#" role="button"
+                        onclick="toggleDropdown(this)">
+                        {% bs_icon 'person' %} <span class="menus">User</span> 
+                        <span class="right_arrow">{% bs_icon 'caret-right-fill' %}</span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-content">
+                        <li><a class="dropdown-item new" href="#">New User</a></li>
+                        <li><a class="dropdown-item manage" href="#">Manage User</a></li>
+                    </ul>
+                </div>
+            </li>
+            <li class="nav-item">
+                <div class="dropdown">
+                    <a class="btn btn-div w-100 text-start" href="#" role="button"
+                        onclick="toggleDropdown(this)">
+                        {% bs_icon 'book' %} <span class="menus">Course</span> 
+                        <span class="right_arrow">{% bs_icon 'caret-right-fill' %}</span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-content">
+                        <li><a class="dropdown-item new" href="#">New Course</a></li>
+                        <li><a class="dropdown-item manage" href="#">Manage Course</a></li>
+                    </ul>
+                </div>
+            </li>
+            <li class="nav-item">
+                <div class="dropdown">
+                    <a class="btn btn-div w-100 text-start" href="#" role="button"
+                        onclick="toggleDropdown(this)">
+                        {% bs_icon 'person' %} <span class="menus">Enquiry</span> 
+                        <span class="right_arrow">{% bs_icon 'caret-right-fill' %}</span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-content">
+                        <li><a class="dropdown-item new" href="#">New Enquiry</a></li>
+                        <li><a class="dropdown-item manage" href="#">Manage Enquiry</a></li>
+                    </ul>
+                </div>
+            </li>
+            <li class="nav-item">
+                <div class="dropdown">
+                    <a class="btn btn-div w-100 text-start" href="#" role="button"
+                        onclick="toggleDropdown(this)">
+                        {% bs_icon 'person-plus' %} <span class="menus">Enrollment</span> <span
+                            class="right_arrow">{% bs_icon 'caret-right-fill' %}</span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-content">
+                        <li><a class="dropdown-item new" href="#">New Enrollment</a></li>
+                        <li><a class="dropdown-item manage" href="#">Manage Enrollment</a></li>
+                    </ul>
+                </div>
+            </li>
+            <li class="nav-item">
+                <div class="dropdown">
+                    <a class="btn btn-div w-100 text-start" href="#" role="button"
+                        onclick="toggleDropdown(this)">
+                        {% bs_icon 'file-earmark-check' %} <span class="menus">Attendance</span> 
+                        <span class="right_arrow">{% bs_icon 'caret-right-fill' %}</span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-content">
+                        <li><a class="dropdown-item new" href="#">New Attendance</a></li>
+                        <li><a class="dropdown-item manage" href="#">Manage Attendance</a></li>
+                    </ul>
+                </div>
+            </li>
+            <li class="nav-item">
+                <div class="dropdown">
+                    <a class="btn btn-div w-100 text-start" href="#" role="button"
+                        onclick="toggleDropdown(this)">
+                        {% bs_icon 'currency-rupee' %} <span class="menus">Payment</span> <span
+                            class="right_arrow">{% bs_icon 'caret-right-fill' %}</span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-content">
+                        <li><a class="dropdown-item new" href="#">New Payment</a></li>
+                        <li><a class="dropdown-item manage" href="#">Manage Payment</a></li>
+                    </ul>
+                </div>
+            </li>
+            <li class="nav-item">
+                <div class="dropdown">
+                    <a class="btn btn-div w-100 text-start" href="#" role="button"
+                        onclick="toggleDropdown(this)">
+                        {% bs_icon 'trophy' %} <span class="menus">Placement</span> 
+                        <span class="right_arrow">{% bs_icon 'caret-right-fill' %}</span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-content">
+                        <li><a class="dropdown-item new" href="#">New Placement</a></li>
+                        <li><a class="dropdown-item manage" href="#">Manage Placement</a></li>
+                    </ul>
+                </div>
+            </li>
+            <li class="nav-item">
+                <div class="dropdown">
+                    <a class="btn btn-div w-100 text-start" href="#" role="button"
+                        onclick="toggleDropdown(this)">
+                        {% bs_icon 'people-fill' %} <span class="menus">Staff</span> <span
+                            class="right_arrow">{% bs_icon 'caret-right-fill' %}</span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-content">
+                        <li><a class="dropdown-item new" href="#">New Staff</a></li>
+                        <li><a class="dropdown-item manage" href="#">Manage Staff</a></li>
+                    </ul>
+                </div>
+            </li>
+            <li class="nav-item">
+                <div class="dropdown">
+                    <a class="btn btn-div w-100 text-start" href="#" role="button"
+                        onclick="toggleDropdown(this)">
+                        {% bs_icon 'file-earmark-plus' %} <span class="menus">Report</span> <span
+                            class="right_arrow">{% bs_icon 'caret-right-fill' %}</span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-content">
+                        <li><a class="dropdown-item new" href="#">New Report</a></li>
+                        <li><a class="dropdown-item manage" href="#">Manage Report</a></li>
+                    </ul>
+                </div>
+            </li>
+        </ul>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+
+
+
+{% endblock %}

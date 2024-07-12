@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+
+{% load static %}
+{% load bootstrap_icons %}
+
+
+{% block css %}
+<link rel="stylesheet" href="{% static '/css/user_module.css' %}">
+<link rel="stylesheet" href="{% static '/css/header.css' %}">
+{% endblock %}
+
+{% block header %}
+{% include 'header.html' %}
+{% endblock %}
+
+{% block content %}
+<!-- <div class="container-fluid"> -->
+    <div class="row m-0 p-0">
+        {% include 'side_navbar.html' %}
+
+        <div class="col-10 background-div">
+            
+                <div class="row m-0 p-0">
+                    <div class="col border bg-white rounded mt-4 ms-4 mb-2 px-4">
+                        <nav style="--bs-breadcrumb-divider: '|';" aria-label="breadcrumb">
+                            <ol class="breadcrumb pt-2">
+                              <li class="breadcrumb-item"><a class="user-a" href="#">User Module</a></li>
+                              <li class="breadcrumb-item active" aria-current="page">New User</li>
+                            </ol>
+                        </nav>
+                    </div>
+                </div>
+
+
+                <div class="row">
+                    <div class="col border bg-white rounded mt-4 ms-4 mb-2 px-4">
+
+                        
+
+                    </div>
+                </div>
+            
+        </div>
+    </div>
+<!-- </div> -->
+
+{% endblock %}
+
+
+{% block scripts %}
+<script>
+    function toggleDropdown(element) {
+        // Close all dropdowns
+        const allDropdowns = document.querySelectorAll('.dropdown-menu');
+        allDropdowns.forEach(dropdown => {
+            if (dropdown !== element.nextElementSibling) {
+                dropdown.classList.remove('show');
+            }
+        });
+
+        // Close all arrows
+        const allArrows = document.querySelectorAll('.right_arrow');
+        allArrows.forEach(arrow => {
+            if (arrow !== element.querySelector('.right_arrow')) {
+                arrow.classList.remove('arrow_user');
+            }
+        });
+
+        // Toggle the clicked dropdown and arrow
+        const dropdownMenu = element.nextElementSibling;
+        dropdownMenu.classList.toggle('show');
+        const rightArrow = element.querySelector('.right_arrow');
+        rightArrow.classList.toggle('arrow_user');
+    }
+
+    document.getElementById('toggle-sidenav').addEventListener('click', function() {
+        const sidenav = document.getElementById('sidenav');
+        sidenav.classList.toggle('collapsed');
+    });
+</script>
+{% endblock %}

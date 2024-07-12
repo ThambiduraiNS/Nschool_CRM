@@ -38,6 +38,7 @@ body {
 
 li .brand:hover {
     color: #fff;
+    background-color: #c72571;
 }
 
 .dashboard {

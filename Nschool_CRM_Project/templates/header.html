@@ -1,0 +1,34 @@
+{% load static %}
+{% load bootstrap_icons %}
+
+{% block header %}
+
+<div class="row m-0 p-0">
+    <div class="col-2 sidenav">
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a class="nav-link brand" aria-current="page" href="#">Nschool</a>
+            </li>
+        </ul>
+    </div>
+    <div class="col-7 p-0 m-0">
+        <span id="toggle-sidenav" class="ps-4">{% bs_icon 'list' %}</span>
+    </div>
+    <div class="col-3 py-2 m-0 d-flex justify-content-center">
+        <img class="images" src="{% static '/images/user.png' %}">
+        <li class="drop">
+            <a href="javascript:void(0)" class="dropbtn">
+                <span class="profile">User Name</span> <p>Admin</p>
+                <span class="down-arrow">{% bs_icon 'chevron-down' %}</span>
+            </a>
+            <div class="drop-content">
+                <img class="images pt-2" src="{% static '/images/user.png' %}" alt="user"><span class="pt-2">User Name</span> 
+                <hr>
+                <a href="#">{% bs_icon 'person-circle' %} Profile</a>
+                <a href="#">{% bs_icon 'box-arrow-right' %} Logout </a>
+            </div>
+        </li>
+    </div>
+</div>
+
+{% endblock %}
