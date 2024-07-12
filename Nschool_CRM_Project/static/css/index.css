@@ -52,9 +52,26 @@ li .brand:hover {
     fill: #fff;
 }
 
-.btn:hover,
-.dropdown-menu a:hover {
+.btn:hover, .btn:focus {
     background-color: #fff;
+    color: #c72571;
+}
+
+.btn:focus .bi-caret-right-fill {
+    fill: #c72571;
+}
+
+.dropdown-menu a:hover {
+    background-color: #fcddec;
+    color: #000000;
+}
+
+.dropdown-menu .slash {
+    font-size: 12px;
+    padding-right: 10px;
+}
+
+.dropdown-menu a:hover .slash, .dropdown-menu a:not(:hover) .slash {
     color: #c72571;
 }
 
@@ -93,6 +110,7 @@ li a:hover .bi-columns-gap {
 .sidenav ul .manage {
     font-size: 11px;
     padding: 5px 0px 5px 52px;
+    font-weight: 600;
 }
 
 .active {

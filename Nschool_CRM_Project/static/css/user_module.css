@@ -45,7 +45,7 @@ h5::before {
 }
 
 /* When the input field is focused */
-.user-input-wrp input:focus ~ .floating-label {
+.user-input-wrp input:focus~.floating-label {
     top: -12px;
     font-size: 14px;
     color: #333;
@@ -53,7 +53,7 @@ h5::before {
 }
 
 /* When there is content in the input field */
-.user-input-wrp input:not(:placeholder-shown) ~ .floating-label {
+.user-input-wrp input:not(:placeholder-shown)~.floating-label {
     top: -12px;
     font-size: 14px;
     color: #333;
@@ -61,11 +61,11 @@ h5::before {
 }
 
 /* When the input field is not focused and empty */
-.user-input-wrp input:not(:focus):placeholder-shown ~ .floating-label {
+.user-input-wrp input:not(:focus):placeholder-shown~.floating-label {
     top: 13px;
     font-size: 14px;
     color: #888;
-    
+
 }
 
 .user-input-wrp {
@@ -73,8 +73,51 @@ h5::before {
     margin: 20px 0;
 }
 
+.permission-p {
+    font-size: 13px;
+    font-weight: 500;
+}
+
 .form-control:focus {
     border-color: #842029 !important;
     border: 2px solid #842029;
     box-shadow: 0 0 0 0 #842029 !important;
+}
+
+.form-check-input:checked {
+    background-color: #c72571 !important;
+    border-color: #c72571 !important;
+}
+
+.form-check-input[type="checkbox"] {
+    border-radius: 0px !important;
+    border: 1px solid black;
+    width: 12px;
+    height: 12px;
+    margin-top: 8px;
+}
+
+.form-check-input:focus {
+    border-color: #c72571 !important;
+    box-shadow: 0 0 0 0 #c72571 !important;
+}
+
+.form-check-label {
+    font-size: 13px;
+}
+
+.login-btn {
+    width: 25%;
+    margin-top: 4%;
+    margin-bottom: 10%;
+    font-size: 13px;
+    float: right;
+    border: 1px solid #842029 !important;
+    border-radius: 50px !important;
+    padding: 14px;
+}
+
+.login-btn:hover {
+    background-color: #8d0f4c !important;
+    color: #ffffff !important;
 }
