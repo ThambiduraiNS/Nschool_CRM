@@ -10,156 +10,132 @@
     {% load bootstrap5 %}
     {% bootstrap_css %}
     {% bootstrap_javascript %}
-    <link rel="stylesheet" href="{% static '/css/style.css' %}">
+    <link rel="stylesheet" href="{% static '/css/dashboard.css' %}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{% static 'images/apple-touch-icon.png' %}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{% static 'images/favicon-32x32.png' %}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{% static 'images/favicon-16x16.png' %}">
+    <link rel="manifest" href="{% static 'images/site.webmanifest' %}">
+    <script src="{% static '/js/dashboard.js' %}"></script>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
-
 </head>
 
 <body>
     <div class="container-fluid">
         <div class="row">
             <div class="col-2 sidenav">
-
-                <ul class="nav flex-column">
+                <ul class="navbar-nav">
+                    <li class="brand">MY LOGO</li>
                     <li class="nav-item">
-                        <a class="nav-link brand" aria-current="page" href="#">Nschool</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">{% bs_icon 'columns-gap' %} <span
-                                class="menus dashboard">DashBoard</span></a>
-                    </li>
-                    <li class="nav-item">
-                        <div class="dropdown">
-                            <a class="btn dropdown-toggle w-100 text-start " href="#" role="button" data-bs-toggle="dropdown"
-                                aria-expanded="false">
-                                {% bs_icon 'person' %}<span class="menus">User</span>
-                            </a>
-
-                            <ul class="dropdown-menu dropdown-content">
-                                <li><a class="dropdown-item new" href="#">New User</a></li>
-                                <li><a class="dropdown-item manage" href="#">Manage USer</a></li>
-                            </ul>
+                        <button class="accordion btn btn-div w-100 text-start" type="button">
+                            {% bs_icon 'columns-gap' %} <span class="menus">Dashboard</span>
+                        </button>
+                        <div class="panel">
+                            <a class="dropdown-item new" href="#">New Enquiry</a>
+                            <a class="dropdown-item manage" href="#">Manage Enquiry</a>
                         </div>
                     </li>
                     <li class="nav-item">
-                        <div class="dropdown">
-                            <a class="btn dropdown-toggle w-100 text-start " href="#" role="button" data-bs-toggle="dropdown"
-                                aria-expanded="false">
-                                {% bs_icon 'book' %}<span class="menus">Course</span>
-                            </a>
-
-                            <ul class="dropdown-menu dropdown-content">
-                                <li><a class="dropdown-item new" href="#">New Course</a></li>
-                                <li><a class="dropdown-item manage" href="#">Manage Course</a></li>
-                            </ul>
-                        </div>
-                    </li>
-                    <li class="nav-item">
-                        <div class="dropdown">
-                            <a class="btn dropdown-toggle w-100 text-start " href="#" role="button" data-bs-toggle="dropdown"
-                                aria-expanded="false">
-                                {% bs_icon 'person' %}<span class="menus">Enquiry</span>
-                            </a>
-
-                            <ul class="dropdown-menu">
-                                <li><a class="dropdown-item new" href="#">New Enquiry</a></li>
-                                <li><a class="dropdown-item manage" href="#">Manage Enquiry</a></li>
-                            </ul>
-                        </div>
-                    </li>
-                    <li class="nav-item">
-                        <div class="dropdown">
-                            <a class="btn dropdown-toggle w-100 text-start" href="#" role="button" data-bs-toggle="dropdown"
-                                aria-expanded="false">
-                                {% bs_icon 'person-plus' %}<span class="menus">Enrollment</span>
-                            </a>
-
-                            <ul class="dropdown-menu dropdown-content">
-                                <li><a class="dropdown-item new" href="#">New Enrollment</a></li>
-                                <li><a class="dropdown-item manage" href="#">Manage Enrollment</a></li>
-                            </ul>
-                        </div>
-                    </li>
-                    <li class="nav-item">
-                        <div class="dropdown">
-                            <a class="btn dropdown-toggle w-100 text-start" href="#" role="button" data-bs-toggle="dropdown"
-                                aria-expanded="false">
-                                {% bs_icon 'file-earmark-check' %}<span class="menus">Attendance</span>
-                            </a>
-
-                            <ul class="dropdown-menu dropdown-content">
-                                <li><a class="dropdown-item new" href="#">New Attendance</a></li>
-                                <li><a class="dropdown-item manage" href="#">Manage Attendance</a></li>
-                            </ul>
-                        </div>
-                    </li>
-                    <li class="nav-item">
-                        <div class="dropdown">
-                            <a class="btn dropdown-toggle w-100 text-start" href="#" role="button" data-bs-toggle="dropdown"
-                                aria-expanded="false">
-                                {% bs_icon 'currency-rupee' %}<span class="menus">Payment</span>
-                            </a>
-
-                            <ul class="dropdown-menu dropdown-content">
-                                <li><a class="dropdown-item new" href="#">New Payment</a></li>
-                                <li><a class="dropdown-item manage" href="#">Manage Payment</a></li>
-                            </ul>
-                        </div>
-                    </li>
-                    <li class="nav-item">
-                        <div class="dropdown">
-                            <a class="btn dropdown-toggle w-100 text-start" href="#" role="button" data-bs-toggle="dropdown"
-                                aria-expanded="false">
-                                {% bs_icon 'trophy' %}<span class="menus">Placement</span>
-                            </a>
-
-                            <ul class="dropdown-menu dropdown-content">
-                                <li><a class="dropdown-item new" href="#">New Placement</a></li>
-                                <li><a class="dropdown-item manage" href="#">Manage Placement</a></li>
-                            </ul>
-                        </div>
-                    </li>
-                    <li class="nav-item">
-                        <div class="dropdown">
-                            <a class="btn dropdown-toggle w-100 text-start" href="#" role="button" data-bs-toggle="dropdown"
-                                aria-expanded="false">
-                                {% bs_icon 'people-fill' %}<span class="menus">Staff</span>
-                            </a>
-
-                            <ul class="dropdown-menu dropdown-content">
-                                <li><a class="dropdown-item new" href="#">New Staff</a></li>
-                                <li><a class="dropdown-item manage" href="#">Manage Staff</a></li>
-                            </ul>
-                        </div>
-                    </li>
-                    <li class="nav-item">
-                        <div class="dropdown">
-                            <a class="btn dropdown-toggle w-100 text-start" href="#" role="button" data-bs-toggle="dropdown"
-                                aria-expanded="false">
-                                {% bs_icon 'file-earmark-plus' %}<span class="menus">Report</span>
-                            </a>
-
-                            <ul class="dropdown-menu dropdown-content">
-                                <li><a class="dropdown-item new" href="#">New Report</a></li>
-                                <li><a class="dropdown-item manage" href="#">Manage Report</a></li>
-                            </ul>
+                        <button class="accordion btn btn-div w-100 text-start" type="button">
+                            {% bs_icon 'person' %} <span class="menus">Staff</span>
+                        </button>
+                        <div class="panel">
+                            <a class="dropdown-item new" href="#">New Staff</a>
+                            <a class="dropdown-item manage" href="#">Manage Staff</a>
                         </div>
                     </li>
                 </ul>
             </div>
             <div class="col-10">
                 <div class="row">
-                    <div class="col-2">
+                    <div class="col-10">
                         {% bs_icon 'list' %}
                     </div>
-                    <div class="col-10 d-flex justify-content-end">
-                        <img class="images" src="{% static '/images/user.png' %}" alt="user">
+                    <div class="col-2">
+                        <img class="images" src="{% static 'images/user.png' %}" alt="user">
+                        <div class="dropdown">
+                            <button class="btn dropdown-toggle user-div" type="button" data-bs-toggle="dropdown"
+                                aria-expanded="false">
+                                User Name
+                            </button>
+                            <ul class="dropdown-menu dropdown-div">
+                                <li><a class="dropdown-item" href="#">Admin</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col custom-div">
+                        <div class="row">
+                            <div class="col-sm-3 mt-5 pt-4 pe-0 mb-sm-0">
+                                <div class="card mb-5">
+                                    <div class="image-div">
+                                        <img src="{% static 'images/enquiry.jpg' %}" alt="Enquiry">
+                                    </div>
+                                    <div class="card-body text-end">
+                                        <p class="card-text my-0">Total</p>
+                                        <p class="card-text my-0">Enquiry</p>
+                                        <p class="total pt-3 fw-semibold">25</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-3 mt-5 pt-4 pe-0 mb-sm-0">
+                                <div class="card mb-5">
+                                    <div class="image-div">
+                                        <img src="{% static 'images/enquiry.jpg' %}" alt="Enquiry">
+                                    </div>
+                                    <div class="card-body text-end">
+                                        <p class="card-text my-0">Total</p>
+                                        <p class="card-text my-0">Enquiry</p>
+                                        <p class="total pt-3 fw-semibold">25</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-3 mt-5 pt-4 pe-0 mb-sm-0">
+                                <div class="card mb-5">
+                                    <div class="image-div">
+                                        <img src="{% static 'images/enquiry.jpg' %}" alt="Enquiry">
+                                    </div>
+                                    <div class="card-body text-end">
+                                        <p class="card-text my-0">Total</p>
+                                        <p class="card-text my-0">Enquiry</p>
+                                        <p class="total pt-3 fw-semibold">25</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-3 mt-5 pt-4 pe-0 mb-sm-0">
+                                <div class="card mb-5">
+                                    <div class="image-div">
+                                        <img src="{% static 'images/enquiry.jpg' %}" alt="Enquiry">
+                                    </div>
+                                    <div class="card-body text-end">
+                                        <p class="card-text my-0">Total</p>
+                                        <p class="card-text my-0">Enquiry</p>
+                                        <p class="total pt-3 fw-semibold">25</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var acc = document.getElementsByClassName("accordion");
+            for (var i = 0; i < acc.length; i++) {
+                acc[i].addEventListener("click", function () {
+                    this.classList.toggle("active");
+                    var panel = this.nextElementSibling;
+                    if (panel.style.display === "block") {
+                        panel.style.display = "none";
+                    } else {
+                        panel.style.display = "block";
+                    }
+                });
+            }
+        });
+    </script>
 </body>
 
 </html>

@@ -11,25 +11,72 @@
     {% bootstrap_css %}
     {% bootstrap_javascript %}
     <link rel="stylesheet" href="{% static '/css/index.css' %}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{% static 'images/apple-touch-icon.png' %}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{% static 'images/favicon-32x32.png' %}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{% static 'images/favicon-16x16.png' %}">
+    <link rel="manifest" href="{% static 'images/site.webmanifest' %}">
     <script src="{% static '/js/dashboard.js' %}"></script>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+    <script>
+        window.onload = function () {
+            var chartDataPoints1 = JSON.parse('{{ datapoints|escapejs }}');
+            var chartDataPoints2 = JSON.parse('{{ datapoints2|escapejs }}');
+            var chart = new CanvasJS.Chart("chartContainer", {
+                animationEnabled: true,
+                exportEnabled: true,
+                title: {
+                    text: "Enquiry & Enrollment Status"
+                },
+                legend: {
+                    cursor: "pointer",
+                    verticalAlign: "top",
+                    itemclick: hideUnhideDataSeries
+                },
+                data: [{
+                    type: "column",
+                    name: "New Enrollment",
+                    showInLegend: true,
+                    dataPoints: chartDataPoints1,
+                }, {
+                    type: "column",
+                    name: "Enquiry",
+                    showInLegend: true,
+                    dataPoints: chartDataPoints2,
+                }]
+            });
+            chart.render();
+
+            function hideUnhideDataSeries(e) {
+                if (typeof (e.dataSeries.visible) === "undefined" || e.dataSeries.visible) {
+                    e.dataSeries.visible = false;
+                } else {
+                    e.dataSeries.visible = true;
+                }
+
+                e.chart.render();
+            }
+        }
+    </script>
 </head>
 
 <body>
     <div class="container-fluid">
         <div class="row">
-            <div class="col-2 sidenav">
+            <div class="col-2 sidenav" id="sidenav">
                 <ul class="nav flex-column">
                     <li class="nav-item">
                         <a class="nav-link brand" aria-current="page" href="#">Nschool</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">{% bs_icon 'columns-gap' %} <span class="menus dashboard">DashBoard</span></a>
+                        <a class="nav-link" href="#">{% bs_icon 'columns-gap' %} <span
+                                class="menus dashboard">DashBoard</span></a>
                     </li>
                     <li class="nav-item">
                         <div class="dropdown">
-                            <a class="btn btn-div w-100 text-start" href="#" role="button" onclick="toggleDropdown(this)">
-                                {% bs_icon 'person' %} <span class="menus">User</span> <span class="right_arrow">{% bs_icon 'caret-right-fill' %}</span>
+                            <a class="btn btn-div w-100 text-start" href="#" role="button"
+                                onclick="toggleDropdown(this)">
+                                {% bs_icon 'person' %} <span class="menus">User</span> 
+                                <span class="right_arrow">{% bs_icon 'caret-right-fill' %}</span>
                             </a>
                             <ul class="dropdown-menu dropdown-content">
                                 <li><a class="dropdown-item new" href="#">New User</a></li>
@@ -39,8 +86,10 @@
                     </li>
                     <li class="nav-item">
                         <div class="dropdown">
-                            <a class="btn btn-div w-100 text-start" href="#" role="button" onclick="toggleDropdown(this)">
-                                {% bs_icon 'book' %} <span class="menus">Course</span> <span class="right_arrow">{% bs_icon 'caret-right-fill' %}</span>
+                            <a class="btn btn-div w-100 text-start" href="#" role="button"
+                                onclick="toggleDropdown(this)">
+                                {% bs_icon 'book' %} <span class="menus">Course</span> 
+                                <span class="right_arrow">{% bs_icon 'caret-right-fill' %}</span>
                             </a>
                             <ul class="dropdown-menu dropdown-content">
                                 <li><a class="dropdown-item new" href="#">New Course</a></li>
@@ -50,8 +99,10 @@
                     </li>
                     <li class="nav-item">
                         <div class="dropdown">
-                            <a class="btn btn-div w-100 text-start" href="#" role="button" onclick="toggleDropdown(this)">
-                                {% bs_icon 'person' %} <span class="menus">Enquiry</span> <span class="right_arrow">{% bs_icon 'caret-right-fill' %}</span>
+                            <a class="btn btn-div w-100 text-start" href="#" role="button"
+                                onclick="toggleDropdown(this)">
+                                {% bs_icon 'person' %} <span class="menus">Enquiry</span> 
+                                <span class="right_arrow">{% bs_icon 'caret-right-fill' %}</span>
                             </a>
                             <ul class="dropdown-menu dropdown-content">
                                 <li><a class="dropdown-item new" href="#">New Enquiry</a></li>
@@ -61,8 +112,10 @@
                     </li>
                     <li class="nav-item">
                         <div class="dropdown">
-                            <a class="btn btn-div w-100 text-start" href="#" role="button" onclick="toggleDropdown(this)">
-                                {% bs_icon 'person-plus' %} <span class="menus">Enrollment</span> <span class="right_arrow">{% bs_icon 'caret-right-fill' %}</span>
+                            <a class="btn btn-div w-100 text-start" href="#" role="button"
+                                onclick="toggleDropdown(this)">
+                                {% bs_icon 'person-plus' %} <span class="menus">Enrollment</span> <span
+                                    class="right_arrow">{% bs_icon 'caret-right-fill' %}</span>
                             </a>
                             <ul class="dropdown-menu dropdown-content">
                                 <li><a class="dropdown-item new" href="#">New Enrollment</a></li>
@@ -72,8 +125,10 @@
                     </li>
                     <li class="nav-item">
                         <div class="dropdown">
-                            <a class="btn btn-div w-100 text-start" href="#" role="button" onclick="toggleDropdown(this)">
-                                {% bs_icon 'file-earmark-check' %} <span class="menus">Attendance</span> <span class="right_arrow">{% bs_icon 'caret-right-fill' %}</span>
+                            <a class="btn btn-div w-100 text-start" href="#" role="button"
+                                onclick="toggleDropdown(this)">
+                                {% bs_icon 'file-earmark-check' %} <span class="menus">Attendance</span> 
+                                <span class="right_arrow">{% bs_icon 'caret-right-fill' %}</span>
                             </a>
                             <ul class="dropdown-menu dropdown-content">
                                 <li><a class="dropdown-item new" href="#">New Attendance</a></li>
@@ -83,8 +138,10 @@
                     </li>
                     <li class="nav-item">
                         <div class="dropdown">
-                            <a class="btn btn-div w-100 text-start" href="#" role="button" onclick="toggleDropdown(this)">
-                                {% bs_icon 'currency-rupee' %} <span class="menus">Payment</span> <span class="right_arrow">{% bs_icon 'caret-right-fill' %}</span>
+                            <a class="btn btn-div w-100 text-start" href="#" role="button"
+                                onclick="toggleDropdown(this)">
+                                {% bs_icon 'currency-rupee' %} <span class="menus">Payment</span> <span
+                                    class="right_arrow">{% bs_icon 'caret-right-fill' %}</span>
                             </a>
                             <ul class="dropdown-menu dropdown-content">
                                 <li><a class="dropdown-item new" href="#">New Payment</a></li>
@@ -94,8 +151,10 @@
                     </li>
                     <li class="nav-item">
                         <div class="dropdown">
-                            <a class="btn btn-div w-100 text-start" href="#" role="button" onclick="toggleDropdown(this)">
-                                {% bs_icon 'trophy' %} <span class="menus">Placement</span> <span class="right_arrow">{% bs_icon 'caret-right-fill' %}</span>
+                            <a class="btn btn-div w-100 text-start" href="#" role="button"
+                                onclick="toggleDropdown(this)">
+                                {% bs_icon 'trophy' %} <span class="menus">Placement</span> 
+                                <span class="right_arrow">{% bs_icon 'caret-right-fill' %}</span>
                             </a>
                             <ul class="dropdown-menu dropdown-content">
                                 <li><a class="dropdown-item new" href="#">New Placement</a></li>
@@ -105,8 +164,10 @@
                     </li>
                     <li class="nav-item">
                         <div class="dropdown">
-                            <a class="btn btn-div w-100 text-start" href="#" role="button" onclick="toggleDropdown(this)">
-                                {% bs_icon 'people-fill' %} <span class="menus">Staff</span> <span class="right_arrow">{% bs_icon 'caret-right-fill' %}</span>
+                            <a class="btn btn-div w-100 text-start" href="#" role="button"
+                                onclick="toggleDropdown(this)">
+                                {% bs_icon 'people-fill' %} <span class="menus">Staff</span> <span
+                                    class="right_arrow">{% bs_icon 'caret-right-fill' %}</span>
                             </a>
                             <ul class="dropdown-menu dropdown-content">
                                 <li><a class="dropdown-item new" href="#">New Staff</a></li>
@@ -116,8 +177,10 @@
                     </li>
                     <li class="nav-item">
                         <div class="dropdown">
-                            <a class="btn btn-div w-100 text-start" href="#" role="button" onclick="toggleDropdown(this)">
-                                {% bs_icon 'file-earmark-plus' %} <span class="menus">Report</span> <span class="right_arrow">{% bs_icon 'caret-right-fill' %}</span>
+                            <a class="btn btn-div w-100 text-start" href="#" role="button"
+                                onclick="toggleDropdown(this)">
+                                {% bs_icon 'file-earmark-plus' %} <span class="menus">Report</span> <span
+                                    class="right_arrow">{% bs_icon 'caret-right-fill' %}</span>
                             </a>
                             <ul class="dropdown-menu dropdown-content">
                                 <li><a class="dropdown-item new" href="#">New Report</a></li>
@@ -130,23 +193,135 @@
             <div class="col-10">
                 <div class="row">
                     <div class="col-10">
-                        {% bs_icon 'list' %}
+                        <span id="toggle-sidenav">{% bs_icon 'list' %}</span>
                     </div>
                     <div class="col-2">
                         <img class="images" src="{% static '/images/user.png' %}" alt="user">
                         <span class="dropdown">
-                            <button class="btn dropdown-toggle user-div" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                              User Name
+                            <button class="btn dropdown-toggle user-div" type="button" data-bs-toggle="dropdown"
+                                aria-expanded="false">
+                                User Name
                             </button>
                             <ul class="dropdown-menu dropdown-div">
-                              <li><a class="dropdown-item" href="#">Admin</a></li>
+                                <li><a class="dropdown-item" href="#">Admin</a></li>
                             </ul>
                         </span>
                     </div>
                 </div>
-                <div class="row">
-                    <div class="col">
+                <div class="row ">
+                    <div class="col custom-div">
                         <!-- Your content here -->
+                        <div class="row">
+                            <div class="col-sm-3 mt-5 pt-4 pe-0 mb-sm-0">
+                                <div class="card mb-5">
+                                    <div class="image-div">
+                                        <img src="{% static 'images/enquiry.jpg' %}" alt="">
+                                    </div>
+                                    <div class="card-body text-end">
+                                        <p class="card-text my-0">Total</p>
+                                        <p class="card-text my-0">Enquiry</p>
+                                        <p class="total pt-3 fw-semibold">25</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-sm-3 mt-5 pt-4 pe-0 mb-sm-0">
+                                <div class="card mb-5">
+                                    <div class="image-div">
+                                        <img src="{% static 'images/enquiry.jpg' %}" alt="">
+                                    </div>
+                                    <div class="card-body text-end">
+                                        <p class="card-text my-0">Total</p>
+                                        <p class="card-text my-0">Students</p>
+                                        <p class="total pt-3 fw-semibold">250</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-sm-3 pe-0 mt-5 pt-4 mb-sm-0">
+                                <div class="card mb-5">
+                                    <div class="image-div">
+                                        <img src="{% static 'images/enquiry.jpg' %}" alt="">
+                                    </div>
+                                    <div class="card-body text-end">
+                                        <p class="card-text my-0">Payment</p>
+                                        <p class="card-text my-0">Pending</p>
+                                        <p class="total pt-3 fw-semibold">250</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-sm-3 mt-5 pt-4 mb-sm-0">
+                                <div class="card mb-5">
+                                    <div class="image-div">
+                                        <img src="{% static 'images/enquiry.jpg' %}" alt="">
+                                    </div>
+                                    <div class="card-body text-end">
+                                        <p class="card-text my-0">Total</p>
+                                        <p class="card-text my-0">Collections</p>
+                                        <p class="total pt-3 fw-semibold">₹250</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- second row -->
+
+                            <div class="col-sm-3 pe-0 mb-sm-0">
+                                <div class="card mb-5">
+                                    <div class="image-div">
+                                        <img src="{% static 'images/enquiry.jpg' %}" alt="">
+                                    </div>
+                                    <div class="card-body text-end">
+                                        <p class="card-text my-0">Course</p>
+                                        <p class="card-text my-0">Completion</p>
+                                        <p class="total pt-3 fw-semibold">250</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-sm-3 pe-0 mb-sm-0">
+                                <div class="card mb-5">
+                                    <div class="image-div">
+                                        <img src="{% static 'images/enquiry.jpg' %}" alt="">
+                                    </div>
+                                    <div class="card-body text-end">
+                                        <p class="card-text my-0">Placement</p>
+                                        <p class="card-text my-0">Details</p>
+                                        <p class="total pt-3 fw-semibold">250</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-sm-3 pe-0 mb-sm-0">
+                                <div class="card mb-5">
+                                    <div class="image-div">
+                                        <img src="{% static 'images/enquiry.jpg' %}" alt="">
+                                    </div>
+                                    <div class="card-body text-end">
+                                        <p class="card-text my-0">Active</p>
+                                        <p class="card-text my-0">Students</p>
+                                        <p class="total pt-3 fw-semibold">250</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-sm-3 mb-sm-0">
+                                <div class="card mb-5">
+                                    <div class="image-div">
+                                        <img src="{% static 'images/enquiry.jpg' %}" alt="">
+                                    </div>
+                                    <div class="card-body text-end">
+                                        <p class="card-text my-0">Discontinued</p>
+                                        <p class="card-text my-0">Students</p>
+                                        <p class="total pt-3 fw-semibold">250</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div id="chartContainer" style="width: 100%; height: 360px;"></div>
+
+
+                        </div>
                     </div>
                 </div>
             </div>
@@ -184,7 +359,13 @@
             const rightArrow = element.querySelector('.right_arrow');
             rightArrow.classList.toggle('arrow_user');
         }
+
+        document.getElementById('toggle-sidenav').addEventListener('click', function() {
+            const sidenav = document.getElementById('sidenav');
+            sidenav.classList.toggle('collapsed');
+        });
     </script>
+    <script src="{% static 'canvasjs/canvasjs.min.js' %}"></script>
 </body>
 
 </html>
