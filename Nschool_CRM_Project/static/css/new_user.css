@@ -8,6 +8,10 @@
     font-weight: 600;
 }
 
+.user-a:hover {
+    color: #c72571;
+}
+
 .user-para {
     color: #333;
     font-size: 14px;

@@ -1,0 +1,219 @@
+{% extends 'base.html' %}
+
+{% load static %}
+{% load bootstrap_icons %}
+
+
+{% block title %}User Module{% endblock %}
+
+{% block css %}
+<link rel="stylesheet" href="{% static '/css/new_user.css' %}">
+<link rel="stylesheet" href="{% static '/css/header.css' %}">
+<link rel="stylesheet" href="{% static '/css/manage_user.css' %}">
+{% endblock %}
+
+{% block header %}
+{% include 'header.html' %}
+{% endblock %}
+
+{% block content %}
+<!-- <div class="container-fluid"> -->
+<div class="row m-0 p-0">
+    {% include 'side_navbar.html' %}
+
+    <div class="col-10 background-div">
+
+        <div class="row m-0 p-0">
+            <div class="col border bg-white rounded mt-4 ms-4 mb-2 px-4">
+                <nav style="--bs-breadcrumb-divider: '|';" aria-label="breadcrumb">
+                    <ol class="breadcrumb pt-2">
+                        <li class="breadcrumb-item"><a class="user-a" href="#">User Module</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Manage User</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+
+
+        <div class="row m-0 p-0">
+            <div class="col border bg-white rounded mt-2 ms-4 mb-2 px-4">
+
+                <div class="row m-0 p-0">
+
+                    <div class="col-5 mt-4 p-0">
+                        <h5 class="fw-bold">Manage User</h5>
+                    </div>
+
+                    <div class="col-5 d-flex pe-0">
+                        <form class="search-form">
+                            <input type="text" class="search-input" placeholder="Search">
+                            <button type="submit" class="search-button">
+                                {% bs_icon 'search' %}
+                            </button>
+                        </form>
+                    </div>
+
+                    <div class="col-2 d-flex mt-2 mb-1 p-2 text-center gap-1">
+                        <div class="col border-div">{% bs_icon 'filetype-csv' %} <span class="csv">CSV</span> </div>
+                        <div class="col border-div">
+                            <?xml version="1.0" ?><svg class="excel" viewBox="0 0 24 24"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <title />
+                                <g id="Excel">
+                                    <g data-name="&lt;Group&gt;" id="_Group_">
+                                        <polygon data-name="&lt;Path&gt;" id="_Path_"
+                                            points="13.5 0.5 0.5 3 0.5 21 13.5 23.5 13.5 0.5"
+                                            style="fill:none;stroke:#303c42;stroke-linecap:round;stroke-linejoin:round" />
+                                        <polyline data-name="&lt;Path&gt;" id="_Path_2"
+                                            points="13.5 3.5 23.5 3.5 23.5 20.5 13.5 20.5"
+                                            style="fill:none;stroke:#303c42;stroke-linecap:round;stroke-linejoin:round" />
+                                        <rect data-name="&lt;Rectangle&gt;" height="1" id="_Rectangle_"
+                                            style="fill:none;stroke:#303c42;stroke-linecap:round;stroke-linejoin:round"
+                                            width="3" x="13.5" y="5.5" />
+                                        <rect data-name="&lt;Rectangle&gt;" height="1" id="_Rectangle_2"
+                                            style="fill:none;stroke:#303c42;stroke-linecap:round;stroke-linejoin:round"
+                                            width="3" x="18.5" y="5.5" />
+                                        <rect data-name="&lt;Rectangle&gt;" height="1" id="_Rectangle_3"
+                                            style="fill:none;stroke:#303c42;stroke-linecap:round;stroke-linejoin:round"
+                                            width="3" x="13.5" y="8.5" />
+                                        <rect data-name="&lt;Rectangle&gt;" height="1" id="_Rectangle_4"
+                                            style="fill:none;stroke:#303c42;stroke-linecap:round;stroke-linejoin:round"
+                                            width="3" x="18.5" y="8.5" />
+                                        <rect data-name="&lt;Rectangle&gt;" height="1" id="_Rectangle_5"
+                                            style="fill:none;stroke:#303c42;stroke-linecap:round;stroke-linejoin:round"
+                                            width="3" x="13.5" y="11.5" />
+                                        <rect data-name="&lt;Rectangle&gt;" height="1" id="_Rectangle_6"
+                                            style="fill:none;stroke:#303c42;stroke-linecap:round;stroke-linejoin:round"
+                                            width="3" x="18.5" y="11.5" />
+                                        <rect data-name="&lt;Rectangle&gt;" height="1" id="_Rectangle_7"
+                                            style="fill:none;stroke:#303c42;stroke-linecap:round;stroke-linejoin:round"
+                                            width="3" x="13.5" y="14.5" />
+                                        <rect data-name="&lt;Rectangle&gt;" height="1" id="_Rectangle_8"
+                                            style="fill:none;stroke:#303c42;stroke-linecap:round;stroke-linejoin:round"
+                                            width="3" x="18.5" y="14.5" />
+                                        <rect data-name="&lt;Rectangle&gt;" height="1" id="_Rectangle_9"
+                                            style="fill:none;stroke:#303c42;stroke-linecap:round;stroke-linejoin:round"
+                                            width="3" x="13.5" y="17.5" />
+                                        <rect data-name="&lt;Rectangle&gt;" height="1" id="_Rectangle_10"
+                                            style="fill:none;stroke:#303c42;stroke-linecap:round;stroke-linejoin:round"
+                                            width="3" x="18.5" y="17.5" />
+                                        <line data-name="&lt;Path&gt;" id="_Path_3"
+                                            style="fill:none;stroke:#303c42;stroke-linecap:round;stroke-linejoin:round"
+                                            x1="4.5" x2="8.5" y1="8.5" y2="16.5" />
+                                        <line data-name="&lt;Path&gt;" id="_Path_4"
+                                            style="fill:none;stroke:#303c42;stroke-linecap:round;stroke-linejoin:round"
+                                            x1="4.5" x2="8.5" y1="16.5" y2="8.5" />
+                                    </g>
+                                </g>
+                            </svg>
+                            <span class="excel-text">EXCEL</span>
+                        </div>
+                        <div class="col border-div">{% bs_icon 'file-earmark-pdf' %}<span class="pdf">PDF</span></div>
+                    </div>
+
+                    <p class="user-para p-0">Use the below form to update your profile</p>
+                </div>
+
+                <div class="row">
+                    <div class="col d-flex justify-content-end py-3">
+                        <select class="select-div" id="perPageSelect">
+                            <option value="10">10 per page</option>
+                            <option value="20">20 per page</option>
+                            <option value="30">30 per page</option>
+                        </select>
+                        <span id="item-range" class="item-range">. 1-10</span>
+                        <span class="page-icon">{% bs_icon 'chevron-left' %}</span> <span class="page-icon">{% bs_icon 'chevron-right' %}</span>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col my-2">
+                        <table class="tabel-div">
+                            <tr>
+                                <th class="check">
+                                    <input type="checkbox" name="checkbox" id="checkbox">
+                                </th>
+                                <th class="thead">Name</th>
+                                <th class="thead">E-Mail-ID</th>
+                                <th class="thead">Contact</th>
+                                <th class="thead">Permission</th>
+                                <th class="password">Password</th>
+                                <th class="thead">Action</th>
+                            </tr>
+                            <tr>
+                                <td class="check1">
+                                    <input type="checkbox" name="checkbox" id="checkbox">
+                                </td>
+                                <td class="tdata">username</td>
+                                <td class="tdata">username@gmail.com</td>
+                                <td class="tdata">1234567890</td>
+                                <td class="tdata">
+                                    <div class="perm">
+                                        
+                                        <span class="staff">staff</span>
+                                        <span class="enrollment">enrollment</span>
+                                    
+                                        <span class="payment">payment</span>
+                                        <span class="report">report</span>
+                                        
+                                    </div>
+                                </td>
+                                <td class="tdata">
+                                    <div>
+                                        <span>***********</span>
+                                    </div>
+                                </td>
+                                <td class="tdata">
+                                    <div>
+                                        <span class="edit">{% bs_icon 'pencil' %}</span>
+                                        <span class="delete">{% bs_icon 'trash3' %}</span>
+                                    </div>
+                                </td>
+                            </tr>
+                            
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</div>
+<!-- </div> -->
+
+{% endblock %}
+
+
+{% block scripts %}
+<script>
+    function toggleDropdown(element) {
+        // Close all dropdowns
+        const allDropdowns = document.querySelectorAll('.dropdown-menu');
+        allDropdowns.forEach(dropdown => {
+            if (dropdown !== element.nextElementSibling) {
+                dropdown.classList.remove('show');
+            }
+        });
+
+        // Close all arrows
+        const allArrows = document.querySelectorAll('.right_arrow');
+        allArrows.forEach(arrow => {
+            if (arrow !== element.querySelector('.right_arrow')) {
+                arrow.classList.remove('arrow_user');
+            }
+        });
+
+        // Toggle the clicked dropdown and arrow
+        const dropdownMenu = element.nextElementSibling;
+        dropdownMenu.classList.toggle('show');
+        const rightArrow = element.querySelector('.right_arrow');
+        rightArrow.classList.toggle('arrow_user');
+    }
+
+    document.getElementById('toggle-sidenav').addEventListener('click', function () {
+        const sidenav = document.getElementById('sidenav');
+        sidenav.classList.toggle('collapsed');
+    });
+</script>
+{% endblock %}

@@ -34,4 +34,7 @@ def dashboard_view(request):
 
 
 def user_module_view(request):
-    return render(request, 'user_module.html')
+    return render(request, 'new_user.html')
+
+def manage_user_view(request):
+    return render(request, 'manage_user.html')
