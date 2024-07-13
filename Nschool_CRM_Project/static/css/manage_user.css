@@ -113,7 +113,21 @@
 
 .password {
     background-color: #fff5fa;
-    padding: 5px 85px 5px 10px;
+    padding: 5px 70px 5px 10px;
+    font-size: 12px;
+    border: 1px solid #aaa;
+}
+
+.Permission {
+    background-color: #fff5fa;
+    padding: 5px 120px 5px 10px;
+    font-size: 12px;
+    border: 1px solid #aaa;
+}
+
+.action {
+    background-color: #fff5fa;
+    padding: 5px 94px 5px 10px;
     font-size: 12px;
     border: 1px solid #aaa;
 }

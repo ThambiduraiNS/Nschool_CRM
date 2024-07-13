@@ -5,6 +5,9 @@ from django.template import loader
 
 # Create your views here.
 
+def admin_login(request):
+    return render(request, 'admin_login.html')
+
 def dashboard_view(request):
     datapoints = [
         { "x": 10, "y": 171 },
