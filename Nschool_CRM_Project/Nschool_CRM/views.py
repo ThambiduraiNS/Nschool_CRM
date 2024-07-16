@@ -1,12 +1,49 @@
 import json
-from django.shortcuts import render
-from django.http import HttpResponse
-from django.template import loader
+from django.shortcuts import redirect, render
+from django.contrib.auth import authenticate
+from django.contrib.auth import authenticate, login
+from django.template import RequestContext
+from .models import NewUser
 
+from rest_framework import generics
+from rest_framework.permissions import IsAuthenticated
+from .serializer import NewUserSerializer
+
+from rest_framework.authtoken.models import Token
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_protect
 # Create your views here.
-
+@csrf_protect
 def admin_login(request):
+    if request.method == 'POST':
+        username = request.POST.get("username", "").strip()
+        password = request.POST.get("password", "").strip()
+
+        if not username or not password:
+            context = {
+                'error': 'Username and password are required.'
+            }
+            return render(request, 'admin_login.html', context)
+        
+        user = authenticate(request, username=username, password=password)
+        
+        if user is not None:
+            # Create new token (deleting old token is optional, based on your use case)
+            Token.objects.filter(user=user).delete()  # Optional: delete old token
+            token, created = Token.objects.get_or_create(user=user)
+            
+            # Optionally store the token in the session or pass it to the next page
+            request.session['auth_token'] = token.key  # Example of storing in session
+            
+            return redirect('dashboard')  # Replace with your success URL
+        else:
+            context = {
+                'error': 'Invalid credentials.'
+            }
+            return render(request, 'admin_login.html', context)
+    
     return render(request, 'admin_login.html')
+
 
 def dashboard_view(request):
     datapoints = [
@@ -41,3 +78,13 @@ def user_module_view(request):
 
 def manage_user_view(request):
     return render(request, 'manage_user.html')
+
+class UserListCreate(generics.ListCreateAPIView):
+    queryset = NewUser.objects.all()
+    serializer_class = NewUserSerializer
+    permission_classes = [IsAuthenticated] 
+
+class UserDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = NewUser.objects.all()
+    serializer_class = NewUserSerializer
+    permission_classes = [IsAuthenticated] 
