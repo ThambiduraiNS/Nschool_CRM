@@ -90,6 +90,21 @@
 
 /* tabel style */
 
+.form-check-input:checked {
+    background-color: #c72571 !important;
+    border-color: #c72571 !important;
+}
+
+.trow:hover {
+    color: #c72571 !important;
+    background-color: #ffffff;
+    border-color: #c72571 !important;
+}
+
+table {
+    margin-right: 7px;
+}
+
 .table-div {
     border-collapse: collapse;
     width: 100%;
@@ -107,29 +122,32 @@
 
 .thead {
     background-color: #fff5fa;
-    padding: 5px 95px 5px 10px;
+    padding: 5px 0px 5px 10px;
     font-size: 12px;
+    width: 10%;
 }
 
 .password {
     background-color: #fff5fa;
-    padding: 5px 70px 5px 10px;
+    padding: 5px 0px 5px 10px;
     font-size: 12px;
     border: 1px solid #aaa;
 }
 
 .Permission {
     background-color: #fff5fa;
-    padding: 5px 120px 5px 10px;
+    padding: 5px 0px 5px 10px;
     font-size: 12px;
     border: 1px solid #aaa;
+    width: 31%;
 }
 
 .action {
     background-color: #fff5fa;
-    padding: 5px 94px 5px 10px;
+    padding: 5px 0px 5px 10px;
     font-size: 12px;
     border: 1px solid #aaa;
+    width: 12%;
 }
 
 .check1 {
@@ -145,18 +163,18 @@
 
 /* permission style */
 
+.permission {
+    border: 1px solid #aaa;
+}
+
 .perm {
-    position: relative;
-    padding: 30px;
+    padding: 5px 0px;
 }
 
 .staff {
-    position: absolute;
-    top: 0px;
-    left: 0px;
     border: 1px solid #f7ac43;
     font-size: 11px;
-    margin: 5px 0px;
+    margin: 5px 3px;
     background-color: #fff0dc;
     padding: 1px 18px;
     border-radius: 15px;
@@ -164,23 +182,17 @@
 }
 
 .enrollment {
-    position: absolute;
-    top: 0px;
-    right: 0px;
     border: 1px solid #c72571;
     font-size: 11px;
     background-color: #fff5fa;
     padding: 1px 18px;
     border-radius: 15px;
-    margin: 5px 0px;
+    margin: 5px 3px;
     color: #c72571;
 }
 
 .payment {
-    position: absolute;
-    margin: 5px 0px;
-    bottom: 0px;
-    left: 0px;
+    margin: 5px 3px;
     border: 1px solid #6f71ef;
     font-size: 11px;
     background-color: #e1e6ff;
@@ -190,16 +202,43 @@
 }
 
 .report {
-    position: absolute;
-    bottom: 0px;
-    right: 0px;
     border: 1px solid #0d888f;
     font-size: 11px;
-    margin: 5px 0px;
+    margin: 5px 3px;
     background-color: #c5f9ff;
     padding: 1px 18px;
     border-radius: 15px;
     color: #0e7f93;
+}
+
+.enquiry {
+    border: 1px solid #7b8404;
+    font-size: 11px;
+    margin: 5px 3px;
+    background-color: #fffed4;
+    padding: 1px 18px;
+    border-radius: 15px;
+    color: #5c6909;
+}
+
+.attendance {
+    border: 1px solid #268101;
+    font-size: 11px;
+    margin: 5px 3px;
+    background-color: #e2fec9;
+    padding: 1px 18px;
+    border-radius: 15px;
+    color: #6dc118;
+}
+
+.placement {
+    border: 1px solid #b515ab;
+    font-size: 11px;
+    margin: 5px 3px;
+    background-color: #fee9ff;
+    padding: 1px 18px;
+    border-radius: 15px;
+    color: #e709f3;
 }
 
 

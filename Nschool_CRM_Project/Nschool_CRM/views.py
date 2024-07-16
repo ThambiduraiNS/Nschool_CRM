@@ -35,7 +35,7 @@ def admin_login(request):
             # Optionally store the token in the session or pass it to the next page
             request.session['auth_token'] = token.key  # Example of storing in session
             
-            return redirect('dashboard')  # Replace with your success URL
+            return redirect('dashboard') 
         else:
             context = {
                 'error': 'Invalid credentials.'
@@ -74,10 +74,49 @@ def dashboard_view(request):
 
 
 def user_module_view(request):
+    print(request.POST)
+    if request.method == 'POST':
+        username = request.POST.get("username", "").strip()
+        email = request.POST.get("email", "").strip()
+        contact = request.POST.get("contact", "").strip()
+        designation = request.POST.get("designation", "").strip()
+        password = request.POST.get("password", "").strip()
+        cpassword = request.POST.get("cpassword", "").strip()
+        
+        # Get checkbox values
+        permissions = {
+            "enquiry": "Enquiry" in request.POST,
+            "enrollment": "Enrollment" in request.POST,
+            "attendance": "Attendance" in request.POST,
+            "staff": "Staff" in request.POST,
+            "placement": "Placement" in request.POST,
+            "report": "Report" in request.POST,
+        }
+
+        if password == cpassword:
+            newuser = NewUser(
+                name=username,
+                email=email,
+                contact=contact,
+                designation=designation,
+                password=password,
+                enquiry=permissions["enquiry"],
+                enrollment=permissions["enrollment"],
+                attendance=permissions["attendance"],
+                staff=permissions["staff"],
+                placement=permissions["placement"],
+                report=permissions["report"],
+            )
+            
+            newuser.save()
+            return redirect('manage-user')
+    
     return render(request, 'new_user.html')
 
+
 def manage_user_view(request):
-    return render(request, 'manage_user.html')
+    users = NewUser.objects.all()
+    return render(request, 'manage_user.html', {'users': users})
 
 class UserListCreate(generics.ListCreateAPIView):
     queryset = NewUser.objects.all()

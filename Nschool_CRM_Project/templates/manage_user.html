@@ -131,7 +131,7 @@
                         <table class="tabel-div">
                             <tr>
                                 <th class="check">
-                                    <input type="checkbox" name="checkbox" id="checkbox">
+                                    <input type="checkbox" class="form-check-input" name="checkbox" id="select_all">
                                 </th>
                                 <th class="thead">Name</th>
                                 <th class="thead">E-Mail-ID</th>
@@ -140,27 +140,33 @@
                                 <th class="password">Password</th>
                                 <th class="action">Action</th>
                             </tr>
-                            <tr>
+                            {% for user in users %}
+                            <tr class="trow">
                                 <td class="check1">
-                                    <input type="checkbox" name="checkbox" id="checkbox">
+                                    <input type="checkbox" class="form-check-input user-checkbox" name="user_ids" value="{{ user.id }}">
                                 </td>
-                                <td class="tdata">username</td>
-                                <td class="tdata">username@gmail.com</td>
-                                <td class="tdata">1234567890</td>
-                                <td class="tdata">
+                                <td class="tdata">{{ user.name }}</td>
+                                <td class="tdata">{{ user.email }}</td>
+                                <td class="tdata">{{ user.contact }}</td>
+                                <td class="permission">
                                     <div class="perm">
-                                        
-                                        <span class="staff">staff</span>
-                                        <span class="enrollment">enrollment</span>
-                                    
-                                        <span class="payment">payment</span>
-                                        <span class="report">report</span>
-                                        
+                                        {% if user.enquiry %}<span class="enquiry">Enquiry</span>{% endif %}
+                                        {% if user.enrollment %}<span class="enrollment">Enrollment</span>{% endif %}
+                                        {% if user.attendance %}<span class="attendance">Attendance</span>{% endif %}
+                                        {% if user.staff %}<span class="staff">Staff</span>{% endif %}
+                                        {% if user.placement %}<span class="placement">Placement</span>{% endif %}
+                                        {% if user.report %}<span class="report">Report</span>{% endif %}
                                     </div>
                                 </td>
                                 <td class="tdata">
                                     <div>
-                                        <span>***********</span>
+                                        <span>
+                                            {% if user.password %}
+                                                {% for i in user.password %}
+                                                    *
+                                                {% endfor %}
+                                            {% endif %}
+                                        </span>
                                     </div>
                                 </td>
                                 <td class="tdata">
@@ -170,7 +176,7 @@
                                     </div>
                                 </td>
                             </tr>
-                            
+                            {% endfor %}
                         </table>
                     </div>
                 </div>
@@ -214,6 +220,14 @@
     document.getElementById('toggle-sidenav').addEventListener('click', function () {
         const sidenav = document.getElementById('sidenav');
         sidenav.classList.toggle('collapsed');
+    });
+
+
+    document.getElementById('select_all').addEventListener('change', function() {
+        let checkboxes = document.querySelectorAll('.user-checkbox');
+        checkboxes.forEach(checkbox => {
+            checkbox.checked = this.checked;
+        });
     });
 </script>
 {% endblock %}
