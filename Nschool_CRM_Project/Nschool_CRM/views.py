@@ -5,6 +5,9 @@ from django.contrib.auth import authenticate, login
 from django.template import RequestContext
 from .models import NewUser
 
+from django.core.cache import cache
+from django.core.paginator import Paginator
+
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
 from .serializer import NewUserSerializer
@@ -115,8 +118,23 @@ def user_module_view(request):
 
 
 def manage_user_view(request):
-    users = NewUser.objects.all()
-    return render(request, 'manage_user.html', {'users': users})
+    # Fetch all users or the relevant queryset
+    users_list = NewUser.objects.all()
+    
+    # Get the per_page value from the request, default to 10 if not provided
+    per_page = request.GET.get('per_page', '10')
+
+    # Apply pagination
+    paginator = Paginator(users_list, per_page)  # Show per_page users per page
+    
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    context = {
+        'page_obj': page_obj,
+        'per_page': per_page,
+    }
+    return render(request, 'manage_user.html', context)
 
 class UserListCreate(generics.ListCreateAPIView):
     queryset = NewUser.objects.all()
