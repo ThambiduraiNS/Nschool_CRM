@@ -126,10 +126,10 @@
                             <span id="item-range" class="item-range">. {{ page_obj.start_index }}-{{ page_obj.end_index }}</span>
                             
                             {% if page_obj.has_previous %}
-                                <a href="?page={{ page_obj.previous_page_number }}&per_page={{ per_page }}"><span class="page-icon">{% bs_icon 'chevron-left' %}</span></a>
+                                <a class="anchor" href="?page={{ page_obj.previous_page_number }}&per_page={{ per_page }}"><span class="page-icon">{% bs_icon 'chevron-left' %}</span></a>
                             {% endif %}
                             {% if page_obj.has_next %}
-                                <a href="?page={{ page_obj.next_page_number }}&per_page={{ per_page }}"><span class="page-icon">{% bs_icon 'chevron-right' %}</span></a>
+                                <a class="anchor" href="?page={{ page_obj.next_page_number }}&per_page={{ per_page }}"><span class="page-icon">{% bs_icon 'chevron-right' %}</span></a>
                             {% endif %}
                         </form>
                     </div>

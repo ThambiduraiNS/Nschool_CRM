@@ -77,7 +77,6 @@ def dashboard_view(request):
 
 
 def user_module_view(request):
-    print(request.POST)
     if request.method == 'POST':
         username = request.POST.get("username", "").strip()
         email = request.POST.get("email", "").strip()
@@ -119,7 +118,7 @@ def user_module_view(request):
 
 def manage_user_view(request):
     # Fetch all users or the relevant queryset
-    users_list = NewUser.objects.all()
+    users_list = NewUser.objects.all().order_by('-id')
     
     # Get the per_page value from the request, default to 10 if not provided
     per_page = request.GET.get('per_page', '10')

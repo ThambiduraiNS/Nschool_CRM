@@ -38,7 +38,7 @@
                     <div class="col border bg-white rounded mt-2 ms-4 mb-2 px-4">
 
                         <div class="row m-0 p-0">
-                            <form action="" method="post">
+                            <form id="login-form" action="" method="post">
                                 {% csrf_token %}    
                                 <div class="col-12 mt-4">
                                     <h5 class="fw-bold">New User</h5>
@@ -49,12 +49,14 @@
                                         <div class="user-input-wrp me-4">
                                             <input type="text" name="username" id="username" class="form-control" aria-label="Username" placeholder=" " autocomplete="off" autofocus>
                                             <label class="floating-label">Name</label>
+                                            <span id="user_error" class="error-div"></span>
                                         </div>
                                     </div>
                                     <div class="col-6 pe-0">
                                         <div class="user-input-wrp ms-4">
-                                            <input type="email" name="email" id="email" class="form-control" aria-label="email" placeholder=" " autocomplete="off" autofocus>
+                                            <input type="email" name="email" id="email" class="form-control" placeholder=" " autocomplete="off" autofocus>
                                             <label class="floating-label">E-Mail-ID</label>
+                                            <span id="email_error" class="error-div error-right"></span>
                                         </div>
                                     </div>
                                 </div>
@@ -63,12 +65,14 @@
                                         <div class="user-input-wrp me-4">
                                             <input type="text" name="contact" id="contact" class="form-control" aria-label="contact_no" placeholder=" " autocomplete="off" autofocus>
                                             <label class="floating-label">Contact No</label>
+                                            <span id="contact_error" class="error-div"></span>
                                         </div>
                                     </div>
                                     <div class="col-6 pe-0">
                                         <div class="user-input-wrp ms-4">
                                             <input type="text" name="designation" id="designation" class="form-control" aria-label="designation" placeholder=" " autocomplete="off" autofocus>
                                             <label class="floating-label">Designation</label>
+                                            <span id="designation_error" class="error-div error-right"></span>
                                         </div>
                                     </div>
                                 </div>
@@ -119,12 +123,14 @@
                                         <div class="user-input-wrp me-4">
                                             <input type="password" name="password" id="password" class="form-control" aria-label="password" placeholder=" " autocomplete="off" autofocus>
                                             <label class="floating-label">Password</label>
+                                            <span id="pass_error" class="error-div"></span>
                                         </div>
                                     </div>
                                     <div class="col-6 pe-0">
                                         <div class="user-input-wrp ms-4">
-                                            <input type="password" name="cpassword" id="password" class="form-control" aria-label="password" placeholder=" " autocomplete="off" autofocus>
+                                            <input type="password" name="cpassword" id="cpassword" class="form-control" aria-label="password" placeholder=" " autocomplete="off" autofocus>
                                             <label class="floating-label">Conform Password</label>
+                                            <span id="cpass_error" class="error-div error-right"></span>
                                         </div>
                                     </div>
                                 </div>
@@ -179,6 +185,86 @@
     document.getElementById('toggle-sidenav').addEventListener('click', function() {
         const sidenav = document.getElementById('sidenav');
         sidenav.classList.toggle('collapsed');
+    });
+
+    // validation
+
+    document.getElementById("login-form").addEventListener("submit", function (event) {
+        event.preventDefault(); // Prevent form submission
+
+        var username = document.getElementById("username").value.trim();
+        var password = document.getElementById("password").value.trim();
+        var cpassword = document.getElementById("cpassword").value.trim();
+        var email = document.getElementById("email").value.trim();
+        var contact = document.getElementById("contact").value.trim();
+        var designation = document.getElementById("designation").value.trim();
+        
+
+        let emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
+
+        let hasError = false;
+
+        // client username Field validation
+        if (username === "") {
+            document.getElementById("user_error").innerText = "Username Field is required";
+            hasError = true;
+        } else {
+            document.getElementById("user_error").innerText = "";
+        }
+
+        // client side email Field validation
+        if (email == "") {
+            document.getElementById("email_error").innerText = "Email Field is required";
+            hasError = true;
+        } else {
+            document.getElementById("email_error").innerText = "";
+        }
+
+        // client side contact Field validation
+        if(contact == "") {
+            document.getElementById("contact_error").innerText = "Contact Field is required";
+            hasError = true;
+        } else if (isNaN(contact)) {
+            document.getElementById("contact_error").innerText = "Given input field is must be a Number";
+            hasError = true;
+        } else if (contact.length < 10 || contact.length > 15) {
+            document.getElementById("contact_error").innerText = "Contact field must be 10 to 15 digits long";
+            hasError = true;
+        } else {
+            document.getElementById("contact_error").innerText = "";
+        }
+        
+        // client side designation Field validation
+        if(designation == "") {
+            document.getElementById("designation_error").innerText = "Designation Field is required";
+            hasError = true;
+        } else {
+            document.getElementById("designation_error").innerText = "";
+        }
+
+        // client side password Field validation
+        if (password === "") {
+            document.getElementById("pass_error").innerText = "Password Field is required";
+            hasError = true;
+        } else {
+            document.getElementById("pass_error").innerText = "";
+        }
+
+        // client side conform password Field validation
+        if (cpassword === "") {
+            document.getElementById("cpass_error").innerText = "Conform Password Field is required";
+            hasError = true;
+        } else if (password !== cpassword) {
+            document.getElementById("cpass_error").innerText = "Passwords do not match";
+            hasError = true;
+        } else {
+            document.getElementById("cpass_error").innerText = "";
+        }
+
+         // Submit the form if there are no errors
+        if (!hasError) {
+            document.getElementById("login-form").submit();
+        }
     });
 </script>
 {% endblock %}

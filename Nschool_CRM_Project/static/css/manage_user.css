@@ -82,6 +82,14 @@
     font-weight: 600;
 }
 
+.anchor {
+    color: #000000;
+}
+
+.anchor:hover {
+    color: #c72571;
+}
+
 .page-icon {
     padding-left: 5px;
     padding-right: 5px;
@@ -176,7 +184,7 @@ table {
     font-size: 11px;
     margin: 5px 3px;
     background-color: #fff0dc;
-    padding: 1px 18px;
+    padding: 5px 18px;
     border-radius: 15px;
     color: #f4950f;
 }
@@ -185,7 +193,7 @@ table {
     border: 1px solid #c72571;
     font-size: 11px;
     background-color: #fff5fa;
-    padding: 1px 18px;
+    padding: 5px 18px;
     border-radius: 15px;
     margin: 5px 3px;
     color: #c72571;
@@ -196,7 +204,7 @@ table {
     border: 1px solid #6f71ef;
     font-size: 11px;
     background-color: #e1e6ff;
-    padding: 1px 18px;
+    padding: 5px 18px;
     border-radius: 15px;
     color: #2112ef;
 }
@@ -206,7 +214,7 @@ table {
     font-size: 11px;
     margin: 5px 3px;
     background-color: #c5f9ff;
-    padding: 1px 18px;
+    padding: 5px 18px;
     border-radius: 15px;
     color: #0e7f93;
 }
@@ -216,7 +224,7 @@ table {
     font-size: 11px;
     margin: 5px 3px;
     background-color: #fffed4;
-    padding: 1px 18px;
+    padding: 5px 18px;
     border-radius: 15px;
     color: #5c6909;
 }
@@ -226,7 +234,7 @@ table {
     font-size: 11px;
     margin: 5px 3px;
     background-color: #e2fec9;
-    padding: 1px 18px;
+    padding: 5px 18px;
     border-radius: 15px;
     color: #6dc118;
 }
@@ -236,12 +244,10 @@ table {
     font-size: 11px;
     margin: 5px 3px;
     background-color: #fee9ff;
-    padding: 1px 18px;
+    padding: 5px 18px;
     border-radius: 15px;
     color: #e709f3;
 }
-
-
 
 
 /* action style */
