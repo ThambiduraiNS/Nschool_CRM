@@ -20,10 +20,17 @@
 }
 
 .span_div {
-    font-size: x-small;
+    font-size: 10px;
     margin-left: 12px;
     height: 10px;
     padding-bottom: 11px;
+}
+
+.error-msg {
+    font-size: 14px;
+    text-align: center;
+    padding: 10px 0px;
+    margin: 40px auto;
 }
 
 .admin-div {
@@ -109,7 +116,7 @@ p {
 .login-btn {
     width: 100%;
     margin-top: 4%;
-    margin-bottom: 10%;
+    margin-bottom: 6%;
     background-color: #8d0f4c !important;
     font-size: 13px;
     float: right;
