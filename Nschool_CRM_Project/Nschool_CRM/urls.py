@@ -10,5 +10,5 @@ urlpatterns = [
     path('logout/', logout, name='logout'),
     
     path('api/login/', user_login, name='login'),
-    path('api/logout/', user_logout, name='logout'),
+    path('api/logout/', user_logout, name='api-logout'),
 ]

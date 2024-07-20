@@ -1,7 +1,7 @@
 import json, requests
 from django.shortcuts import redirect, render
 from django.contrib.auth import authenticate
-from django.contrib.auth import authenticate, login as auth_login
+from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
 from django.template import RequestContext
 from .models import NewUser, AdminLogin
 from django.contrib.auth.decorators import login_required
@@ -68,7 +68,7 @@ def admin_login(request):
             response = requests.post(url, data=data)
             # response.raise_for_status()  # Raise an HTTPError for bad responses
             response_data = response.json()
-            print(response_data)
+    
         except requests.exceptions.RequestException as e:
             context = {
                 'errors': f'Error occurred: {e}'
@@ -86,12 +86,53 @@ def admin_login(request):
     return render(request, 'admin_login.html')
 
 
-@login_required
-def logout(request):
-    user = request.user
-    token = Token.objects.get(user=user)
-    api_url = 'http://127.0.0.1:8000/api/logout/'
+
+# def logout(request):
+#     user = request.user.authenticate
+#     print("User name : ",user)
     
+#     if not user.is_authenticated:
+#         return redirect('admin_login')
+    
+#     token = Token.objects.get(user=user)
+#     print(token)
+#     api_url = 'http://127.0.0.1:8000/api/logout/'
+    
+#     headers = {
+#         'Authorization': f'Token {token.key}'
+#     }
+    
+#     try:
+#         response = requests.post(api_url, headers=headers)
+#         response.raise_for_status()
+#     except requests.exceptions.RequestException as e:
+#         print(f'Error during API logout: {e}')
+#         return redirect('dashboard')  # Redirect to dashboard or show an error message
+
+#     # Remove the token locally after successful API logout
+#     token.delete()
+
+#     # Clear the session and redirect to the login page
+#     request.session.flush()
+#     return redirect('admin_login')
+
+
+def logout(request):
+    # user = request.user
+    # print(user)
+    # if not user.is_authenticated():
+    #     return redirect('admin_login')
+
+    # try:
+    #     token = Token.objects.get(user=user)
+    #     print(f"Token for user {user}: {token.key}")
+    # except Token.DoesNotExist:
+    #     print(f"No token found for user {user}")
+    #     return redirect('admin_login')  # Or handle this case as needed
+    
+    
+    token = Token.objects.get()
+    api_url = 'http://127.0.0.1:8000/api/logout/'
     headers = {
         'Authorization': f'Token {token.key}'
     }
@@ -106,8 +147,10 @@ def logout(request):
     # Remove the token locally after successful API logout
     token.delete()
 
-    # Clear the session and redirect to the login page
+    # Log out the user and clear the session
+    auth_logout(request)
     request.session.flush()
+
     return redirect('admin_login')
 
 def dashboard_view(request):
