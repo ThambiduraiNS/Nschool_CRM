@@ -180,8 +180,8 @@
                                 </td>
                                 <td class="tdata">
                                     <div>
-                                        <span class="edit">{% bs_icon 'pencil' %}</span>
-                                        <span class="delete">{% bs_icon 'trash3' %}</span>
+                                        <a href="/update_user/{{user.id}}"><span class="edit">{% bs_icon 'pencil' %}</span></a>
+                                        <a href="/delete_user/{{user.id}}"><span class="delete">{% bs_icon 'trash3' %}</span></a>
                                     </div>
                                 </td>
                             </tr>

@@ -182,6 +182,63 @@ p {
     bottom: 14px;
 }
 
+/* style for password validation */
+
+.span-pass {
+    width: 100%;
+    display: flex;
+    font-size: 12px;
+    padding: 5px 16px;
+}
+
+/* The message box */
+#password-message { 
+    display: none;
+    background: #fff1fb;
+    color: #000;
+    position: relative;
+    padding: 0px 20px;
+    /* margin-top: 10px; */
+    text-align: left; 
+} 
+  
+#password-message h3 { 
+    font-size: 12px;
+    margin-top: 0;
+    text-transform: uppercase; 
+} 
+  
+#password-message span { 
+    margin: 8px 0; 
+} 
+  
+.valid { 
+    color: green; 
+} 
+  
+.valid:before { 
+    position: relative; 
+    left: -16px; 
+    content: "✔"; 
+} 
+  
+.invalid { 
+    color: red; 
+} 
+  
+.invalid:before { 
+    position: relative; 
+    left: -16px; 
+    content: "✖"; 
+} 
+  
+/* Error message style */
+.error-msg { 
+    color: red; 
+    font-size: 14px; 
+    margin-top: 4px; 
+}
+
 /* ---------------------------------------------------------------- */
 @media (max-width:768px) {
     .admin-login-div {

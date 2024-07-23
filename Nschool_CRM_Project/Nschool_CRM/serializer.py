@@ -30,7 +30,8 @@ class UserSerializer(serializers.ModelSerializer):
             return data
         raise serializers.ValidationError('Invalid credentials')
 
-class NewUserSerializer(serializers.Serializer):
+class NewUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = NewUser
         fields = '__all__'
+        

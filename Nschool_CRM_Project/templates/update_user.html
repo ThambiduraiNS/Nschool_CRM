@@ -41,13 +41,13 @@
                             <form id="login-form" action="" method="post">
                                 {% csrf_token %}    
                                 <div class="col-12 mt-4">
-                                    <h5 class="fw-bold">New User</h5>
+                                    <h5 class="fw-bold">Update User</h5>
                                     <p class="user-para">Use the below form to update your profile</p>
                                 </div>
                                 <div class="row d-flex justify-content-between pe-0">
                                     <div class="col-6">
                                         <div class="user-input-wrp me-4">
-                                            <input type="text" name="username" id="username" class="form-control" aria-label="Username" placeholder=" " autocomplete="off" autofocus>
+                                            <input type="text" name="username" id="username" value="{{user.name}}" class="form-control" aria-label="Username" placeholder=" " autocomplete="off" autofocus>
                                             <label class="floating-label">Name</label>
                                             <span id="user_error" class="error-div">
                                                 {% if name %}
@@ -58,7 +58,7 @@
                                     </div>
                                     <div class="col-6 pe-0">
                                         <div class="user-input-wrp ms-4">
-                                            <input type="email" name="email" id="email" class="form-control" placeholder=" " autocomplete="off" autofocus>
+                                            <input type="email" name="email" id="email" value="{{user.email}}" class="form-control" placeholder=" " autocomplete="off" autofocus>
                                             <label class="floating-label">E-Mail-ID</label>
                                             <span id="email_error" class="error-div error-right">
                                                 {% if email %}
@@ -71,7 +71,7 @@
                                 <div class="row d-flex justify-content-between pe-0">
                                     <div class="col-6">
                                         <div class="user-input-wrp me-4">
-                                            <input type="text" name="contact" id="contact" class="form-control" aria-label="contact_no" placeholder=" " autocomplete="off" autofocus>
+                                            <input type="text" name="contact" id="contact" value="{{user.contact}}" class="form-control" aria-label="contact_no" placeholder=" " autocomplete="off" autofocus>
                                             <label class="floating-label">Contact No</label>
                                             <span id="contact_error" class="error-div">
                                                 {% if contact %}
@@ -82,7 +82,7 @@
                                     </div>
                                     <div class="col-6 pe-0">
                                         <div class="user-input-wrp ms-4">
-                                            <input type="text" name="designation" id="designation" class="form-control" aria-label="designation" placeholder=" " autocomplete="off" autofocus>
+                                            <input type="text" name="designation" id="designation" value="{{user.designation}}" class="form-control" aria-label="designation" placeholder=" " autocomplete="off" autofocus>
                                             <label class="floating-label">Designation</label>
                                             <span id="designation_error" class="error-div error-right">
                                                 {% if designation %}
@@ -137,7 +137,7 @@
                                 <div class="row d-flex justify-content-between pe-0">
                                     <div class="col-6">
                                         <div class="user-input-wrp me-4">
-                                            <input type="password" name="password" id="password" class="form-control" aria-label="password" placeholder=" " autocomplete="off" autofocus>
+                                            <input type="password" name="password" id="password" value="{{user.password}}" class="form-control" aria-label="password" placeholder=" " autocomplete="off" autofocus>
                                             <label class="floating-label">Password</label>
                                             <span id="pass_error" class="error-div">
                                                 {% if password %}
@@ -146,13 +146,13 @@
                                             </span>
                                         </div>
                                     </div>
-                                    <div class="col-6 pe-0">
+                                    <!-- <div class="col-6 pe-0">
                                         <div class="user-input-wrp ms-4">
                                             <input type="password" name="cpassword" id="cpassword" class="form-control" aria-label="password" placeholder=" " autocomplete="off" autofocus>
                                             <label class="floating-label">Conform Password</label>
                                             <span id="cpass_error" class="error-div error-right"></span>
                                         </div>
-                                    </div>
+                                    </div> -->
                                 </div>
 
                                 <div class="row d-flex justify-content-between">
@@ -212,8 +212,8 @@
         event.preventDefault(); // Prevent form submission
 
         var username = document.getElementById("username").value.trim();
-        var password = document.getElementById("password").value.trim();
-        var cpassword = document.getElementById("cpassword").value.trim();
+        // var password = document.getElementById("password").value.trim();
+        // var cpassword = document.getElementById("cpassword").value.trim();
         var email = document.getElementById("email").value.trim();
         var contact = document.getElementById("contact").value.trim();
         var designation = document.getElementById("designation").value.trim();
@@ -288,16 +288,16 @@
             document.getElementById("pass_error").innerText = "";
         }
 
-        // client side conform password Field validation
-        if (cpassword === "") {
-            document.getElementById("cpass_error").innerText = "Conform Password Field is required";
-            hasError = true;
-        } else if (password !== cpassword) {
-            document.getElementById("cpass_error").innerText = "Passwords do not match";
-            hasError = true;
-        } else {
-            document.getElementById("cpass_error").innerText = "";
-        }
+        // // client side conform password Field validation
+        // if (cpassword === "") {
+        //     document.getElementById("cpass_error").innerText = "Conform Password Field is required";
+        //     hasError = true;
+        // } else if (password !== cpassword) {
+        //     document.getElementById("cpass_error").innerText = "Passwords do not match";
+        //     hasError = true;
+        // } else {
+        //     document.getElementById("cpass_error").innerText = "";
+        // }
 
          // Submit the form if there are no errors
         if (!hasError) {

@@ -1,6 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from phonenumber_field.modelfields import PhoneNumberField
+from django.core.validators import MinLengthValidator
+
 # Create your models here.
 
 class AdminLoginManager(BaseUserManager):
@@ -49,7 +51,7 @@ class AdminLogin(AbstractBaseUser, PermissionsMixin):
 class NewUser(models.Model):
     name = models.CharField(max_length=50)
     email = models.EmailField(max_length=200, unique=True)
-    contact = PhoneNumberField(unique=True, blank=True)
+    contact = PhoneNumberField(unique=True, blank=False)
     designation = models.CharField(max_length=255)
     enquiry = models.BooleanField(default=False)
     enrollment = models.BooleanField(default=False)
@@ -57,7 +59,7 @@ class NewUser(models.Model):
     staff = models.BooleanField(default=False)
     placement = models.BooleanField(default=False)
     report = models.BooleanField(default=False)
-    password = models.CharField(max_length=10)
+    password = models.CharField(max_length=15, validators=[MinLengthValidator(8)])
     
     def __str__(self):
     	return self.name
