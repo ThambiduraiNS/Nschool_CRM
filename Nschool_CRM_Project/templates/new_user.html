@@ -17,159 +17,179 @@
 
 {% block content %}
 <!-- <div class="container-fluid"> -->
-    <div class="row m-0 p-0">
-        {% include 'side_navbar.html' %}
+<div class="row m-0 p-0">
+    {% include 'side_navbar.html' %}
 
-        <div class="col-10 background-div">
-            
-                <div class="row m-0 p-0">
-                    <div class="col border bg-white rounded mt-4 ms-4 mb-2 px-4">
-                        <nav style="--bs-breadcrumb-divider: '|';" aria-label="breadcrumb">
-                            <ol class="breadcrumb pt-2">
-                              <li class="breadcrumb-item"><a class="user-a" href="#">User Module</a></li>
-                              <li class="breadcrumb-item active" aria-current="page">New User</li>
-                            </ol>
-                        </nav>
-                    </div>
-                </div>
+    <div class="col-10 background-div">
 
-
-                <div class="row m-0 p-0">
-                    <div class="col border bg-white rounded mt-2 ms-4 mb-2 px-4">
-
-                        <div class="row m-0 p-0">
-                            <form id="login-form" action="" method="post">
-                                {% csrf_token %}    
-                                <div class="col-12 mt-4">
-                                    <h5 class="fw-bold">New User</h5>
-                                    <p class="user-para">Use the below form to update your profile</p>
-                                </div>
-                                <div class="row d-flex justify-content-between pe-0">
-                                    <div class="col-6">
-                                        <div class="user-input-wrp me-4">
-                                            <input type="text" name="username" id="username" class="form-control" aria-label="Username" placeholder=" " autocomplete="off" autofocus>
-                                            <label class="floating-label">Name</label>
-                                            <span id="user_error" class="error-div">
-                                                {% if name %}
-                                                    {{name}}
-                                                {% endif %}
-                                            </span>
-                                        </div>
-                                    </div>
-                                    <div class="col-6 pe-0">
-                                        <div class="user-input-wrp ms-4">
-                                            <input type="email" name="email" id="email" class="form-control" placeholder=" " autocomplete="off" autofocus>
-                                            <label class="floating-label">E-Mail-ID</label>
-                                            <span id="email_error" class="error-div error-right">
-                                                {% if email %}
-                                                    {{email}}
-                                                {% endif %}
-                                            </span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="row d-flex justify-content-between pe-0">
-                                    <div class="col-6">
-                                        <div class="user-input-wrp me-4">
-                                            <input type="text" name="contact" id="contact" class="form-control" aria-label="contact_no" placeholder=" " autocomplete="off" autofocus>
-                                            <label class="floating-label">Contact No</label>
-                                            <span id="contact_error" class="error-div">
-                                                {% if contact %}
-                                                    {{contact}}
-                                                {% endif %}
-                                            </span>
-                                        </div>
-                                    </div>
-                                    <div class="col-6 pe-0">
-                                        <div class="user-input-wrp ms-4">
-                                            <input type="text" name="designation" id="designation" class="form-control" aria-label="designation" placeholder=" " autocomplete="off" autofocus>
-                                            <label class="floating-label">Designation</label>
-                                            <span id="designation_error" class="error-div error-right">
-                                                {% if designation %}
-                                                    {{designation}}
-                                                {% endif %}
-                                            </span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="row d-flex mt-3">
-                                    <p class="permission-p">Department Permission</p> <span id="permission_error"></span>
-                                    <div class="row gap-5 ms-2 mb-3 p-0">
-                                        <div class="col d-flex justify-content-end p-0">
-                                            <div class="form-check form-check-inline">
-                                                <input class="form-check-input" type="checkbox" name="Enquiry" id="inlineCheckbox1" value="Enquiry">
-                                                <label class="form-check-label" for="inlineCheckbox1">Enquiry</label>
-                                            </div>  
-                                        </div>
-                                        <div class="col d-flex justify-content-end p-0">
-                                            <div class="form-check form-check-inline">
-                                                <input class="form-check-input" type="checkbox" name="Enrollment" id="inlineCheckbox2" value="Enrollment">
-                                                <label class="form-check-label" for="inlineCheckbox2">Enrollment</label>
-                                            </div>                                          
-                                        </div>
-                                        <div class="col d-flex justify-content-end p-0">
-                                            <div class="form-check form-check-inline">
-                                                <input class="form-check-input" type="checkbox" name="Attendance" id="inlineCheckbox3" value="Attendance">
-                                                <label class="form-check-label" for="inlineCheckbox3">Attendance</label>
-                                            </div>                                          
-                                        </div>
-                                        <div class="col d-flex justify-content-end  p-0">
-                                            <div class="form-check form-check-inline">
-                                                <input class="form-check-input" type="checkbox" name="Staff" id="inlineCheckbox4" value="Staff">
-                                                <label class="form-check-label" for="inlineCheckbox4">Staff</label>
-                                            </div>                                          
-                                        </div>
-                                        <div class="col d-flex justify-content-end  p-0">
-                                            <div class="form-check form-check-inline">
-                                                <input class="form-check-input" type="checkbox" name="Placement" id="inlineCheckbox5" value="Placement">
-                                                <label class="form-check-label" for="inlineCheckbox5">Placement</label>
-                                            </div>                                          
-                                        </div>
-                                        <div class="col d-flex justify-content-end p-0">
-                                            <div class="form-check form-check-inline">
-                                                <input class="form-check-input" type="checkbox" name="Report" id="inlineCheckbox6" value="Report">
-                                                <label class="form-check-label" for="inlineCheckbox6">Report</label>
-                                            </div>                                          
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                <div class="row d-flex justify-content-between pe-0">
-                                    <div class="col-6">
-                                        <div class="user-input-wrp me-4">
-                                            <input type="password" name="password" id="password" class="form-control" aria-label="password" placeholder=" " autocomplete="off" autofocus>
-                                            <label class="floating-label">Password</label>
-                                            <span id="pass_error" class="error-div">
-                                                {% if password %}
-                                                    {{password}}
-                                                {% endif %}
-                                            </span>
-                                        </div>
-                                    </div>
-                                    <div class="col-6 pe-0">
-                                        <div class="user-input-wrp ms-4">
-                                            <input type="password" name="cpassword" id="cpassword" class="form-control" aria-label="password" placeholder=" " autocomplete="off" autofocus>
-                                            <label class="floating-label">Conform Password</label>
-                                            <span id="cpass_error" class="error-div error-right"></span>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="row d-flex justify-content-between">
-                                    <div class="col-6 d-flex justify-content-end pe-4">
-                                        <input type="reset" value="cancel" class="btn login-btn">
-                                    </div>
-                                    <div class="col-6 d-flex justify-content-start ps-4">
-                                        <input type="submit" value="save" class="btn login-btn">
-                                    </div>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            
+        <div class="row m-0 p-0">
+            <div class="col border bg-white rounded mt-4 ms-4 mb-2 px-4">
+                <nav style="--bs-breadcrumb-divider: '|';" aria-label="breadcrumb">
+                    <ol class="breadcrumb pt-2">
+                        <li class="breadcrumb-item"><a class="user-a" href="#">User Module</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">New User</li>
+                    </ol>
+                </nav>
+            </div>
         </div>
+
+
+        <div class="row m-0 p-0">
+            <div class="col border bg-white rounded mt-2 ms-4 mb-2 px-4">
+
+                <div class="row m-0 p-0">
+                    <form id="login-form" action="" method="post">
+                        {% csrf_token %}
+                        <div class="col-12 mt-4">
+                            <h5 class="fw-bold">New User</h5>
+                            <p class="user-para">Use the below form to update your profile</p>
+                        </div>
+                        <div class="row d-flex justify-content-between pe-0">
+                            <div class="col-6">
+                                <div class="user-input-wrp me-4">
+                                    <input type="text" name="username" id="username" class="form-control"
+                                        aria-label="Username" placeholder=" " autocomplete="off" autofocus>
+                                    <label class="floating-label">Name</label>
+                                    <span id="user_error" class="error-div">
+                                        {% if name %}
+                                        {{name}}
+                                        {% endif %}
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="col-6 pe-0">
+                                <div class="user-input-wrp ms-4">
+                                    <input type="email" name="email" id="email" class="form-control" placeholder=" "
+                                        autocomplete="off" autofocus>
+                                    <label class="floating-label">E-Mail-ID</label>
+                                    <span id="email_error" class="error-div error-right">
+                                        {% if email %}
+                                        {{email}}
+                                        {% endif %}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row d-flex justify-content-between pe-0">
+                            <div class="col-6">
+                                <div class="user-input-wrp me-4">
+                                    <input type="text" name="contact" id="contact" class="form-control"
+                                        aria-label="contact_no" placeholder=" " autocomplete="off" autofocus>
+                                    <label class="floating-label">Contact No</label>
+                                    <span id="contact_error" class="error-div">
+                                        {% if contact %}
+                                        {{contact}}
+                                        {% endif %}
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="col-6 pe-0">
+                                <div class="user-input-wrp ms-4">
+                                    <input type="text" name="designation" id="designation" class="form-control"
+                                        aria-label="designation" placeholder=" " autocomplete="off" autofocus>
+                                    <label class="floating-label">Designation</label>
+                                    <span id="designation_error" class="error-div error-right">
+                                        {% if designation %}
+                                        {{designation}}
+                                        {% endif %}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row d-flex mt-3">
+                            <p class="permission-p">Department Permission</p> 
+                            <span id="permission_error" class="error-div perm-error"></span>
+                            
+                            <div class="row gap-5 ms-2 mb-3 p-0">
+                                <div class="col d-flex justify-content-end p-0">
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="checkbox" name="Enquiry"
+                                            id="inlineCheckbox1" value="false" onclick="permission('inlineCheckbox1')">
+                                        <label class="form-check-label" for="inlineCheckbox1">Enquiry</label>
+                                        <span id="text_inlineCheckbox1"></span>
+                                    </div>
+                                </div>
+                                <div class="col d-flex justify-content-end p-0">
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="checkbox" name="Enrollment"
+                                            id="inlineCheckbox2" value="false" onclick="permission('inlineCheckbox2')">
+                                        <label class="form-check-label" for="inlineCheckbox2">Enrollment</label>
+                                        <span id="text_inlineCheckbox2"></span>
+                                    </div>
+                                </div>
+                                <div class="col d-flex justify-content-end p-0">
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="checkbox" name="Attendance"
+                                            id="inlineCheckbox3" value="false" onclick="permission('inlineCheckbox3')">
+                                        <label class="form-check-label" for="inlineCheckbox3">Attendance</label>
+                                        <span id="text_inlineCheckbox3"></span>
+                                    </div>
+                                </div>
+                                <div class="col d-flex justify-content-end  p-0">
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="checkbox" name="Staff"
+                                            id="inlineCheckbox4" value="false" onclick="permission('inlineCheckbox4')">
+                                        <label class="form-check-label" for="inlineCheckbox4">Staff</label>
+                                        <span id="text_inlineCheckbox4"></span>
+                                    </div>
+                                </div>
+                                <div class="col d-flex justify-content-end  p-0">
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="checkbox" name="Placement"
+                                            id="inlineCheckbox5" value="false" onclick="permission('inlineCheckbox5')">
+                                        <label class="form-check-label" for="inlineCheckbox5">Placement</label>
+                                        <span id="text_inlineCheckbox5"></span>
+                                    </div>
+                                </div>
+                                <div class="col d-flex justify-content-end p-0">
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="checkbox" name="Report"
+                                            id="inlineCheckbox6" value="false" onclick="permission('inlineCheckbox6')">
+                                        <label class="form-check-label" for="inlineCheckbox6">Report</label>
+                                        <span id="text_inlineCheckbox6"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row d-flex justify-content-between pe-0">
+                            <div class="col-6">
+                                <div class="user-input-wrp me-4">
+                                    <input type="password" name="password" id="password" class="form-control"
+                                        aria-label="password" placeholder=" " autocomplete="off" autofocus>
+                                    <label class="floating-label">Password</label>
+                                    <span id="pass_error" class="error-div">
+                                        {% if password %}
+                                        {{password}}
+                                        {% endif %}
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="col-6 pe-0">
+                                <div class="user-input-wrp ms-4">
+                                    <input type="password" name="cpassword" id="cpassword" class="form-control"
+                                        aria-label="password" placeholder=" " autocomplete="off" autofocus>
+                                    <label class="floating-label">Conform Password</label>
+                                    <span id="cpass_error" class="error-div error-right"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row d-flex justify-content-between">
+                            <div class="col-6 d-flex justify-content-end pe-4">
+                                <input type="reset" value="cancel" class="btn login-btn">
+                            </div>
+                            <div class="col-6 d-flex justify-content-start ps-4">
+                                <input type="submit" value="save" class="btn login-btn">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
     </div>
+</div>
 <!-- </div> -->
 
 {% endblock %}
@@ -201,7 +221,7 @@
         rightArrow.classList.toggle('arrow_user');
     }
 
-    document.getElementById('toggle-sidenav').addEventListener('click', function() {
+    document.getElementById('toggle-sidenav').addEventListener('click', function () {
         const sidenav = document.getElementById('sidenav');
         sidenav.classList.toggle('collapsed');
     });
@@ -223,7 +243,7 @@
         var Staff = document.getElementById("inlineCheckbox4").value.trim();
         var Placement = document.getElementById("inlineCheckbox5").value.trim();
         var Report = document.getElementById("inlineCheckbox6").value.trim();
-        
+
 
         let emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
         let contactCountryCode = /^(\+?\d{1,3}|\d{1,4})$/gm
@@ -250,7 +270,7 @@
         // Clear previous error
         document.getElementById("contact_error").innerText = "";
 
-        if(contact == "") {
+        if (contact == "") {
             document.getElementById("contact_error").innerText = "Contact Field is required";
             hasError = true;
         } else if (!/^\+?[0-9]+$/.test(contact)) {
@@ -262,9 +282,9 @@
         } else {
             document.getElementById("contact_error").innerText = "";
         }
-        
+
         // client side designation Field validation
-        if(designation == "") {
+        if (designation == "") {
             document.getElementById("designation_error").innerText = "Designation Field is required";
             hasError = true;
         } else {
@@ -272,13 +292,22 @@
         }
 
         // client side designation Field validation
-        if(Enquiry == false && Enrollment == false && Attendance == false && Staff == false && Placement == false && Report == false) {
-            document.getElementById("permission_error").innerText = "At least one permission Field is required";
+
+        var enquiry = document.getElementById("inlineCheckbox1").checked;
+        var enrollment = document.getElementById("inlineCheckbox2").checked;
+        var attendance = document.getElementById("inlineCheckbox3").checked;
+        var staff = document.getElementById("inlineCheckbox4").checked;
+        var placement = document.getElementById("inlineCheckbox5").checked;
+        var report = document.getElementById("inlineCheckbox6").checked;
+
+        if (!enquiry && !enrollment && !attendance && !staff && !placement && !report) {
+            document.getElementById("permission_error").innerText = "At least one permission field is required";
             hasError = true;
+            
         } else {
             document.getElementById("permission_error").innerText = "";
+            
         }
-
 
         // client side password Field validation
         if (password === "") {
@@ -299,10 +328,25 @@
             document.getElementById("cpass_error").innerText = "";
         }
 
-         // Submit the form if there are no errors
+        // Submit the form if there are no errors
         if (!hasError) {
             document.getElementById("login-form").submit();
         }
     });
+
+    function permission(checkboxId) {
+        // Get the checkbox
+        console.log("permission function")
+        var checkBox = document.getElementById(checkboxId);
+        // Get the output text
+        // var text = document.getElementById('text_' + checkboxId);
+
+        // If the checkbox is checked, display the output text
+        if (checkBox.checked) {
+            checkBox.value = true;
+        } else {
+            checkBox.value = false;
+        }
+    }
 </script>
 {% endblock %}

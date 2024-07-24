@@ -473,7 +473,7 @@ def update_user_view(request, id):
         return render(request, 'manage_user.html', context)
 
     if request.method == 'POST':
-        print(user)
+        print("User before update:", user)
         
         try:
             token = Token.objects.first()  # Get the first token for simplicity
@@ -483,30 +483,36 @@ def update_user_view(request, id):
             context = {'error': 'Authentication token not found'}
             return render(request, 'manage_user.html', context)
         
-        api_url = f'http://127.0.0.1:8000/api/newuser/{user.pk}/'
+        api_url = f'http://127.0.0.1:8000/api/update_newuser/{user.pk}/'
         headers = {
             'Authorization': f'Token {token.key}',
             'Content-Type': 'application/json'
         }
         
         user_data = {
-            'name': request.POST.get('name', user.name),
+            'name': request.POST.get('username', user.name),
             'email': request.POST.get('email', user.email),
-            'contact': str(request.POST.get('contact', user.contact)),  # Convert PhoneNumber to string
+            'contact': request.POST.get('contact', user.contact),
             'designation': request.POST.get('designation', user.designation),
-            'password': request.POST.get('password', user.password),
+            'enquiry': 'Enquiry' in request.POST,
+            'enrollment': 'Enrollment' in request.POST,
+            'attendance': 'Attendance' in request.POST,
+            'staff': 'Staff' in request.POST,
+            'placement': 'Placement' in request.POST,
+            'report': 'Report' in request.POST,
         }
         
+        print(user_data['enquiry'])
+        
+        print("User Data being sent:", user_data)
+
         try:
-            response = requests.patch(api_url, data=json.dumps(user_data), headers=headers)  # Use PATCH for partial updates
+            response = requests.patch(api_url, data=json.dumps(user_data), headers=headers)
+            print("API Response Status Code:", response.status_code)
             response.raise_for_status()
             response_data = response.json()
-            print(response_data)
+            print("API Response Data:", response_data)
         except requests.exceptions.RequestException as err:
-            # Print detailed error information
-            print(f"Request error occurred: {err}")
-            print(f"Response status code: {response.status_code}")
-            print(f"Response content: {response.text}")
             context = {
                 'error': f'Request error occurred: {err}',
                 'response_data': response.json() if response.content else {}
@@ -514,14 +520,15 @@ def update_user_view(request, id):
             return render(request, 'manage_user.html', context)
         
         if response.status_code in [200, 204]:  # 204 No Content is also a valid response for updates
+            print("Update successful")
             return redirect('manage-user')
         else:
             context = {
+                'error': 'Failed to update user information',
                 'name': response_data.get('name', ''),
                 'email': response_data.get('email', ''),
                 'contact': response_data.get('contact', ''),
                 'designation': response_data.get('designation', ''),
-                'password': response_data.get('password', ''),
             }
             return render(request, 'update_user.html', context)
         
@@ -593,7 +600,7 @@ class NewUserDetailView(generics.RetrieveUpdateDestroyAPIView):
 
 class NewUserUpdateView(generics.RetrieveUpdateAPIView):
     queryset = NewUser.objects.all()
-    serializer_class = NewUserSerializer
+    serializer_class = NewUserUpdateSerializer
     permission_classes = [IsAuthenticated]
     partial = True
     

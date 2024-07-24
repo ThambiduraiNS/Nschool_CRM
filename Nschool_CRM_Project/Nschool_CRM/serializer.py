@@ -35,3 +35,8 @@ class NewUserSerializer(serializers.ModelSerializer):
         model = NewUser
         fields = '__all__'
         
+class NewUserUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = NewUser
+        exclude = ['password',]
+        

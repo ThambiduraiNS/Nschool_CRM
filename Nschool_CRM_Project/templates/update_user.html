@@ -38,7 +38,7 @@
                     <div class="col border bg-white rounded mt-2 ms-4 mb-2 px-4">
 
                         <div class="row m-0 p-0">
-                            <form id="login-form" action="" method="post">
+                            <form id="login-form" action="{% url 'update-user' user.id %}" method="post">
                                 {% csrf_token %}    
                                 <div class="col-12 mt-4">
                                     <h5 class="fw-bold">Update User</h5>
@@ -93,68 +93,46 @@
                                     </div>
                                 </div>
                                 <div class="row d-flex mt-3">
-                                    <p class="permission-p">Department Permission</p> <span id="permission_error"></span>
+                                    <p class="permission-p">Department Permission</p> <span id="permission_error" class="error-div perm-error"></span>
                                     <div class="row gap-5 ms-2 mb-3 p-0">
                                         <div class="col d-flex justify-content-end p-0">
                                             <div class="form-check form-check-inline">
-                                                <input class="form-check-input" type="checkbox" name="Enquiry" id="inlineCheckbox1" value="Enquiry">
+                                                <input class="form-check-input" type="checkbox" name="Enquiry" id="inlineCheckbox1" {% if user.enquiry %}checked{% endif %}>
                                                 <label class="form-check-label" for="inlineCheckbox1">Enquiry</label>
                                             </div>  
                                         </div>
                                         <div class="col d-flex justify-content-end p-0">
                                             <div class="form-check form-check-inline">
-                                                <input class="form-check-input" type="checkbox" name="Enrollment" id="inlineCheckbox2" value="Enrollment">
+                                                <input class="form-check-input" type="checkbox" name="Enrollment" id="inlineCheckbox2" {% if user.enrollment %}checked{% endif %}>
                                                 <label class="form-check-label" for="inlineCheckbox2">Enrollment</label>
                                             </div>                                          
                                         </div>
                                         <div class="col d-flex justify-content-end p-0">
                                             <div class="form-check form-check-inline">
-                                                <input class="form-check-input" type="checkbox" name="Attendance" id="inlineCheckbox3" value="Attendance">
+                                                <input class="form-check-input" type="checkbox" name="Attendance" id="inlineCheckbox3" {% if user.attendance %}checked{% endif %}>
                                                 <label class="form-check-label" for="inlineCheckbox3">Attendance</label>
                                             </div>                                          
                                         </div>
                                         <div class="col d-flex justify-content-end  p-0">
                                             <div class="form-check form-check-inline">
-                                                <input class="form-check-input" type="checkbox" name="Staff" id="inlineCheckbox4" value="Staff">
+                                                <input class="form-check-input" type="checkbox" name="Staff" id="inlineCheckbox4" {% if user.staff %}checked{% endif %}>
                                                 <label class="form-check-label" for="inlineCheckbox4">Staff</label>
                                             </div>                                          
                                         </div>
                                         <div class="col d-flex justify-content-end  p-0">
                                             <div class="form-check form-check-inline">
-                                                <input class="form-check-input" type="checkbox" name="Placement" id="inlineCheckbox5" value="Placement">
+                                                <input class="form-check-input" type="checkbox" name="Placement" id="inlineCheckbox5" {% if user.placement %}checked{% endif %}>
                                                 <label class="form-check-label" for="inlineCheckbox5">Placement</label>
                                             </div>                                          
                                         </div>
                                         <div class="col d-flex justify-content-end p-0">
                                             <div class="form-check form-check-inline">
-                                                <input class="form-check-input" type="checkbox" name="Report" id="inlineCheckbox6" value="Report">
+                                                <input class="form-check-input" type="checkbox" name="Report" id="inlineCheckbox6" {% if user.report %}checked{% endif %}>
                                                 <label class="form-check-label" for="inlineCheckbox6">Report</label>
                                             </div>                                          
                                         </div>
                                     </div>
                                 </div>
-                                
-                                <div class="row d-flex justify-content-between pe-0">
-                                    <div class="col-6">
-                                        <div class="user-input-wrp me-4">
-                                            <input type="password" name="password" id="password" value="{{user.password}}" class="form-control" aria-label="password" placeholder=" " autocomplete="off" autofocus>
-                                            <label class="floating-label">Password</label>
-                                            <span id="pass_error" class="error-div">
-                                                {% if password %}
-                                                    {{password}}
-                                                {% endif %}
-                                            </span>
-                                        </div>
-                                    </div>
-                                    <!-- <div class="col-6 pe-0">
-                                        <div class="user-input-wrp ms-4">
-                                            <input type="password" name="cpassword" id="cpassword" class="form-control" aria-label="password" placeholder=" " autocomplete="off" autofocus>
-                                            <label class="floating-label">Conform Password</label>
-                                            <span id="cpass_error" class="error-div error-right"></span>
-                                        </div>
-                                    </div> -->
-                                </div>
-
                                 <div class="row d-flex justify-content-between">
                                     <div class="col-6 d-flex justify-content-end pe-4">
                                         <input type="reset" value="cancel" class="btn login-btn">
@@ -164,6 +142,7 @@
                                     </div>
                                 </div>
                             </form>
+                            
                         </div>
                     </div>
                 </div>
@@ -272,21 +251,30 @@
         }
 
         // client side designation Field validation
-        if(Enquiry == false && Enrollment == false && Attendance == false && Staff == false && Placement == false && Report == false) {
-            document.getElementById("permission_error").innerText = "At least one permission Field is required";
+        var enquiry = document.getElementById("inlineCheckbox1").checked;
+        var enrollment = document.getElementById("inlineCheckbox2").checked;
+        var attendance = document.getElementById("inlineCheckbox3").checked;
+        var staff = document.getElementById("inlineCheckbox4").checked;
+        var placement = document.getElementById("inlineCheckbox5").checked;
+        var report = document.getElementById("inlineCheckbox6").checked;
+
+        if (!enquiry && !enrollment && !attendance && !staff && !placement && !report) {
+            document.getElementById("permission_error").innerText = "At least one permission field is required";
             hasError = true;
+            
         } else {
             document.getElementById("permission_error").innerText = "";
+            
         }
 
 
         // client side password Field validation
-        if (password === "") {
-            document.getElementById("pass_error").innerText = "Password Field is required";
-            hasError = true;
-        } else {
-            document.getElementById("pass_error").innerText = "";
-        }
+        // if (password === "") {
+        //     document.getElementById("pass_error").innerText = "Password Field is required";
+        //     hasError = true;
+        // } else {
+        //     document.getElementById("pass_error").innerText = "";
+        // }
 
         // // client side conform password Field validation
         // if (cpassword === "") {
@@ -304,5 +292,20 @@
             document.getElementById("login-form").submit();
         }
     });
+
+    function permission(checkboxId) {
+        // Get the checkbox
+        console.log("permission function")
+        var checkBox = document.getElementById(checkboxId);
+        // Get the output text
+        // var text = document.getElementById('text_' + checkboxId);
+
+        // If the checkbox is checked, display the output text
+        if (checkBox.checked) {
+            checkBox.value = true;
+        } else {
+            checkBox.value = false;
+        }
+    }
 </script>
 {% endblock %}
