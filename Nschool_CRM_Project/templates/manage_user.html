@@ -118,20 +118,37 @@
                 <div class="row">
                     <div class="col d-flex justify-content-end py-3">
                         <form id="perPageForm" method="get" class="d-flex">
-                            <select class="select-div" name="per_page" id="perPageSelect" onchange="document.getElementById('perPageForm').submit();">
+                            <select class="select-div" name="per_page" id="perPageSelect"
+                                onchange="document.getElementById('perPageForm').submit();">
                                 <option value="10" {% if per_page == '10' %}selected{% endif %}>10 per page</option>
                                 <option value="20" {% if per_page == '20' %}selected{% endif %}>20 per page</option>
                                 <option value="30" {% if per_page == '30' %}selected{% endif %}>30 per page</option>
                             </select>
-                            <span id="item-range" class="item-range">. {{ page_obj.start_index }}-{{ page_obj.end_index }}</span>
-                            
+                            <span id="item-range" class="item-range align-content-center">.
+                                {{ page_obj.start_index}}-{{ page_obj.end_index }}
+                            </span>
+
                             {% if page_obj.has_previous %}
-                                <a class="anchor" href="?page={{ page_obj.previous_page_number }}&per_page={{ per_page }}"><span class="page-icon">{% bs_icon 'chevron-left' %}</span></a>
+                            <a class="anchor align-content-center"
+                                href="?page={{ page_obj.previous_page_number }}&per_page={{ per_page }}"><span
+                                    class="page-icon">{% bs_icon 'chevron-left' %}</span></a>
                             {% endif %}
                             {% if page_obj.has_next %}
-                                <a class="anchor" href="?page={{ page_obj.next_page_number }}&per_page={{ per_page }}"><span class="page-icon">{% bs_icon 'chevron-right' %}</span></a>
+                            <a class="anchor align-content-center"
+                                href="?page={{ page_obj.next_page_number }}&per_page={{ per_page }}">
+                                <span class="page-icon">{% bs_icon 'chevron-right' %}</span>
+                            </a>
                             {% endif %}
+
                         </form>
+                        <span data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-custom-class="custom-tooltip"
+                            data-bs-title="delete">
+                            <a href="javascript:void(0);" id="deleteSelected"><span class="delete">
+                                {% bs_icon 'trash3'%}
+                                </span>
+                            </a>
+                            
+                        </span>
                     </div>
                 </div>
 
@@ -152,7 +169,8 @@
                             {% for user in page_obj %}
                             <tr class="trow">
                                 <td class="check1">
-                                    <input type="checkbox" class="form-check-input user-checkbox" name="user_ids" value="{{ user.id }}">
+                                    <input type="checkbox" class="form-check-input user-checkbox" name="user_ids"
+                                        value="{{ user.id }}" id="user{{ user.id }}">
                                 </td>
                                 <td class="tdata">{{ user.name }}</td>
                                 <td class="tdata">{{ user.email }}</td>
@@ -180,13 +198,19 @@
                                 </td>
                                 <td class="tdata">
                                     <div>
-                                        <a href="/update_user/{{user.id}}"><span class="edit">{% bs_icon 'pencil' %}</span></a>
-                                        <a href="/delete_user/{{user.id}}"><span class="delete">{% bs_icon 'trash3' %}</span></a>
+                                        <a href="/update_user/{{user.id}}">
+                                            <span class="edit">{% bs_icon 'pencil' %}
+                                            </span></a>
+                                        <a href="/delete_user/{{user.id}}">
+                                            <span class="delete">{% bs_icon 'trash3' %}
+                                            </span>
+                                        </a>
                                     </div>
                                 </td>
                             </tr>
                             {% endfor %}
                         </table>
+                        <!-- <button type="button" class="btn btn-danger" id="deleteSelected">Delete Selected Users</button> -->
                     </div>
                 </div>
 
@@ -195,7 +219,9 @@
 
     </div>
 </div>
-<!-- </div> -->
+<!-- CSRF token -->
+<input type="hidden" id="csrfToken" value="{{ csrf_token }}">
+
 
 {% endblock %}
 
@@ -232,11 +258,60 @@
     });
 
 
-    document.getElementById('select_all').addEventListener('change', function() {
+    document.getElementById('select_all').addEventListener('change', function () {
         let checkboxes = document.querySelectorAll('.user-checkbox');
         checkboxes.forEach(checkbox => {
             checkbox.checked = this.checked;
         });
     });
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const selectAllCheckbox = document.getElementById('select_all');
+        const userCheckboxes = document.querySelectorAll('.user-checkbox');
+        const deleteSelectedButton = document.getElementById('deleteSelected');
+        const csrfToken = document.getElementById('csrfToken').value;
+
+        // Select all checkboxes functionality
+        selectAllCheckbox.addEventListener('change', function () {
+            userCheckboxes.forEach(function (checkbox) {
+                checkbox.checked = selectAllCheckbox.checked;
+            });
+        });
+
+        // Delete selected users via AJAX
+        deleteSelectedButton.addEventListener('click', function () {
+            const selectedUserIds = Array.from(userCheckboxes)
+                .filter(checkbox => checkbox.checked)
+                .map(checkbox => checkbox.value);
+
+            if (selectedUserIds.length > 0) {
+                if (confirm('Are you sure you want to delete the selected users?')) {
+                    fetch('/delete_all_user/', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': csrfToken
+                        },
+                        body: JSON.stringify({ user_ids: selectedUserIds })
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                window.location.reload();
+                            } else {
+                                alert('An error occurred: ' + data.error);
+                            }
+                        })
+                        .catch(error => console.error('Error:', error));
+                }
+            } else {
+                alert('No users selected for deletion.');
+            }
+        });
+    });
+
+
+
+
 </script>
 {% endblock %}

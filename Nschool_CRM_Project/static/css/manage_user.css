@@ -9,6 +9,7 @@
     margin-top: 20px;
     border-radius: 20px;
     width: 350px;
+    height: 40px;
     background-color: #fff5fa;
     border: 1px solid #c72571;
 }
@@ -24,7 +25,7 @@
 /* Style the search button */
 .search-button {
     position: absolute;
-    top: 3px;
+    top: 2px;
     left: 10px;
     height: 100%;
     background: none;
@@ -34,7 +35,13 @@
 }
 
 .excel {
-    width: 16px;
+    width: 28px;
+    height: 26px;
+}
+
+.bi-filetype-csv, .bi-file-earmark-pdf {
+    height: 26px;
+    width: 28px;
 }
 
 .bi-search {
@@ -45,6 +52,8 @@
 .border-div {
     position: relative;
     border: 1px solid #aaa;
+    padding: 8px 7px;
+    margin: 0px 4px;
 }
 
 .csv,
@@ -52,7 +61,7 @@
     position: absolute;
     font-size: 11px;
     bottom: -21px;
-    left: 10px;
+    left: 7px;
     font-weight: 600;
 }
 
@@ -60,7 +69,7 @@
     position: absolute;
     font-size: 11px;
     bottom: -21px;
-    left: 5px;
+    left: 1px;
     font-weight: 600;
 }
 
@@ -122,6 +131,7 @@ table {
     border: 1px solid #aaa;
     background-color: #fff5fa;
     padding: 10px;
+    width: 0px;
 }
 
 .thead, .tdata {
@@ -130,9 +140,9 @@ table {
 
 .thead {
     background-color: #fff5fa;
-    padding: 5px 0px 5px 10px;
+    padding: 5px 5px 5px 10px;
     font-size: 12px;
-    width: 10%;
+    width: 14%;
 }
 
 .password {
@@ -140,6 +150,7 @@ table {
     padding: 5px 0px 5px 10px;
     font-size: 12px;
     border: 1px solid #aaa;
+    width: 10%;
 }
 
 .Permission {
@@ -147,7 +158,7 @@ table {
     padding: 5px 0px 5px 10px;
     font-size: 12px;
     border: 1px solid #aaa;
-    width: 31%;
+    width: 35%;
 }
 
 .action {
@@ -259,4 +270,5 @@ table {
     height: 26px;
     margin: 5px;
     background-color: #eee;
+    fill: #666;
 }

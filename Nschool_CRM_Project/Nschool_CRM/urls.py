@@ -8,6 +8,8 @@ urlpatterns = [
     path('manage_user/', manage_user_view, name='manage-user'),
     path('delete_user/<int:id>/', delete_user_view, name='delete-user'),
     path('update_user/<int:id>/', update_user_view, name='update-user'),
+    path('delete_all_user/', delete_all_users_view, name='delete-all-user'),
+    
     
     
     path('logout/', logout, name='logout'),

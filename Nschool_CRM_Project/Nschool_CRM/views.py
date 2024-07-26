@@ -403,7 +403,7 @@ def manage_user_view(request):
             'error': f'Request error occurred: {err}',
             'response_data': response.json() if response else {}
         }
-        return render(request, 'new_user.html', context)
+        return render(request, 'manage_user.html', context)
 
     # Get the per_page value from the request, default to 10 if not provided
     per_page = request.GET.get('per_page', '10')
@@ -456,15 +456,84 @@ def delete_user_view(request, id):
         return render(request, 'manage_user.html', context)
     
     if response.status_code == 204:
-        
         return redirect('manage-user')
+    
     else:
         response_data = response.json()
         context = {
             'detail': response_data.get('detail', 'An error occurred while deleting the user'),
         }
         return render(request, 'manage_user.html', context)
+
+def delete_all_users_view(request):
     
+        # print("welcome")
+        # user_ids = request.POST.getlist('user_ids')  
+        # print(f"User IDs received: {user_ids}")  
+
+        # if not user_ids:
+        #     context = {'error': 'No user IDs provided'}
+        #     return render(request, 'manage_user.html', context)
+
+        # try:
+        #     token = Token.objects.first()  # Get the first token for simplicity
+        #     if not token:
+        #         raise Token.DoesNotExist
+        # except Token.DoesNotExist:
+        #     context = {'error': 'Authentication token not found'}
+        #     return render(request, 'manage_user.html', context)
+
+        # headers = {
+        #     'Authorization': f'Token {token.key}',
+        #     'Content-Type': 'application/json'
+        # }
+
+        # errors = []
+        # for user_id in user_ids:
+        #     api_url = f'http://127.0.0.1:8000/api/newuser/{user_id}/'
+        #     try:
+        #         response = requests.delete(api_url, headers=headers)
+        #         response.raise_for_status()
+        #     except requests.exceptions.RequestException as err:
+        #         errors.append({
+        #             'user_id': user_id,
+        #             'error': f'Request error occurred: {err}',
+        #             'response_data': response.json() if response else {}
+        #         })
+
+        # if errors:
+        #     context = {'errors': errors}
+        #     return render(request, 'manage_user.html', context)
+
+        # return redirect('manage-user')
+    
+
+    
+        # user_ids = request.POST.getlist('user_ids')
+        # print(user_ids)
+        # if user_ids:
+        #     NewUser.objects.filter(id__in=user_ids).delete()
+        #     return redirect('manage-users')  # Redirect to a page that lists users
+        # else:
+        #     context = {'error': 'No users selected for deletion'}
+        #     return render(request, 'manage_user.html', context)
+        
+        
+        
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            user_ids = data.get('user_ids', [])
+            if user_ids:
+                NewUser.objects.filter(id__in=user_ids).delete()
+                return JsonResponse({'success': True})
+            else:
+                return JsonResponse({'success': False, 'error': 'No users selected for deletion'})
+        except json.JSONDecodeError:
+            return JsonResponse({'success': False, 'error': 'Invalid JSON'})
+    return JsonResponse({'success': False, 'error': 'Invalid request method'})
+    
+
 def update_user_view(request, id):
     try:
         user = NewUser.objects.get(id=id)
