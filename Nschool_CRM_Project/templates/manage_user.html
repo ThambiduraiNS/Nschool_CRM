@@ -472,28 +472,17 @@
         async function exportCoursesPDF(ids) {
             try {
                 const csrftoken = getCookie('csrftoken');
-                if (!csrftoken) {
-                    throw new Error('CSRF token not found');
-                }
-
                 let formData = new FormData();
                 formData.append('ids', ids.join(','));  // Convert ids array to comma-separated string
-                formData.append('csrfmiddlewaretoken', csrftoken);
 
-                // Debug: log the form data contents
-                for (let [key, value] of formData.entries()) {
-                    console.log(`${key}: ${value}`);
-                }
+                formData.append('csrfmiddlewaretoken', csrftoken);
 
                 let response = await fetch('/export_user_pdf/', {
                     method: 'POST',
-                    body: formData,
+                    body: formData
                 });
 
                 if (!response.ok) {
-                    console.log("response not ok!");
-                    let text = await response.text();
-                    console.error(text);
                     throw new Error('Network response was not ok');
                 }
 
@@ -503,13 +492,13 @@
                 const a = document.createElement('a');
                 a.style.display = 'none';
                 a.href = url;
-                a.download = 'user_list.pdf';
+                a.download = 'user_list_pdf.pdf';
                 document.body.appendChild(a);
                 a.click();
                 window.URL.revokeObjectURL(url);
             } catch (error) {
                 console.error('Error:', error);
-                alert('An error occurred while exporting the user list PDF. Please try again.');
+                // Handle error appropriately (e.g., show error message to user)
             }
         }
 

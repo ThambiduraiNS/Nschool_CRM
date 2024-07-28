@@ -814,7 +814,7 @@ def export_user_excel(request):
             if contact_number.startswith('+91'):
                 contact_number = contact_number[3:]  # Remove "+91"
             
-            ws.append([user.name, user.email, contact_number, user.designation])
+            ws.append([user.name, user.email, int(contact_number), user.designation])
 
             # Align text and apply borders
             for cell in ws[idx]:
@@ -842,30 +842,27 @@ from django.views.decorators.http import require_POST
 @csrf_protect
 @require_POST
 def export_user_pdf(request):
-    ids = request.POST.get('ids', '').split(',')
-    selected_users = NewUser.objects.filter(id__in=ids)
+    if request.method == 'POST':
+        ids = request.POST.get('ids', '').split(',')
+        selected_users = NewUser.objects.filter(id__in=ids)
+        
+        if not selected_users:
+            return JsonResponse({'error': 'No users available.'}, status=404)
+        
+        content_list = []
+        for user in selected_users:
+            contact_number = str(user.contact)
+            if contact_number.startswith('+91'):
+                contact_number = contact_number[3:]  # Remove "+91"
+            content_list.append({
+                'name': user.name, 
+                'email': user.email,
+                'contact': int(contact_number),
+                'designation': user.designation,
+            })
+        
+        content = {'user_list': content_list}
+        return renderers.render_to_pdf('user_data_list.html', content)
     
-    if not selected_users:
-        return JsonResponse({'error': 'No users available.'}, status=404)
-    
-    content_list = []
-    for user in selected_users:
-        contact_number = str(user.contact)
-        if contact_number.startswith('+91'):
-            contact_number = contact_number[3:]  # Remove "+91"
-        content_list.append({
-            'name': user.name, 
-            'email': user.email,
-            'contact': contact_number,
-            'designation': user.designation,
-        })
-    
-    content = {'user_list': content_list}
-    pdf_response = renderers.render_to_pdf('user_data_list.html', content)
-    
-    if not pdf_response:
-        return HttpResponse(status=500)
-    
-    response = HttpResponse(pdf_response.content, content_type='application/pdf')
-    response['Content-Disposition'] = 'attachment; filename="user_list.pdf"'
-    return response
+    # Handle GET request or non-AJAX POST request here if needed
+    return HttpResponse(status=400)  # Bad request if not POST or AJAX

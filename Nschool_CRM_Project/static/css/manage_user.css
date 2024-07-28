@@ -42,6 +42,7 @@
 .bi-filetype-csv, .bi-file-earmark-pdf {
     height: 26px;
     width: 28px;
+    fill: #333;
 }
 
 .bi-search {
@@ -191,6 +192,7 @@ table {
 }
 
 .staff {
+    display: inline-block;
     border: 1px solid #f7ac43;
     font-size: 11px;
     margin: 5px 3px;
@@ -201,6 +203,7 @@ table {
 }
 
 .enrollment {
+    display: inline-block;
     border: 1px solid #c72571;
     font-size: 11px;
     background-color: #fff5fa;
@@ -211,6 +214,7 @@ table {
 }
 
 .payment {
+    display: inline-block;
     margin: 5px 3px;
     border: 1px solid #6f71ef;
     font-size: 11px;
@@ -221,6 +225,7 @@ table {
 }
 
 .report {
+    display: inline-block;
     border: 1px solid #0d888f;
     font-size: 11px;
     margin: 5px 3px;
@@ -231,6 +236,7 @@ table {
 }
 
 .enquiry {
+    display: inline-block;
     border: 1px solid #7b8404;
     font-size: 11px;
     margin: 5px 3px;
@@ -241,6 +247,7 @@ table {
 }
 
 .attendance {
+    display: inline-block;
     border: 1px solid #268101;
     font-size: 11px;
     margin: 5px 3px;
@@ -251,6 +258,7 @@ table {
 }
 
 .placement {
+    display: inline-block;
     border: 1px solid #b515ab;
     font-size: 11px;
     margin: 5px 3px;
