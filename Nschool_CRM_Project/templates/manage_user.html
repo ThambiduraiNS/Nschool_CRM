@@ -54,8 +54,14 @@
                     </div>
 
                     <div class="col-2 d-flex mt-2 mb-1 p-2 text-center gap-1">
-                        <div class="col border-div">{% bs_icon 'filetype-csv' %} <span class="csv">CSV</span> </div>
                         <div class="col border-div">
+                            <a href="javascript:void(0);" id="export-csv-link">
+                                {% bs_icon 'filetype-csv' %}
+                            </a>
+                            <span class="csv">CSV</span>
+                        </div>
+                        <div class="col border-div">
+                            <a href="javascript:void(0);" id="export-excel-link">
                             <?xml version="1.0" ?><svg class="excel" viewBox="0 0 24 24"
                                 xmlns="http://www.w3.org/2000/svg">
                                 <title />
@@ -106,9 +112,15 @@
                                     </g>
                                 </g>
                             </svg>
+                            </a>
                             <span class="excel-text">EXCEL</span>
                         </div>
-                        <div class="col border-div">{% bs_icon 'file-earmark-pdf' %}<span class="pdf">PDF</span></div>
+                        <div class="col border-div">
+                            <a href="" id="export-pdf-link">
+                                {% bs_icon 'file-earmark-pdf' %}
+                            </a>
+                            <span class="pdf">PDF</span>
+                        </div>
                     </div>
 
                     <p class="user-para p-0">Use the below form to update your profile</p>
@@ -116,9 +128,9 @@
 
                 <!-- Pagination controls -->
                 <div class="row">
-                    <div class="col d-flex justify-content-end py-3">
+                    <div class="col d-flex justify-content-end py-3 gap-2">
                         <form id="perPageForm" method="get" class="d-flex">
-                            <select class="select-div" name="per_page" id="perPageSelect"
+                            <select class="select-div me-2" name="per_page" id="perPageSelect"
                                 onchange="document.getElementById('perPageForm').submit();">
                                 <option value="10" {% if per_page == '10' %}selected{% endif %}>10 per page</option>
                                 <option value="20" {% if per_page == '20' %}selected{% endif %}>20 per page</option>
@@ -143,11 +155,28 @@
                         </form>
                         <span data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-custom-class="custom-tooltip"
                             data-bs-title="delete">
-                            <a href="javascript:void(0);" id="deleteSelected"><span class="delete">
-                                {% bs_icon 'trash3'%}
+                            <a href="javascript:void(0);" id="deleteSelected">
+                                <span class="delete">
+                                    <?xml version="1.0" ?>
+                                    <!DOCTYPE svg
+                                        PUBLIC '-//W3C//DTD SVG 1.1//EN' 'http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd'>
+                                    <svg class="delete-icon" height="512px" id="Layer_1"
+                                        style="enable-background:new 0 0 512 512;" version="1.1" viewBox="0 0 512 512"
+                                        width="512px" xml:space="preserve" xmlns="http://www.w3.org/2000/svg"
+                                        xmlns:xlink="http://www.w3.org/1999/xlink">
+                                        <g>
+                                            <path
+                                                d="M400,113.3h-80v-20c0-16.2-13.1-29.3-29.3-29.3h-69.5C205.1,64,192,77.1,192,93.3v20h-80V128h21.1l23.6,290.7   c0,16.2,13.1,29.3,29.3,29.3h141c16.2,0,29.3-13.1,29.3-29.3L379.6,128H400V113.3z M206.6,93.3c0-8.1,6.6-14.7,14.6-14.7h69.5   c8.1,0,14.6,6.6,14.6,14.7v20h-98.7V93.3z M341.6,417.9l0,0.4v0.4c0,8.1-6.6,14.7-14.6,14.7H186c-8.1,0-14.6-6.6-14.6-14.7v-0.4   l0-0.4L147.7,128h217.2L341.6,417.9z" />
+                                            <g>
+                                                <rect height="241" width="14" x="249" y="160" />
+                                                <polygon points="320,160 305.4,160 294.7,401 309.3,401   " />
+                                                <polygon points="206.5,160 192,160 202.7,401 217.3,401   " />
+                                            </g>
+                                        </g>
+                                    </svg>
                                 </span>
                             </a>
-                            
+
                         </span>
                     </div>
                 </div>
@@ -174,7 +203,7 @@
                                 </td>
                                 <td class="tdata">{{ user.name }}</td>
                                 <td class="tdata">{{ user.email }}</td>
-                                <td class="tdata">{{ user.contact }}</td>
+                                <td class="tdata">{{ user.contact|stringformat:"s" }}</td>
                                 <td class="permission">
                                     <div class="perm">
                                         {% if user.enquiry %}<span class="enquiry">Enquiry</span>{% endif %}
@@ -189,9 +218,10 @@
                                     <div>
                                         <span>
                                             {% if user.password %}
-                                                {% for i in user.password %}
+                                            <!-- {% for i in user.password %}
                                                     *
-                                                {% endfor %}
+                                                {% endfor %} -->
+                                            {{user.password}}
                                             {% endif %}
                                         </span>
                                     </div>
@@ -199,10 +229,13 @@
                                 <td class="tdata">
                                     <div>
                                         <a href="/update_user/{{user.id}}">
-                                            <span class="edit">{% bs_icon 'pencil' %}
-                                            </span></a>
+                                            <span class="edit">
+                                                {% bs_icon 'pencil' %}
+                                            </span>
+                                        </a>
                                         <a href="/delete_user/{{user.id}}">
-                                            <span class="delete">{% bs_icon 'trash3' %}
+                                            <span class="delete">
+                                                {% bs_icon 'trash3' %}
                                             </span>
                                         </a>
                                     </div>
@@ -309,6 +342,241 @@
             }
         });
     });
+
+
+    //     document.addEventListener('DOMContentLoaded', () => {
+    //     const selectAllCheckbox = document.getElementById('select_all');
+    //     const userCheckboxes = document.querySelectorAll('.user-checkbox');
+    //     const fileformatButton = document.getElementById('fileformat');
+    //     const csrfToken = document.getElementById('csrfToken').value;
+
+    //     // Toggle all checkboxes
+    //     selectAllCheckbox.addEventListener('change', () => {
+    //         userCheckboxes.forEach(checkbox => checkbox.checked = selectAllCheckbox.checked);
+    //     });
+
+    //     // Export selected users as CSV
+    //     fileformatButton.addEventListener('click', () => {
+    //         const selectedUserIds = Array.from(userCheckboxes)
+    //             .filter(checkbox => checkbox.checked)
+    //             .map(checkbox => checkbox.value);
+
+    //         if (selectedUserIds.length === 0) {
+    //             alert('No users selected.');
+    //             return;
+    //         }
+
+    //         fetch('/export_courses_csv/', {
+    //             method: 'POST',
+    //             headers: {
+    //                 'Content-Type': 'application/json',
+    //                 'X-CSRFToken': csrfToken
+    //             },
+    //             body: JSON.stringify({ user_ids: selectedUserIds })
+    //         })
+    //         .then(response => {
+    //             if (!response.ok) {
+    //                 throw new Error('Network response was not ok');
+    //             }
+    //             return response.blob();
+    //         })
+    //         .then(blob => {
+    //             console.log(blob)
+    //             const url = URL.createObjectURL(blob);
+    //             console.log(url)
+    //             const a = document.createElement('a');
+    //             a.href = url;
+    //             a.download = 'course_list_csv.csv';
+    //             document.body.appendChild(a);
+    //             a.click();
+    //             URL.revokeObjectURL(url);
+    //         })
+    //         .catch(error => {
+    //             console.error('Error:', error);
+    //             alert('An error occurred.');
+    //         });
+    //     });
+    // });
+
+
+    document.addEventListener('DOMContentLoaded', function () {
+        // Function to send selected course IDs for CSV export
+        async function exportCoursesCSV(ids) {
+            try {
+                const csrftoken = getCookie('csrftoken');
+                let formData = new FormData();
+                formData.append('ids', ids.join(','));  // Convert ids array to comma-separated string
+                formData.append('csrfmiddlewaretoken', csrftoken);
+
+                let response = await fetch('/export_user_csv/', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+
+                // Download the CSV file
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.style.display = 'none';
+                a.href = url;
+                a.download = 'user_list_csv.csv';
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+            } catch (error) {
+                console.error('Error:', error);
+                // Handle error appropriately (e.g., show error message to user)
+            }
+        }
+
+        // Function to send selected course IDs for Excel export
+        async function exportCoursesExcel(ids) {
+            try {
+                const csrftoken = getCookie('csrftoken');
+                let formData = new FormData();
+                formData.append('ids', ids.join(','));  // Convert ids array to comma-separated string
+
+                formData.append('csrfmiddlewaretoken', csrftoken);
+
+                let response = await fetch('/export_user_excel/', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+
+                // Download the Excel file
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                console.log(url)
+                const a = document.createElement('a');
+                a.style.display = 'none';
+                a.href = url;
+                a.download = 'user_list_excel.xlsx';
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+            } catch (error) {
+                console.error('Error:', error);
+                // Handle error appropriately (e.g., show error message to user)
+            }
+        }
+
+        // Function to send selected course IDs for PDF export
+        async function exportCoursesPDF(ids) {
+            try {
+                const csrftoken = getCookie('csrftoken');
+                if (!csrftoken) {
+                    throw new Error('CSRF token not found');
+                }
+
+                let formData = new FormData();
+                formData.append('ids', ids.join(','));  // Convert ids array to comma-separated string
+                formData.append('csrfmiddlewaretoken', csrftoken);
+
+                // Debug: log the form data contents
+                for (let [key, value] of formData.entries()) {
+                    console.log(`${key}: ${value}`);
+                }
+
+                let response = await fetch('/export_user_pdf/', {
+                    method: 'POST',
+                    body: formData,
+                });
+
+                if (!response.ok) {
+                    console.log("response not ok!");
+                    let text = await response.text();
+                    console.error(text);
+                    throw new Error('Network response was not ok');
+                }
+
+                // Download the PDF file
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.style.display = 'none';
+                a.href = url;
+                a.download = 'user_list.pdf';
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred while exporting the user list PDF. Please try again.');
+            }
+        }
+
+
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.startsWith(name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        // Example: Trigger CSV export on button click
+        document.getElementById('export-csv-link').addEventListener('click', function () {
+            // Replace with your logic to get selected course IDs
+            // const selectedIds = [1, 2]; // Example: Replace with actual selected IDs
+            let checkboxes = document.querySelectorAll('input[type="checkbox"]:checked');
+            let selectedIds = Array.from(checkboxes).map(checkbox => checkbox.value).filter(id => id !== 'on');
+            console.log(selectedIds);  // Check the selected IDs in the console
+
+            if (selectedIds.length > 0) {
+                exportCoursesCSV(selectedIds);
+            } else {
+                alert('Please select at least one course to export.');
+            }
+        });
+
+        // Example: Trigger Excel export on button click
+        document.getElementById('export-excel-link').addEventListener('click', function () {
+            // Replace with your logic to get selected course IDs
+            // const selectedIds = [1, 2]; // Example: Replace with actual selected IDs
+            let checkboxes = document.querySelectorAll('input[type="checkbox"]:checked');
+            let selectedIds = Array.from(checkboxes).map(checkbox => checkbox.value).filter(id => id !== 'on');
+            console.log(selectedIds);  // Check the selected IDs in the console
+
+            if (selectedIds.length > 0) {
+                exportCoursesExcel(selectedIds);
+            } else {
+                alert('Please select at least one course to export.');
+            }
+        });
+
+        // Example: Trigger PDF export on button click
+        document.getElementById('export-pdf-link').addEventListener('click', function () {
+            // Replace with your logic to get selected course IDs
+            // const selectedIds = [1, 2]; // Example: Replace with actual selected IDs
+            let checkboxes = document.querySelectorAll('input[type="checkbox"]:checked');
+            let selectedIds = Array.from(checkboxes).map(checkbox => checkbox.value).filter(id => id !== 'on');
+            console.log(selectedIds);  // Check the selected IDs in the console
+
+            if (selectedIds.length > 0) {
+                exportCoursesPDF(selectedIds);
+            } else {
+                alert('Please select at least one course to export.');
+            }
+        });
+
+    });
+
+
 
 
 

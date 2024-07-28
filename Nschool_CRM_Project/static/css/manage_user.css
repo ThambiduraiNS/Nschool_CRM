@@ -45,15 +45,15 @@
 }
 
 .bi-search {
-    width: 12px;
-    height: 12px;
+    width: 14px;
+    height: 14px;
 }
 
 .border-div {
     position: relative;
     border: 1px solid #aaa;
     padding: 8px 7px;
-    margin: 0px 4px;
+    margin: 0px 3px;
 }
 
 .csv,
@@ -79,6 +79,7 @@
     border: 1px solid #c72571;
     padding: 5px;
     font-weight: 600;
+    background-color: #eee;
 }
 
 .select-div:focus {
@@ -119,12 +120,11 @@
 }
 
 table {
-    margin-right: 7px;
+    width: 100%;
 }
 
 .table-div {
     border-collapse: collapse;
-    width: 100%;
 }
 
 .check {
@@ -269,6 +269,15 @@ table {
     width: 30px;
     height: 26px;
     margin: 5px;
+    background-color: #eee;
+    fill: #666;
+}
+
+.delete .delete-icon {
+    padding: 3px 1px;
+    border: 1px solid #aaa;
+    width: 30px;
+    height: 29px;
     background-color: #eee;
     fill: #666;
 }

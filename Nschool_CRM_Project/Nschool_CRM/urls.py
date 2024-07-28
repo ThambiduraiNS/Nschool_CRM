@@ -10,7 +10,9 @@ urlpatterns = [
     path('update_user/<int:id>/', update_user_view, name='update-user'),
     path('delete_all_user/', delete_all_users_view, name='delete-all-user'),
     
-    
+    path('export_user_csv/', export_user_csv, name='export_user_csv'),
+    path('export_user_excel/', export_user_excel, name='export_user_excel'),
+    path('export_user_pdf/', export_user_pdf, name='export_user_pdf'),
     
     path('logout/', logout, name='logout'),
     

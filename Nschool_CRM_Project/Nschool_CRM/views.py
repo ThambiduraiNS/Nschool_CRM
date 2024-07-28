@@ -1,8 +1,12 @@
+
+from io import BytesIO
 import json, requests
+
 from django.shortcuts import redirect, render
 from django.contrib.auth import authenticate
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
 from django.template import RequestContext
+from yaml import Loader
 from .models import NewUser, AdminLogin
 from django.contrib.auth.decorators import login_required
 
@@ -23,6 +27,23 @@ from rest_framework.response import Response
 from rest_framework import status
 
 from .serializer import *
+
+import csv
+from django.http import HttpResponse
+from django.views.decorators.csrf import csrf_exempt
+
+from PIL import Image as PILImage
+from reportlab.pdfgen import canvas
+from reportlab.lib.pagesizes import letter
+
+import openpyxl
+from django.http import Http404
+from openpyxl.drawing.image import Image as ExcelImage
+from openpyxl.styles import Font, Alignment, Border, Side
+from PIL import Image as PILImage
+from io import BytesIO
+import re
+from . import renderers
 
 # Create your views here.
 # @csrf_protect
@@ -519,7 +540,6 @@ def delete_all_users_view(request):
         #     return render(request, 'manage_user.html', context)
         
         
-        
     if request.method == 'POST':
         try:
             data = json.loads(request.body)
@@ -683,3 +703,169 @@ class NewUserDeleteView(generics.DestroyAPIView):
         instance = self.get_object()
         instance.delete()
         return Response({'Message': 'Successfully deleted'})
+    
+    
+# @csrf_exempt
+# def export_courses_csv(request):
+#     if request.method == 'POST':
+#         try:
+#             data = json.loads(request.body)
+#             user_ids = data.get('user_ids', [])
+            
+#             if not user_ids:
+#                 return HttpResponse(json.dumps({'success': False, 'error': 'No user IDs provided.'}), content_type='application/json', status=400)
+
+#             # Create the HttpResponse object with the appropriate CSV header
+#             response = HttpResponse(content_type='text/csv')
+#             response['Content-Disposition'] = 'attachment; filename="course_list_csv.csv"'
+
+#             writer = csv.writer(response)
+#             writer.writerow(['name', 'email', 'contact', 'designation'])
+
+#             # Fetch selected users based on IDs
+#             selected_users = NewUser.objects.filter(id__in=user_ids)
+
+#             for user in selected_users:
+#                 writer.writerow([user.name, user.email, user.contact, user.designation])
+
+#             return response
+
+#         except json.JSONDecodeError:
+#             return HttpResponse(json.dumps({'success': False, 'error': 'Invalid JSON format.'}), content_type='application/json', status=400)
+
+#         except Exception as e:
+#             return HttpResponse(json.dumps({'success': False, 'error': str(e)}), content_type='application/json', status=500)
+
+#     return HttpResponse(status=400)  # Bad request if not POST
+
+@csrf_exempt
+def export_user_csv(request):
+    if request.method == 'POST':
+        ids = request.POST.get('ids', '').split(',')  # Get the ids from AJAX request
+
+        # Create the HttpResponse object with the appropriate CSV header
+        response = HttpResponse(content_type='text/csv')
+        response['Content-Disposition'] = 'attachment; filename="course_list_csv.csv"'
+
+        writer = csv.writer(response)
+
+        # Write the header row
+        writer.writerow(['name', 'email', 'contact', 'designation'])
+
+        # Fetch selected courses based on IDs
+        selected_courses = NewUser.objects.filter(id__in=ids)
+
+        for user in selected_courses:
+            # Remove country code from contact number
+            contact_number = str(user.contact)
+            # Example: Removing country code "+1" (assumes country code is "+1" or "+01")
+            if contact_number.startswith('+91'):
+                contact_number = contact_number[3:]  # Remove "+91"
+            
+            # Write the data row
+            writer.writerow([user.name, user.email, contact_number, user.designation])
+
+        return response
+
+    # Handle GET request or non-AJAX POST request here if needed
+    return HttpResponse(status=400)  # Bad request if not POST or AJAX
+
+
+
+from django.http import HttpResponse
+from django.views.decorators.csrf import csrf_exempt
+
+@csrf_exempt
+def export_user_excel(request):
+    if request.method == 'POST':
+        ids = request.POST.get('ids', '').split(',')  # Get the ids from AJAX request
+
+        # Fetch selected courses based on IDs
+        selected_courses = NewUser.objects.filter(id__in=ids)
+
+        # Create an Excel workbook
+        wb = openpyxl.Workbook()
+        ws = wb.active
+
+        # Define header row with font style and alignment
+        header_row = ['name', 'email', 'contact', 'designation']
+        ws.append(header_row)
+        for cell in ws[1]:
+            cell.font = Font(bold=True, color='000000')
+            cell.alignment = Alignment(horizontal='left', vertical='center')
+
+        # Set column widths for better readability
+        column_widths = [20, 30, 50, 20]
+        for i, width in enumerate(column_widths, start=1):
+            ws.column_dimensions[openpyxl.utils.get_column_letter(i)].width = width
+
+        # Add data rows with alignment and borders
+        thin_border = Border(
+            left = Side(style='thin'),
+            right = Side(style='thin'),
+            top = Side(style='thin'),
+            bottom = Side(style='thin'),
+        )
+
+        for idx, user in enumerate(selected_courses, start=2):
+            # Remove country code from contact number
+            contact_number = str(user.contact)
+            # Example: Removing country code "+1" (assumes country code is "+1" or "+01")
+            if contact_number.startswith('+91'):
+                contact_number = contact_number[3:]  # Remove "+91"
+            
+            ws.append([user.name, user.email, contact_number, user.designation])
+
+            # Align text and apply borders
+            for cell in ws[idx]:
+                cell.alignment = Alignment(horizontal='left', vertical='top', wrap_text=True)
+                cell.border = thin_border
+
+        # Create an in-memory file-like object to save the workbook
+        output = BytesIO()
+        wb.save(output)
+        output.seek(0)
+
+        # Create the HTTP response with Excel content type and attachment header
+        response = HttpResponse(output, content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+        response['Content-Disposition'] = 'attachment; filename="generated_excel.xlsx"'
+        
+        return response
+
+    # Handle GET request or non-AJAX POST request here if needed
+    return HttpResponse(status=400)  # Bad request if not POST or AJAX
+
+from django.http import HttpResponse
+from xhtml2pdf import pisa
+from django.views.decorators.http import require_POST
+
+@csrf_protect
+@require_POST
+def export_user_pdf(request):
+    ids = request.POST.get('ids', '').split(',')
+    selected_users = NewUser.objects.filter(id__in=ids)
+    
+    if not selected_users:
+        return JsonResponse({'error': 'No users available.'}, status=404)
+    
+    content_list = []
+    for user in selected_users:
+        contact_number = str(user.contact)
+        if contact_number.startswith('+91'):
+            contact_number = contact_number[3:]  # Remove "+91"
+        content_list.append({
+            'name': user.name, 
+            'email': user.email,
+            'contact': contact_number,
+            'designation': user.designation,
+        })
+    
+    content = {'user_list': content_list}
+    pdf_response = renderers.render_to_pdf('user_data_list.html', content)
+    
+    if not pdf_response:
+        return HttpResponse(status=500)
+    
+    response = HttpResponse(pdf_response.content, content_type='application/pdf')
+    response['Content-Disposition'] = 'attachment; filename="user_list.pdf"'
+    return response
