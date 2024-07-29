@@ -22,6 +22,10 @@
     font-size: 12px;
 }
 
+.search-input:focus {
+    outline: none;
+}
+
 /* Style the search button */
 .search-button {
     position: absolute;
@@ -32,6 +36,12 @@
     border: none;
     padding: 5px;
     cursor: pointer;
+}
+
+.user-para {
+    color: #333;
+    font-size: 14px;
+    margin: 5px 0px 0px 0px;
 }
 
 .excel {
