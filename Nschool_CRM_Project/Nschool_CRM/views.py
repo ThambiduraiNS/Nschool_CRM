@@ -750,7 +750,7 @@ def export_user_csv(request):
         writer = csv.writer(response)
 
         # Write the header row
-        writer.writerow(['name', 'email', 'contact', 'designation'])
+        writer.writerow(['Name', 'Email', 'Contact', 'Designation', 'Permission'])
 
         # Fetch selected courses based on IDs
         selected_courses = NewUser.objects.filter(id__in=ids)
@@ -758,12 +758,30 @@ def export_user_csv(request):
         for user in selected_courses:
             # Remove country code from contact number
             contact_number = str(user.contact)
-            # Example: Removing country code "+1" (assumes country code is "+1" or "+01")
-            if contact_number.startswith('+91'):
-                contact_number = contact_number[3:]  # Remove "+91"
+            contact_number = re.sub(r'^\+\d{1,2}', '', contact_number)
             
+            permission = []
+                
+            if user.enquiry == True:
+                permission.append('Enquiry')
+            
+            if user.enrollment == True:
+                permission.append('Enrollment')
+            
+            if user.attendance == True:
+                permission.append('Attendance')
+                
+            if user.placement == True:
+                permission.append('Permission')
+            
+            if user.staff == True:
+                permission.append('Staff')
+            
+            if user.report == True:
+                permission.append('Report')
+                    
             # Write the data row
-            writer.writerow([user.name, user.email, contact_number, user.designation])
+            writer.writerow([user.name, user.email, contact_number, user.designation, ', '.join(permission)])
 
         return response
 
@@ -788,38 +806,58 @@ def export_user_excel(request):
         ws = wb.active
 
         # Define header row with font style and alignment
-        header_row = ['name', 'email', 'contact', 'designation']
+        header_row = ['Name', 'Email', 'Contact', 'Designation', 'Permission']
         ws.append(header_row)
-        for cell in ws[1]:
-            cell.font = Font(bold=True, color='000000')
-            cell.alignment = Alignment(horizontal='left', vertical='center')
+        # for cell in ws[1]:
+        #     cell.font = Font(bold=True, color='000000')
+        #     cell.alignment = Alignment(horizontal='left', vertical='center')
 
         # Set column widths for better readability
-        column_widths = [20, 30, 50, 20]
-        for i, width in enumerate(column_widths, start=1):
-            ws.column_dimensions[openpyxl.utils.get_column_letter(i)].width = width
+        # column_widths = [20, 30, 50, 20]
+        # for i, width in enumerate(column_widths, start=1):
+        #     ws.column_dimensions[openpyxl.utils.get_column_letter(i)].width = width
 
         # Add data rows with alignment and borders
-        thin_border = Border(
-            left = Side(style='thin'),
-            right = Side(style='thin'),
-            top = Side(style='thin'),
-            bottom = Side(style='thin'),
-        )
+        # thin_border = Border(
+        #     left = Side(style='thin'),
+        #     right = Side(style='thin'),
+        #     top = Side(style='thin'),
+        #     bottom = Side(style='thin'),
+        # )
 
         for idx, user in enumerate(selected_courses, start=2):
             # Remove country code from contact number
             contact_number = str(user.contact)
             # Example: Removing country code "+1" (assumes country code is "+1" or "+01")
-            if contact_number.startswith('+91'):
-                contact_number = contact_number[3:]  # Remove "+91"
+            contact_number = str(user.contact)
+            contact_number = re.sub(r'^\+\d{1,2}', '', contact_number)
+                
+            permission = []
+                
+            if user.enquiry == True:
+                permission.append('Enquiry')
             
-            ws.append([user.name, user.email, int(contact_number), user.designation])
+            if user.enrollment == True:
+                permission.append('Enrollment')
+            
+            if user.attendance == True:
+                permission.append('Attendance')
+                
+            if user.placement == True:
+                permission.append('Permission')
+            
+            if user.staff == True:
+                permission.append('Staff')
+            
+            if user.report == True:
+                permission.append('Report')
+            
+            ws.append([user.name, user.email, int(contact_number), user.designation, ', '.join(permission)])
 
             # Align text and apply borders
-            for cell in ws[idx]:
-                cell.alignment = Alignment(horizontal='left', vertical='top', wrap_text=True)
-                cell.border = thin_border
+            # for cell in ws[idx]:
+            #     cell.alignment = Alignment(horizontal='left', vertical='top', wrap_text=True)
+                # cell.border = thin_border
 
         # Create an in-memory file-like object to save the workbook
         output = BytesIO()
@@ -852,13 +890,34 @@ def export_user_pdf(request):
         content_list = []
         for user in selected_users:
             contact_number = str(user.contact)
-            if contact_number.startswith('+91'):
-                contact_number = contact_number[3:]  # Remove "+91"
+            contact_number = re.sub(r'^\+\d{1,2}', '', contact_number)
+                
+            permission = []
+                
+            if user.enquiry == True:
+                permission.append('Enquiry')
+            
+            if user.enrollment == True:
+                permission.append('Enrollment')
+            
+            if user.attendance == True:
+                permission.append('Attendance')
+                
+            if user.placement == True:
+                permission.append('Permission')
+            
+            if user.staff == True:
+                permission.append('Staff')
+            
+            if user.report == True:
+                permission.append('Report')
+                
             content_list.append({
                 'name': user.name, 
                 'email': user.email,
                 'contact': int(contact_number),
                 'designation': user.designation,
+                'permission': ', '.join(permission),
             })
         
         content = {'user_list': content_list}
