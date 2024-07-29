@@ -55,6 +55,25 @@
     fill: #333;
 }
 
+.bi-filetype-csv:active, .bi-file-earmark-pdf:active {
+    fill: #c72571;
+    
+}
+
+.border-div:active {
+    border: 1px solid #c72571;
+}
+
+.excel-style {
+    stroke: #303c42;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+#export-excel-link:active .excel-style {
+    stroke: #c72571 !important;
+}
+
 .bi-search {
     width: 14px;
     height: 14px;
@@ -90,7 +109,17 @@
     border: 1px solid #c72571;
     padding: 5px;
     font-weight: 600;
-    background-color: #eee;
+    outline: none;
+}
+
+/* Custom styling for options */
+select option {
+    background-color: white;
+    color: black;
+}
+
+select option:hover {
+    background-color: #fff5fa;
 }
 
 .select-div:focus {
@@ -124,10 +153,27 @@
     border-color: #c72571 !important;
 }
 
-.trow:hover {
+/* .form-check-input:checked .trow {
     color: #c72571 !important;
     background-color: #ffffff;
     border-color: #c72571 !important;
+} */
+
+.checked-row {
+    color: #c72571 !important;
+    background-color: #ffffff;
+    border-color: #c72571 !important;
+}
+
+.checked-perm {
+    background-color: #fee9ff !important;
+    color: #c72571 !important;
+    border: 1px solid #c72571 !important;
+}
+
+.checked-action {
+    fill: #c72571 !important;
+    border: 1px solid #c72571 !important;
 }
 
 table {
@@ -281,7 +327,7 @@ table {
 
 /* action style */
 
-.bi-pencil, .bi-trash3 {
+.edit-icon, .delete-icon {
     padding: 5px;
     border: 1px solid #aaa;
     width: 30px;
