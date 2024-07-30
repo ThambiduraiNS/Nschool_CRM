@@ -14,6 +14,8 @@ urlpatterns = [
     path('export_user_excel/', export_user_excel, name='export_user_excel'),
     path('export_user_pdf/', export_user_pdf, name='export_user_pdf'),
     
+    path("search/", SearchResultsView.as_view(), name="search_results"),
+    
     path('logout/', logout, name='logout'),
     
     path('api/login/', user_login, name='login'),

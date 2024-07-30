@@ -45,6 +45,9 @@ from io import BytesIO
 import re
 from . import renderers
 
+from django.views.generic import TemplateView, ListView
+from django.db.models import Q
+
 # Create your views here.
 # @csrf_protect
 # def admin_login(request):
@@ -665,7 +668,6 @@ def user_logout(request):
         request.user.auth_token.delete()
         return Response({"Message": "You are logged out"}, status=status.HTTP_200_OK)
 
-
 # New user APi view
 
 class NewUserListCreateView(generics.ListCreateAPIView):
@@ -925,3 +927,124 @@ def export_user_pdf(request):
     
     # Handle GET request or non-AJAX POST request here if needed
     return HttpResponse(status=400)  # Bad request if not POST or AJAX
+
+
+
+
+# search view
+# basic search method
+# class SearchResultsView(ListView):
+#     model = NewUser
+#     template_name = 'search_result.html'
+#     def get_queryset(self):
+#         query = self.request.GET.get("q")
+        
+#         object_list = NewUser.objects.filter(
+#             Q(name__icontains = query) | 
+#             Q(email__icontains = query) |
+#             Q(contact__icontains = query) | 
+#             Q(designation__icontains = query)
+#         )
+        
+#         return object_list
+
+# class SearchResultsView(ListView):
+#     model = NewUser
+#     template_name = 'search_result.html'
+#     context_object_name = 'users'
+
+#     def get_queryset(self):
+#         query = self.request.GET.get("q")
+#         if query:
+#             fields = [f.name for f in NewUser._meta.fields if isinstance(f, (models.CharField, models.EmailField, PhoneNumberField))]
+#             query_filter = Q()
+#             for field in fields:
+#                 query_filter |= Q(**{f"{field}__icontains": query})
+            
+#             # Add boolean fields handling
+#             boolean_fields = [f.name for f in NewUser._meta.fields if isinstance(f, models.BooleanField)]
+            
+#             for field in boolean_fields:
+#                 if query.lower() in ['true', 'false']:
+#                     value = query.lower() == 'true'
+                    
+#                     query_filter |= Q(**{field: value})
+#         else:
+#             query_filter = Q(pk__isnull=True)
+        
+#         object_list = NewUser.objects.filter(query_filter)
+#         return object_list
+
+
+# class SearchResultsView(ListView):
+#     model = NewUser
+#     template_name = 'search_result.html'
+#     context_object_name = 'users'
+
+#     def get_queryset(self):
+#         query = self.request.GET.get("q")
+#         if query:
+#             query_filter = Q()
+            
+#             # Handle specific keyword searches for boolean fields
+#             if 'e'==query.lower() or 'en'==query.lower() or 'enq'==query.lower() or 'enqu'==query.lower() or 'enqui'==query.lower() or 'enquir'==query.lower() or 'enquiry'==query.lower():
+#                     query_filter |= Q(enquiry=True)
+#             elif query.lower() == 'enrollment':
+#                 query_filter |= Q(enrollment=True)
+#             elif query.lower() == 'attendance':
+#                 query_filter |= Q(attendance=True)
+#             elif query.lower() == 'staff':
+#                 query_filter |= Q(staff=True)
+#             elif query.lower() == 'placement':
+#                 query_filter |= Q(placement=True)
+#             elif query.lower() == 'report':
+#                 query_filter |= Q(report=True)
+#             else:
+#                 # Search across CharField, EmailField, and PhoneNumberField
+#                 fields = [f.name for f in NewUser._meta.fields if isinstance(f, (models.CharField, models.EmailField, PhoneNumberField))]
+#                 for field in fields:
+#                     query_filter |= Q(**{f"{field}__icontains": query})
+#         else:
+#             query_filter = Q(pk__isnull=True)
+        
+#         object_list = NewUser.objects.filter(query_filter)
+#         return object_list
+
+class SearchResultsView(ListView):
+    model = NewUser
+    template_name = 'search_result.html'
+    context_object_name = 'users'
+
+    def get_queryset(self):
+        query = self.request.GET.get("q")
+        query_filter = Q()
+
+        if query:
+            query_lower = query.lower()
+            
+            boolean_fields = {
+                'enquiry': 'enquiry',
+                'enrollment': 'enrollment',
+                'attendance': 'attendance',
+                'staff': 'staff',
+                'placement': 'placement',
+                'report': 'report'
+            }
+            
+            match_found = False
+            for keyword, field in boolean_fields.items():
+                if query_lower in keyword:
+                    query_filter |= Q(**{f"{field}": True})
+                    match_found = True
+                    break
+
+            if not match_found:
+                # Search across CharField, EmailField, and PhoneNumberField
+                fields = [f.name for f in NewUser._meta.fields if isinstance(f, (models.CharField, models.EmailField, PhoneNumberField))]
+                for field in fields:
+                    query_filter |= Q(**{f"{field}__icontains": query})
+        else:
+            query_filter = Q(pk__isnull=True)
+
+        object_list = NewUser.objects.filter(query_filter)
+        return object_list
