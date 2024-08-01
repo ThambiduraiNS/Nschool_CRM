@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from phonenumber_field.modelfields import PhoneNumberField
 from django.core.validators import MinLengthValidator
+from django.contrib.auth.hashers import make_password, check_password
 
 # Create your models here.
 
@@ -59,7 +60,14 @@ class NewUser(models.Model):
     staff = models.BooleanField(default=False)
     placement = models.BooleanField(default=False)
     report = models.BooleanField(default=False)
-    password = models.CharField(max_length=15, validators=[MinLengthValidator(8)])
-    
+    password = models.CharField(max_length=128, validators=[MinLengthValidator(8)])  # Increased max_length for hashed password
+
+    def set_password(self, raw_password):
+        self.password = make_password(raw_password)
+        self.save()
+
+    def check_password(self, raw_password):
+        return check_password(raw_password, self.password)
+
     def __str__(self):
-    	return self.name
+        return self.name

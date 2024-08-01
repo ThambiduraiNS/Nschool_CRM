@@ -127,12 +127,12 @@ input:-internal-autofill-selected {
     fill: #333;
 }
 
-.bi-filetype-csv:active, .bi-file-earmark-pdf:active {
+.bi-filetype-csv:hover, .bi-file-earmark-pdf:hover {
     fill: #c72571;
     
 }
 
-.border-div:active {
+.border-div:hover {
     border: 1px solid #c72571;
 }
 
@@ -142,7 +142,7 @@ input:-internal-autofill-selected {
     stroke-linejoin: round;
 }
 
-#export-excel-link:active .excel-style {
+#export-excel-link:hover .excel-style {
     stroke: #c72571 !important;
 }
 

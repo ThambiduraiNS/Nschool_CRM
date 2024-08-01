@@ -85,11 +85,18 @@ def admin_login(request):
         username = request.POST.get('username')
         password = request.POST.get('password')
         
+        print(username, password)
+        
         url = 'http://127.0.0.1:8000/api/login/'
-        data = {'username': username, 'password': password}
+        # data = {'username': username, 'password': password}
+        data = {'username_or_email': username, 'password': password}
+        csrf_token = request.COOKIES.get('csrftoken')
         
         try:
-            response = requests.post(url, data=data)
+            headers = {
+                'X-CSRFToken': csrf_token
+            }
+            response = requests.post(url, data=data, headers=headers)
             # response.raise_for_status()  # Raise an HTTPError for bad responses
             response_data = response.json()
     
@@ -375,7 +382,8 @@ def user_module_view(request):
                 'email': response_data.get('email', ''),
                 'contact': response_data.get('contact', ''),
                 'designation': response_data.get('designation', ''),
-                'password': response_data.get('password', ''),
+                # 'password': response_data.get('password', ''),
+                'password': '',
             }
             return render(request, 'new_user.html', context)
         
@@ -629,6 +637,11 @@ def update_user_view(request, id):
 # create APIS
 
 # user login api
+
+import logging
+
+logger = logging.getLogger(__name__)
+
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def user_login(request):
@@ -653,11 +666,62 @@ def user_login(request):
 
     #     return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
     
-    serializer = UserSerializer(data=request.data)
+    # serializer = UserSerializer(data=request.data)
+    # if serializer.is_valid():
+    #     user = authenticate(username=serializer.validated_data['username'], password=serializer.validated_data['password'])
+    #     token, _ = Token.objects.get_or_create(user=user)
+    #     return Response({'token': token.key}, status=status.HTTP_200_OK)
+    # return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    # serializer = UserSerializer(data=request.data)
+    
+    # print(serializer)
+    # if serializer.is_valid():
+    #     username_or_email = serializer.validated_data['username_or_email']
+    #     password = serializer.validated_data['password']
+        
+    #     # Log the authentication attempt
+    #     logger.debug(f"Attempting to authenticate user: {username_or_email}")
+        
+    #     # Try to authenticate using custom backend
+    #     user = authenticate(request, username=username_or_email, password=password)
+        
+    #     if user is not None:
+    #         token, _ = Token.objects.get_or_create(user=user)
+    #         logger.debug(f"Authentication successful for user: {username_or_email}")
+    #         return Response({'token': token.key}, status=status.HTTP_200_OK)
+    #     else:
+    #         logger.debug(f"Authentication failed for user: {username_or_email}")
+    #         return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
+    # else:
+    #     logger.debug(f"Invalid data provided: {serializer.errors}")
+    #     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    serializer = LoginSerializer(data=request.data)
+
     if serializer.is_valid():
-        user = authenticate(username=serializer.validated_data['username'], password=serializer.validated_data['password'])
-        token, _ = Token.objects.get_or_create(user=user)
-        return Response({'token': token.key}, status=status.HTTP_200_OK)
+        username_or_email = serializer.validated_data['username_or_email']
+        password = serializer.validated_data['password']
+
+        user = authenticate(username=username_or_email, password=password)
+        
+        print(" Login user : ", user)
+        
+        if user:
+            if not isinstance(user, (AdminLogin, NewUser)):
+                print("not a isinstance")
+                return Response({'error': 'Invalid user type'}, status=status.HTTP_401_UNAUTHORIZED)
+
+            try:
+                token, created = Token.objects.get_or_create(user=user)
+                print("Token : ", token)
+            except Exception as e:
+                return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+            return Response({'token': token.key}, status=status.HTTP_200_OK)
+        else:
+            return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
+
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 # user logout api view
