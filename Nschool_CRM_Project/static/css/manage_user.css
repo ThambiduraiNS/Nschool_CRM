@@ -121,6 +121,10 @@ input:-internal-autofill-selected {
     height: 26px;
 }
 
+.border-div:hover .excel-text {
+    color: #c72571;
+}
+
 .bi-filetype-csv, .bi-file-earmark-pdf {
     height: 26px;
     width: 28px;
@@ -165,6 +169,10 @@ input:-internal-autofill-selected {
     bottom: -21px;
     left: 7px;
     font-weight: 600;
+}
+
+.border-div:hover .csv, .border-div:hover .pdf {
+    color: #c72571;
 }
 
 .excel-text {
