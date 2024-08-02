@@ -19,6 +19,7 @@ BASE_DIR1 = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 TEMPLATES_DIR = os.path.join(BASE_DIR1, 'templates')
 STATIC_DIR = os.path.join(BASE_DIR1, 'static')
 STATIC_ROOT = os.path.join(STATIC_DIR, 'canvasjs')
+ENCRYPTION_KEY_FILE = os.path.join(BASE_DIR, 'secure_keys', 'secure_keys', 'keyfile.key')
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
@@ -32,7 +33,7 @@ DEBUG = True
 ALLOWED_HOSTS = []
 
 
-AUTH_USER_MODEL = "Nschool_CRM.AdminLogin"
+AUTH_USER_MODEL = "Nschool_CRM.NewUser"
 
 # Application definition
 
@@ -75,6 +76,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'Nschool_CRM.context_processors.user_context_processor',
             ],
         },
     },

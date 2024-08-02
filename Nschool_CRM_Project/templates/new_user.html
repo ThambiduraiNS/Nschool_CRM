@@ -51,8 +51,8 @@
                                         aria-label="Username" placeholder=" " autocomplete="off" autofocus>
                                     <label class="floating-label">Name</label>
                                     <span id="user_error" class="error-div">
-                                        {% if name %}
-                                        {{name}}
+                                        {% if username %}
+                                        {{username}}
                                         {% endif %}
                                     </span>
                                 </div>
@@ -96,7 +96,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="row d-flex mt-3">
+                        <div class="row d-flex mt-3 position">
                             <p class="permission-p">Department Permission</p> 
                             <span id="permission_error" class="error-div perm-error"></span>
                             
@@ -273,11 +273,8 @@
         if (contact == "") {
             document.getElementById("contact_error").innerText = "Contact Field is required";
             hasError = true;
-        } else if (!/^\+?[0-9]+$/.test(contact)) {
-            document.getElementById("contact_error").innerText = "Given input field must be a number, with country code";
-            hasError = true;
-        } else if (contact.replace(/^\+/, '').length < 10 || contact.replace(/^\+/, '').length > 15) {
-            document.getElementById("contact_error").innerText = "Contact field must be 10 to 15 digits long";
+        } else if (!/^\d{10}$/.test(contact)) {
+            document.getElementById("contact_error").innerText = "Given input field must be 10 digit";
             hasError = true;
         } else {
             document.getElementById("contact_error").innerText = "";

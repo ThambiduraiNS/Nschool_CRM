@@ -4,10 +4,10 @@ import json, requests
 
 from django.shortcuts import redirect, render
 from django.contrib.auth import authenticate
-from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
+from django.contrib.auth import authenticate, login , logout as auth_logout
 from django.template import RequestContext
 from yaml import Loader
-from .models import NewUser, AdminLogin
+from .models import NewUser
 from django.contrib.auth.decorators import login_required
 
 from django.core.cache import cache
@@ -45,6 +45,7 @@ from io import BytesIO
 import re
 from . import renderers
 
+from .utils import encrypt_password, decrypt_password
 from django.views.generic import TemplateView, ListView
 from django.db.models import Q
 
@@ -107,7 +108,13 @@ def admin_login(request):
             return render(request, 'admin_login.html', context)
         
         if response.status_code == 200:
-            return redirect('dashboard')
+            user = authenticate(request, username=username, password=password)
+            if user is not None:
+                login(request, user)
+                return redirect('dashboard')
+            else:
+                context = {'error': 'Invalid credentials'}
+                return render(request, 'admin_login.html', context)
         else:
             context = {
                 'error': response_data.get('user_error', response_data.get('pass_error', response_data.get('error', 'Invalid credentials')))
@@ -309,7 +316,7 @@ def dashboard_view(request):
         
     # return render(request, 'new_user.html')
 
-def user_module_view(request):
+def user_module_insert_view(request):
     if request.method == 'POST':
         # Extract data from the form
         username = request.POST.get("username", "").strip()
@@ -326,13 +333,18 @@ def user_module_view(request):
             }
             return render(request, 'new_user.html', context)
 
+
+        # Encrypt the password
+        encrypted_password = encrypt_password(password)
+        
+        
         # Prepare data for the API request
         user_data = {
-            'name': username,
-            'email': email,
+            'username': username,
+            'email': email.lower(),
             'contact': contact,
             'designation': designation,
-            'password': password,
+            'password': encrypted_password.decode(),
             'enquiry': "Enquiry" in request.POST,
             'enrollment': "Enrollment" in request.POST,
             'attendance': "Attendance" in request.POST,
@@ -343,7 +355,7 @@ def user_module_view(request):
 
         # Get the token
         try:
-            token = Token.objects.get()
+            token = Token.objects.first()
         except Token.DoesNotExist:
             context = {
                 'error': 'Authentication token not found'
@@ -382,8 +394,7 @@ def user_module_view(request):
                 'email': response_data.get('email', ''),
                 'contact': response_data.get('contact', ''),
                 'designation': response_data.get('designation', ''),
-                # 'password': response_data.get('password', ''),
-                'password': '',
+                'password': response_data.get('password', ''),
             }
             return render(request, 'new_user.html', context)
         
@@ -409,15 +420,67 @@ def user_module_view(request):
 #     }
 #     return render(request, 'manage_user.html', context)
 
+# def manage_user_view(request):
+#     # Fetch the token
+#     try:
+#         token = Token.objects.get()  # Assuming you only have one token and it's safe to get the first one
+#     except Token.DoesNotExist:
+#         context = {
+#             'error': 'Authentication token not found'
+#         }
+#         return render(request, 'new_user.html', context)
+    
+#     api_url = 'http://127.0.0.1:8000/api/newuser/'
+#     headers = {
+#         'Authorization': f'Token {token.key}',
+#         'Content-Type': 'application/json'
+#     }
+
+#     try:
+#         response = requests.get(api_url, headers=headers)
+#         response.raise_for_status()  # Raise an HTTPError for bad responses
+#         response_data = response.json()
+        
+#         User = get_user_model()
+#         for user_data in response_data:
+#             raw_password = user_data.get('password')
+        
+#         passwords = make_password(raw_password)
+        
+#         print(passwords)
+        
+#     except requests.exceptions.RequestException as err:
+#         # Catch any request-related exceptions
+#         context = {
+#             'error': f'Request error occurred: {err}',
+#             'response_data': response.json() if response else {}
+#         }
+#         return render(request, 'manage_user.html', context)
+
+#     # Get the per_page value from the request, default to 10 if not provided
+#     per_page = request.GET.get('per_page', '10')
+
+#     # Apply pagination
+#     paginator = Paginator(response_data, per_page)  # Use response_data for pagination
+    
+#     page_number = request.GET.get('page')
+#     page_obj = paginator.get_page(page_number)
+
+#     context = {
+#         'page_obj': page_obj,
+#         'per_page': per_page,
+#     }
+#     return render(request, 'manage_user.html', context)
+
 def manage_user_view(request):
     # Fetch the token
     try:
-        token = Token.objects.get()  # Assuming you only have one token and it's safe to get the first one
+        token = Token.objects.first()  # Assuming you only have one token and it's safe to get the first one
     except Token.DoesNotExist:
         context = {
             'error': 'Authentication token not found'
         }
-        return render(request, 'new_user.html', context)
+        return render(request, 'manage_user.html', context)
     
     api_url = 'http://127.0.0.1:8000/api/newuser/'
     headers = {
@@ -429,6 +492,16 @@ def manage_user_view(request):
         response = requests.get(api_url, headers=headers)
         response.raise_for_status()  # Raise an HTTPError for bad responses
         response_data = response.json()
+        
+        # Decrypt the passwords
+        for user_data in response_data:
+            encrypted_password = user_data.get('password')
+            if encrypted_password:
+                try:
+                    user_data['password'] = decrypt_password(encrypted_password)
+                except Exception as e:
+                    user_data['password'] = 'Error decrypting password' 
+        
     except requests.exceptions.RequestException as err:
         # Catch any request-related exceptions
         context = {
@@ -590,7 +663,7 @@ def update_user_view(request, id):
         }
         
         user_data = {
-            'name': request.POST.get('username', user.name),
+            'username': request.POST.get('username', user.username),
             'email': request.POST.get('email', user.email),
             'contact': request.POST.get('contact', user.contact),
             'designation': request.POST.get('designation', user.designation),
@@ -625,7 +698,7 @@ def update_user_view(request, id):
         else:
             context = {
                 'error': 'Failed to update user information',
-                'name': response_data.get('name', ''),
+                'username': response_data.get('username', ''),
                 'email': response_data.get('email', ''),
                 'contact': response_data.get('contact', ''),
                 'designation': response_data.get('designation', ''),
@@ -698,17 +771,24 @@ def user_login(request):
     #     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
     serializer = LoginSerializer(data=request.data)
+    
+    print("serializer : ", serializer)
 
     if serializer.is_valid():
         username_or_email = serializer.validated_data['username_or_email']
         password = serializer.validated_data['password']
 
+        print("username : ", username_or_email)
+        print("password : ", password)
+
         user = authenticate(username=username_or_email, password=password)
+        
+        print(user)
         
         print(" Login user : ", user)
         
         if user:
-            if not isinstance(user, (AdminLogin, NewUser)):
+            if not isinstance(user, (NewUser)):
                 print("not a isinstance")
                 return Response({'error': 'Invalid user type'}, status=status.HTTP_401_UNAUTHORIZED)
 
@@ -824,7 +904,7 @@ def export_user_csv(request):
         for user in selected_courses:
             # Remove country code from contact number
             contact_number = str(user.contact)
-            contact_number = re.sub(r'^\+\d{1,2}', '', contact_number)
+            # contact_number = re.sub(r'^\+\d{1,2}', '', contact_number)
             
             permission = []
                 
@@ -847,7 +927,7 @@ def export_user_csv(request):
                 permission.append('Report')
                     
             # Write the data row
-            writer.writerow([user.name, user.email, contact_number, user.designation, ', '.join(permission)])
+            writer.writerow([user.username, user.email, contact_number, user.designation, ', '.join(permission)])
 
         return response
 
@@ -893,10 +973,10 @@ def export_user_excel(request):
 
         for idx, user in enumerate(selected_courses, start=2):
             # Remove country code from contact number
-            contact_number = str(user.contact)
+            
             # Example: Removing country code "+1" (assumes country code is "+1" or "+01")
-            contact_number = str(user.contact)
-            contact_number = re.sub(r'^\+\d{1,2}', '', contact_number)
+            # contact_number = str(user.contact)
+            # contact_number = re.sub(r'^\+\d{1,2}', '', contact_number)
                 
             permission = []
                 
@@ -918,7 +998,7 @@ def export_user_excel(request):
             if user.report == True:
                 permission.append('Report')
             
-            ws.append([user.name, user.email, int(contact_number), user.designation, ', '.join(permission)])
+            ws.append([user.username, user.email, user.contact, user.designation, ', '.join(permission)])
 
             # Align text and apply borders
             # for cell in ws[idx]:
@@ -955,8 +1035,7 @@ def export_user_pdf(request):
         
         content_list = []
         for user in selected_users:
-            contact_number = str(user.contact)
-            contact_number = re.sub(r'^\+\d{1,2}', '', contact_number)
+            # contact_number = re.sub(r'^\+\d{1,2}', '', contact_number)
                 
             permission = []
                 
@@ -979,9 +1058,9 @@ def export_user_pdf(request):
                 permission.append('Report')
                 
             content_list.append({
-                'name': user.name, 
+                'username': user.username, 
                 'email': user.email,
-                'contact': int(contact_number),
+                'contact': user.contact,
                 'designation': user.designation,
                 'permission': ', '.join(permission),
             })

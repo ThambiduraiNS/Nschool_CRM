@@ -15,18 +15,23 @@
             margin: 20px 0;
         }
         th, td {
-            padding: 12px;
+            padding: 5px;
             border: 1px solid #ddd;
             text-align: left;
             vertical-align: top;
         }
+
+        tr {
+            width: 150px;
+        }
+
         th {
             background-color: #f4f4f4;
         }
-        img {
+        /* img {
             max-width: 100px;
             height: auto;
-        }
+        } */
         /* .description {
             max-height: 150px;
             overflow: auto;
@@ -48,7 +53,7 @@
         <tbody>
             {% for user in user_list %}
                 <tr>
-                    <td>{{ user.name }}</td>
+                    <td>{{ user.username }}</td>
                     <td>{{ user.email }}</td>
                     <td>{{ user.contact }}</td>
                     <td>{{ user.designation }}</td>

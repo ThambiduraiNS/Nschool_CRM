@@ -162,9 +162,9 @@
                                     <input type="checkbox" class="form-check-input user-checkbox checked-row" name="user_ids"
                                         value="{{ user.id }}" id="user{{ user.id }}">
                                 </td>
-                                <td class="tdata">{{ user.name }}</td>
+                                <td class="tdata">{{ user.username }}</td>
                                 <td class="tdata">{{ user.email }}</td>
-                                <td class="tdata">{{ user.contact|stringformat:"s" }}</td>
+                                <td class="tdata">{{ user.contact }}</td>
                                 <td class="permission">
                                     <div class="perm">
                                         {% if user.enquiry %}<span class="enquiry permission-class">Enquiry</span>{% endif %}
@@ -179,10 +179,10 @@
                                     <div>
                                         <span>
                                             {% if user.password %}
-                                            <!-- {% for i in user.password %}
+                                                {% for i in user.password %}
                                                     *
-                                                {% endfor %} -->
-                                            {{user.password}}
+                                                {% endfor %}
+                                                <!-- {{user.password}} -->
                                             {% endif %}
                                         </span>
                                     </div>

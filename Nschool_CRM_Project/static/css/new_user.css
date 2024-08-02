@@ -139,6 +139,11 @@ h5::before {
     margin-top: 5px;
 }
 
+.position {
+    position: relative;
+}
+
 .perm-error {
-    right: -35%;
+    right: 0px;
+    top: 60px;
 }
