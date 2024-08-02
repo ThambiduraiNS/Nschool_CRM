@@ -35,9 +35,9 @@
                                     </div>
 
                                     <div class="user-input-wrp">
-                                        <input type="text" name="username" id="username" class="form-control"
+                                        <input type="text" name="email" id="email" class="form-control"
                                             aria-label="Username" placeholder=" " autocomplete="off" autofocus>
-                                        <label class="floating-label">Username</label>
+                                        <label class="floating-label">Email</label>
                                     </div>
 
                                     <div class="text-danger span_div" id="user_error">{{user_error}}</div>
@@ -124,7 +124,7 @@
     document.getElementById("admin-login-form").addEventListener("submit", function (event) {
         event.preventDefault(); // Prevent form submission
 
-        var username = document.getElementById("username").value.trim();
+        var email = document.getElementById("email").value.trim();
         var passwordInput = document.getElementById("password").value.trim();
         var passwordMessage = document.getElementById("password-message");
 
@@ -133,8 +133,8 @@
         document.getElementById("user_error").innerText = "";
 
         // client username Field validation
-        if (username === "") {
-            document.getElementById("user_error").innerText = "Username Field is required";
+        if (email === "") {
+            document.getElementById("user_error").innerText = "Email Field is required";
             hasError = true;
         } else {
             document.getElementById("user_error").innerText = "";

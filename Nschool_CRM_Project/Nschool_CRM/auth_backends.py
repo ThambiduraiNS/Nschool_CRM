@@ -5,11 +5,11 @@ from .models import NewUser
 from .utils import encrypt_password, decrypt_password
 
 class MultiModelBackend(BaseBackend):
-    def authenticate(self, request, username=None, password=None, **kwargs):
-        print(f"Attempting to authenticate {username}")
+    def authenticate(self, request, email=None, password=None, **kwargs):
+        print(f"Attempting to authenticate {email}")
         try:
             print("Welcome to new user !")
-            user = NewUser.objects.get(Q(username=username) | Q(email=username))
+            user = NewUser.objects.get(Q(email=email))
             print("User : ", user)
             if decrypt_password(user.password) == password:
                 print("Authenticated as NewUser")

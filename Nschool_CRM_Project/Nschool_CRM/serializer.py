@@ -4,7 +4,8 @@ from django.contrib.auth import authenticate, get_user_model
 from .models import *
 
 class LoginSerializer(serializers.Serializer):
-    username_or_email = serializers.CharField()
+    # username_or_email = serializers.CharField()
+    username_or_email = serializers.EmailField()
     password = serializers.CharField()
 
     def validate(self, data):

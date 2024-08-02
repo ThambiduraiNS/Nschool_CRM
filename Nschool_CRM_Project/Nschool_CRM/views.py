@@ -84,13 +84,14 @@ from django.db.models import Q
 def admin_login(request):
     if request.method == 'POST':
         username = request.POST.get('username')
+        email = request.POST.get('email')
         password = request.POST.get('password')
         
-        print(username, password)
+        print(email, password)
         
         url = 'http://127.0.0.1:8000/api/login/'
         # data = {'username': username, 'password': password}
-        data = {'username_or_email': username, 'password': password}
+        data = {'username_or_email': email, 'password': password, 'username': username}
         csrf_token = request.COOKIES.get('csrftoken')
         
         try:
@@ -108,7 +109,7 @@ def admin_login(request):
             return render(request, 'admin_login.html', context)
         
         if response.status_code == 200:
-            user = authenticate(request, username=username, password=password)
+            user = authenticate(request, email=email, password=password)
             if user is not None:
                 login(request, user)
                 return redirect('dashboard')
@@ -778,10 +779,10 @@ def user_login(request):
         username_or_email = serializer.validated_data['username_or_email']
         password = serializer.validated_data['password']
 
-        print("username : ", username_or_email)
+        print("email : ", username_or_email)
         print("password : ", password)
 
-        user = authenticate(username=username_or_email, password=password)
+        user = authenticate(email=username_or_email, password=password)
         
         print(user)
         
