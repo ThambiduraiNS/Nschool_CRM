@@ -388,7 +388,10 @@ def user_module_insert_view(request):
             return render(request, 'new_user.html', context)        
         
         if response.status_code == 201:
-            return redirect('manage-user')
+            context =  {
+                "message": "New User Created Successfully"
+            }
+            return render(request, 'new_user.html', context)
         else:
             context = {
                 'name': response_data.get('name', ''),
@@ -1184,7 +1187,7 @@ class SearchResultsView(ListView):
 
             if not match_found:
                 # Search across CharField, EmailField, and PhoneNumberField
-                fields = [f.name for f in NewUser._meta.fields if isinstance(f, (models.CharField, models.EmailField, PhoneNumberField))]
+                fields = [f.name for f in NewUser._meta.fields if isinstance(f, (models.CharField, models.EmailField))]
                 for field in fields:
                     query_filter |= Q(**{f"{field}__icontains": query})
         else:

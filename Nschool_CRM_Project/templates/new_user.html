@@ -40,16 +40,17 @@
                 <div class="row m-0 p-0">
                     <form id="login-form" action="" method="post">
                         {% csrf_token %}
-                        <div class="col-12 mt-4">
+                        <div class="col-12 mt-4 position-relative">
                             <h5 class="fw-bold">New User</h5>
                             <p class="user-para">Use the below form to update your profile</p>
+                            <span class="message" id="message">{{message}}</span>
                         </div>
                         <div class="row d-flex justify-content-between pe-0">
                             <div class="col-6">
                                 <div class="user-input-wrp me-4">
                                     <input type="text" name="username" id="username" class="form-control"
                                         aria-label="Username" placeholder=" " autocomplete="off" autofocus>
-                                    <label class="floating-label">Name</label>
+                                    <label class="floating-label">&nbsp;Name&nbsp;</label>
                                     <span id="user_error" class="error-div">
                                         {% if username %}
                                         {{username}}
@@ -61,7 +62,7 @@
                                 <div class="user-input-wrp ms-4">
                                     <input type="email" name="email" id="email" class="form-control" placeholder=" "
                                         autocomplete="off" autofocus>
-                                    <label class="floating-label">E-Mail-ID</label>
+                                    <label class="floating-label">&nbsp;E-Mail-ID&nbsp;</label>
                                     <span id="email_error" class="error-div error-right">
                                         {% if email %}
                                         {{email}}
@@ -73,9 +74,9 @@
                         <div class="row d-flex justify-content-between pe-0">
                             <div class="col-6">
                                 <div class="user-input-wrp me-4">
-                                    <input type="text" name="contact" id="contact" class="form-control"
+                                    <input type="text" name="contact" id="contact" maxlength="10" class="form-control"
                                         aria-label="contact_no" placeholder=" " autocomplete="off" autofocus>
-                                    <label class="floating-label">Contact No</label>
+                                    <label class="floating-label">&nbsp;Contact No&nbsp;</label>
                                     <span id="contact_error" class="error-div">
                                         {% if contact %}
                                         {{contact}}
@@ -87,7 +88,7 @@
                                 <div class="user-input-wrp ms-4">
                                     <input type="text" name="designation" id="designation" class="form-control"
                                         aria-label="designation" placeholder=" " autocomplete="off" autofocus>
-                                    <label class="floating-label">Designation</label>
+                                    <label class="floating-label">&nbsp;Designation&nbsp;</label>
                                     <span id="designation_error" class="error-div error-right">
                                         {% if designation %}
                                         {{designation}}
@@ -105,7 +106,7 @@
                                     <div class="form-check form-check-inline">
                                         <input class="form-check-input" type="checkbox" name="Enquiry"
                                             id="inlineCheckbox1" value="false" onclick="permission('inlineCheckbox1')">
-                                        <label class="form-check-label" for="inlineCheckbox1">Enquiry</label>
+                                        <label class="form-check-label" for="inlineCheckbox1">&nbsp;Enquiry&nbsp;</label>
                                         <span id="text_inlineCheckbox1"></span>
                                     </div>
                                 </div>
@@ -113,7 +114,7 @@
                                     <div class="form-check form-check-inline">
                                         <input class="form-check-input" type="checkbox" name="Enrollment"
                                             id="inlineCheckbox2" value="false" onclick="permission('inlineCheckbox2')">
-                                        <label class="form-check-label" for="inlineCheckbox2">Enrollment</label>
+                                        <label class="form-check-label" for="inlineCheckbox2">&nbsp;Enrollment&nbsp;</label>
                                         <span id="text_inlineCheckbox2"></span>
                                     </div>
                                 </div>
@@ -121,7 +122,7 @@
                                     <div class="form-check form-check-inline">
                                         <input class="form-check-input" type="checkbox" name="Attendance"
                                             id="inlineCheckbox3" value="false" onclick="permission('inlineCheckbox3')">
-                                        <label class="form-check-label" for="inlineCheckbox3">Attendance</label>
+                                        <label class="form-check-label" for="inlineCheckbox3">&nbsp;Attendance&nbsp;</label>
                                         <span id="text_inlineCheckbox3"></span>
                                     </div>
                                 </div>
@@ -129,7 +130,7 @@
                                     <div class="form-check form-check-inline">
                                         <input class="form-check-input" type="checkbox" name="Staff"
                                             id="inlineCheckbox4" value="false" onclick="permission('inlineCheckbox4')">
-                                        <label class="form-check-label" for="inlineCheckbox4">Staff</label>
+                                        <label class="form-check-label" for="inlineCheckbox4">&nbsp;Staff&nbsp;</label>
                                         <span id="text_inlineCheckbox4"></span>
                                     </div>
                                 </div>
@@ -137,7 +138,7 @@
                                     <div class="form-check form-check-inline">
                                         <input class="form-check-input" type="checkbox" name="Placement"
                                             id="inlineCheckbox5" value="false" onclick="permission('inlineCheckbox5')">
-                                        <label class="form-check-label" for="inlineCheckbox5">Placement</label>
+                                        <label class="form-check-label" for="inlineCheckbox5">&nbsp;Placement&nbsp;</label>
                                         <span id="text_inlineCheckbox5"></span>
                                     </div>
                                 </div>
@@ -145,7 +146,7 @@
                                     <div class="form-check form-check-inline">
                                         <input class="form-check-input" type="checkbox" name="Report"
                                             id="inlineCheckbox6" value="false" onclick="permission('inlineCheckbox6')">
-                                        <label class="form-check-label" for="inlineCheckbox6">Report</label>
+                                        <label class="form-check-label" for="inlineCheckbox6">&nbsp;Report&nbsp;</label>
                                         <span id="text_inlineCheckbox6"></span>
                                     </div>
                                 </div>
@@ -157,7 +158,16 @@
                                 <div class="user-input-wrp me-4">
                                     <input type="password" name="password" id="password" class="form-control"
                                         aria-label="password" placeholder=" " autocomplete="off" autofocus>
-                                    <label class="floating-label">Password</label>
+                                    <label class="floating-label">&nbsp;Password&nbsp;</label>
+                                    <svg id="togglePassword" xmlns="http://www.w3.org/2000/svg" width="16"
+                                        height="16" fill="currentColor" class="bi bi-eye-slash" viewBox="0 0 16 16">
+                                        <path
+                                            d="M13.359 11.238C15.06 9.72 16 8 16 8s-3-5.5-8-5.5a7 7 0 0 0-2.79.588l.77.771A6 6 0 0 1 8 3.5c2.12 0 3.879 1.168 5.168 2.457A13 13 0 0 1 14.828 8q-.086.13-.195.288c-.335.48-.83 1.12-1.465 1.755q-.247.248-.517.486z" />
+                                        <path
+                                            d="M11.297 9.176a3.5 3.5 0 0 0-4.474-4.474l.823.823a2.5 2.5 0 0 1 2.829 2.829zm-2.943 1.299.822.822a3.5 3.5 0 0 1-4.474-4.474l.823.823a2.5 2.5 0 0 0 2.829 2.829" />
+                                        <path
+                                            d="M3.35 5.47q-.27.24-.518.487A13 13 0 0 0 1.172 8l.195.288c.335.48.83 1.12 1.465 1.755C4.121 11.332 5.881 12.5 8 12.5c.716 0 1.39-.133 2.02-.36l.77.772A7 7 0 0 1 8 13.5C3 13.5 0 8 0 8s.939-1.721 2.641-3.238l.708.709zm10.296 8.884-12-12 .708-.708 12 12z" />
+                                    </svg>
                                     <span id="pass_error" class="error-div">
                                         {% if password %}
                                         {{password}}
@@ -169,7 +179,16 @@
                                 <div class="user-input-wrp ms-4">
                                     <input type="password" name="cpassword" id="cpassword" class="form-control"
                                         aria-label="password" placeholder=" " autocomplete="off" autofocus>
-                                    <label class="floating-label">Conform Password</label>
+                                    <label class="floating-label">&nbsp;Conform Password&nbsp;</label>
+                                    <svg id="togglePassword1" xmlns="http://www.w3.org/2000/svg" width="16"
+                                        height="16" fill="currentColor" class="bi bi-eye-slash" viewBox="0 0 16 16">
+                                        <path
+                                            d="M13.359 11.238C15.06 9.72 16 8 16 8s-3-5.5-8-5.5a7 7 0 0 0-2.79.588l.77.771A6 6 0 0 1 8 3.5c2.12 0 3.879 1.168 5.168 2.457A13 13 0 0 1 14.828 8q-.086.13-.195.288c-.335.48-.83 1.12-1.465 1.755q-.247.248-.517.486z" />
+                                        <path
+                                            d="M11.297 9.176a3.5 3.5 0 0 0-4.474-4.474l.823.823a2.5 2.5 0 0 1 2.829 2.829zm-2.943 1.299.822.822a3.5 3.5 0 0 1-4.474-4.474l.823.823a2.5 2.5 0 0 0 2.829 2.829" />
+                                        <path
+                                            d="M3.35 5.47q-.27.24-.518.487A13 13 0 0 0 1.172 8l.195.288c.335.48.83 1.12 1.465 1.755C4.121 11.332 5.881 12.5 8 12.5c.716 0 1.39-.133 2.02-.36l.77.772A7 7 0 0 1 8 13.5C3 13.5 0 8 0 8s.939-1.721 2.641-3.238l.708.709zm10.296 8.884-12-12 .708-.708 12 12z" />
+                                    </svg>
                                     <span id="cpass_error" class="error-div error-right"></span>
                                 </div>
                             </div>
@@ -177,17 +196,16 @@
 
                         <div class="row d-flex justify-content-between">
                             <div class="col-6 d-flex justify-content-end pe-4">
-                                <input type="reset" value="cancel" class="btn login-btn">
+                                <input type="reset" value="Cancel" class="btn login-btn">
                             </div>
                             <div class="col-6 d-flex justify-content-start ps-4">
-                                <input type="submit" value="save" class="btn login-btn">
+                                <input type="submit" value="Save" class="btn login-btn">
                             </div>
                         </div>
                     </form>
                 </div>
             </div>
         </div>
-
     </div>
 </div>
 <!-- </div> -->
@@ -226,6 +244,51 @@
         sidenav.classList.toggle('collapsed');
     });
 
+
+    function myFunction() {
+        var passwordField = document.getElementById("password");
+        var togglePassword = document.getElementById("togglePassword");
+
+        if (passwordField.type === "password") {
+            passwordField.type = "text";
+            togglePassword.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye" viewBox="0 0 16 16">
+                                            <path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8M1.173 8a13 13 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5s3.879 1.168 5.168 2.457A13 13 0 0 1 14.828 8q-.086.13-.195.288c-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5s-3.879-1.168-5.168-2.457A13 13 0 0 1 1.172 8z"/>
+                                            <path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5M4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0"/>
+                                        </svg>`;
+        } else {
+            passwordField.type = "password";
+            togglePassword.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye-slash" viewBox="0 0 16 16">
+                                            <path d="M13.359 11.238C15.06 9.72 16 8 16 8s-3-5.5-8-5.5a7 7 0 0 0-2.79.588l.77.771A6 6 0 0 1 8 3.5c2.12 0 3.879 1.168 5.168 2.457A13 13 0 0 1 14.828 8q-.086.13-.195.288c-.335.48-.83 1.12-1.465 1.755q-.247.248-.517.486z"/>
+                                            <path d="M11.297 9.176a3.5 3.5 0 0 0-4.474-4.474l.823.823a2.5 2.5 0 0 1 2.829 2.829zm-2.943 1.299.822.822a3.5 3.5 0 0 1-4.474-4.474l.823.823a2.5 2.5 0 0 0 2.829 2.829"/>
+                                            <path d="M3.35 5.47q-.27.24-.518.487A13 13 0 0 0 1.172 8l.195.288c.335.48.83 1.12 1.465 1.755C4.121 11.332 5.881 12.5 8 12.5c.716 0 1.39-.133 2.02-.36l.77.772A7 7 0 0 1 8 13.5C3 13.5 0 8 0 8s.939-1.721 2.641-3.238l.708.709zm10.296 8.884-12-12 .708-.708 12 12z"/>
+                                        </svg>`;
+        }
+    }
+
+    document.getElementById("togglePassword").addEventListener("click", myFunction);
+
+
+    function myFunction1() {
+        var passwordField = document.getElementById("cpassword");
+        var togglePassword = document.getElementById("togglePassword1");
+
+        if (passwordField.type === "password") {
+            passwordField.type = "text";
+            togglePassword.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye" viewBox="0 0 16 16">
+                                            <path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8M1.173 8a13 13 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5s3.879 1.168 5.168 2.457A13 13 0 0 1 14.828 8q-.086.13-.195.288c-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5s-3.879-1.168-5.168-2.457A13 13 0 0 1 1.172 8z"/>
+                                            <path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5M4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0"/>
+                                        </svg>`;
+        } else {
+            passwordField.type = "password";
+            togglePassword.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye-slash" viewBox="0 0 16 16">
+                                            <path d="M13.359 11.238C15.06 9.72 16 8 16 8s-3-5.5-8-5.5a7 7 0 0 0-2.79.588l.77.771A6 6 0 0 1 8 3.5c2.12 0 3.879 1.168 5.168 2.457A13 13 0 0 1 14.828 8q-.086.13-.195.288c-.335.48-.83 1.12-1.465 1.755q-.247.248-.517.486z"/>
+                                            <path d="M11.297 9.176a3.5 3.5 0 0 0-4.474-4.474l.823.823a2.5 2.5 0 0 1 2.829 2.829zm-2.943 1.299.822.822a3.5 3.5 0 0 1-4.474-4.474l.823.823a2.5 2.5 0 0 0 2.829 2.829"/>
+                                            <path d="M3.35 5.47q-.27.24-.518.487A13 13 0 0 0 1.172 8l.195.288c.335.48.83 1.12 1.465 1.755C4.121 11.332 5.881 12.5 8 12.5c.716 0 1.39-.133 2.02-.36l.77.772A7 7 0 0 1 8 13.5C3 13.5 0 8 0 8s.939-1.721 2.641-3.238l.708.709zm10.296 8.884-12-12 .708-.708 12 12z"/>
+                                        </svg>`;
+        }
+    }
+
+    document.getElementById("togglePassword1").addEventListener("click", myFunction1);
     // validation
 
     document.getElementById("login-form").addEventListener("submit", function (event) {
@@ -260,6 +323,9 @@
         // client side email Field validation
         if (email == "") {
             document.getElementById("email_error").innerText = "Email Field is required";
+            hasError = true;
+        } else if(!/^[a-zA-Z0-9._%±]+@[a-zA-Z0-9.-]+.[a-zA-Z]{2,}$/.test(email)) {
+            document.getElementById("email_error").innerText = "Invalid email address.";
             hasError = true;
         } else {
             document.getElementById("email_error").innerText = "";
@@ -345,5 +411,16 @@
             checkBox.value = false;
         }
     }
+
+    function showMessage() {
+        const alertBox = document.getElementById('message');
+        alertBox.style.display = 'block';
+
+        setTimeout(() => {
+            alertBox.style.display = 'none';
+        }, 5000);
+    }
+
+    document.addEventListener('DOMContentLoaded', () => showMessage());
 </script>
 {% endblock %}

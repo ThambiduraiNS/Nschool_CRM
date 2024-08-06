@@ -149,16 +149,16 @@ p {
 
 /* When the input field is focused */
 .user-input-wrp input:focus ~ .floating-label {
-    top: -9px;
-    font-size: 11px;
+    top: -14px;
+    font-size: 14px;
     color: #333;
     background-color: #fff1fb;
 }
 
 /* When there is content in the input field */
 .user-input-wrp input:not(:placeholder-shown) ~ .floating-label {
-    top: -9px;
-    font-size: 11px;
+    top: -14px;
+    font-size: 14px;
     background-color: #fff1fb;
     color: #333;
 }

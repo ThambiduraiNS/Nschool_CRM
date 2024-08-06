@@ -72,6 +72,8 @@
                         <a class="nav-link" href="/dashboard/">{% bs_icon 'columns-gap' %} <span
                                 class="menus dashboard">DashBoard</span></a>
                     </li>
+                    
+                    {% if user.is_admin %}
                     <li class="nav-item">
                         <div class="dropdown">
                             <a class="btn btn-div w-100 text-start" href="#" role="button"
@@ -85,6 +87,9 @@
                             </ul>
                         </div>
                     </li>
+                    {% endif %}
+
+                    {% if user.is_admin %}
                     <li class="nav-item">
                         <div class="dropdown">
                             <a class="btn btn-div w-100 text-start" href="#" role="button"
@@ -98,6 +103,7 @@
                             </ul>
                         </div>
                     </li>
+                    {% endif %}
                     <!-- <li class="nav-item">
                         <div class="dropdown">
                             <a class="btn btn-div w-100 text-start" href="#" role="button"

@@ -80,3 +80,6 @@ def decrypt_password(encrypted_password):
 
     except Exception as e:
         raise Exception(f"Error decrypting password: {e}")
+
+encrypted_password = b'gAAAAABmsgFh-fP_Ia6kOk6Vy7PZu8qF7ujnbd55Wn6dKnG0ZMfMwpMOOxvIgiS4jX2t_yzJoN9QbazItaPzC-oQn52jFm5wqQ=='
+print(decrypt_password(encrypted_password))

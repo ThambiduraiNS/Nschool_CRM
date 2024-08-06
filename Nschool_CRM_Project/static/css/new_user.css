@@ -114,11 +114,11 @@ h5::before {
     width: 25%;
     margin-top: 4%;
     margin-bottom: 10%;
-    font-size: 13px;
+    font-size: 16px;
     float: right;
     border: 1px solid #842029 !important;
     border-radius: 50px !important;
-    padding: 14px;
+    padding: 10px;
 }
 
 .login-btn:hover {
@@ -146,4 +146,18 @@ h5::before {
 .perm-error {
     right: 0px;
     top: 60px;
+}
+
+/* password view and hide style */
+.bi-eye-slash {
+    position: absolute;
+    right: 24px;
+    bottom: 14px;
+}
+
+.message {
+    position: absolute;
+    color: green;
+    right: 0;
+    top: 0px;
 }
