@@ -393,12 +393,19 @@ def user_module_insert_view(request):
             }
             return render(request, 'new_user.html', context)
         else:
-            context = {
-                'name': response_data.get('name', ''),
+            error_messages = {
+                'username': response_data.get('username', ''),
                 'email': response_data.get('email', ''),
                 'contact': response_data.get('contact', ''),
                 'designation': response_data.get('designation', ''),
                 'password': response_data.get('password', ''),
+            }
+            context = {
+                'username': username,
+                'email': email,
+                'contact': contact,
+                'designation': designation,
+                'error_messages': error_messages,
             }
             return render(request, 'new_user.html', context)
         

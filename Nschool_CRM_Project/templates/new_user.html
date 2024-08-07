@@ -25,7 +25,7 @@
         <div class="row m-0 p-0">
             <div class="col border bg-white rounded mt-4 ms-4 mb-2 px-4">
                 <nav style="--bs-breadcrumb-divider: '|';" aria-label="breadcrumb">
-                    <ol class="breadcrumb pt-2">
+                    <ol class="breadcrumb pt-3 mb-3">
                         <li class="breadcrumb-item"><a class="user-a" href="#">User Module</a></li>
                         <li class="breadcrumb-item active" aria-current="page">New User</li>
                     </ol>
@@ -52,9 +52,9 @@
                                         aria-label="Username" placeholder=" " autocomplete="off" autofocus>
                                     <label class="floating-label">&nbsp;Name&nbsp;</label>
                                     <span id="user_error" class="error-div">
-                                        {% if username %}
+                                        <!-- {% if username %}
                                         {{username}}
-                                        {% endif %}
+                                        {% endif %} -->
                                     </span>
                                 </div>
                             </div>
@@ -64,9 +64,9 @@
                                         autocomplete="off" autofocus>
                                     <label class="floating-label">&nbsp;E-Mail-ID&nbsp;</label>
                                     <span id="email_error" class="error-div error-right">
-                                        {% if email %}
+                                        <!-- {% if email %}
                                         {{email}}
-                                        {% endif %}
+                                        {% endif %} -->
                                     </span>
                                 </div>
                             </div>
@@ -78,9 +78,9 @@
                                         aria-label="contact_no" placeholder=" " autocomplete="off" autofocus>
                                     <label class="floating-label">&nbsp;Contact No&nbsp;</label>
                                     <span id="contact_error" class="error-div">
-                                        {% if contact %}
+                                        <!-- {% if contact %}
                                         {{contact}}
-                                        {% endif %}
+                                        {% endif %} -->
                                     </span>
                                 </div>
                             </div>
@@ -90,9 +90,9 @@
                                         aria-label="designation" placeholder=" " autocomplete="off" autofocus>
                                     <label class="floating-label">&nbsp;Designation&nbsp;</label>
                                     <span id="designation_error" class="error-div error-right">
-                                        {% if designation %}
+                                        <!-- {% if designation %}
                                         {{designation}}
-                                        {% endif %}
+                                        {% endif %} -->
                                     </span>
                                 </div>
                             </div>
@@ -169,9 +169,9 @@
                                             d="M3.35 5.47q-.27.24-.518.487A13 13 0 0 0 1.172 8l.195.288c.335.48.83 1.12 1.465 1.755C4.121 11.332 5.881 12.5 8 12.5c.716 0 1.39-.133 2.02-.36l.77.772A7 7 0 0 1 8 13.5C3 13.5 0 8 0 8s.939-1.721 2.641-3.238l.708.709zm10.296 8.884-12-12 .708-.708 12 12z" />
                                     </svg>
                                     <span id="pass_error" class="error-div">
-                                        {% if password %}
+                                        <!-- {% if password %}
                                         {{password}}
-                                        {% endif %}
+                                        {% endif %} -->
                                     </span>
                                 </div>
                             </div>
@@ -203,6 +203,19 @@
                             </div>
                         </div>
                     </form>
+                    <span>
+                        {% if error_messages %}
+                        <div class="errors-common">
+                            <ul class="ul-errors">
+                                {% for field, message in error_messages.items %}
+                                    {% if message %}
+                                        <li>{{ message }}</li>
+                                    {% endif %}
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% endif %}
+                    </span>
                 </div>
             </div>
         </div>

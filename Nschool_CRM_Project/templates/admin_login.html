@@ -35,15 +35,15 @@
                                     </div>
 
                                     <div class="user-input-wrp">
-                                        <input type="text" name="email" id="email" class="form-control"
+                                        <input type="text" name="email" id="email" class="form-control inputs"
                                             aria-label="Username" placeholder=" " autocomplete="off" autofocus>
                                         <label class="floating-label">&nbsp;Email&nbsp;</label>
                                     </div>
-
+                                    
                                     <div class="text-danger span_div" id="user_error">{{user_error}}</div>
 
                                     <div class="user-input-wrp">
-                                        <input type="password" name="password" id="password" class="form-control"
+                                        <input type="password" name="password" id="password" class="form-control inputs"
                                             aria-label="Password" placeholder=" ">
                                         <label class="floating-label">&nbsp;Password&nbsp;</label>
                                         <svg id="togglePassword" xmlns="http://www.w3.org/2000/svg" width="16"
@@ -56,7 +56,9 @@
                                                 d="M3.35 5.47q-.27.24-.518.487A13 13 0 0 0 1.172 8l.195.288c.335.48.83 1.12 1.465 1.755C4.121 11.332 5.881 12.5 8 12.5c.716 0 1.39-.133 2.02-.36l.77.772A7 7 0 0 1 8 13.5C3 13.5 0 8 0 8s.939-1.721 2.641-3.238l.708.709zm10.296 8.884-12-12 .708-.708 12 12z" />
                                         </svg>
                                     </div>
-                                    <div class="text-danger span_div" id="pass_error">{{pass_error}}</div>
+                                    <div class="position-relative">
+                                        <div class="text-danger span_div span_div_pass" id="pass_error">{{pass_error}}</div>
+                                    </div>
 
                                     <!-- <div id="password-message">
                                         <h3>Password must contain the following:</h3>
@@ -136,6 +138,9 @@
         if (email === "") {
             document.getElementById("user_error").innerText = "Email Field is required";
             hasError = true;
+        } else if (!(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email))) {
+            document.getElementById("user_error").innerText = "You have entered an invalid email address!";
+            hasError = true;
         } else {
             document.getElementById("user_error").innerText = "";
         }
@@ -143,14 +148,35 @@
 
         // client side password Field validation
 
-        document.getElementById("pass_error").innerText = "";
+        
+
+        let errorMessage = document.getElementById("pass_error");
+
+        errorMessage = "";
 
         if (passwordInput === "") {
-            document.getElementById("pass_error").innerText = "Password Field is required";
+            errorMessage = "Password Field is required";
             hasError = true;
         } else {
-            document.getElementById("pass_error").innerText = "";
+            const rules = [
+                { regex: /(?=.*\d)/, message: "At least one digit." },
+                { regex: /(?=.*[a-z])/, message: "At least one lowercase letter." },
+                { regex: /(?=.*[A-Z])/, message: "At least one uppercase letter." },
+                { regex: /(?=.*[^a-zA-Z0-9])/, message: "At least one special character." },
+                { regex: /^[^\s]+$/, message: "Not contain any whitespace characters." },
+                { regex: /.{8,15}$/, message: "Password must between 8 to 15 characters long." },
+            ];
+
+            for (let rule of rules) {
+                if (!rule.regex.test(passwordInput)) {
+                    errorMessage += rule.message + " | ";
+                    hasError = true;
+                }
+            }
         }
+
+        document.getElementById("pass_error").innerText = errorMessage;
+
         // Submit the form if there are no errors
         if (!hasError) {
             document.getElementById("admin-login-form").submit();

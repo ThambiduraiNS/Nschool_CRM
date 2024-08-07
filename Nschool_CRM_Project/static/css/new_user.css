@@ -161,3 +161,18 @@ h5::before {
     right: 0;
     top: 0px;
 }
+
+
+/* common errors */
+
+.errors-common {
+    font-size: 14px;
+    color: #c72571;
+    text-decoration: none;
+    text-align: center;
+    margin: 0px 0px 40px 0px;
+}
+
+.ul-errors {
+    list-style-type: none;
+}

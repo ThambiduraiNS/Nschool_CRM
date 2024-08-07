@@ -10,6 +10,7 @@
 <link rel="stylesheet" href="{% static '/css/new_user.css' %}">
 <link rel="stylesheet" href="{% static '/css/header.css' %}">
 <link rel="stylesheet" href="{% static '/css/manage_user.css' %}">
+<link rel="stylesheet" href="{% static '/css/search_result.css' %}">
 {% endblock %}
 
 {% block header %}
@@ -41,7 +42,7 @@
                 <div class="row m-0 p-0">
 
                     <div class="col-5 mt-4 p-0">
-                        <h5 class="fw-bold">Manage User</h5>
+                        <h5 class="fw-bold">Search Result</h5>
                     </div>
 
                     <div class="col-5 d-flex pe-0">
@@ -74,20 +75,13 @@
                         </div>
                     </div>
 
-                    <p class="user-para p-0">Use the below tabel to update your profile</p>
+                    <p class="user-para p-0">This below tabel to get the search result.</p>
                 </div>
 
                 <!-- Pagination controls -->
                 <div class="row">
                     <div class="col d-flex justify-content-end py-3 gap-2">
-                        <form id="perPageForm" method="get" class="d-flex">
-                            <!-- <select class="select-div me-2" name="per_page" id="perPageSelect"
-                                onchange="document.getElementById('perPageForm').submit();">
-                                <option class="option" value="10" {% if per_page == '10' %}selected{% endif %}>10 per page</option>
-                                <option class="option" value="15" {% if per_page == '15' %}selected{% endif %}>15 per page</option>
-                                <option class="option" value="25" {% if per_page == '25' %}selected{% endif %}>25 per page</option>
-                                <option class="option" value="50" {% if per_page == '50' %}selected{% endif %}>50 per page</option>
-                            </select> -->
+                        <!-- <form id="perPageForm" method="get" class="d-flex">
 
                             <select class="select-div me-2" name="per_page" id="perPageSelect" onchange="this.form.submit();">
                                 <option class="option" value="10" {% if per_page == '10' %}selected{% endif %}>10 per page</option>
@@ -113,8 +107,8 @@
                             </a>
                             {% endif %}
 
-                        </form>
-                        <span data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-custom-class="custom-tooltip"
+                        </form> -->
+                        <!-- <span data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-custom-class="custom-tooltip"
                             data-bs-title="delete">
                             <a href="javascript:void(0);" id="deleteSelected">
                                 <span class="delete">
@@ -138,7 +132,7 @@
                                 </span>
                             </a>
 
-                        </span>
+                        </span> -->
                     </div>
                 </div>
 
@@ -153,8 +147,8 @@
                                 <th class="thead">E-Mail-ID</th>
                                 <th class="thead">Contact</th>
                                 <th class="Permission">Permission</th>
-                                <th class="password">Password</th>
-                                <th class="action">Action</th>
+                                <!-- <th class="password">Password</th> -->
+                                <!-- <th class="action">Action</th> -->
                             </tr>
                             {% for user in object_list %}
                             <tr class="trow">
@@ -162,7 +156,7 @@
                                     <input type="checkbox" class="form-check-input user-checkbox checked-row" name="user_ids"
                                         value="{{ user.id }}" id="user{{ user.id }}">
                                 </td>
-                                <td class="tdata">{{ user.name }}</td>
+                                <td class="tdata">{{ user.username }}</td>
                                 <td class="tdata">{{ user.email }}</td>
                                 <td class="tdata">{{ user.contact|stringformat:"s" }}</td>
                                 <td class="permission">
@@ -175,19 +169,16 @@
                                         {% if user.report %}<span class="report permission-class">Report</span>{% endif %}
                                     </div>
                                 </td>
-                                <td class="tdata">
+                                <!-- <td class="tdata">
                                     <div>
                                         <span>
                                             {% if user.password %}
-                                            <!-- {% for i in user.password %}
-                                                    *
-                                                {% endfor %} -->
-                                            {{user.password}}
+                                                {{user.password}}
                                             {% endif %}
                                         </span>
                                     </div>
-                                </td>
-                                <td class="tdata">
+                                </td> -->
+                                <!-- <td class="tdata">
                                     <div>
                                         <a href="/update_user/{{user.id}}">
                                             <span class="edit">
@@ -200,7 +191,7 @@
                                             </span>
                                         </a>
                                     </div>
-                                </td>
+                                </td> -->
                             </tr>
                             {% endfor %}
                         </table>
