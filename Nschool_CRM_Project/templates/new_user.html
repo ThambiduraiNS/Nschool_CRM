@@ -20,12 +20,12 @@
 <div class="row m-0 p-0">
     {% include 'side_navbar.html' %}
 
-    <div class="col-10 background-div">
+    <div class="col-12 col-lg-10 background-div">
 
         <div class="row m-0 p-0">
-            <div class="col border bg-white rounded mt-4 ms-4 mb-2 px-4">
+            <div class="col border bg-white rounded mt-4 ms-xll-4 mb-2 px-xll-4">
                 <nav style="--bs-breadcrumb-divider: '|';" aria-label="breadcrumb">
-                    <ol class="breadcrumb pt-3 mb-3">
+                    <ol class="breadcrumb pt-3 mb-3 ps-lg-3">
                         <li class="breadcrumb-item"><a class="user-a" href="#">User Module</a></li>
                         <li class="breadcrumb-item active" aria-current="page">New User</li>
                     </ol>
@@ -35,10 +35,10 @@
 
 
         <div class="row m-0 p-0">
-            <div class="col border bg-white rounded mt-2 ms-4 mb-2 px-4">
+            <div class="col border bg-white rounded mt-2 ms-xll-4 mb-2 px-xll-4">
 
                 <div class="row m-0 p-0">
-                    <form id="login-form" action="" method="post">
+                    <form id="login-form" class="pe-lg-4" action="" method="post">
                         {% csrf_token %}
                         <div class="col-12 mt-4 position-relative">
                             <h5 class="fw-bold">New User</h5>
@@ -46,8 +46,8 @@
                             <span class="message" id="message">{{message}}</span>
                         </div>
                         <div class="row d-flex justify-content-between pe-0">
-                            <div class="col-6">
-                                <div class="user-input-wrp me-4">
+                            <div class="col-12 col-md-6">
+                                <div class="user-input-wrp me-md-4">
                                     <input type="text" name="username" id="username" class="form-control"
                                         aria-label="Username" placeholder=" " autocomplete="off" autofocus>
                                     <label class="floating-label">&nbsp;Name&nbsp;</label>
@@ -58,8 +58,8 @@
                                     </span>
                                 </div>
                             </div>
-                            <div class="col-6 pe-0">
-                                <div class="user-input-wrp ms-4">
+                            <div class="col-12 col-md-6 pe-md-0">
+                                <div class="user-input-wrp ms-md-4">
                                     <input type="email" name="email" id="email" class="form-control" placeholder=" "
                                         autocomplete="off" autofocus>
                                     <label class="floating-label">&nbsp;E-Mail-ID&nbsp;</label>
@@ -72,8 +72,8 @@
                             </div>
                         </div>
                         <div class="row d-flex justify-content-between pe-0">
-                            <div class="col-6">
-                                <div class="user-input-wrp me-4">
+                            <div class="col-12 col-md-6">
+                                <div class="user-input-wrp me-md-4">
                                     <input type="text" name="contact" id="contact" maxlength="10" class="form-control"
                                         aria-label="contact_no" placeholder=" " autocomplete="off" autofocus>
                                     <label class="floating-label">&nbsp;Contact No&nbsp;</label>
@@ -84,8 +84,8 @@
                                     </span>
                                 </div>
                             </div>
-                            <div class="col-6 pe-0">
-                                <div class="user-input-wrp ms-4">
+                            <div class="col-12 col-md-6 pe-md-0">
+                                <div class="user-input-wrp ms-md-4">
                                     <input type="text" name="designation" id="designation" class="form-control"
                                         aria-label="designation" placeholder=" " autocomplete="off" autofocus>
                                     <label class="floating-label">&nbsp;Designation&nbsp;</label>
@@ -101,8 +101,8 @@
                             <p class="permission-p">Department Permission</p> 
                             <span id="permission_error" class="error-div perm-error"></span>
                             
-                            <div class="row gap-5 ms-2 mb-3 p-0">
-                                <div class="col d-flex justify-content-end p-0">
+                            <div class="row gap-xl-5 ms-3 ms-md-2 mb-3 p-0">
+                                <div class="col d-flex justify-content-start justify-content-md-end p-0">
                                     <div class="form-check form-check-inline">
                                         <input class="form-check-input" type="checkbox" name="Enquiry"
                                             id="inlineCheckbox1" value="false" onclick="permission('inlineCheckbox1')">
@@ -110,7 +110,7 @@
                                         <span id="text_inlineCheckbox1"></span>
                                     </div>
                                 </div>
-                                <div class="col d-flex justify-content-end p-0">
+                                <div class="col d-flex justify-content-start justify-content-md-end p-0">
                                     <div class="form-check form-check-inline">
                                         <input class="form-check-input" type="checkbox" name="Enrollment"
                                             id="inlineCheckbox2" value="false" onclick="permission('inlineCheckbox2')">
@@ -118,7 +118,7 @@
                                         <span id="text_inlineCheckbox2"></span>
                                     </div>
                                 </div>
-                                <div class="col d-flex justify-content-end p-0">
+                                <div class="col d-flex justify-content-start justify-content-md-end p-0">
                                     <div class="form-check form-check-inline">
                                         <input class="form-check-input" type="checkbox" name="Attendance"
                                             id="inlineCheckbox3" value="false" onclick="permission('inlineCheckbox3')">
@@ -126,7 +126,7 @@
                                         <span id="text_inlineCheckbox3"></span>
                                     </div>
                                 </div>
-                                <div class="col d-flex justify-content-end  p-0">
+                                <div class="col d-flex justify-content-start justify-content-md-end p-0">
                                     <div class="form-check form-check-inline">
                                         <input class="form-check-input" type="checkbox" name="Staff"
                                             id="inlineCheckbox4" value="false" onclick="permission('inlineCheckbox4')">
@@ -134,7 +134,7 @@
                                         <span id="text_inlineCheckbox4"></span>
                                     </div>
                                 </div>
-                                <div class="col d-flex justify-content-end  p-0">
+                                <div class="col d-flex justify-content-start justify-content-md-end p-0">
                                     <div class="form-check form-check-inline">
                                         <input class="form-check-input" type="checkbox" name="Placement"
                                             id="inlineCheckbox5" value="false" onclick="permission('inlineCheckbox5')">
@@ -142,7 +142,7 @@
                                         <span id="text_inlineCheckbox5"></span>
                                     </div>
                                 </div>
-                                <div class="col d-flex justify-content-end p-0">
+                                <div class="col d-flex justify-content-start justify-content-lg-start justify-content-md-end p-0">
                                     <div class="form-check form-check-inline">
                                         <input class="form-check-input" type="checkbox" name="Report"
                                             id="inlineCheckbox6" value="false" onclick="permission('inlineCheckbox6')">
@@ -154,8 +154,8 @@
                         </div>
 
                         <div class="row d-flex justify-content-between pe-0">
-                            <div class="col-6">
-                                <div class="user-input-wrp me-4">
+                            <div class="col-12 col-md-6 pe-md-0">
+                                <div class="user-input-wrp me-md-4">
                                     <input type="password" name="password" id="password" class="form-control"
                                         aria-label="password" placeholder=" " autocomplete="off" autofocus>
                                     <label class="floating-label">&nbsp;Password&nbsp;</label>
@@ -175,8 +175,8 @@
                                     </span>
                                 </div>
                             </div>
-                            <div class="col-6 pe-0">
-                                <div class="user-input-wrp ms-4">
+                            <div class="col-12 col-md-6 pe-md-0 pe-md-0">
+                                <div class="user-input-wrp ms-md-4">
                                     <input type="password" name="cpassword" id="cpassword" class="form-control"
                                         aria-label="password" placeholder=" " autocomplete="off" autofocus>
                                     <label class="floating-label">&nbsp;Conform Password&nbsp;</label>
@@ -194,12 +194,12 @@
                             </div>
                         </div>
 
-                        <div class="row d-flex justify-content-between">
-                            <div class="col-6 d-flex justify-content-end pe-4">
-                                <input type="reset" value="Cancel" class="btn login-btn">
+                        <div class="row d-flex justify-content-between my-3">
+                            <div class="col-6 d-flex justify-content-md-end p-0 pe-4 pe-lg-4">
+                                <input type="reset" value="Cancel" class="btn login-btn w-50">
                             </div>
-                            <div class="col-6 d-flex justify-content-start ps-4">
-                                <input type="submit" value="Save" class="btn login-btn">
+                            <div class="col-6 d-flex justify-content-lg-start ps-lg-4 p-0 ps-4">
+                                <input type="submit" value="Save" class="btn login-btn w-50">
                             </div>
                         </div>
                     </form>

@@ -15,8 +15,14 @@
 
 .img-div {
     width: 100%;
-    top: 300px;
+    background-image: url(/static/images/wave1.svg);
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+    /* top: 300px; */
     left: 0;
+    /* bottom: 0px; */
+    height: 85%;
 }
 
 .span_div {
@@ -252,8 +258,33 @@ p {
 }
 
 /* ---------------------------------------------------------------- */
-@media (max-width:768px) {
-    .admin-login-div {
-        width: 100%;
+
+@media (max-width:1441px) {
+    .admin-img {
+        margin: 5% 30%;
+    }
+
+    .img-div {
+        height: 85%;
+    }
+}
+
+@media (max-width:1025px) {
+    .admin-img {
+        margin: 5% 25%;
+    }
+
+    .img-div {
+        height: 210%;
+    }
+}
+
+@media (max-width:769px) {
+    .admin-img {
+        margin: 5% 16%;
+    }
+
+    .img-div {
+        height: 210%;
     }
 }

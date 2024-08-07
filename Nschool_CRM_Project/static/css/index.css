@@ -275,7 +275,7 @@ li a:hover .bi-columns-gap {
 }
 
 /* Mobile responsiveness */
-@media screen and (max-width: 900px) {
+@media screen and (max-width: 769px) {
     .sidenav {
         width: 100%;
         height: auto;
@@ -283,7 +283,7 @@ li a:hover .bi-columns-gap {
     }
 
     .sidenav ul li a {
-        float: left;
+        /* float: left; */
         padding: 15px;
     }
 
@@ -292,9 +292,8 @@ li a:hover .bi-columns-gap {
     }
 }
 
-@media screen and (max-width: 400px) {
+@media screen and (max-width: 426px) {
     .sidenav ul li a {
-        text-align: center;
         float: none;
     }
 }
