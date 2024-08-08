@@ -132,7 +132,7 @@
                 { regex: /(?=.*[A-Z])/, message: "At least one uppercase letter." },
                 { regex: /(?=.*[^a-zA-Z0-9])/, message: "At least one special character." },
                 { regex: /^[^\s]+$/, message: "Not contain any whitespace characters." },
-                { regex: /.{8,15}$/, message: "Password must between 8 to 15 characters long." },
+                { regex: /.{7,15}$/, message: "Password must between 7 to 15 characters long." },
             ];
 
             for (let rule of rules) {
