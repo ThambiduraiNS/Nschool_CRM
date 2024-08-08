@@ -1,0 +1,175 @@
+{% extends 'base.html' %}
+
+{% load static %}
+{% load bootstrap_icons %}
+
+
+{% block title %}Course{% endblock %}
+
+{% block css %}
+<link rel="stylesheet" href="{% static '/css/new_user.css' %}">
+<link rel="stylesheet" href="{% static '/css/header.css' %}">
+{% endblock %}
+
+{% block header %}
+{% include 'header.html' %}
+{% endblock %}
+
+{% block content %}
+<!-- <div class="container-fluid"> -->
+<div class="row m-0 p-0">
+    {% include 'side_navbar.html' %}
+
+    <div class="col-12 col-lg-10 background-div">
+
+        <div class="row m-0 p-0">
+            <div class="col border bg-white rounded mt-4 ms-xll-4 mb-2 px-xll-4">
+                <nav style="--bs-breadcrumb-divider: '|';" aria-label="breadcrumb">
+                    <ol class="breadcrumb pt-3 mb-3 ps-lg-3">
+                        <li class="breadcrumb-item"><a class="user-a" href="#">Course</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Add Course</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+
+
+        <div class="row m-0 p-0">
+            <div class="col border bg-white rounded mt-2 ms-xll-4 mb-2 px-xll-4">
+
+                <div class="row m-0 p-0">
+                    <form id="login-form" class="pe-lg-4" action="" method="post">
+                        {% csrf_token %}
+                        <div class="col-12 mt-4 position-relative">
+                            <h5 class="fw-bold">Add Course</h5>
+                            <p class="user-para">Use the below form to update your profile</p>
+                            <span class="message" id="message">{{message}}</span>
+                        </div>
+                        <div class="row d-flex justify-content-between pe-0">
+                            <div class="col-12 col-md-6">
+                                <div class="user-input-wrp me-md-4">
+                                    <input type="text" name="course" id="course" class="form-control"
+                                        aria-label="course" placeholder=" " autocomplete="off" autofocus>
+                                    <label class="floating-label">&nbsp;Course&nbsp;</label>
+                                    <span id="course_error" class="error-div">
+                                        <!-- {% if username %}
+                                        {{username}}
+                                        {% endif %} -->
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row d-flex justify-content-between my-3">
+                            <div class="col-6 d-flex justify-content-md-end p-0 pe-4 pe-lg-4">
+                                <input type="reset" value="Cancel" class="btn login-btn w-50">
+                            </div>
+                            <div class="col-6 d-flex justify-content-lg-start ps-lg-4 p-0 ps-4">
+                                <input type="submit" value="Save" class="btn login-btn w-50">
+                            </div>
+                        </div>
+                    </form>
+                    <span>
+                        {% if error_messages %}
+                        <div class="errors-common">
+                            <ul class="ul-errors">
+                                {% for field, message in error_messages.items %}
+                                    {% if message %}
+                                        <li>{{ message }}</li>
+                                    {% endif %}
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% endif %}
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- </div> -->
+
+{% endblock %}
+
+
+{% block scripts %}
+<script>
+    function toggleDropdown(element) {
+        // Close all dropdowns
+        const allDropdowns = document.querySelectorAll('.dropdown-menu');
+        allDropdowns.forEach(dropdown => {
+            if (dropdown !== element.nextElementSibling) {
+                dropdown.classList.remove('show');
+            }
+        });
+
+        // Close all arrows
+        const allArrows = document.querySelectorAll('.right_arrow');
+        allArrows.forEach(arrow => {
+            if (arrow !== element.querySelector('.right_arrow')) {
+                arrow.classList.remove('arrow_user');
+            }
+        });
+
+        // Toggle the clicked dropdown and arrow
+        const dropdownMenu = element.nextElementSibling;
+        dropdownMenu.classList.toggle('show');
+        const rightArrow = element.querySelector('.right_arrow');
+        rightArrow.classList.toggle('arrow_user');
+    }
+
+    document.getElementById('toggle-sidenav').addEventListener('click', function () {
+        const sidenav = document.getElementById('sidenav');
+        sidenav.classList.toggle('collapsed');
+    });
+
+    // validation
+
+    document.getElementById("login-form").addEventListener("submit", function (event) {
+        event.preventDefault(); // Prevent form submission
+
+        var course_name = document.getElementById("course").value.trim();
+
+        let hasError = false;
+
+        // client username Field validation
+        if (course_name === "") {
+            document.getElementById("course_error").innerText = "Course Field is required";
+            hasError = true;
+        } else {
+            document.getElementById("course_error").innerText = "";
+        }
+
+        // Submit the form if there are no errors
+        if (!hasError) {
+            document.getElementById("login-form").submit();
+        }
+    });
+
+    function permission(checkboxId) {
+        // Get the checkbox
+        console.log("permission function")
+        var checkBox = document.getElementById(checkboxId);
+        // Get the output text
+        // var text = document.getElementById('text_' + checkboxId);
+
+        // If the checkbox is checked, display the output text
+        if (checkBox.checked) {
+            checkBox.value = true;
+        } else {
+            checkBox.value = false;
+        }
+    }
+
+    function showMessage() {
+        const alertBox = document.getElementById('message');
+        alertBox.style.display = 'block';
+
+        setTimeout(() => {
+            alertBox.style.display = 'none';
+        }, 5000);
+    }
+
+    document.addEventListener('DOMContentLoaded', () => showMessage());
+</script>
+{% endblock %}

@@ -49,37 +49,6 @@ from .utils import encrypt_password, decrypt_password
 from django.views.generic import TemplateView, ListView
 from django.db.models import Q
 
-# Create your views here.
-# @csrf_protect
-# def admin_login(request):
-#     if request.method == 'POST':
-#         username = request.POST.get("username", "").strip()
-#         password = request.POST.get("password", "").strip()
-
-#         if not username or not password:
-#             context = {
-#                 'error': 'Username and password are required.'
-#             }
-#             return render(request, 'admin_login.html', context)
-        
-#         user = authenticate(request, username=username, password=password)
-        
-#         if user is not None:
-#             # Create new token (deleting old token is optional, based on your use case)
-#             Token.objects.filter(user=user).delete()  # Optional: delete old token
-#             token, created = Token.objects.get_or_create(user=user)
-            
-#             # Optionally store the token in the session or pass it to the next page
-#             request.session['auth_token'] = token.key  # Example of storing in session
-            
-#             return redirect('dashboard') 
-#         else:
-#             context = {
-#                 'error': 'Invalid credentials.'
-#             }
-#             return render(request, 'admin_login.html', context)
-    
-#     return render(request, 'admin_login.html')
 @csrf_protect
 def admin_login(request):
     if request.method == 'POST':
@@ -124,52 +93,7 @@ def admin_login(request):
     
     return render(request, 'admin_login.html')
 
-
-
-# def logout(request):
-#     user = request.user.authenticate
-#     print("User name : ",user)
-    
-#     if not user.is_authenticated:
-#         return redirect('admin_login')
-    
-#     token = Token.objects.get(user=user)
-#     print(token)
-#     api_url = 'http://127.0.0.1:8000/api/logout/'
-    
-#     headers = {
-#         'Authorization': f'Token {token.key}'
-#     }
-    
-#     try:
-#         response = requests.post(api_url, headers=headers)
-#         response.raise_for_status()
-#     except requests.exceptions.RequestException as e:
-#         print(f'Error during API logout: {e}')
-#         return redirect('dashboard')  # Redirect to dashboard or show an error message
-
-#     # Remove the token locally after successful API logout
-#     token.delete()
-
-#     # Clear the session and redirect to the login page
-#     request.session.flush()
-#     return redirect('admin_login')
-
-
 def logout(request):
-    # user = request.user
-    # print(user)
-    # if not user.is_authenticated():
-    #     return redirect('admin_login')
-
-    # try:
-    #     token = Token.objects.get(user=user)
-    #     print(f"Token for user {user}: {token.key}")
-    # except Token.DoesNotExist:
-    #     print(f"No token found for user {user}")
-    #     return redirect('admin_login')  # Or handle this case as needed
-    
-    
     token = Token.objects.get()
     api_url = 'http://127.0.0.1:8000/api/logout/'
     headers = {
@@ -218,104 +142,6 @@ def dashboard_view(request):
     ]
     
     return render(request, 'dashboard.html',  { "datapoints" : json.dumps(datapoints), "datapoints2": json.dumps(datapoints2) })
-
-
-# def user_module_view(request): 
-#     if request.method == 'POST':
-#         username = request.POST.get("username", "").strip()
-#         email = request.POST.get("email", "").strip()
-#         contact = request.POST.get("contact", "").strip()
-#         designation = request.POST.get("designation", "").strip()
-#         password = request.POST.get("password", "").strip()
-#         cpassword = request.POST.get("cpassword", "").strip()
-        
-#         # Get checkbox values
-#         permissions = {
-#             "enquiry": "Enquiry" in request.POST,
-#             "enrollment": "Enrollment" in request.POST,
-#             "attendance": "Attendance" in request.POST,
-#             "staff": "Staff" in request.POST,
-#             "placement": "Placement" in request.POST,
-#             "report": "Report" in request.POST,
-#         }
-
-#         if password == cpassword:
-#             newuser = NewUser(
-#                 name=username,
-#                 email=email,
-#                 contact=contact,
-#                 designation=designation,
-#                 password=password,
-#                 enquiry=permissions["enquiry"],
-#                 enrollment=permissions["enrollment"],
-#                 attendance=permissions["attendance"],
-#                 staff=permissions["staff"],
-#                 placement=permissions["placement"],
-#                 report=permissions["report"],
-#             )
-            
-#             newuser.save()
-#             return redirect('manage-user')
-    
-#     return render(request, 'new_user.html')
-
-# def user_module_view(request): 
-#     if request.method == 'POST':
-        # username = request.POST.get("username", "").strip()
-        # email = request.POST.get("email", "").strip()
-        # contact = request.POST.get("contact", "").strip()
-        # designation = request.POST.get("designation", "").strip()
-        # password = request.POST.get("password", "").strip()
-        # cpassword = request.POST.get("cpassword", "").strip()
-        
-        # # Get checkbox values
-        # permissions = {
-        #     "enquiry": "Enquiry" in request.POST,
-        #     "enrollment": "Enrollment" in request.POST,
-        #     "attendance": "Attendance" in request.POST,
-        #     "staff": "Staff" in request.POST,
-        #     "placement": "Placement" in request.POST,
-        #     "report": "Report" in request.POST,
-        # }
-
-        # if password == cpassword:
-        #     newuser = NewUser(
-        #         name=username,
-        #         email=email,
-        #         contact=contact,
-        #         designation=designation,
-        #         password=password,
-        #         enquiry=permissions["enquiry"],
-        #         enrollment=permissions["enrollment"],
-        #         attendance=permissions["attendance"],
-        #         staff=permissions["staff"],
-        #         placement=permissions["placement"],
-        #         report=permissions["report"],
-        #     )
-        
-    #     token = Token.objects.get()
-    #     api_url = 'http://127.0.0.1:8000/api/newuser/'
-    #     headers = {
-    #         'Authorization': f'Token {token.key}'
-    #     }
-        
-    #     try:
-    #         response = requests.post(api_url, headers=headers)
-    #         # response.raise_for_status()
-    #         response_data = response.json()
-    #     except requests.exceptions.RequestException as e:
-    #         print(f'Error during API create New User: {e}')   
-    #         return redirect('user-module')
-        
-    #     if response.status_code == 200:
-    #         return redirect('manage-user')
-    #     else:
-    #         context = {
-    #             'error': response_data.get('user_error', response_data.get('pass_error', response_data.get('error', 'Invalid credentials')))
-    #         }
-    #         return render(request, 'admin_login.html', context)
-        
-    # return render(request, 'new_user.html')
 
 def user_module_insert_view(request):
     if request.method == 'POST':
@@ -410,78 +236,6 @@ def user_module_insert_view(request):
             return render(request, 'new_user.html', context)
         
     return render(request, 'new_user.html')
-
-
-# def manage_user_view(request):
-#     # Fetch all users or the relevant queryset
-#     users_list = NewUser.objects.all().order_by('-id')
-    
-#     # Get the per_page value from the request, default to 10 if not provided
-#     per_page = request.GET.get('per_page', '10')
-
-#     # Apply pagination
-#     paginator = Paginator(users_list, per_page)  # Show per_page users per page
-    
-#     page_number = request.GET.get('page')
-#     page_obj = paginator.get_page(page_number)
-
-#     context = {
-#         'page_obj': page_obj,
-#         'per_page': per_page,
-#     }
-#     return render(request, 'manage_user.html', context)
-
-# def manage_user_view(request):
-#     # Fetch the token
-#     try:
-#         token = Token.objects.get()  # Assuming you only have one token and it's safe to get the first one
-#     except Token.DoesNotExist:
-#         context = {
-#             'error': 'Authentication token not found'
-#         }
-#         return render(request, 'new_user.html', context)
-    
-#     api_url = 'http://127.0.0.1:8000/api/newuser/'
-#     headers = {
-#         'Authorization': f'Token {token.key}',
-#         'Content-Type': 'application/json'
-#     }
-
-#     try:
-#         response = requests.get(api_url, headers=headers)
-#         response.raise_for_status()  # Raise an HTTPError for bad responses
-#         response_data = response.json()
-        
-#         User = get_user_model()
-#         for user_data in response_data:
-#             raw_password = user_data.get('password')
-        
-#         passwords = make_password(raw_password)
-        
-#         print(passwords)
-        
-#     except requests.exceptions.RequestException as err:
-#         # Catch any request-related exceptions
-#         context = {
-#             'error': f'Request error occurred: {err}',
-#             'response_data': response.json() if response else {}
-#         }
-#         return render(request, 'manage_user.html', context)
-
-#     # Get the per_page value from the request, default to 10 if not provided
-#     per_page = request.GET.get('per_page', '10')
-
-#     # Apply pagination
-#     paginator = Paginator(response_data, per_page)  # Use response_data for pagination
-    
-#     page_number = request.GET.get('page')
-#     page_obj = paginator.get_page(page_number)
-
-#     context = {
-#         'page_obj': page_obj,
-#         'per_page': per_page,
-#     }
-#     return render(request, 'manage_user.html', context)
 
 def manage_user_view(request):
     # Fetch the token
@@ -582,59 +336,6 @@ def delete_user_view(request, id):
         return render(request, 'manage_user.html', context)
 
 def delete_all_users_view(request):
-    
-        # print("welcome")
-        # user_ids = request.POST.getlist('user_ids')  
-        # print(f"User IDs received: {user_ids}")  
-
-        # if not user_ids:
-        #     context = {'error': 'No user IDs provided'}
-        #     return render(request, 'manage_user.html', context)
-
-        # try:
-        #     token = Token.objects.first()  # Get the first token for simplicity
-        #     if not token:
-        #         raise Token.DoesNotExist
-        # except Token.DoesNotExist:
-        #     context = {'error': 'Authentication token not found'}
-        #     return render(request, 'manage_user.html', context)
-
-        # headers = {
-        #     'Authorization': f'Token {token.key}',
-        #     'Content-Type': 'application/json'
-        # }
-
-        # errors = []
-        # for user_id in user_ids:
-        #     api_url = f'http://127.0.0.1:8000/api/newuser/{user_id}/'
-        #     try:
-        #         response = requests.delete(api_url, headers=headers)
-        #         response.raise_for_status()
-        #     except requests.exceptions.RequestException as err:
-        #         errors.append({
-        #             'user_id': user_id,
-        #             'error': f'Request error occurred: {err}',
-        #             'response_data': response.json() if response else {}
-        #         })
-
-        # if errors:
-        #     context = {'errors': errors}
-        #     return render(request, 'manage_user.html', context)
-
-        # return redirect('manage-user')
-    
-
-    
-        # user_ids = request.POST.getlist('user_ids')
-        # print(user_ids)
-        # if user_ids:
-        #     NewUser.objects.filter(id__in=user_ids).delete()
-        #     return redirect('manage-users')  # Redirect to a page that lists users
-        # else:
-        #     context = {'error': 'No users selected for deletion'}
-        #     return render(request, 'manage_user.html', context)
-        
-        
     if request.method == 'POST':
         try:
             data = json.loads(request.body)
@@ -729,58 +430,6 @@ logger = logging.getLogger(__name__)
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def user_login(request):
-    # if request.method == 'POST':
-    #     username = request.data.get('username')
-    #     password = request.data.get('password')
-        
-    #     if username == "":
-    #         return Response({'user_error': 'Username field is required'}, status=status.HTTP_400_BAD_REQUEST)
-        
-    #     if password == "":
-    #         return Response({'pass_error': 'Password field is required'}, status=status.HTTP_400_BAD_REQUEST)
-        
-    #     user = authenticate(username=username, password=password)
-        
-    #     if not user:
-    #         return Response({'user_error': 'Username does not exist'}, status=status.HTTP_401_UNAUTHORIZED)
-
-    #     if user:
-    #         token, _ = Token.objects.get_or_create(user=user)
-    #         return Response({'token': token.key}, status=status.HTTP_200_OK)
-
-    #     return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
-    
-    # serializer = UserSerializer(data=request.data)
-    # if serializer.is_valid():
-    #     user = authenticate(username=serializer.validated_data['username'], password=serializer.validated_data['password'])
-    #     token, _ = Token.objects.get_or_create(user=user)
-    #     return Response({'token': token.key}, status=status.HTTP_200_OK)
-    # return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
-    # serializer = UserSerializer(data=request.data)
-    
-    # print(serializer)
-    # if serializer.is_valid():
-    #     username_or_email = serializer.validated_data['username_or_email']
-    #     password = serializer.validated_data['password']
-        
-    #     # Log the authentication attempt
-    #     logger.debug(f"Attempting to authenticate user: {username_or_email}")
-        
-    #     # Try to authenticate using custom backend
-    #     user = authenticate(request, username=username_or_email, password=password)
-        
-    #     if user is not None:
-    #         token, _ = Token.objects.get_or_create(user=user)
-    #         logger.debug(f"Authentication successful for user: {username_or_email}")
-    #         return Response({'token': token.key}, status=status.HTTP_200_OK)
-    #     else:
-    #         logger.debug(f"Authentication failed for user: {username_or_email}")
-    #         return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
-    # else:
-    #     logger.debug(f"Invalid data provided: {serializer.errors}")
-    #     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
     serializer = LoginSerializer(data=request.data)
     
     print("serializer : ", serializer)
@@ -860,40 +509,44 @@ class NewUserDeleteView(generics.DestroyAPIView):
         instance = self.get_object()
         instance.delete()
         return Response({'Message': 'Successfully deleted'})
+
+# New Course APi view
+
+class CourseListCreateView(generics.ListCreateAPIView):
+    queryset = Course.objects.all().order_by('-id')
+    serializer_class = CourseSerializer
+    permission_classes = [IsAuthenticated]
+    
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        if not queryset.exists():
+            return Response({'Message': 'No users found'}, status=status.HTTP_404_NOT_FOUND)
+        
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+class CourseDetailView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Course.objects.all()
+    serializer_class = CourseSerializer
+    permission_classes = [IsAuthenticated]
+    lookup_field = 'pk'
+
+class CourseUpdateView(generics.RetrieveUpdateAPIView):
+    queryset = Course.objects.all()
+    serializer_class = CourseSerializer
+    permission_classes = [IsAuthenticated]
+    partial = True
     
     
-# @csrf_exempt
-# def export_courses_csv(request):
-#     if request.method == 'POST':
-#         try:
-#             data = json.loads(request.body)
-#             user_ids = data.get('user_ids', [])
-            
-#             if not user_ids:
-#                 return HttpResponse(json.dumps({'success': False, 'error': 'No user IDs provided.'}), content_type='application/json', status=400)
+class CourseDeleteView(generics.DestroyAPIView):
+    queryset = Course.objects.all()
+    serializer_class = CourseSerializer
+    permission_classes = [IsAuthenticated]
 
-#             # Create the HttpResponse object with the appropriate CSV header
-#             response = HttpResponse(content_type='text/csv')
-#             response['Content-Disposition'] = 'attachment; filename="course_list_csv.csv"'
-
-#             writer = csv.writer(response)
-#             writer.writerow(['name', 'email', 'contact', 'designation'])
-
-#             # Fetch selected users based on IDs
-#             selected_users = NewUser.objects.filter(id__in=user_ids)
-
-#             for user in selected_users:
-#                 writer.writerow([user.name, user.email, user.contact, user.designation])
-
-#             return response
-
-#         except json.JSONDecodeError:
-#             return HttpResponse(json.dumps({'success': False, 'error': 'Invalid JSON format.'}), content_type='application/json', status=400)
-
-#         except Exception as e:
-#             return HttpResponse(json.dumps({'success': False, 'error': str(e)}), content_type='application/json', status=500)
-
-#     return HttpResponse(status=400)  # Bad request if not POST
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        instance.delete()
+        return Response({'Message': 'Successfully deleted'})
 
 @csrf_exempt
 def export_user_csv(request):
@@ -965,29 +618,8 @@ def export_user_excel(request):
         # Define header row with font style and alignment
         header_row = ['Name', 'Email', 'Contact', 'Designation', 'Permission']
         ws.append(header_row)
-        # for cell in ws[1]:
-        #     cell.font = Font(bold=True, color='000000')
-        #     cell.alignment = Alignment(horizontal='left', vertical='center')
-
-        # Set column widths for better readability
-        # column_widths = [20, 30, 50, 20]
-        # for i, width in enumerate(column_widths, start=1):
-        #     ws.column_dimensions[openpyxl.utils.get_column_letter(i)].width = width
-
-        # Add data rows with alignment and borders
-        # thin_border = Border(
-        #     left = Side(style='thin'),
-        #     right = Side(style='thin'),
-        #     top = Side(style='thin'),
-        #     bottom = Side(style='thin'),
-        # )
 
         for idx, user in enumerate(selected_courses, start=2):
-            # Remove country code from contact number
-            
-            # Example: Removing country code "+1" (assumes country code is "+1" or "+01")
-            # contact_number = str(user.contact)
-            # contact_number = re.sub(r'^\+\d{1,2}', '', contact_number)
                 
             permission = []
                 
@@ -1010,11 +642,6 @@ def export_user_excel(request):
                 permission.append('Report')
             
             ws.append([user.username, user.email, user.contact, user.designation, ', '.join(permission)])
-
-            # Align text and apply borders
-            # for cell in ws[idx]:
-            #     cell.alignment = Alignment(horizontal='left', vertical='top', wrap_text=True)
-                # cell.border = thin_border
 
         # Create an in-memory file-like object to save the workbook
         output = BytesIO()
@@ -1083,87 +710,6 @@ def export_user_pdf(request):
     return HttpResponse(status=400)  # Bad request if not POST or AJAX
 
 
-
-
-# search view
-# basic search method
-# class SearchResultsView(ListView):
-#     model = NewUser
-#     template_name = 'search_result.html'
-#     def get_queryset(self):
-#         query = self.request.GET.get("q")
-        
-#         object_list = NewUser.objects.filter(
-#             Q(name__icontains = query) | 
-#             Q(email__icontains = query) |
-#             Q(contact__icontains = query) | 
-#             Q(designation__icontains = query)
-#         )
-        
-#         return object_list
-
-# class SearchResultsView(ListView):
-#     model = NewUser
-#     template_name = 'search_result.html'
-#     context_object_name = 'users'
-
-#     def get_queryset(self):
-#         query = self.request.GET.get("q")
-#         if query:
-#             fields = [f.name for f in NewUser._meta.fields if isinstance(f, (models.CharField, models.EmailField, PhoneNumberField))]
-#             query_filter = Q()
-#             for field in fields:
-#                 query_filter |= Q(**{f"{field}__icontains": query})
-            
-#             # Add boolean fields handling
-#             boolean_fields = [f.name for f in NewUser._meta.fields if isinstance(f, models.BooleanField)]
-            
-#             for field in boolean_fields:
-#                 if query.lower() in ['true', 'false']:
-#                     value = query.lower() == 'true'
-                    
-#                     query_filter |= Q(**{field: value})
-#         else:
-#             query_filter = Q(pk__isnull=True)
-        
-#         object_list = NewUser.objects.filter(query_filter)
-#         return object_list
-
-
-# class SearchResultsView(ListView):
-#     model = NewUser
-#     template_name = 'search_result.html'
-#     context_object_name = 'users'
-
-#     def get_queryset(self):
-#         query = self.request.GET.get("q")
-#         if query:
-#             query_filter = Q()
-            
-#             # Handle specific keyword searches for boolean fields
-#             if 'e'==query.lower() or 'en'==query.lower() or 'enq'==query.lower() or 'enqu'==query.lower() or 'enqui'==query.lower() or 'enquir'==query.lower() or 'enquiry'==query.lower():
-#                     query_filter |= Q(enquiry=True)
-#             elif query.lower() == 'enrollment':
-#                 query_filter |= Q(enrollment=True)
-#             elif query.lower() == 'attendance':
-#                 query_filter |= Q(attendance=True)
-#             elif query.lower() == 'staff':
-#                 query_filter |= Q(staff=True)
-#             elif query.lower() == 'placement':
-#                 query_filter |= Q(placement=True)
-#             elif query.lower() == 'report':
-#                 query_filter |= Q(report=True)
-#             else:
-#                 # Search across CharField, EmailField, and PhoneNumberField
-#                 fields = [f.name for f in NewUser._meta.fields if isinstance(f, (models.CharField, models.EmailField, PhoneNumberField))]
-#                 for field in fields:
-#                     query_filter |= Q(**{f"{field}__icontains": query})
-#         else:
-#             query_filter = Q(pk__isnull=True)
-        
-#         object_list = NewUser.objects.filter(query_filter)
-#         return object_list
-
 class SearchResultsView(ListView):
     model = NewUser
     template_name = 'search_result.html'
@@ -1201,4 +747,323 @@ class SearchResultsView(ListView):
             query_filter = Q(pk__isnull=True)
 
         object_list = NewUser.objects.filter(query_filter)
+        return object_list
+
+
+# course module
+
+def add_course_view(request):
+    if request.method == 'POST':
+        # Extract data from the form
+        course_name = request.POST.get("course", "").strip()
+        
+        # Prepare data for the API request
+        user_data = {
+            'course_name': course_name,
+        }
+
+        # Get the token
+        try:
+            token = Token.objects.first()
+        except Token.DoesNotExist:
+            context = {
+                'error': 'Authentication token not found'
+            }
+            return render(request, 'add_course.html', context)
+        
+        api_url = 'http://127.0.0.1:8000/api/course/'
+        headers = {
+            'Authorization': f'Token {token.key}',
+            'Content-Type': 'application/json'
+        }
+
+        try:
+            response = requests.post(api_url, json=user_data, headers=headers)
+            response_data = response.json()
+            
+            print(response_data)
+            
+        except requests.exceptions.HTTPError as http_err:
+            # Handle specific HTTP errors
+            context = {
+                'error': f'HTTP error occurred: {http_err}',
+                'response_data': response.json()
+            }
+            return render(request, 'add_course.html', context)
+        except requests.exceptions.RequestException as req_err:
+            # Handle general request exceptions
+            print(f'Error during API create Course: {req_err}')
+            context = {
+                'error': 'An error occurred while creating course.'
+            }
+            return render(request, 'add_course.html', context)        
+        
+        if response.status_code == 201:
+            context =  {
+                "message": "New Course Created Successfully"
+            }
+            return render(request, 'add_course.html', context)
+        else:
+            context = {
+                'course': response_data.get('course', ''),
+            }
+            return render(request, 'add_course.html', context)
+        
+    return render(request, 'add_course.html')
+
+def manage_course_view(request):
+    # Fetch the token
+    try:
+        token = Token.objects.first()  # Assuming you only have one token and it's safe to get the first one
+    except Token.DoesNotExist:
+        context = {
+            'error': 'Authentication token not found'
+        }
+        return render(request, 'manage_user.html', context)
+    
+    api_url = 'http://127.0.0.1:8000/api/course/'
+    headers = {
+        'Authorization': f'Token {token.key}',
+        'Content-Type': 'application/json'
+    }
+
+    try:
+        response = requests.get(api_url, headers=headers)
+        response.raise_for_status()  # Raise an HTTPError for bad responses
+        response_data = response.json()
+        
+    except requests.exceptions.RequestException as err:
+        # Catch any request-related exceptions
+        context = {
+            'error': f'Request error occurred: {err}',
+            'response_data': response.json() if response else {}
+        }
+        return render(request, 'manage_course.html', context)
+
+    # Get the per_page value from the request, default to 10 if not provided
+    per_page = request.GET.get('per_page', '10')
+
+    # Apply pagination
+    paginator = Paginator(response_data, per_page)  # Use response_data for pagination
+    
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    context = {
+        'page_obj': page_obj,
+        'per_page': per_page,
+    }
+    return render(request, 'manage_course.html', context)
+
+def delete_course_view(request, id):
+    user_id = Course.objects.get(id=id)
+    
+    print(user_id.pk)
+    
+    if not user_id:
+        context = {'error': 'User ID not provided'}
+        print("user id not provided")
+        return render(request, 'manage_course.html', context)
+    
+    try:
+        token = Token.objects.get()  # Get the first token for simplicity
+        if not token:
+            raise Token.DoesNotExist
+    except Token.DoesNotExist:
+        context = {'error': 'Authentication token not found'}
+        return render(request, 'manage_course.html', context)
+    
+    api_url = f'http://127.0.0.1:8000/api/course/{user_id.pk}/'
+    headers = {
+        'Authorization': f'Token {token.key}',
+        'Content-Type': 'application/json'
+    }
+    
+    try:
+        response = requests.delete(api_url, headers=headers)
+        response.raise_for_status()
+
+    except requests.exceptions.RequestException as err:
+        context = {
+            'error': f'Request error occurred: {err}',
+            'response_data': response.json() if response else {}
+        }
+        return render(request, 'manage_course.html', context)
+    
+    if response.status_code == 204:
+        return redirect('manage-course')
+    
+    else:
+        response_data = response.json()
+        context = {
+            'detail': response_data.get('detail', 'An error occurred while deleting the user'),
+        }
+        return render(request, 'manage_course.html', context)
+    
+def delete_all_course_view(request):
+    if request.method == 'POST':
+        print("Welcome")
+        try:
+            data = json.loads(request.body)
+            
+            print("Data : ", data)
+            
+            user_ids = data.get('user_ids', [])
+            
+            if user_ids:
+                Course.objects.filter(id__in=user_ids).delete()
+                return JsonResponse({'success': True})
+            else:
+                return JsonResponse({'success': False, 'error': 'No users selected for deletion'})
+        except json.JSONDecodeError:
+            return JsonResponse({'success': False, 'error': 'Invalid JSON'})
+    return JsonResponse({'success': False, 'error': 'Invalid request method'})
+
+def update_course_view(request, id):
+    try:
+        user = Course.objects.get(id=id)
+    except Course.DoesNotExist:
+        context = {'error': 'Course not found'}
+        return render(request, 'manage_course.html', context)
+
+    if request.method == 'POST':
+        
+        try:
+            token = Token.objects.first()  # Get the first token for simplicity
+            if not token:
+                raise Token.DoesNotExist
+        except Token.DoesNotExist:
+            context = {'error': 'Authentication token not found'}
+            return render(request, 'manage_user.html', context)
+        
+        api_url = f'http://127.0.0.1:8000/api/update_course/{user.pk}/'
+        headers = {
+            'Authorization': f'Token {token.key}',
+            'Content-Type': 'application/json'
+        }
+        
+        user_data = {
+            'course_name': request.POST.get('course', user.course_name),
+        }
+
+        try:
+            response = requests.patch(api_url, data=json.dumps(user_data), headers=headers)
+            print("API Response Status Code:", response.status_code)
+            response.raise_for_status()
+            response_data = response.json()
+            print("API Response Data:", response_data)
+        except requests.exceptions.RequestException as err:
+            context = {
+                'error': f'Request error occurred: {err}',
+                'response_data': response.json() if response.content else {}
+            }
+            return render(request, 'manage_course.html', context)
+        
+        if response.status_code in [200, 204]:  # 204 No Content is also a valid response for updates
+            print("Update successful")
+            return redirect('manage-course')
+        else:
+            context = {
+                'error': 'Failed to update user information',
+                'course_name': response_data.get('course_name', ''),
+            }
+            return render(request, 'update_course.html', context)
+        
+    return render(request, 'update_course.html', {"course": user})
+
+# csv file formate for course
+@csrf_exempt
+def export_course_csv(request):
+    if request.method == 'POST':
+        ids = request.POST.get('ids', '').split(',')  # Get the ids from AJAX request
+
+        # Create the HttpResponse object with the appropriate CSV header
+        response = HttpResponse(content_type='text/csv')
+        response['Content-Disposition'] = 'attachment; filename="course_list_csv.csv"'
+
+        writer = csv.writer(response)
+
+        # Write the header row
+        writer.writerow(['Course Name'])
+
+        # Fetch selected courses based on IDs
+        selected_courses = Course.objects.filter(id__in=ids)
+
+        for user in selected_courses:        
+            # Write the data row
+            writer.writerow([user.course_name])
+
+        return response
+
+    # Handle GET request or non-AJAX POST request here if needed
+    return HttpResponse(status=400)  # Bad request if not POST or AJAX
+
+# Excel file format for course
+@csrf_exempt
+def export_course_excel(request):
+    if request.method == 'POST':
+        ids = request.POST.get('ids', '').split(',')  # Get the ids from AJAX request
+
+        # Fetch selected courses based on IDs
+        selected_courses = Course.objects.filter(id__in=ids)
+
+        # Create an Excel workbook
+        wb = openpyxl.Workbook()
+        ws = wb.active
+
+        # Define header row with font style and alignment
+        header_row = ['Course Name']
+        ws.append(header_row)
+
+        for idx, user in enumerate(selected_courses, start=2):
+            ws.append([user.course_name])
+
+        # Create an in-memory file-like object to save the workbook
+        output = BytesIO()
+        wb.save(output)
+        output.seek(0)
+
+        # Create the HTTP response with Excel content type and attachment header
+        response = HttpResponse(output, content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+        response['Content-Disposition'] = 'attachment; filename="generated_excel.xlsx"'
+        
+        return response
+
+    # Handle GET request or non-AJAX POST request here if needed
+    return HttpResponse(status=400)  # Bad request if not POST or AJAX
+
+@csrf_protect
+@require_POST
+def export_course_pdf(request):
+    if request.method == 'POST':
+        ids = request.POST.get('ids', '').split(',')
+        selected_users = Course.objects.filter(id__in=ids)
+        
+        if not selected_users:
+            return JsonResponse({'error': 'No users available.'}, status=404)
+        
+        content_list = []
+        for user in selected_users:    
+            content_list.append({
+                'course_name': user.course_name, 
+            })
+        
+        content = {'course_list': content_list}
+        return renderers.render_to_pdf('course_data_list.html', content)
+    
+    # Handle GET request or non-AJAX POST request here if needed
+    return HttpResponse(status=400)  # Bad request if not POST or AJAX
+
+class SearchCourseResultsView(ListView):
+    model = Course
+    template_name = 'search_course_result.html'
+    context_object_name = 'users'
+
+    def get_queryset(self):
+        query = self.request.GET.get("q")
+        
+        object_list = NewUser.objects.filter(
+            Q(course_name__icontains = query)
+        )
+        
         return object_list
