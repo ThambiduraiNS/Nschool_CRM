@@ -1107,33 +1107,35 @@ class SearchCourseResultsView(ListView):
 def enquiry_view(request):
     if request.method == 'POST':
         # Extract data from the form
+        
         enquiry_data = {
             'enquiry_date': request.POST.get('enquiry_date', '').strip(),
-            'name': request.POST.get('name', '').strip(),
-            'contact_no': request.POST.get('contact_no', '').strip(),
-            'email_id': request.POST.get('email_id', '').strip(),
-            'date_of_birth': request.POST.get('date_of_birth', '').strip(),
-            'fathers_name': request.POST.get('fathers_name', '').strip(),
-            'fathers_contact_no': request.POST.get('fathers_contact_no', '').strip(),
+            'enquiry_no': request.POST.get('enquiry_number', '').strip(),
+            'name': request.POST.get('student_name', '').strip(),
+            'contact_no': request.POST.get('contact', '').strip(),
+            'email_id': request.POST.get('email', '').strip(),
+            'date_of_birth': request.POST.get('dob', '').strip(),
+            'fathers_name': request.POST.get('father_name', '').strip(),
+            'fathers_contact_no': request.POST.get('father_contact', '').strip(),
             'fathers_occupation': request.POST.get('fathers_occupation', '').strip(),
             'address': request.POST.get('address', '').strip(),
             'status': request.POST.get('status', '').strip(),
             'course_name': request.POST.get('course_name', '').strip(),
-            'inplant_technology': request.POST.get('inplant_technology', '').strip(),
+            'inplant_technology': request.POST.get('technology', '').strip(),
             'inplant_no_of_days': request.POST.get('inplant_no_of_days', '').strip(),
-            'internship_technology': request.POST.get('internship_technology', '').strip(),
-            'internship_no_of_days': request.POST.get('internship_no_of_days', '').strip(),
+            # 'internship_technology': request.POST.get('technology', '').strip(),
+            # 'internship_no_of_days': request.POST.get('internship_no_of_days', '').strip(),
             'next_follow_up_date': request.POST.get('next_follow_up_date', '').strip(),
             'degree': request.POST.get('degree', '').strip(),
             'college': request.POST.get('college', '').strip(),
-            'grade_percentage': request.POST.get('grade_percentage', '').strip(),
+            'grade_percentage': request.POST.get('grade-persentage', '').strip(),
             'year_of_graduation': request.POST.get('year_of_graduation', '').strip(),
             'mode_of_enquiry': request.POST.get('mode_of_enquiry', '').strip(),
             'reference_name': request.POST.get('reference_name', '').strip(),
-            'reference_contact_no': request.POST.get('reference_contact_no', '').strip(),
+            'reference_contact_no': request.POST.get('reference_contact', '').strip(),
             'other_enquiry_details': request.POST.get('other_enquiry_details', '').strip(),
         }
-
+        
         # Get the token
         try:
             token = Token.objects.get(user=request.user)
@@ -1141,7 +1143,7 @@ def enquiry_view(request):
             context = {
                 'error': 'Authentication token not found'
             }
-            return render(request, 'add_enquiry.html', context)
+            return render(request, 'new_enquiry.html', context)
         
         api_url = 'http://127.0.0.1:8000/api/enquiry/'  # Adjust the URL as needed
         headers = {
@@ -1152,8 +1154,6 @@ def enquiry_view(request):
         try:
             response = requests.post(api_url, json=enquiry_data, headers=headers)
             response_data = response.json()
-            
-            print(response_data)
             
         except requests.exceptions.HTTPError as http_err:
             # Handle specific HTTP errors
@@ -1176,9 +1176,38 @@ def enquiry_view(request):
             }
             return render(request, 'new_enquiry.html', context)
         else:
+            # Fetch available courses and mode of enquiry choices for the form
+            courses = Course.objects.all()
+            mode_of_enquiry_choices = Enquiry.MODE_OF_ENQUIRY_CHOICES
             context = {
                 'error': response_data.get('error', 'An error occurred during enquiry creation.'),
-                'enquiry_data': enquiry_data,  # To repopulate the form in case of errors
+                'enquiry_date': response_data.get('enquiry_date', ''),
+                'enquiry_no': response_data.get('enquiry_no', ''),
+                'name': response_data.get('name', ''),
+                'contact_no': response_data.get('contact_no', ''),
+                'email_id': response_data.get('email_id', ''),
+                'date_of_birth': response_data.get('date_of_birth', ''),
+                'fathers_name': response_data.get('fathers_name', ''),
+                'fathers_contact_no': response_data.get('fathers_contact_no', ''),
+                'fathers_occupation': response_data.get('fathers_occupation', ''),
+                'address': response_data.get('address', ''),
+                'status': response_data.get('status', ''),
+                'course_name': response_data.get('course_name', ''),
+                'inplant_technology': response_data.get('inplant_technology', ''),
+                'inplant_no_of_days': response_data.get('inplant_no_of_days', ''),
+                # 'internship_technology': response_data.get('internship_technology', ''),
+                # 'internship_no_of_days': response_data.get('internship_no_of_days', ''),
+                'next_follow_up_date': response_data.get('next_follow_up_date', ''),
+                'degree': response_data.get('degree', ''),
+                'college': response_data.get('college', ''),
+                'grade_percentage': response_data.get('grade_percentage', ''),
+                'year_of_graduation': response_data.get('year_of_graduation', ''),
+                'mode_of_enquiry': response_data.get('mode_of_enquiry', ''),
+                'reference_name': response_data.get('reference_name', ''),
+                'reference_contact_no': response_data.get('reference_contact_no', ''),
+                'other_enquiry_details': response_data.get('other_enquiry_details', ''),
+                'courses': courses,
+                'mode_of_enquiry_choices': mode_of_enquiry_choices,
             }
             return render(request, 'new_enquiry.html', context)
         

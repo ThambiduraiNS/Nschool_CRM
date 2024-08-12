@@ -70,11 +70,13 @@
                                     <div class="row d-flex justify-content-between pe-0">
                                         <div class="col-12 col-md-6">
                                             <div class="user-input-wrp mx-md-2">
-                                                <input type="text" name="date" id="date" class="form-control"
+                                                <input type="text" name="enquiry_date" id="enquiry_date" class="form-control"
                                                     aria-label="date" placeholder=" " autocomplete="off" autofocus>
-                                                <label class="floating-label">&nbsp;Date&nbsp;</label>
+                                                <label class="floating-label">&nbsp;Date <span class="required">*</span> &nbsp;</label>
                                                 <span id="date_error" class="error-div">
-                                                    
+                                                    {% if enquiry_date %}
+                                                        {{enquiry_date}}
+                                                    {% endif %}
                                                 </span>
                                             </div>
                                         </div>
@@ -86,7 +88,9 @@
                                                     aria-label="number" placeholder=" " autocomplete="off" autofocus>
                                                 <label class="floating-label">&nbsp;Enquiry No&nbsp;</label>
                                                 <span id="enquiry_no_error" class="error-div">
-                                                    
+                                                    {% if enquiry_no %}
+                                                        {{enquiry_no}}
+                                                    {% endif %}
                                                 </span>
                                             </div>
                                         </div>
@@ -96,9 +100,11 @@
                                             <div class="user-input-wrp mx-md-2">
                                                 <input type="text" name="student_name" id="student_name" class="form-control"
                                                     aria-label="student_name" placeholder=" " autocomplete="off" autofocus>
-                                                <label class="floating-label">&nbsp;Name&nbsp;</label>
+                                                <label class="floating-label">&nbsp;Name <span class="required">*</span> &nbsp;</label>
                                                 <span id="user_error" class="error-div">
-                                                    
+                                                    {% if name %}
+                                                        {{name}}
+                                                    {% endif %}
                                                 </span>
                                             </div>
                                         </div>
@@ -108,9 +114,11 @@
                                             <div class="user-input-wrp ms-4">
                                                 <input type="text" name="contact" id="contact" maxlength="10" class="form-control"
                                                     aria-label="contact" placeholder=" " autocomplete="off" autofocus>
-                                                <label class="floating-label">&nbsp;Contact No&nbsp;</label>
+                                                <label class="floating-label">&nbsp;Contact No <span class="required">*</span> &nbsp;</label>
                                                 <span id="contact_error" class="error-div">
-                                                    
+                                                    {% if contact_no %}
+                                                        {{contact_no}}
+                                                    {% endif %}
                                                 </span>
                                             </div>
                                         </div>
@@ -120,9 +128,11 @@
                                             <div class="user-input-wrp mx-md-2">
                                                 <input type="email" name="email" id="email" class="form-control" placeholder=" "
                                                     autocomplete="off" autofocus>
-                                                <label class="floating-label">&nbsp;E-Mail-ID&nbsp;</label>
+                                                <label class="floating-label">&nbsp;E-Mail-ID <span class="required">*</span> &nbsp;</label>
                                                 <span id="email_error" class="error-div error-right">
-                                                    
+                                                    {% if email_id %}
+                                                        {{email_id}}
+                                                    {% endif %}
                                                 </span>
                                             </div>
                                         </div>
@@ -132,9 +142,11 @@
                                             <div class="user-input-wrp ms-4">
                                                 <input type="text" name="dob" id="dob" class="form-control" placeholder=" "
                                                     autocomplete="off" autofocus>
-                                                <label class="floating-label">&nbsp;Date Of Birth&nbsp;</label>
+                                                <label class="floating-label">&nbsp;Date Of Birth <span class="required">*</span> &nbsp;</label>
                                                 <span id="dob_error" class="error-div error-right">
-                                                    
+                                                    {% if date_of_birth %}
+                                                        {{date_of_birth}}
+                                                    {% endif %}
                                                 </span>
                                             </div>
                                         </div>
@@ -144,9 +156,11 @@
                                             <div class="user-input-wrp mx-md-2">
                                                 <input type="text" name="father_name" id="father_name" class="form-control" placeholder=" "
                                                     autocomplete="off" autofocus>
-                                                <label class="floating-label">&nbsp;Father's Name / Guardian's Name&nbsp;</label>
+                                                <label class="floating-label">&nbsp;Father's Name / Guardian's Name <span class="required">*</span> &nbsp;</label>
                                                 <span id="father_name_error" class="error-div error-right">
-                                                    
+                                                    {% if fathers_name %}
+                                                        {{fathers_name}}
+                                                    {% endif %}
                                                 </span>
                                             </div>
                                         </div>
@@ -154,11 +168,13 @@
                                         <!-- Father's Contact No field -->
                                         <div class="col-12 col-md-6 p-0">
                                             <div class="user-input-wrp ms-4">
-                                                <input type="text" name="father_contact" id="father_contact" class="form-control" placeholder=" "
+                                                <input type="text" name="father_contact" id="father_contact" maxlength="10" maxlength="10" class="form-control" placeholder=" "
                                                     autocomplete="off" autofocus>
-                                                <label class="floating-label">&nbsp;Father's Contact No&nbsp;</label>
+                                                <label class="floating-label">&nbsp;Father's Contact No <span class="required">*</span> &nbsp;</label>
                                                 <span id="father_contact_error" class="error-div error-right">
-                                                    
+                                                    {% if fathers_contact_no %}
+                                                        {{fathers_contact_no}}
+                                                    {% endif %}
                                                 </span>
                                             </div>
                                         </div>
@@ -169,11 +185,13 @@
                                                 <!-- Father's Occupation field -->
                                                 <div class="col-12 col-md-12 pe-md-0">
                                                     <div class="user-input-wrp mx-md-2">
-                                                        <input type="text" name="father_contact" id="father_contact" class="form-control" placeholder=" "
+                                                        <input type="text" name="fathers_occupation" id="fathers_occupation" class="form-control" placeholder=" "
                                                             autocomplete="off" autofocus>
                                                         <label class="floating-label">&nbsp;Father's Occupation&nbsp;</label>
                                                         <span id="father_occupation_error" class="error-div error-right">
-                                                            
+                                                            {% if fathers_occupation %}
+                                                                {{fathers_occupation}}
+                                                            {% endif %}
                                                         </span>
                                                     </div>
                                                 </div>
@@ -187,7 +205,12 @@
                                                             <option value="{{ course.id }}">{{ course.course_name }}</option>
                                                             {% endfor %}
                                                         </select>
-                                                        <label for="courseName" class="floating-label float">&nbsp;Course Name&nbsp;</label>
+                                                        <label for="courseName" class="floating-label float">&nbsp;Course Name <span class="required">*</span> &nbsp;</label>
+                                                        <span id="course_name_error" class="error-div error-right">
+                                                            {% if course_name %}
+                                                                {{course_name}}
+                                                            {% endif %}
+                                                        </span>
                                                     </div>
                                                 </div>
 
@@ -198,7 +221,9 @@
                                                             autocomplete="off" autofocus>
                                                         <label class="floating-label">&nbsp;Technology&nbsp;</label>
                                                         <span id="technology_error" class="error-div error-right">
-                                                            
+                                                            {% if inplant_technology %}
+                                                                {{inplant_technology}}
+                                                            {% endif %}
                                                         </span>
                                                     </div>
                                                 </div>
@@ -206,11 +231,13 @@
                                                 <!-- No.of Days field -->
                                                 <div class="col-12 col-md-12 pe-md-0">
                                                     <div class="user-input-wrp mx-md-2">
-                                                        <input type="text" name="days" id="days" class="form-control" placeholder=" "
+                                                        <input type="text" name="inplant_no_of_days" id="inplant_no_of_days" class="form-control" placeholder=" "
                                                             autocomplete="off" autofocus>
-                                                        <label class="floating-label">&nbsp;No.of Days&nbsp;</label>
-                                                        <span id="days_error" class="error-div error-right">
-                                                            
+                                                        <label class="floating-label">&nbsp;No.of Days <span class="required">*</span> &nbsp;</label>
+                                                        <span id="inplant_no_of_days_error" class="error-div error-right">
+                                                            {% if inplant_no_of_days %}
+                                                                {{inplant_no_of_days}}
+                                                            {% endif %}
                                                         </span>
                                                     </div>
                                                 </div>
@@ -225,7 +252,9 @@
                                                         </textarea>
                                                         <label class="floating-label">&nbsp;Address&nbsp;</label>
                                                         <span id="father_occupation_error" class="error-div error-right">
-                                                            
+                                                            {% if address %}
+                                                                {{address}}
+                                                            {% endif %}
                                                         </span>
                                                     </div>
                                                 </div>
@@ -233,11 +262,13 @@
                                                 <!-- Next Follow-Up Date field -->
                                                 <div class="col-12 col-md-12 ms-md-4">
                                                     <div class="user-input-wrp ms-md-3 mt-md-5">
-                                                        <input type="text" name="date" id="date" class="form-control"
+                                                        <input type="text" name="next_follow_up_date" id="next_follow_up_date" class="form-control"
                                                             aria-label="date" placeholder=" " autocomplete="off" autofocus>
-                                                        <label class="floating-label">&nbsp;Next Follow-Up Date&nbsp;</label>
-                                                        <span id="user_error" class="error-div">
-                                                            
+                                                        <label class="floating-label">&nbsp;Next Follow-Up Date <span class="required">*</span> &nbsp;</label>
+                                                        <span id="next_follow_up_date_error" class="error-div">
+                                                            {% if next_follow_up_date %}
+                                                                {{next_follow_up_date}}
+                                                            {% endif %}
                                                         </span>
                                                     </div>
                                                 </div>
@@ -251,7 +282,7 @@
                                         </div>
                                         <div class="col-6 d-flex justify-content-lg-end ps-lg-4 p-0 ps-4 gap-5">
                                             <button class="btn login-btn" id="next-tab">Next</button>
-                                            <input type="submit" value="submit" class="btn login-btn">
+                                            <!-- <input type="submit" value="submit" class="btn login-btn"> -->
                                         </div>
                                     </div>
 
@@ -278,7 +309,7 @@
                             <div class="col-12 mt-4 ms-md-3 position-relative">
                                 <h5 class="fw-bold st-details">Education Details</h5>
                                 <p class="user-para">Use the below form to update your profile</p>
-                                <span class="message" id="message">{{message}}</span>
+                                <!-- <span class="message" id="message">{{message}}</span> -->
                             </div>
 
                             <div class="row">
@@ -288,9 +319,11 @@
                                         <div class="user-input-wrp mx-md-3">
                                             <input type="text" name="degree" id="degree" class="form-control"
                                                 aria-label="degree" placeholder=" " autocomplete="off" autofocus>
-                                            <label class="floating-label">&nbsp;Degree&nbsp;</label>
+                                            <label class="floating-label">&nbsp;Degree <span class="required">*</span> &nbsp;</label>
                                             <span id="degree_error" class="error-div">
-                                                
+                                                {% if degree %}
+                                                    {{degree}}
+                                                {% endif %}
                                             </span>
                                         </div>
                                     </div>
@@ -300,9 +333,11 @@
                                         <div class="user-input-wrp mx-md-3 mt-md-5">
                                             <input type="text" name="grade-persentage" id="grade-persentage" class="form-control"
                                                 aria-label="collage" placeholder=" " autocomplete="off" autofocus>
-                                            <label class="floating-label">&nbsp;Grade-Persentage&nbsp;</label>
+                                            <label class="floating-label">&nbsp;Grade-Persentage <span class="required">*</span> &nbsp;</label>
                                             <span id="grade_persentage_error" class="error-div">
-                                                
+                                                {% if grade_percentage %}
+                                                    {{grade_percentage}}
+                                                {% endif %}
                                             </span>
                                         </div>
                                     </div>
@@ -311,11 +346,13 @@
                                     <!-- collage field -->
                                     <div class="col-12 col-md-12">
                                         <div class="user-input-wrp me-md-4">
-                                            <input type="text" name="collage" id="collage" class="form-control"
-                                                aria-label="collage" placeholder=" " autocomplete="off" autofocus>
-                                            <label class="floating-label">&nbsp;Collage&nbsp;</label>
-                                            <span id="collage_error" class="error-div">
-                                                
+                                            <input type="text" name="college" id="college" class="form-control"
+                                                aria-label="college" placeholder=" " autocomplete="off" autofocus>
+                                            <label class="floating-label">&nbsp;Collage <span class="required">*</span> &nbsp;</label>
+                                            <span id="college_error" class="error-div">
+                                                {% if college %}
+                                                    {{college}}
+                                                {% endif %}
                                             </span>
                                         </div>
                                     </div>
@@ -325,9 +362,11 @@
                                         <div class="user-input-wrp me-md-4 mt-md-5">
                                             <input type="text" name="year_of_graduation" id="year_of_graduation" class="form-control"
                                                 aria-label="collage" placeholder=" " autocomplete="off" autofocus>
-                                            <label class="floating-label">&nbsp;Year Of Graduation&nbsp;</label>
+                                            <label class="floating-label">&nbsp;Year Of Graduation <span class="required">*</span> &nbsp;</label>
                                             <span id="year_of_graduation_error" class="error-div">
-                                                
+                                                {% if year_of_graduation %}
+                                                    {{year_of_graduation}}
+                                                {% endif %}
                                             </span>
                                         </div>
                                     </div>
@@ -339,7 +378,7 @@
                             <div class="col-12 mt-4 ms-md-3 position-relative">
                                 <h5 class="fw-bold st-details">Mode of Enquiry</h5>
                                 <p class="user-para">Use the below form to update your profile</p>
-                                <span class="message" id="message">{{message}}</span>
+                                <!-- <span class="message" id="message">{{message}}</span> -->
                             </div>
 
                             <div class="row">
@@ -348,19 +387,65 @@
                                     <!-- Mode of Enquiry field -->
                                     <div class="col-12 col-md-12">
                                         <div class="user-input-wrp mx-md-3 mb-md-5">
-                                            <select name="mode_of_enquiry" id="mode_of_enquiry" class="form-select select">
-                                                <option selected disabled>Select Mode of Enquiry</option>
-                                                {% for mode in modes_of_enquiry %}
+                                            <select name="mode_of_enquiry" id="mode_of_enquiry" class="form-select select" onchange="handleModeOfEnquiryChange()">
+                                                <option value="" selected>Select Mode of Enquiry</option>
+                                                <option value="Reference">Reference</option>
+                                                <option value="Others">Others</option>
+                                                <!-- {% for mode in modes_of_enquiry %}
                                                     <option value="{{ mode.id }}">{{ mode.name }}</option>
-                                                {% endfor %}
+                                                {% endfor %} -->
                                             </select>
-                                            <label class="floating-label">&nbsp;Mode of Enquiry&nbsp;</label>
+                                            <label class="floating-label">&nbsp;Mode of Enquiry <span class="required">*</span> &nbsp;</label>
                                             <span id="mode_of_enquiry_error" class="error-div">
+                                                {% if mode_of_enquiry %}
+                                                        {{mode_of_enquiry}}
+                                                {% endif %}
                                             </span>
                                         </div>
                                     </div>
 
-                                    
+                                    <!-- Refferenc Name -->
+                                    <div class="col-12 col-md-12" style="display: none;" id="reference_name_div">
+                                        <div class="user-input-wrp mx-md-3 mb-md-5">
+                                            <input type="text" name="reference_name" id="reference_name" class="form-control"
+                                                aria-label="collage" placeholder=" " autocomplete="off" autofocus>
+                                            <label class="floating-label">&nbsp;Refference Name&nbsp;</label>
+                                            <span id="reference_name_error" class="error-div">
+                                                {% if reference_name %}
+                                                        {{reference_name}}
+                                                {% endif %}
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    <!-- Father's Contact No field -->
+                                    <div class="col-12 col-md-12" style="display: none;" id="reference_contact_div">
+                                        <div class="user-input-wrp mx-md-3 mb-md-5">
+                                            <input type="text" name="reference_contact" id="reference_contact" maxlength="10" class="form-control" placeholder=" "
+                                                autocomplete="off" autofocus>
+                                            <label class="floating-label">&nbsp;Contact No&nbsp;</label>
+                                            <span id="reference_contact_error" class="error-div error-right">
+                                                {% if reference_contact_no %}
+                                                        {{reference_contact_no}}
+                                                {% endif %}
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    <!-- Others field -->
+                                    <div class="col-12 col-md-12" style="display: none;" id="other_enquiry_details_div">
+                                        <div class="user-input-wrp mx-md-3 mb-md-5">
+                                            <input type="text" name="other_enquiry_details" id="other_enquiry_details" class="form-control"
+                                                aria-label="collage" placeholder=" " autocomplete="off" autofocus>
+                                            <!-- <label class="floating-label">&nbsp;Refference Name&nbsp;</label> -->
+                                            <span id="other_enquiry_details_error" class="error-div">
+                                                {% if other_enquiry_details %}
+                                                        {{other_enquiry_details}}
+                                                {% endif %}
+                                            </span>
+                                        </div>
+                                    </div>
+
                                 </div>
                                 <div class="col">
                                     <!-- Status Field -->
@@ -448,7 +533,7 @@
 
     // Function to validate date format (dd/mm/yyyy)
     function validateDate(dateString) {
-        var regex = /^(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[0-2])\/\d{4}$/;
+        var regex = /^\d{4}\-(0?[1-9]|1[012])\-(0?[1-9]|[12][0-9]|3[01])$/;
         return regex.test(dateString);
     }
 
@@ -456,22 +541,42 @@
         var isValid = true;
 
         // Date Validation
-        // var dateField = document.getElementById('date');
-        // if (!validateDate(dateField.value)) {
-        //     document.getElementById('date_error').innerText = "Please enter a valid date in dd/mm/yyyy format.";
-        //     isValid = false;
-        // } else {
-        //     document.getElementById('date_error').innerText = "";
-        // }
-
-        // Enquiry Number Validation
-        var enquiryNumber = document.getElementById('enquiry_number');
-        if (enquiryNumber.value.trim() === "") {
-            document.getElementById('enquiry_no_error').innerText = "Enquiry Number cannot be empty.";
+        var dateField = document.getElementById('date');
+        if (!validateDate(dateField.value)) {
+            document.getElementById('date_error').innerText = "Please enter a valid date in yyyy/mm/dd format.";
             isValid = false;
         } else {
-            document.getElementById('enquiry_no_error').innerText = "";
+            document.getElementById('date_error').innerText = "";
         }
+
+        // document.addEventListener('DOMContentLoaded', function() {
+        //     const dateField = document.getElementById('date');
+
+        //     // Set the default value to today's date
+        //     const today = new Date();
+        //     const formattedDate = today.toISOString().split('T')[0];
+        //     dateField.value = formattedDate;
+        // });
+
+        // function validateDate() {
+        //     const dateField = document.getElementById('date');
+        //     const errorMessage = document.getElementById('error-message');
+        //     const today = new Date();
+            
+        //     // Get the entered date and today's date
+        //     const enteredDate = new Date(dateField.value);
+        //     const formattedToday = new Date(today.toISOString().split('T')[0]);
+            
+        //     // Validate that the entered date is not before today
+        //     if (enteredDate < formattedToday) {
+        //         errorMessage.textContent = "The date cannot be before today.";
+        //         dateField.value = today.toISOString().split('T')[0];
+        //     } else {
+        //         errorMessage.textContent = "";
+        //         // Proceed with form submission or other actions
+        //         alert("Date is valid!");
+        //     }
+        // }
 
         // Student Name Validation
         var studentName = document.getElementById('student_name');
@@ -502,13 +607,13 @@
         }
 
         // Date of Birth Validation
-        // var dobField = document.getElementById('dob');
-        // if (!validateDate(dobField.value)) {
-        //     document.getElementById('dob_error').innerText = "Please enter a valid date in dd/mm/yyyy format.";
-        //     isValid = false;
-        // } else {
-        //     document.getElementById('dob_error').innerText = "";
-        // }
+        var dobField = document.getElementById('dob');
+        if (!validateDate(dobField.value)) {
+            document.getElementById('dob_error').innerText = "Please enter a valid date in dd/mm/yyyy format.";
+            isValid = false;
+        } else {
+            document.getElementById('dob_error').innerText = "";
+        }
 
         // Father Name Validation
         var studentName = document.getElementById('father_name');
@@ -528,7 +633,6 @@
             document.getElementById('father_contact_error').innerText = "";
         }
 
-        // Prevent form submission if validation fails
         if (!isValid) {
             event.preventDefault();
         }
@@ -559,5 +663,31 @@
     }
 
     document.addEventListener('DOMContentLoaded', () => showMessage());
+
+
+    function handleModeOfEnquiryChange() {
+        console.log("hello")
+        const modeOfEnquiry = document.getElementById('mode_of_enquiry').value;
+        const referenceName = document.getElementById('reference_name_div');
+        const referenceContact = document.getElementById('reference_contact_div');
+        const otherEnquiryDetailsDiv = document.getElementById('other_enquiry_details_div');
+
+        console.log(modeOfEnquiry)
+        console.log(referenceName)
+        console.log(otherEnquiryDetailsDiv)
+
+        // Hide all fields initially
+        referenceName.style.display = 'none';
+        otherEnquiryDetailsDiv.style.display = 'none';
+        referenceContact.style.display = 'none';
+
+        // Show relevant fields based on selected mode of enquiry
+        if (modeOfEnquiry === 'Reference') {
+            referenceName.style.display = 'block';
+            referenceContact.style.display = 'block';
+        } else if (modeOfEnquiry === 'Others') {
+            otherEnquiryDetailsDiv.style.display = 'block';
+        }
+    }
 </script>
 {% endblock %}
