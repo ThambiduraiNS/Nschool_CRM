@@ -70,17 +70,9 @@
                         </div>
                     </form>
                     <span>
-                        {% if error_messages %}
-                        <div class="errors-common">
-                            <ul class="ul-errors">
-                                {% for field, message in error_messages.items %}
-                                    {% if message %}
-                                        <li>{{ message }}</li>
-                                    {% endif %}
-                                {% endfor %}
-                            </ul>
-                        </div>
-                    {% endif %}
+                        {% if course %}
+                            <span class="errors-common d-flex justify-content-center mb-5">{{course}}</span>
+                        {% endif %}
                     </span>
                 </div>
             </div>

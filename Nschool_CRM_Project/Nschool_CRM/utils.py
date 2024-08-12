@@ -74,7 +74,7 @@ def decrypt_password(encrypted_password):
         fernet = Fernet(key)
 
         decrypted_password = fernet.decrypt(encrypted_password).decode()
-        print(f"Decrypted password: {decrypted_password}")  # Debugging statement
+        # print(f"Decrypted password: {decrypted_password}")  # Debugging statement
 
         return decrypted_password
 
@@ -82,4 +82,4 @@ def decrypt_password(encrypted_password):
         raise Exception(f"Error decrypting password: {e}")
 
 encrypted_password = b'gAAAAABmsgFh-fP_Ia6kOk6Vy7PZu8qF7ujnbd55Wn6dKnG0ZMfMwpMOOxvIgiS4jX2t_yzJoN9QbazItaPzC-oQn52jFm5wqQ=='
-print(decrypt_password(encrypted_password))
+# print(decrypt_password(encrypted_password))

@@ -7,7 +7,7 @@ from django.contrib.auth import authenticate
 from django.contrib.auth import authenticate, login , logout as auth_logout
 from django.template import RequestContext
 from yaml import Loader
-from .models import NewUser
+from .models import NewUser, Course
 from django.contrib.auth.decorators import login_required
 
 from django.core.cache import cache
@@ -548,6 +548,44 @@ class CourseDeleteView(generics.DestroyAPIView):
         instance.delete()
         return Response({'Message': 'Successfully deleted'})
 
+# New Enquiry APi view
+
+class EnquiryListCreateView(generics.ListCreateAPIView):
+    queryset = Enquiry.objects.all().order_by('-id')
+    serializer_class = EnquirySerializer
+    permission_classes = [IsAuthenticated]
+    
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        if not queryset.exists():
+            return Response({'Message': 'No users found'}, status=status.HTTP_404_NOT_FOUND)
+        
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+class EnquiryDetailView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Enquiry.objects.all()
+    serializer_class = EnquirySerializer
+    permission_classes = [IsAuthenticated]
+    lookup_field = 'pk'
+
+class EnquiryUpdateView(generics.RetrieveUpdateAPIView):
+    queryset = Enquiry.objects.all()
+    serializer_class = EnquirySerializer
+    permission_classes = [IsAuthenticated]
+    partial = True
+    
+    
+class EnquiryDeleteView(generics.DestroyAPIView):
+    queryset = Enquiry.objects.all()
+    serializer_class = EnquirySerializer
+    permission_classes = [IsAuthenticated]
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        instance.delete()
+        return Response({'Message': 'Successfully deleted'})
+
 @csrf_exempt
 def export_user_csv(request):
     if request.method == 'POST':
@@ -713,7 +751,6 @@ def export_user_pdf(request):
 class SearchResultsView(ListView):
     model = NewUser
     template_name = 'search_result.html'
-    context_object_name = 'users'
 
     def get_queryset(self):
         query = self.request.GET.get("q")
@@ -759,7 +796,7 @@ def add_course_view(request):
         
         # Prepare data for the API request
         user_data = {
-            'course_name': course_name,
+            'course_name': course_name.lower(),
         }
 
         # Get the token
@@ -805,7 +842,7 @@ def add_course_view(request):
             return render(request, 'add_course.html', context)
         else:
             context = {
-                'course': response_data.get('course', ''),
+                'course': response_data.get('course_name', ''),
             }
             return render(request, 'add_course.html', context)
         
@@ -1057,13 +1094,101 @@ def export_course_pdf(request):
 class SearchCourseResultsView(ListView):
     model = Course
     template_name = 'search_course_result.html'
-    context_object_name = 'users'
 
     def get_queryset(self):
         query = self.request.GET.get("q")
         
-        object_list = NewUser.objects.filter(
+        object_list = Course.objects.filter(
             Q(course_name__icontains = query)
         )
         
         return object_list
+
+def enquiry_view(request):
+    if request.method == 'POST':
+        # Extract data from the form
+        enquiry_data = {
+            'enquiry_date': request.POST.get('enquiry_date', '').strip(),
+            'name': request.POST.get('name', '').strip(),
+            'contact_no': request.POST.get('contact_no', '').strip(),
+            'email_id': request.POST.get('email_id', '').strip(),
+            'date_of_birth': request.POST.get('date_of_birth', '').strip(),
+            'fathers_name': request.POST.get('fathers_name', '').strip(),
+            'fathers_contact_no': request.POST.get('fathers_contact_no', '').strip(),
+            'fathers_occupation': request.POST.get('fathers_occupation', '').strip(),
+            'address': request.POST.get('address', '').strip(),
+            'status': request.POST.get('status', '').strip(),
+            'course_name': request.POST.get('course_name', '').strip(),
+            'inplant_technology': request.POST.get('inplant_technology', '').strip(),
+            'inplant_no_of_days': request.POST.get('inplant_no_of_days', '').strip(),
+            'internship_technology': request.POST.get('internship_technology', '').strip(),
+            'internship_no_of_days': request.POST.get('internship_no_of_days', '').strip(),
+            'next_follow_up_date': request.POST.get('next_follow_up_date', '').strip(),
+            'degree': request.POST.get('degree', '').strip(),
+            'college': request.POST.get('college', '').strip(),
+            'grade_percentage': request.POST.get('grade_percentage', '').strip(),
+            'year_of_graduation': request.POST.get('year_of_graduation', '').strip(),
+            'mode_of_enquiry': request.POST.get('mode_of_enquiry', '').strip(),
+            'reference_name': request.POST.get('reference_name', '').strip(),
+            'reference_contact_no': request.POST.get('reference_contact_no', '').strip(),
+            'other_enquiry_details': request.POST.get('other_enquiry_details', '').strip(),
+        }
+
+        # Get the token
+        try:
+            token = Token.objects.get(user=request.user)
+        except Token.DoesNotExist:
+            context = {
+                'error': 'Authentication token not found'
+            }
+            return render(request, 'add_enquiry.html', context)
+        
+        api_url = 'http://127.0.0.1:8000/api/enquiry/'  # Adjust the URL as needed
+        headers = {
+            'Authorization': f'Token {token.key}',
+            'Content-Type': 'application/json'
+        }
+
+        try:
+            response = requests.post(api_url, json=enquiry_data, headers=headers)
+            response_data = response.json()
+            
+            print(response_data)
+            
+        except requests.exceptions.HTTPError as http_err:
+            # Handle specific HTTP errors
+            context = {
+                'error': f'HTTP error occurred: {http_err}',
+                'response_data': response.json()
+            }
+            return render(request, 'new_enquiry.html', context)
+        except requests.exceptions.RequestException as req_err:
+            # Handle general request exceptions
+            print(f'Error during API create Enquiry: {req_err}')
+            context = {
+                'error': 'An error occurred while creating the enquiry.'
+            }
+            return render(request, 'new_enquiry.html', context)        
+        
+        if response.status_code == 201:
+            context = {
+                'message': 'New Enquiry Created Successfully'
+            }
+            return render(request, 'new_enquiry.html', context)
+        else:
+            context = {
+                'error': response_data.get('error', 'An error occurred during enquiry creation.'),
+                'enquiry_data': enquiry_data,  # To repopulate the form in case of errors
+            }
+            return render(request, 'new_enquiry.html', context)
+        
+    # Fetch available courses and mode of enquiry choices for the form
+    courses = Course.objects.all()
+    mode_of_enquiry_choices = Enquiry.MODE_OF_ENQUIRY_CHOICES
+
+    context = {
+        'courses': courses,
+        'mode_of_enquiry_choices': mode_of_enquiry_choices,
+    }
+    
+    return render(request, 'new_enquiry.html', context)

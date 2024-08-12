@@ -1,0 +1,563 @@
+{% extends 'base.html' %}
+
+{% load static %}
+{% load bootstrap_icons %}
+
+
+{% block title %}User Module{% endblock %}
+
+{% block css %}
+<link rel="stylesheet" href="{% static '/css/new_user.css' %}">
+<link rel="stylesheet" href="{% static '/css/header.css' %}">
+<link rel="stylesheet" href="{% static '/css/new_enquiry.css' %}">
+{% endblock %}
+
+{% block header %}
+{% include 'header.html' %}
+{% endblock %}
+
+{% block content %}
+<!-- <div class="container-fluid"> -->
+<div class="row m-0 p-0">
+    {% include 'side_navbar.html' %}
+
+    <div class="col-12 col-lg-10 background-div">
+
+        <div class="row m-0 p-0">
+            <div class="col border bg-white rounded mt-4 ms-xll-4 mb-2 px-xll-4">
+                <nav style="--bs-breadcrumb-divider: '|';" aria-label="breadcrumb">
+                    <ol class="breadcrumb pt-3 mb-3 ps-lg-3">
+                        <li class="breadcrumb-item"><a class="user-a" href="#">Enquiry</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">New Enquiry</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+
+        
+        <div class="row m-0 p-0">
+            <div class="col border-end bg-white rounded ms-xll-4 mb-2 p-0">
+                <!-- Tab Navigation -->
+                <ul class="nav nav-tabs" id="myTab" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home" type="button" role="tab" aria-controls="home" aria-selected="true">Student Details</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile" type="button" role="tab" aria-controls="profile" aria-selected="false">Education Details</button>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        
+
+        <div class="row m-0 p-0">
+            <div class="col border bg-white rounded mt-2 ms-xll-4 mb-2 px-xll-4">
+
+                <!-- Tab Content -->
+                <form id="login-form" class="pe-lg-2" action="" method="post">
+                    <!-- Student details -->
+                    <div class="tab-content" id="myTabContent">
+                        <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+                            <div class="row m-0 p-0">
+                                    {% csrf_token %}
+                                    <div class="col-12 mt-4 ms-md-2 position-relative">
+                                        <h5 class="fw-bold st-details">Student Details</h5>
+                                        <p class="user-para">Use the below form to update your profile</p>
+                                        <span class="message" id="message">{{message}}</span>
+                                    </div>
+
+                                    <!-- date field -->
+                                    <div class="row d-flex justify-content-between pe-0">
+                                        <div class="col-12 col-md-6">
+                                            <div class="user-input-wrp mx-md-2">
+                                                <input type="text" name="date" id="date" class="form-control"
+                                                    aria-label="date" placeholder=" " autocomplete="off" autofocus>
+                                                <label class="floating-label">&nbsp;Date&nbsp;</label>
+                                                <span id="date_error" class="error-div">
+                                                    
+                                                </span>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- enquiry number field -->
+                                        <div class="col-12 col-md-6 p-0">
+                                            <div class="user-input-wrp ms-4">
+                                                <input type="text" name="enquiry_number" id="enquiry_number" class="form-control"
+                                                    aria-label="number" placeholder=" " autocomplete="off" autofocus>
+                                                <label class="floating-label">&nbsp;Enquiry No&nbsp;</label>
+                                                <span id="enquiry_no_error" class="error-div">
+                                                    
+                                                </span>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- student name field -->
+                                        <div class="col-12 col-md-6">
+                                            <div class="user-input-wrp mx-md-2">
+                                                <input type="text" name="student_name" id="student_name" class="form-control"
+                                                    aria-label="student_name" placeholder=" " autocomplete="off" autofocus>
+                                                <label class="floating-label">&nbsp;Name&nbsp;</label>
+                                                <span id="user_error" class="error-div">
+                                                    
+                                                </span>
+                                            </div>
+                                        </div>
+            
+                                        <!-- student contact number field -->
+                                        <div class="col-12 col-md-6 p-0">
+                                            <div class="user-input-wrp ms-4">
+                                                <input type="text" name="contact" id="contact" maxlength="10" class="form-control"
+                                                    aria-label="contact" placeholder=" " autocomplete="off" autofocus>
+                                                <label class="floating-label">&nbsp;Contact No&nbsp;</label>
+                                                <span id="contact_error" class="error-div">
+                                                    
+                                                </span>
+                                            </div>
+                                        </div>
+            
+                                        <!-- student email field -->
+                                        <div class="col-12 col-md-6">
+                                            <div class="user-input-wrp mx-md-2">
+                                                <input type="email" name="email" id="email" class="form-control" placeholder=" "
+                                                    autocomplete="off" autofocus>
+                                                <label class="floating-label">&nbsp;E-Mail-ID&nbsp;</label>
+                                                <span id="email_error" class="error-div error-right">
+                                                    
+                                                </span>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- student date of birth field -->
+                                        <div class="col-12 col-md-6 p-0">
+                                            <div class="user-input-wrp ms-4">
+                                                <input type="text" name="dob" id="dob" class="form-control" placeholder=" "
+                                                    autocomplete="off" autofocus>
+                                                <label class="floating-label">&nbsp;Date Of Birth&nbsp;</label>
+                                                <span id="dob_error" class="error-div error-right">
+                                                    
+                                                </span>
+                                            </div>
+                                        </div>
+
+                                        <!-- student father name / guardian field -->
+                                        <div class="col-12 col-md-6">
+                                            <div class="user-input-wrp mx-md-2">
+                                                <input type="text" name="father_name" id="father_name" class="form-control" placeholder=" "
+                                                    autocomplete="off" autofocus>
+                                                <label class="floating-label">&nbsp;Father's Name / Guardian's Name&nbsp;</label>
+                                                <span id="father_name_error" class="error-div error-right">
+                                                    
+                                                </span>
+                                            </div>
+                                        </div>
+
+                                        <!-- Father's Contact No field -->
+                                        <div class="col-12 col-md-6 p-0">
+                                            <div class="user-input-wrp ms-4">
+                                                <input type="text" name="father_contact" id="father_contact" class="form-control" placeholder=" "
+                                                    autocomplete="off" autofocus>
+                                                <label class="floating-label">&nbsp;Father's Contact No&nbsp;</label>
+                                                <span id="father_contact_error" class="error-div error-right">
+                                                    
+                                                </span>
+                                            </div>
+                                        </div>
+
+
+                                        <div class="row">
+                                            <div class="col-6 pe-0">
+                                                <!-- Father's Occupation field -->
+                                                <div class="col-12 col-md-12 pe-md-0">
+                                                    <div class="user-input-wrp mx-md-2">
+                                                        <input type="text" name="father_contact" id="father_contact" class="form-control" placeholder=" "
+                                                            autocomplete="off" autofocus>
+                                                        <label class="floating-label">&nbsp;Father's Occupation&nbsp;</label>
+                                                        <span id="father_occupation_error" class="error-div error-right">
+                                                            
+                                                        </span>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Course Name field -->
+                                                <div class="col-12 col-md-12 pe-md-0">
+                                                    <div class="user-input-wrp mx-md-2 my-md-5">
+                                                        <select class="form-select select" id="courseName" name="course_name" required>
+                                                            <option selected disabled>Select Your Course</option>
+                                                            {% for course in courses %}
+                                                            <option value="{{ course.id }}">{{ course.course_name }}</option>
+                                                            {% endfor %}
+                                                        </select>
+                                                        <label for="courseName" class="floating-label float">&nbsp;Course Name&nbsp;</label>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Technology field -->
+                                                <div class="col-12 col-md-12 pe-md-0">
+                                                    <div class="user-input-wrp mx-md-2 my-md-5">
+                                                        <input type="text" name="technology" id="technology" class="form-control" placeholder=" "
+                                                            autocomplete="off" autofocus>
+                                                        <label class="floating-label">&nbsp;Technology&nbsp;</label>
+                                                        <span id="technology_error" class="error-div error-right">
+                                                            
+                                                        </span>
+                                                    </div>
+                                                </div>
+
+                                                <!-- No.of Days field -->
+                                                <div class="col-12 col-md-12 pe-md-0">
+                                                    <div class="user-input-wrp mx-md-2">
+                                                        <input type="text" name="days" id="days" class="form-control" placeholder=" "
+                                                            autocomplete="off" autofocus>
+                                                        <label class="floating-label">&nbsp;No.of Days&nbsp;</label>
+                                                        <span id="days_error" class="error-div error-right">
+                                                            
+                                                        </span>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                            <div class="col-6 p-0">
+                                                <!-- Address field -->
+                                                <div class="col-12 col-md-12 ms-md-4">
+                                                    <div class="user-input-wrp ms-md-3">
+                                                        <textarea name="address" id="address" class="form-control text-area" rows="9" cols="1" placeholder=" "
+                                                            autocomplete="off" autofocus>
+                                                        </textarea>
+                                                        <label class="floating-label">&nbsp;Address&nbsp;</label>
+                                                        <span id="father_occupation_error" class="error-div error-right">
+                                                            
+                                                        </span>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Next Follow-Up Date field -->
+                                                <div class="col-12 col-md-12 ms-md-4">
+                                                    <div class="user-input-wrp ms-md-3 mt-md-5">
+                                                        <input type="text" name="date" id="date" class="form-control"
+                                                            aria-label="date" placeholder=" " autocomplete="off" autofocus>
+                                                        <label class="floating-label">&nbsp;Next Follow-Up Date&nbsp;</label>
+                                                        <span id="user_error" class="error-div">
+                                                            
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+            
+                                    <div class="row d-flex justify-content-between">
+                                        <div class="col-6 d-flex justify-content-md-end p-0 pe-4 pe-lg-4">
+                                        </div>
+                                        <div class="col-6 d-flex justify-content-lg-end ps-lg-4 p-0 ps-4 gap-5">
+                                            <button class="btn login-btn" id="next-tab">Next</button>
+                                            <input type="submit" value="submit" class="btn login-btn">
+                                        </div>
+                                    </div>
+
+                                    
+                                
+                                <span>
+                                    {% if error_messages %}
+                                    <div class="errors-common">
+                                        <ul class="ul-errors">
+                                            {% for field, message in error_messages.items %}
+                                                {% if message %}
+                                                    <li>{{ message }}</li>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </ul>
+                                    </div>
+                                    {% endif %}
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Education details -->
+                        <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+                            <div class="col-12 mt-4 ms-md-3 position-relative">
+                                <h5 class="fw-bold st-details">Education Details</h5>
+                                <p class="user-para">Use the below form to update your profile</p>
+                                <span class="message" id="message">{{message}}</span>
+                            </div>
+
+                            <div class="row">
+                                <div class="col">
+                                    <!-- degree field -->
+                                    <div class="col-12 col-md-12">
+                                        <div class="user-input-wrp mx-md-3">
+                                            <input type="text" name="degree" id="degree" class="form-control"
+                                                aria-label="degree" placeholder=" " autocomplete="off" autofocus>
+                                            <label class="floating-label">&nbsp;Degree&nbsp;</label>
+                                            <span id="degree_error" class="error-div">
+                                                
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    <!-- grade-persentage field -->
+                                    <div class="col-12 col-md-12">
+                                        <div class="user-input-wrp mx-md-3 mt-md-5">
+                                            <input type="text" name="grade-persentage" id="grade-persentage" class="form-control"
+                                                aria-label="collage" placeholder=" " autocomplete="off" autofocus>
+                                            <label class="floating-label">&nbsp;Grade-Persentage&nbsp;</label>
+                                            <span id="grade_persentage_error" class="error-div">
+                                                
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <!-- collage field -->
+                                    <div class="col-12 col-md-12">
+                                        <div class="user-input-wrp me-md-4">
+                                            <input type="text" name="collage" id="collage" class="form-control"
+                                                aria-label="collage" placeholder=" " autocomplete="off" autofocus>
+                                            <label class="floating-label">&nbsp;Collage&nbsp;</label>
+                                            <span id="collage_error" class="error-div">
+                                                
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    <!-- Year Of Graduation field -->
+                                    <div class="col-12 col-md-12">
+                                        <div class="user-input-wrp me-md-4 mt-md-5">
+                                            <input type="text" name="year_of_graduation" id="year_of_graduation" class="form-control"
+                                                aria-label="collage" placeholder=" " autocomplete="off" autofocus>
+                                            <label class="floating-label">&nbsp;Year Of Graduation&nbsp;</label>
+                                            <span id="year_of_graduation_error" class="error-div">
+                                                
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Mode of Enquiry -->
+                        
+                            <div class="col-12 mt-4 ms-md-3 position-relative">
+                                <h5 class="fw-bold st-details">Mode of Enquiry</h5>
+                                <p class="user-para">Use the below form to update your profile</p>
+                                <span class="message" id="message">{{message}}</span>
+                            </div>
+
+                            <div class="row">
+                                <div class="col">
+
+                                    <!-- Mode of Enquiry field -->
+                                    <div class="col-12 col-md-12">
+                                        <div class="user-input-wrp mx-md-3 mb-md-5">
+                                            <select name="mode_of_enquiry" id="mode_of_enquiry" class="form-select select">
+                                                <option selected disabled>Select Mode of Enquiry</option>
+                                                {% for mode in modes_of_enquiry %}
+                                                    <option value="{{ mode.id }}">{{ mode.name }}</option>
+                                                {% endfor %}
+                                            </select>
+                                            <label class="floating-label">&nbsp;Mode of Enquiry&nbsp;</label>
+                                            <span id="mode_of_enquiry_error" class="error-div">
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    
+                                </div>
+                                <div class="col">
+                                    <!-- Status Field -->
+                                    <div class="col-12 col-md-12">
+                                        <div class="user-input-wrp ms-md-0 me-md-4 mb-md-5">
+                                            <textarea name="address" id="address" class="form-control text-area" rows="9" cols="1" placeholder=" " autocomplete="off" autofocus>
+                                            
+                                            </textarea>
+                                            <label class="floating-label">&nbsp;Status&nbsp;</label>
+                                            <span id="degree_error" class="error-div">
+                                                
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row d-flex justify-content-between">
+                                    <div class="col-6 d-flex justify-content-md-end p-0 pe-4 pe-lg-4">
+                                    </div>
+                                    <div class="col-6 d-flex justify-content-lg-end ps-lg-4 p-0 ps-4 gap-5">
+                                        <button class="btn login-btn nav-link active " id="student-tab" data-bs-toggle="tab" data-bs-target="#home" type="button" role="tab" aria-controls="home" aria-selected="true">Back</button>
+                                        <input type="submit" value="submit" class="btn login-btn">
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- </div> -->
+
+{% endblock %}
+
+
+{% block scripts %}
+<script>
+    // tab functionality
+    document.getElementById('next-tab').addEventListener('click', function () {
+        event.preventDefault();
+        var profileTab = new bootstrap.Tab(document.getElementById('profile-tab'));
+        profileTab.show();
+    });
+    
+    document.getElementById('student-tab').addEventListener('click', function () {
+        event.preventDefault();
+        var profileTab = new bootstrap.Tab(document.getElementById('home-tab'));
+        profileTab.show();
+    });
+
+    // dropdown functionality
+    function toggleDropdown(element) {
+        // Close all dropdowns
+        const allDropdowns = document.querySelectorAll('.dropdown-menu');
+        allDropdowns.forEach(dropdown => {
+            if (dropdown !== element.nextElementSibling) {
+                dropdown.classList.remove('show');
+            }
+        });
+
+        // Close all arrows
+        const allArrows = document.querySelectorAll('.right_arrow');
+        allArrows.forEach(arrow => {
+            if (arrow !== element.querySelector('.right_arrow')) {
+                arrow.classList.remove('arrow_user');
+            }
+        });
+
+        // Toggle the clicked dropdown and arrow
+        const dropdownMenu = element.nextElementSibling;
+        dropdownMenu.classList.toggle('show');
+        const rightArrow = element.querySelector('.right_arrow');
+        rightArrow.classList.toggle('arrow_user');
+    }
+
+    document.getElementById('toggle-sidenav').addEventListener('click', function () {
+        const sidenav = document.getElementById('sidenav');
+        sidenav.classList.toggle('collapsed');
+    });
+    
+    // validation
+
+    // Function to validate date format (dd/mm/yyyy)
+    function validateDate(dateString) {
+        var regex = /^(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[0-2])\/\d{4}$/;
+        return regex.test(dateString);
+    }
+
+    document.getElementById('login-form').addEventListener('submit', function(event) {
+        var isValid = true;
+
+        // Date Validation
+        // var dateField = document.getElementById('date');
+        // if (!validateDate(dateField.value)) {
+        //     document.getElementById('date_error').innerText = "Please enter a valid date in dd/mm/yyyy format.";
+        //     isValid = false;
+        // } else {
+        //     document.getElementById('date_error').innerText = "";
+        // }
+
+        // Enquiry Number Validation
+        var enquiryNumber = document.getElementById('enquiry_number');
+        if (enquiryNumber.value.trim() === "") {
+            document.getElementById('enquiry_no_error').innerText = "Enquiry Number cannot be empty.";
+            isValid = false;
+        } else {
+            document.getElementById('enquiry_no_error').innerText = "";
+        }
+
+        // Student Name Validation
+        var studentName = document.getElementById('student_name');
+        if (studentName.value.trim() === "") {
+            document.getElementById('user_error').innerText = "Student Name cannot be empty.";
+            isValid = false;
+        } else {
+            document.getElementById('user_error').innerText = "";
+        }
+
+        // Contact Number Validation
+        var contactField = document.getElementById('contact');
+        if (contactField.value.trim() === "" || contactField.value.length != 10 || isNaN(contactField.value)) {
+            document.getElementById('contact_error').innerText = "Please enter a valid 10-digit contact number.";
+            isValid = false;
+        } else {
+            document.getElementById('contact_error').innerText = "";
+        }
+
+        // Email Validation
+        var emailField = document.getElementById('email');
+        var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(emailField.value)) {
+            document.getElementById('email_error').innerText = "Please enter a valid email address.";
+            isValid = false;
+        } else {
+            document.getElementById('email_error').innerText = "";
+        }
+
+        // Date of Birth Validation
+        // var dobField = document.getElementById('dob');
+        // if (!validateDate(dobField.value)) {
+        //     document.getElementById('dob_error').innerText = "Please enter a valid date in dd/mm/yyyy format.";
+        //     isValid = false;
+        // } else {
+        //     document.getElementById('dob_error').innerText = "";
+        // }
+
+        // Father Name Validation
+        var studentName = document.getElementById('father_name');
+        if (studentName.value.trim() === "") {
+            document.getElementById('father_name_error').innerText = "Father Name cannot be empty.";
+            isValid = false;
+        } else {
+            document.getElementById('father_name_error').innerText = "";
+        }
+
+        // Father's Contact Number Validation
+        var fatherContactField = document.getElementById('father_contact');
+        if (fatherContactField.value.trim() === "" || fatherContactField.value.length != 10 || isNaN(fatherContactField.value)) {
+            document.getElementById('father_contact_error').innerText = "Please enter a valid 10-digit contact number.";
+            isValid = false;
+        } else {
+            document.getElementById('father_contact_error').innerText = "";
+        }
+
+        // Prevent form submission if validation fails
+        if (!isValid) {
+            event.preventDefault();
+        }
+    });
+
+    function permission(checkboxId) {
+        // Get the checkbox
+        console.log("permission function")
+        var checkBox = document.getElementById(checkboxId);
+        // Get the output text
+        // var text = document.getElementById('text_' + checkboxId);
+
+        // If the checkbox is checked, display the output text
+        if (checkBox.checked) {
+            checkBox.value = true;
+        } else {
+            checkBox.value = false;
+        }
+    }
+
+    function showMessage() {
+        const alertBox = document.getElementById('message');
+        alertBox.style.display = 'block';
+
+        setTimeout(() => {
+            alertBox.style.display = 'none';
+        }, 5000);
+    }
+
+    document.addEventListener('DOMContentLoaded', () => showMessage());
+</script>
+{% endblock %}

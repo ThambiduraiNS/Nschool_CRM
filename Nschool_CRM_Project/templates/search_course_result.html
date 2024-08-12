@@ -46,7 +46,7 @@
                     </div>
 
                     <div class="col-5 d-flex pe-0">
-                        <form class="search-form" action="{% url 'search_course_results' %}" method="get">
+                        <form class="search-form" action="{% url 'search_courses' %}" method="get">
                             <input type="text" name="q" class="search-input" placeholder="Search" autocomplete="off">
                             <button type="submit" class="search-button">
                                 {% bs_icon 'search' %}
@@ -106,7 +106,7 @@
                             {% endif %}
 
                         </form> -->
-                        <span data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-custom-class="custom-tooltip"
+                        <!-- <span data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-custom-class="custom-tooltip"
                             data-bs-title="delete">
                             <a href="javascript:void(0);" id="deleteSelected">
                                 <span class="delete">
@@ -130,7 +130,7 @@
                                 </span>
                             </a>
 
-                        </span>
+                        </span> -->
                     </div>
                 </div>
 
@@ -145,7 +145,7 @@
                                 <th class="thead">Course Name</th>
                                 <th class="action">Action</th>
                             </tr>
-                            {% for user in page_obj %}
+                            {% for user in object_list %}
                             <tr class="trow">
                                 <td class="check1">
                                     <input type="checkbox" class="form-check-input user-checkbox checked-row" name="user_ids"

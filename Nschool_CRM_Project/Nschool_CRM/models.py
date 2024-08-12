@@ -61,7 +61,7 @@ class NewUser(AbstractBaseUser, PermissionsMixin):
         return self.username
     
 class Course(models.Model):
-    course_name = models.CharField(max_length=150)
+    course_name = models.CharField(max_length=150, unique=True)
     created_at = models.DateTimeField(auto_now_add=True)
     modified_at = models.DateTimeField(auto_now=True)
     created_by = models.IntegerField(null=True, blank=True)
@@ -71,3 +71,76 @@ class Course(models.Model):
 
     def __str__(self):
         return self.course_name
+    
+class Enquiry(models.Model):
+    enquiry_date = models.DateField()
+    enquiry_no = models.CharField(unique=True)
+
+    # Student Details
+    name = models.CharField(max_length=100)
+    contact_no = models.CharField(max_length=10, unique=True)
+    email_id = models.EmailField(max_length=255, unique=True)
+    date_of_birth = models.DateField(null=True, blank=True)
+    fathers_name = models.CharField(max_length=100)
+    fathers_contact_no = models.CharField(max_length=10, unique=True)
+    fathers_occupation = models.CharField(max_length=100, null=True, blank=True)
+    address = models.TextField(null=True, blank=True)
+    status = models.CharField(max_length=255)
+
+    # Course Name (Foreign Key)
+    course_name = models.ForeignKey('Course', on_delete=models.CASCADE)
+    inplant_technology = models.CharField(max_length=100, null=True, blank=True)
+    inplant_no_of_days = models.PositiveIntegerField(null=True, blank=True)
+    internship_technology = models.CharField(max_length=100, null=True, blank=True)
+    internship_no_of_days = models.PositiveIntegerField(null=True, blank=True)
+    next_follow_up_date = models.DateField()
+
+    # Educational Details
+    degree = models.CharField(max_length=100)
+    college = models.CharField(max_length=100)
+    grade_percentage = models.DecimalField(max_digits=5, decimal_places=2)
+    year_of_graduation = models.PositiveIntegerField()
+
+    # Mode of Enquiry
+    GOOGLE = 'Google'
+    FACEBOOK = 'Facebook'
+    INSTAGRAM = 'Instagram'
+    LINKEDIN = 'LinkedIn'
+    WHATSAPP = 'WhatsApp'
+    DIRECT_WALK_IN = 'Direct Walk-in'
+    EMAIL_ENQUIRY = 'Email Enquiry'
+    DIRECT_CALL = 'Direct Call'
+    REFERENCE = 'Reference'
+    OTHER = 'Other'
+
+    MODE_OF_ENQUIRY_CHOICES = [
+        (GOOGLE, 'Google'),
+        (FACEBOOK, 'Facebook'),
+        (INSTAGRAM, 'Instagram'),
+        (LINKEDIN, 'LinkedIn'),
+        (WHATSAPP, 'Whatsapp'),
+        (DIRECT_WALK_IN, 'Direct walk-in'),
+        (EMAIL_ENQUIRY, 'Email Enquiry'),
+        (DIRECT_CALL, 'Direct call'),
+        (REFERENCE, 'Reference'),
+        (OTHER, 'Other'),
+    ]
+
+    mode_of_enquiry = models.CharField(max_length=20, choices=MODE_OF_ENQUIRY_CHOICES)
+    reference_name = models.CharField(max_length=100, null=True, blank=True)
+    reference_contact_no = models.CharField(max_length=15, null=True, blank=True)
+    other_enquiry_details = models.TextField(null=True, blank=True)
+
+    def __str__(self):
+        return f"{self.enquiry_no} - {self.name}"
+    
+    def save(self):
+        if not self.enquiry_no and self.pk is None:
+            last_enquiry = Enquiry.objects.all().order_by("-pk").first()
+            last_pk = 0
+            if last_enquiry:
+                last_pk = last_enquiry.pk
+        
+            self.enquiry_no = "EWT-" + str(last_pk+1).zfill(4)
+
+        super(Enquiry, self).save()

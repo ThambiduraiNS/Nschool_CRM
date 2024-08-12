@@ -22,10 +22,10 @@ urlpatterns = [
     path('export_course_pdf/', export_course_pdf, name='export_course_pdf'),
     
     # search user details
-    path("search/", SearchResultsView.as_view(), name="search_results"),
+    path("search_user/", SearchResultsView.as_view(), name='search_results'),
     
     # search course details
-    path("search_course/", SearchCourseResultsView.as_view(), name="search_course_results"),
+    path('search_courses/', SearchCourseResultsView.as_view(), name='search_courses'),
     
     path('logout/', logout, name='logout'),
     
@@ -36,6 +36,9 @@ urlpatterns = [
     path('delete_course/<int:id>/', delete_course_view, name='delete-course'),
     path('update_course/<int:id>/', update_course_view, name='update-course'),
     path('delete_all_course/', delete_all_course_view, name='delete-all-course'),
+    
+    # Enquiry module
+    path('enquiry/', enquiry_view, name='enquiry'),
     
     # API for login and logout
     path('api/login/', user_login, name='login'),
@@ -48,8 +51,14 @@ urlpatterns = [
     path('api/delete_newuser/<int:pk>/', NewUserDeleteView.as_view(), name='course_delete'),
     
     # API for course module
-    path('api/course/', CourseListCreateView.as_view(), name='newuser_list_create'),
+    path('api/course/', CourseListCreateView.as_view(), name='course_list_create'),
     path('api/course/<int:pk>/', CourseDetailView.as_view(), name='course_detail'),
     path('api/update_course/<int:pk>/', CourseUpdateView.as_view(), name='course_update'),
     path('api/delete_course/<int:pk>/', CourseDeleteView.as_view(), name='course_delete'),
+    
+    # API for enquiry module
+    path('api/enquiry/', EnquiryListCreateView.as_view(), name='enquiry_list_create'),
+    path('api/enquiry/<int:pk>/', EnquiryDetailView.as_view(), name='enquiry_detail'),
+    path('api/update_enquiry/<int:pk>/', EnquiryUpdateView.as_view(), name='enquirye_update'),
+    path('api/delete_enquiry/<int:pk>/', EnquiryDeleteView.as_view(), name='enquiry_delete'),
 ]

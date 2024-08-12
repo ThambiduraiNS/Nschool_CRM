@@ -38,3 +38,7 @@ class CourseSerializer(serializers.ModelSerializer):
         model = Course
         fields = '__all__'
         
+class EnquirySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Enquiry
+        fields = '__all__'

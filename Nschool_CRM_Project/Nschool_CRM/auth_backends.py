@@ -6,18 +6,18 @@ from .utils import encrypt_password, decrypt_password
 
 class MultiModelBackend(BaseBackend):
     def authenticate(self, request, email=None, password=None, **kwargs):
-        print(f"Attempting to authenticate {email}")
+        # print(f"Attempting to authenticate {email}")
         try:
-            print("Welcome to new user !")
+            # print("Welcome to new user !")
             user = NewUser.objects.get(Q(email=email))
-            print("User : ", user)
+            # print("User : ", user)
             if decrypt_password(user.password) == password:
-                print("Authenticated as NewUser")
+                # print("Authenticated as NewUser")
                 return user
         except NewUser.DoesNotExist:
             print("NewUser does not exist")
 
-        print("Authentication failed")
+        # print("Authentication failed")
         return None
 
     def get_user(self, user_id):
