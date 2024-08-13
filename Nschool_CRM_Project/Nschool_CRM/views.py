@@ -49,6 +49,8 @@ from .utils import encrypt_password, decrypt_password
 from django.views.generic import TemplateView, ListView
 from django.db.models import Q
 
+from django.contrib import messages
+
 @csrf_protect
 def admin_login(request):
     if request.method == 'POST':
@@ -1105,12 +1107,34 @@ class SearchCourseResultsView(ListView):
         return object_list
 
 def enquiry_view(request):
+    
+    # Extract data from the form
+    last_enquiry_no = Enquiry.objects.latest('enquiry_date').enquiry_no
+    
+    print("Last Enquiry No : ", last_enquiry_no)
+    
+    # Get the last enquiry_no
+    try:
+        last_enquiry_no = Enquiry.objects.latest('id').enquiry_no
+    except Enquiry.DoesNotExist:
+        last_enquiry_no = "EWT-0000" 
+
+    # Extract the numeric part and increment it
+    numeric_part = int(last_enquiry_no.split('-')[1])
+    incremented_numeric_part = numeric_part + 1
+
+    print(incremented_numeric_part)
+
+    # Format the incremented value with leading zeros
+    new_enquiry_no = f"EWT-{incremented_numeric_part:04d}"
+    
+    print(new_enquiry_no)
+    
     if request.method == 'POST':
-        # Extract data from the form
-        
         enquiry_data = {
             'enquiry_date': request.POST.get('enquiry_date', '').strip(),
-            'enquiry_no': request.POST.get('enquiry_number', '').strip(),
+            # 'enquiry_no': request.POST.get('enquiry_number', '').strip(),
+            'enquiry_no': new_enquiry_no,
             'name': request.POST.get('student_name', '').strip(),
             'contact_no': request.POST.get('contact', '').strip(),
             'email_id': request.POST.get('email', '').strip(),
@@ -1123,18 +1147,21 @@ def enquiry_view(request):
             'course_name': request.POST.get('course_name', '').strip(),
             'inplant_technology': request.POST.get('technology', '').strip(),
             'inplant_no_of_days': request.POST.get('inplant_no_of_days', '').strip(),
+            'inplant_no_of_students': request.POST.get('inplant_no_of_students', '').strip(),
             # 'internship_technology': request.POST.get('technology', '').strip(),
             # 'internship_no_of_days': request.POST.get('internship_no_of_days', '').strip(),
             'next_follow_up_date': request.POST.get('next_follow_up_date', '').strip(),
             'degree': request.POST.get('degree', '').strip(),
             'college': request.POST.get('college', '').strip(),
-            'grade_percentage': request.POST.get('grade-persentage', '').strip(),
+            'grade_persentage': request.POST.get('grade_persentage', '').strip(),
             'year_of_graduation': request.POST.get('year_of_graduation', '').strip(),
             'mode_of_enquiry': request.POST.get('mode_of_enquiry', '').strip(),
             'reference_name': request.POST.get('reference_name', '').strip(),
             'reference_contact_no': request.POST.get('reference_contact', '').strip(),
             'other_enquiry_details': request.POST.get('other_enquiry_details', '').strip(),
         }
+        
+        print(enquiry_data['enquiry_no'])
         
         # Get the token
         try:
@@ -1155,6 +1182,8 @@ def enquiry_view(request):
             response = requests.post(api_url, json=enquiry_data, headers=headers)
             response_data = response.json()
             
+            print(response_data)
+            
         except requests.exceptions.HTTPError as http_err:
             # Handle specific HTTP errors
             context = {
@@ -1171,10 +1200,8 @@ def enquiry_view(request):
             return render(request, 'new_enquiry.html', context)        
         
         if response.status_code == 201:
-            context = {
-                'message': 'New Enquiry Created Successfully'
-            }
-            return render(request, 'new_enquiry.html', context)
+            messages.success(request, 'New Enquiry Created Successfully')
+            return redirect('enquiry')
         else:
             # Fetch available courses and mode of enquiry choices for the form
             courses = Course.objects.all()
@@ -1195,6 +1222,7 @@ def enquiry_view(request):
                 'course_name': response_data.get('course_name', ''),
                 'inplant_technology': response_data.get('inplant_technology', ''),
                 'inplant_no_of_days': response_data.get('inplant_no_of_days', ''),
+                'inplant_no_of_students': response_data.get('inplant_no_of_students', ''),
                 # 'internship_technology': response_data.get('internship_technology', ''),
                 # 'internship_no_of_days': response_data.get('internship_no_of_days', ''),
                 'next_follow_up_date': response_data.get('next_follow_up_date', ''),
@@ -1218,6 +1246,7 @@ def enquiry_view(request):
     context = {
         'courses': courses,
         'mode_of_enquiry_choices': mode_of_enquiry_choices,
+        'enquiry_no': new_enquiry_no
     }
     
     return render(request, 'new_enquiry.html', context)

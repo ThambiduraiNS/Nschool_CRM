@@ -81,8 +81,8 @@ class Enquiry(models.Model):
     name = models.CharField(max_length=100)
     contact_no = models.CharField(max_length=10, unique=True)
     email_id = models.EmailField(max_length=255, unique=True)
-    date_of_birth = models.DateField(null=True, blank=True)
-    fathers_name = models.CharField(max_length=100)
+    date_of_birth = models.DateField(null=True, blank=True, default=0000-00-00)
+    fathers_name = models.CharField(max_length=100, null=True, blank=True)
     fathers_contact_no = models.CharField(max_length=10, unique=True)
     fathers_occupation = models.CharField(max_length=100, null=True, blank=True)
     address = models.TextField(null=True, blank=True)
@@ -90,8 +90,9 @@ class Enquiry(models.Model):
 
     # Course Name (Foreign Key)
     course_name = models.ForeignKey('Course', on_delete=models.CASCADE)
-    inplant_technology = models.CharField(max_length=100, null=True, blank=True)
+    inplant_technology = models.CharField(max_length=100, null=True)
     inplant_no_of_days = models.PositiveIntegerField(default=0)
+    inplant_no_of_students = models.PositiveIntegerField(default=0)
     internship_technology = models.CharField(max_length=100, null=True, blank=True)
     internship_no_of_days = models.PositiveIntegerField(null=True, blank=True)
     next_follow_up_date = models.DateField()
@@ -99,7 +100,7 @@ class Enquiry(models.Model):
     # Educational Details
     degree = models.CharField(max_length=100, null=True)
     college = models.CharField(max_length=100)
-    grade_percentage = models.DecimalField(max_digits=5, decimal_places=2)
+    grade_percentage = models.DecimalField(max_digits=5, decimal_places=2, blank=True, default=0.00)
     year_of_graduation = models.PositiveIntegerField()
 
     # Mode of Enquiry
@@ -128,8 +129,8 @@ class Enquiry(models.Model):
     ]
 
     mode_of_enquiry = models.CharField(max_length=20, choices=MODE_OF_ENQUIRY_CHOICES)
-    reference_name = models.CharField(max_length=100, null=True, blank=True)
-    reference_contact_no = models.CharField(max_length=15, null=True, blank=True)
+    reference_name = models.CharField(max_length=100, null=True)
+    reference_contact_no = models.CharField(max_length=10, null=True)
     other_enquiry_details = models.TextField(null=True, blank=True)
 
     def __str__(self):
