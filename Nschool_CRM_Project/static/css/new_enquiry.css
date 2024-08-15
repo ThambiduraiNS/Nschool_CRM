@@ -68,3 +68,8 @@
 .required {
     color: red;
 }
+
+.login-btn {
+    font-weight: 600;
+    color: #c72571;
+}

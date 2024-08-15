@@ -27,6 +27,9 @@ urlpatterns = [
     # search course details
     path('search_courses/', SearchCourseResultsView.as_view(), name='search_courses'),
     
+    # search Attributes details
+    path('search_attribute/', SearchAttributeResultsView.as_view(), name='search_attribute'),
+    
     path('logout/', logout, name='logout'),
     
     
@@ -37,8 +40,23 @@ urlpatterns = [
     path('update_course/<int:id>/', update_course_view, name='update-course'),
     path('delete_all_course/', delete_all_course_view, name='delete-all-course'),
     
-    # Enquiry module
+    # Attributes module
+    path('add_attribute/', add_attribute_view, name='add_attribute'),
+    path('manage_attribute/', manage_attribute_view, name='manage_attribute'),
+    path('delete_attribute/<int:id>/', delete_attribute_view, name='delete_attribute'),
+    path('update_attribute/<int:id>/', update_attribute_view, name='update_attribute'),
+    path('delete_all_attributes/', delete_all_attributes_view, name='delete_all_attributes'),
+    
     path('enquiry/', enquiry_view, name='enquiry'),
+    path('manage_enquiry/', manage_enquiry_view, name='manage_enquiry'),
+    path('update_enquiry/<int:id>/', update_enquiry_view, name='update_enquiry'),
+    path('delete_enquiry/<int:id>/', delete_enquiry_view, name='update_enquiry'),
+    path('delete_all_enquiry/', delete_all_enquiry_view, name='delete_all_enquiry'),
+    
+    # file formate for attributes
+    path('export_attributes_csv/', export_attributes_csv, name='export_attributes_csv'),
+    path('export_attributes_excel/', export_attributes_excel, name='export_attributes_excel'),
+    path('export_attributes_pdf/', export_attributes_pdf, name='export_attributes_pdf'),
     
     # API for login and logout
     path('api/login/', user_login, name='login'),
@@ -55,6 +73,12 @@ urlpatterns = [
     path('api/course/<int:pk>/', CourseDetailView.as_view(), name='course_detail'),
     path('api/update_course/<int:pk>/', CourseUpdateView.as_view(), name='course_update'),
     path('api/delete_course/<int:pk>/', CourseDeleteView.as_view(), name='course_delete'),
+    
+    # API for Enquiry Mode module
+    path('api/enquiry_mode/', EnquiryModeListCreateView.as_view(), name='enquiry_mode_list_create'),
+    path('api/enquiry_mode/<int:pk>/', EnquiryModeDetailView.as_view(), name='enquiry_mode_detail'),
+    path('api/update_enquiry_mode/<int:pk>/', EnquiryModeUpdateView.as_view(), name='enquiry_mode_update'),
+    path('api/delete_enquiry_mode/<int:pk>/', EnquiryModeDeleteView.as_view(), name='enquiry_mode_delete'),
     
     # API for enquiry module
     path('api/enquiry/', EnquiryListCreateView.as_view(), name='enquiry_list_create'),

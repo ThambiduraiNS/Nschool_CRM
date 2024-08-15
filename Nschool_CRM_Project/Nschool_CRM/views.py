@@ -550,6 +550,44 @@ class CourseDeleteView(generics.DestroyAPIView):
         instance.delete()
         return Response({'Message': 'Successfully deleted'})
 
+# New Enquiry Mode APi view
+
+class EnquiryModeListCreateView(generics.ListCreateAPIView):
+    queryset = Enquiry_Mode.objects.all().order_by('-id')
+    serializer_class = EnquiryModeSerializer
+    permission_classes = [IsAuthenticated]
+    
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        if not queryset.exists():
+            return Response({'Message': 'No users found'}, status=status.HTTP_404_NOT_FOUND)
+        
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+class EnquiryModeDetailView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Enquiry_Mode.objects.all()
+    serializer_class = EnquiryModeSerializer
+    permission_classes = [IsAuthenticated]
+    lookup_field = 'pk'
+
+class EnquiryModeUpdateView(generics.RetrieveUpdateAPIView):
+    queryset = Enquiry_Mode.objects.all()
+    serializer_class = EnquiryModeSerializer
+    permission_classes = [IsAuthenticated]
+    partial = True
+    
+    
+class EnquiryModeDeleteView(generics.DestroyAPIView):
+    queryset = Enquiry_Mode.objects.all()
+    serializer_class = EnquiryModeSerializer
+    permission_classes = [IsAuthenticated]
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        instance.delete()
+        return Response({'Message': 'Successfully deleted'})
+
 # New Enquiry APi view
 
 class EnquiryListCreateView(generics.ListCreateAPIView):
@@ -1205,7 +1243,7 @@ def enquiry_view(request):
         else:
             # Fetch available courses and mode of enquiry choices for the form
             courses = Course.objects.all()
-            mode_of_enquiry_choices = Enquiry.MODE_OF_ENQUIRY_CHOICES
+            mode_of_enquiry_choices = Enquiry_Mode.objects.all()
             context = {
                 'error': response_data.get('error', 'An error occurred during enquiry creation.'),
                 'enquiry_date': response_data.get('enquiry_date', ''),
@@ -1241,7 +1279,7 @@ def enquiry_view(request):
         
     # Fetch available courses and mode of enquiry choices for the form
     courses = Course.objects.all()
-    mode_of_enquiry_choices = Enquiry.MODE_OF_ENQUIRY_CHOICES
+    mode_of_enquiry_choices = Enquiry_Mode.objects.all()
 
     context = {
         'courses': courses,
@@ -1250,3 +1288,538 @@ def enquiry_view(request):
     }
     
     return render(request, 'new_enquiry.html', context)
+
+def add_attribute_view(request):
+    if request.method == 'POST':
+        # Extract data from the form
+        mode_of_enquiry = request.POST.get("mode_of_enquiry", "").strip()
+        
+        # Prepare data for the API request
+        user_data = {
+            'mode_of_enquiry': mode_of_enquiry.lower(),
+        }
+
+        # Get the token
+        try:
+            token = Token.objects.get(user=request.user)
+        except Token.DoesNotExist:
+            context = {
+                'error': 'Authentication token not found'
+            }
+            return render(request, 'add_attribute.html', context)
+        
+        api_url = 'http://127.0.0.1:8000/api/enquiry_mode/'
+        headers = {
+            'Authorization': f'Token {token.key}',
+            'Content-Type': 'application/json'
+        }
+
+        try:
+            response = requests.post(api_url, json=user_data, headers=headers)
+            response_data = response.json()
+            
+            print(response_data)
+            
+        except requests.exceptions.HTTPError as http_err:
+            # Handle specific HTTP errors
+            context = {
+                'error': f'HTTP error occurred: {http_err}',
+                'response_data': response.json()
+            }
+            return render(request, 'add_attribute.html', context)
+        except requests.exceptions.RequestException as req_err:
+            # Handle general request exceptions
+            print(f'Error during API create Course: {req_err}')
+            context = {
+                'error': 'An error occurred while creating course.'
+            }
+            return render(request, 'add_attribute.html', context)        
+        
+        if response.status_code == 201:
+            context =  {
+                "message": "New Enquiry Mode Created Successfully"
+            }
+            return render(request, 'add_attribute.html', context)
+        else:
+            context = {
+                'course': response_data.get('mode_of_enquiry', ''),
+            }
+            return render(request, 'add_attribute.html', context)
+    return render(request, 'add_attribute.html')
+
+def manage_attribute_view(request):
+    # Fetch the token
+    try:
+        token = Token.objects.get(user=request.user)  # Assuming you only have one token and it's safe to get the first one
+    except Token.DoesNotExist:
+        context = {
+            'error': 'Authentication token not found'
+        }
+        return render(request, 'manage_attributes.html', context)
+    
+    api_url = 'http://127.0.0.1:8000/api/enquiry_mode/'
+    headers = {
+        'Authorization': f'Token {token.key}',
+        'Content-Type': 'application/json'
+    }
+
+    try:
+        response = requests.get(api_url, headers=headers)
+        response.raise_for_status()  # Raise an HTTPError for bad responses
+        response_data = response.json()
+        
+    except requests.exceptions.RequestException as err:
+        # Catch any request-related exceptions
+        context = {
+            'error': f'Request error occurred: {err}',
+            'response_data': response.json() if response else {}
+        }
+        return render(request, 'manage_attributes.html', context)
+
+    # Get the per_page value from the request, default to 10 if not provided
+    per_page = request.GET.get('per_page', '10')
+
+    # Apply pagination
+    paginator = Paginator(response_data, per_page)  # Use response_data for pagination
+    
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    context = {
+        'page_obj': page_obj,
+        'per_page': per_page,
+    }
+    return render(request, 'manage_attributes.html', context)
+
+def delete_attribute_view(request, id):
+    user_id = Enquiry_Mode.objects.get(id=id)
+    
+    print(user_id)
+    
+    if not user_id:
+        context = {'error': 'Attribute ID not provided'}
+        return render(request, 'manage_attributes.html', context)
+    
+    try:
+        token = Token.objects.get(user=request.user)  # Get the first token for simplicity
+        if not token:
+            raise Token.DoesNotExist
+    except Token.DoesNotExist:
+        context = {'error': 'Authentication token not found'}
+        return render(request, 'manage_attributes.html', context)
+    
+    api_url = f'http://127.0.0.1:8000/api/enquiry_mode/{user_id.pk}/'
+    headers = {
+        'Authorization': f'Token {token.key}',
+        'Content-Type': 'application/json'
+    }
+    
+    try:
+        response = requests.delete(api_url, headers=headers)
+        response.raise_for_status()
+
+    except requests.exceptions.RequestException as err:
+        context = {
+            'error': f'Request error occurred: {err}',
+            'response_data': response.json() if response else {}
+        }
+        return render(request, 'manage_attributes.html', context)
+    
+    if response.status_code == 204:
+        return redirect('manage_attribute')
+    
+    else:
+        response_data = response.json()
+        context = {
+            'detail': response_data.get('detail', 'An error occurred while deleting the Attributes'),
+        }
+        return render(request, 'manage_attributes.html', context)
+
+def delete_all_attributes_view(request):
+    if request.method == 'POST':
+        print("Welcome")
+        try:
+            data = json.loads(request.body)
+            
+            print("Data : ", data)
+            
+            user_ids = data.get('user_ids', [])
+            
+            if user_ids:
+                Enquiry_Mode.objects.filter(id__in=user_ids).delete()
+                return JsonResponse({'success': True})
+            else:
+                return JsonResponse({'success': False, 'error': 'No Enquiry selected for deletion'})
+        except json.JSONDecodeError:
+            return JsonResponse({'success': False, 'error': 'Invalid JSON'})
+    return JsonResponse({'success': False, 'error': 'Invalid request method'})
+
+# update_attribute_view
+def update_attribute_view(request, id):
+    try:
+        user = Enquiry_Mode.objects.get(id=id)
+    except Enquiry_Mode.DoesNotExist:
+        context = {'error': 'Attributes not found'}
+        return render(request, 'manage_attributes.html', context)
+
+    if request.method == 'POST':
+        
+        try:
+            token = Token.objects.first()  # Get the first token for simplicity
+            if not token:
+                raise Token.DoesNotExist
+        except Token.DoesNotExist:
+            context = {'error': 'Authentication token not found'}
+            return render(request, 'manage_attributes.html', context)
+        
+        api_url = f'http://127.0.0.1:8000/api/update_enquiry_mode/{user.pk}/'
+        headers = {
+            'Authorization': f'Token {token.key}',
+            'Content-Type': 'application/json'
+        }
+        
+        user_data = {
+            'mode_of_enquiry': request.POST.get('attribute', user.mode_of_enquiry),
+        }
+
+        try:
+            response = requests.patch(api_url, data=json.dumps(user_data), headers=headers)
+            print("API Response Status Code:", response.status_code)
+            response.raise_for_status()
+            response_data = response.json()
+            print("API Response Data:", response_data)
+        except requests.exceptions.RequestException as err:
+            context = {
+                'error': f'Request error occurred: {err}',
+                'response_data': response.json() if response.content else {}
+            }
+            return render(request, 'manage_attributes.html', context)
+        
+        if response.status_code in [200, 204]:  # 204 No Content is also a valid response for updates
+            print("Update successful")
+            return redirect('manage_attribute')
+        else:
+            context = {
+                'error': 'Failed to update user information',
+                'mode_of_enquiry': response_data.get('mode_of_enquiry', ''),
+            }
+            return render(request, 'update_attributes.html', context)
+        
+    return render(request, 'update_attributes.html', {"enquiry_mode": user})
+
+
+# csv file formate for attributes
+@csrf_exempt
+def export_attributes_csv(request):
+    if request.method == 'POST':
+        ids = request.POST.get('ids', '').split(',')  # Get the ids from AJAX request
+
+        # Create the HttpResponse object with the appropriate CSV header
+        response = HttpResponse(content_type='text/csv')
+        response['Content-Disposition'] = 'attachment; filename="attributes_list_csv.csv"'
+
+        writer = csv.writer(response)
+
+        # Write the header row
+        writer.writerow(['Attributes Name'])
+
+        # Fetch selected courses based on IDs
+        selected_attributes = Enquiry_Mode.objects.filter(id__in=ids)
+
+        for user in selected_attributes:        
+            # Write the data row
+            writer.writerow([user.mode_of_enquiry])
+
+        return response
+
+    # Handle GET request or non-AJAX POST request here if needed
+    return HttpResponse(status=400)  # Bad request if not POST or AJAX
+
+# Excel file format for course
+@csrf_exempt
+def export_attributes_excel(request):
+    if request.method == 'POST':
+        ids = request.POST.get('ids', '').split(',')  # Get the ids from AJAX request
+
+        # Fetch selected courses based on IDs
+        selected_attributes = Enquiry_Mode.objects.filter(id__in=ids)
+
+        # Create an Excel workbook
+        wb = openpyxl.Workbook()
+        ws = wb.active
+
+        # Define header row with font style and alignment
+        header_row = ['Attributes Name']
+        ws.append(header_row)
+
+        for idx, user in enumerate(selected_attributes, start=2):
+            ws.append([user.mode_of_enquiry])
+
+        # Create an in-memory file-like object to save the workbook
+        output = BytesIO()
+        wb.save(output)
+        output.seek(0)
+
+        # Create the HTTP response with Excel content type and attachment header
+        response = HttpResponse(output, content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+        response['Content-Disposition'] = 'attachment; filename="generated_excel.xlsx"'
+        
+        return response
+
+    # Handle GET request or non-AJAX POST request here if needed
+    return HttpResponse(status=400)  # Bad request if not POST or AJAX
+
+@csrf_protect
+@require_POST
+def export_attributes_pdf(request):
+    if request.method == 'POST':
+        ids = request.POST.get('ids', '').split(',')
+        selected_attribute = Enquiry_Mode.objects.filter(id__in=ids)
+        
+        if not selected_attribute:
+            return JsonResponse({'error': 'No users available.'}, status=404)
+        
+        attribute_list = []
+        for user in selected_attribute:    
+            attribute_list.append({
+                'mode_of_enquiry': user.mode_of_enquiry, 
+            })
+        
+        print(attribute_list)
+        
+        content = {'attribute_list': attribute_list}
+        return renderers.render_to_pdf('attribute_data_list.html', content)
+    
+    # Handle GET request or non-AJAX POST request here if needed
+    return HttpResponse(status=400)  # Bad request if not POST or AJAX
+
+class SearchAttributeResultsView(ListView):
+    model = Enquiry_Mode
+    template_name = 'search_attribute_result.html'
+
+    def get_queryset(self):
+        query = self.request.GET.get("q")
+        
+        object_list = Enquiry_Mode.objects.filter(
+            Q(mode_of_enquiry__icontains = query)
+        )
+        
+        return object_list
+
+
+def manage_enquiry_view(request):
+    # Fetch the token
+    
+    enquiry_data = Enquiry.objects.all()
+    
+    try:
+        token = Token.objects.get(user=request.user)  # Assuming you only have one token and it's safe to get the first one
+    except Token.DoesNotExist:
+        context = {
+            'error': 'Authentication token not found'
+        }
+        return render(request, 'manage_user.html', context)
+    
+    api_url = 'http://127.0.0.1:8000/api/enquiry/'
+    
+    headers = {
+        'Authorization': f'Token {token.key}',
+        'Content-Type': 'application/json'
+    }
+
+    try:
+        response = requests.get(api_url, headers=headers)
+        response.raise_for_status()  # Raise an HTTPError for bad responses
+        response_data = response.json()
+        
+    except requests.exceptions.RequestException as err:
+        # Catch any request-related exceptions
+        context = {
+            'error': f'Request error occurred: {err}',
+            'response_data': response.json() if response else {}
+        }
+        return render(request, 'manage_user.html', context)
+
+    # Get the per_page value from the request, default to 10 if not provided
+    per_page = request.GET.get('per_page', '10')
+
+    # Apply pagination
+    paginator = Paginator(response_data, per_page)  # Use response_data for pagination
+    
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    context = {
+        'page_obj': page_obj,
+        'per_page': per_page,
+    }
+    return render(request, 'manage_enquiry.html', context)
+
+def update_enquiry_view(request, id):
+    try:
+        enquiry = Enquiry.objects.get(id=id)
+    except Enquiry.DoesNotExist:
+        context = {'error': 'Enquiry not found'}
+        return render(request, 'manage_enquiry.html', context)
+
+    if request.method == 'POST':
+        
+        try:
+            token = Token.objects.first()  # Get the first token for simplicity
+            if not token:
+                raise Token.DoesNotExist
+        except Token.DoesNotExist:
+            context = {'error': 'Authentication token not found'}
+            return render(request, 'manage_enquiry.html', context)
+        
+        api_url = f'http://127.0.0.1:8000/api/update_enquiry/{enquiry.pk}/'
+        headers = {
+            'Authorization': f'Token {token.key}',
+            'Content-Type': 'application/json'
+        }
+        
+        # user_data = {
+        #     'course_name': request.POST.get('course', user.course_name),
+        # }
+        
+        enquiry_data = {
+            'enquiry_date': request.POST.get('enquiry_date', enquiry.enquiry_date),
+            'enquiry_no': request.POST.get('enquiry_number', enquiry.enquiry_no)(),
+            'name': request.POST.get('student_name', enquiry.name),
+            'contact_no': request.POST.get('contact', enquiry.contact_no),
+            'email_id': request.POST.get('email', enquiry.email_id),
+            'date_of_birth': request.POST.get('dob', enquiry.date_of_birth),
+            'fathers_name': request.POST.get('father_name', enquiry.fathers_name),
+            'fathers_contact_no': request.POST.get('father_contact', enquiry.fathers_contact_no),
+            'fathers_occupation': request.POST.get('fathers_occupation', enquiry.fathers_occupation),
+            'address': request.POST.get('address', enquiry.address),
+            'status': request.POST.get('status', enquiry.status),
+            'course_name': request.POST.get('course_name', enquiry.course_name),
+            'inplant_technology': request.POST.get('technology', enquiry.inplant_technology),
+            'inplant_no_of_days': request.POST.get('inplant_no_of_days', enquiry.inplant_no_of_days),
+            'inplant_no_of_students': request.POST.get('inplant_no_of_students', enquiry.inplant_no_of_students),
+            'internship_technology': request.POST.get('technology', enquiry.internship_technology),
+            'internship_no_of_days': request.POST.get('internship_no_of_days', enquiry.internship_no_of_days),
+            'next_follow_up_date': request.POST.get('next_follow_up_date', enquiry.next_follow_up_date),
+            'degree': request.POST.get('degree', enquiry.degree),
+            'college': request.POST.get('college', enquiry.college),
+            'grade_persentage': request.POST.get('grade_persentage', enquiry.grade_percentage),
+            'year_of_graduation': request.POST.get('year_of_graduation', enquiry.year_of_graduation),
+            'mode_of_enquiry': request.POST.get('mode_of_enquiry', enquiry.reference_name),
+            'reference_name': request.POST.get('reference_name', enquiry.reference_name),
+            'reference_contact_no': request.POST.get('reference_contact', enquiry.reference_contact_no),
+            'other_enquiry_details': request.POST.get('other_enquiry_details', enquiry.other_enquiry_details),
+        }
+
+        try:
+            response = requests.patch(api_url, data=json.dumps(enquiry_data), headers=headers)
+            print("API Response Status Code:", response.status_code)
+            response.raise_for_status()
+            response_data = response.json()
+            print("API Response Data:", response_data)
+        except requests.exceptions.RequestException as err:
+            context = {
+                'error': f'Request error occurred: {err}',
+                'response_data': response.json() if response.content else {}
+            }
+            return render(request, 'manage_enquiry.html', context)
+        
+        if response.status_code in [200, 204]:  # 204 No Content is also a valid response for updates
+            print("Update successful")
+            return redirect('manage_enquiry')
+        else:
+            context = {
+                'error': response_data.get('error', 'An error occurred during enquiry creation.'),
+                'enquiry_date': response_data.get('enquiry_date', ''),
+                'enquiry_no': response_data.get('enquiry_no', ''),
+                'name': response_data.get('name', ''),
+                'contact_no': response_data.get('contact_no', ''),
+                'email_id': response_data.get('email_id', ''),
+                'date_of_birth': response_data.get('date_of_birth', ''),
+                'fathers_name': response_data.get('fathers_name', ''),
+                'fathers_contact_no': response_data.get('fathers_contact_no', ''),
+                'fathers_occupation': response_data.get('fathers_occupation', ''),
+                'address': response_data.get('address', ''),
+                'status': response_data.get('status', ''),
+                'course_name': response_data.get('course_name', ''),
+                'inplant_technology': response_data.get('inplant_technology', ''),
+                'inplant_no_of_days': response_data.get('inplant_no_of_days', ''),
+                'inplant_no_of_students': response_data.get('inplant_no_of_students', ''),
+                # 'internship_technology': response_data.get('internship_technology', ''),
+                # 'internship_no_of_days': response_data.get('internship_no_of_days', ''),
+                'next_follow_up_date': response_data.get('next_follow_up_date', ''),
+                'degree': response_data.get('degree', ''),
+                'college': response_data.get('college', ''),
+                'grade_percentage': response_data.get('grade_percentage', ''),
+                'year_of_graduation': response_data.get('year_of_graduation', ''),
+                'mode_of_enquiry': response_data.get('mode_of_enquiry', ''),
+                'reference_name': response_data.get('reference_name', ''),
+                'reference_contact_no': response_data.get('reference_contact_no', ''),
+                'other_enquiry_details': response_data.get('other_enquiry_details', ''),
+            }
+            return render(request, 'update_enquiry.html', context)
+        
+    return render(request, 'update_enquiry.html', {"enquiry": enquiry})
+
+
+def delete_enquiry_view(request, id):
+    user_id = Enquiry.objects.get(id=id)
+    
+    print(user_id.pk)
+    
+    if not user_id:
+        context = {'error': 'Enquiry ID not provided'}
+        return render(request, 'manage_enquiry.html', context)
+    
+    try:
+        token = Token.objects.get(user=request.user)  # Get the first token for simplicity
+        if not token:
+            raise Token.DoesNotExist
+    except Token.DoesNotExist:
+        context = {'error': 'Authentication token not found'}
+        return render(request, 'manage_enquiry.html', context)
+    
+    api_url = f'http://127.0.0.1:8000/api/enquiry/{user_id.pk}/'
+    headers = {
+        'Authorization': f'Token {token.key}',
+        'Content-Type': 'application/json'
+    }
+    
+    try:
+        response = requests.delete(api_url, headers=headers)
+        response.raise_for_status()
+
+    except requests.exceptions.RequestException as err:
+        context = {
+            'error': f'Request error occurred: {err}',
+            'response_data': response.json() if response else {}
+        }
+        return render(request, 'manage_enquiry.html', context)
+    
+    if response.status_code == 204:
+        return redirect('manage_enquiry')
+    
+    else:
+        response_data = response.json()
+        context = {
+            'detail': response_data.get('detail', 'An error occurred while deleting the Enquiry'),
+        }
+        return render(request, 'manage_enquiry.html', context)
+    
+def delete_all_enquiry_view(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            
+            print("Data : ", data)
+            
+            user_ids = data.get('user_ids', [])
+            
+            if user_ids:
+                Enquiry.objects.filter(id__in=user_ids).delete()
+                return JsonResponse({'success': True})
+            else:
+                return JsonResponse({'success': False, 'error': 'No users selected for deletion'})
+        except json.JSONDecodeError:
+            return JsonResponse({'success': False, 'error': 'Invalid JSON'})
+    return JsonResponse({'success': False, 'error': 'Invalid request method'})

@@ -76,7 +76,7 @@
                                     <div class="row d-flex justify-content-between pe-0">
                                         <div class="col-12 col-md-6">
                                             <div class="user-input-wrp mx-md-2">
-                                                <input type="date" name="enquiry_date" id="enquiry_date" class="form-control"
+                                                <input type="date" name="enquiry_date" id="enquiry_date" value="{{enquiry.enquiry_date}}" class="form-control"
                                                     aria-label="date" placeholder=" " autocomplete="off" autofocus>
                                                 <label class="floating-label">&nbsp;Date <span class="required">*</span> &nbsp;</label>
                                                 <span id="date_error" class="error-div">
@@ -90,7 +90,7 @@
                                         <!-- enquiry number field -->
                                         <div class="col-12 col-md-6 p-0">
                                             <div class="user-input-wrp ms-4">
-                                                <input type="text" name="enquiry_number" id="enquiry_number" value="{{enquiry_no}}" class="form-control"
+                                                <input type="text" name="enquiry_number" id="enquiry_number" value="{{enquiry.enquiry_no}}" class="form-control"
                                                     aria-label="number" placeholder=" " autocomplete="off" autofocus>
                                                 <label class="floating-label">&nbsp;Enquiry No&nbsp;</label>
                                                 <span id="enquiry_no_error" class="error-div">
@@ -104,7 +104,7 @@
                                         <!-- student name field -->
                                         <div class="col-12 col-md-6">
                                             <div class="user-input-wrp mx-md-2">
-                                                <input type="text" name="student_name" id="student_name" class="form-control"
+                                                <input type="text" name="student_name" id="student_name" value="{{enquiry.name}}" class="form-control"
                                                     aria-label="student_name" placeholder=" " autocomplete="off" autofocus>
                                                 <label class="floating-label">&nbsp;Name <span class="required">*</span> &nbsp;</label>
                                                 <span id="user_error" class="error-div">
@@ -118,7 +118,7 @@
                                         <!-- student contact number field -->
                                         <div class="col-12 col-md-6 p-0">
                                             <div class="user-input-wrp ms-4">
-                                                <input type="text" name="contact" id="contact" maxlength="10" class="form-control"
+                                                <input type="text" name="contact" id="contact" maxlength="10" value="{{enquiry.contact_no}}" class="form-control"
                                                     aria-label="contact" placeholder=" " autocomplete="off" autofocus>
                                                 <label class="floating-label">&nbsp;Contact No <span class="required">*</span> &nbsp;</label>
                                                 <span id="contact_error" class="error-div">
@@ -132,7 +132,7 @@
                                         <!-- student email field -->
                                         <div class="col-12 col-md-6">
                                             <div class="user-input-wrp mx-md-2">
-                                                <input type="email" name="email" id="email" class="form-control" placeholder=" "
+                                                <input type="email" name="email" id="email" value="{{enquiry.email_id}}" class="form-control" placeholder=" "
                                                     autocomplete="off" autofocus>
                                                 <label class="floating-label">&nbsp;E-Mail-ID <span class="required">*</span> &nbsp;</label>
                                                 <span id="email_error" class="error-div error-right">
@@ -146,7 +146,7 @@
                                         <!-- student date of birth field -->
                                         <div class="col-12 col-md-6 p-0">
                                             <div class="user-input-wrp ms-4">
-                                                <input type="date" name="dob" id="dob" class="form-control" placeholder=" "
+                                                <input type="date" name="dob" id="dob" value="{{enquiry.date_of_birth}}" class="form-control" placeholder=" "
                                                     autocomplete="off" autofocus>
                                                 <label class="floating-label">&nbsp;Date Of Birth&nbsp;</label>
                                                 <span id="dob_error" class="error-div error-right">
@@ -160,7 +160,7 @@
                                         <!-- student father name / guardian field -->
                                         <div class="col-12 col-md-6">
                                             <div class="user-input-wrp mx-md-2">
-                                                <input type="text" name="father_name" id="father_name" class="form-control" placeholder=" "
+                                                <input type="text" name="father_name" id="father_name" value="{{enquiry.father_name}}" class="form-control" placeholder=" "
                                                     autocomplete="off" autofocus>
                                                 <label class="floating-label">&nbsp;Father's Name / Guardian's Name&nbsp;</label>
                                                 <span id="father_name_error" class="error-div error-right">
@@ -174,7 +174,7 @@
                                         <!-- Father's Contact No field -->
                                         <div class="col-12 col-md-6 p-0">
                                             <div class="user-input-wrp ms-4">
-                                                <input type="text" name="father_contact" id="father_contact" maxlength="10" maxlength="10" class="form-control" placeholder=" "
+                                                <input type="text" name="father_contact" id="father_contact" value="{{enquiry.fathers_contact_no}}" maxlength="10" maxlength="10" class="form-control" placeholder=" "
                                                     autocomplete="off" autofocus>
                                                 <label class="floating-label">&nbsp;Father's Contact No <span class="required">*</span> &nbsp;</label>
                                                 <span id="father_contact_error" class="error-div error-right">
@@ -191,7 +191,7 @@
                                                 <!-- Father's Occupation field -->
                                                 <div class="col-12 col-md-12 pe-md-0">
                                                     <div class="user-input-wrp mx-md-2">
-                                                        <input type="text" name="fathers_occupation" id="fathers_occupation" class="form-control" placeholder=" "
+                                                        <input type="text" name="fathers_occupation" id="fathers_occupation" value="{{enquiry.fathers_occupation}}" class="form-control" placeholder=" "
                                                             autocomplete="off" autofocus>
                                                         <label class="floating-label">&nbsp;Father's Occupation&nbsp;</label>
                                                         <span id="father_occupation_error" class="error-div error-right">
@@ -205,7 +205,7 @@
                                                 <!-- Course Name field -->
                                                 <div class="col-12 col-md-12 pe-md-0">
                                                     <div class="user-input-wrp mx-md-2 my-md-5">
-                                                        <select class="form-select select" id="courseName" name="course_name" onchange="handleCourseNameChange()">
+                                                        <select class="form-select select" id="courseName" value="{{enquiry.course_name}}" name="course_name" onchange="handleCourseNameChange()">
                                                             <option value="select" selected>Select Your Course</option>
                                                             {% for course in courses %}
                                                             <option value="{{ course.id }}">{{ course.course_name }}</option>
@@ -223,7 +223,7 @@
                                                 <!-- Technology field -->
                                                 <div class="col-12 col-md-12 pe-md-0" style="display: none;" id="technology_div">
                                                     <div class="user-input-wrp mx-md-2 mt-md-5">
-                                                        <input type="text" name="technology" id="technology" class="form-control" placeholder=" "
+                                                        <input type="text" name="technology" id="technology" value="{{enquiry.inplant_technology}}" class="form-control" placeholder=" "
                                                             autocomplete="off" autofocus>
                                                         <label class="floating-label">&nbsp;Technology <span class="required">*</span> &nbsp;</label>
                                                         <span id="technology_error" class="error-div error-right">
@@ -238,7 +238,7 @@
                                                     <!-- No.of Days field -->
                                                     <div class="col-12 col-md-6 pe-md-0"  style="display: none;" id="no_of_days_div">
                                                         <div class="user-input-wrp mx-md-2">
-                                                            <input type="text" name="inplant_no_of_days" id="inplant_no_of_days" class="form-control" placeholder=" "
+                                                            <input type="text" name="inplant_no_of_days" id="inplant_no_of_days" value="{{enquiry.inplant_no_of_days}}" class="form-control" placeholder=" "
                                                                 autocomplete="off" autofocus>
                                                             <label class="floating-label">&nbsp;No.of Days <span class="required">*</span> &nbsp;</label>
                                                             <span id="inplant_no_of_days_error" class="error-div error-right">
@@ -252,7 +252,7 @@
                                                     <!-- No.of Students -->
                                                     <div class="col-12 col-md-6" style="display: none;" id="no_of_students_div">
                                                         <div class="user-input-wrp me-md-2">
-                                                            <input type="text" name="inplant_no_of_students" id="inplant_no_of_students" class="form-control" placeholder=" "
+                                                            <input type="text" name="inplant_no_of_students" id="inplant_no_of_students" value="{{enquiry.inplant_no_of_students}}" class="form-control" placeholder=" "
                                                                 autocomplete="off" autofocus>
                                                             <label class="floating-label">&nbsp;No.of Students <span class="required">*</span> &nbsp;</label>
                                                             <span id="inplant_no_of_students_error" class="error-div error-right">
@@ -270,7 +270,7 @@
                                                 <!-- Address field -->
                                                 <div class="col-12 col-md-12 ms-md-4">
                                                     <div class="user-input-wrp ms-md-3">
-                                                        <textarea name="address" id="address" class="form-control text-area" rows="9" cols="1" placeholder=" "
+                                                        <textarea name="address" id="address" value="{{enquiry.address}}" class="form-control text-area" rows="9" cols="1" placeholder=" "
                                                             autocomplete="off" autofocus>
                                                         </textarea>
                                                         <label class="floating-label">&nbsp;Address&nbsp;</label>
@@ -340,7 +340,7 @@
                                     <!-- degree field -->
                                     <div class="col-12 col-md-12">
                                         <div class="user-input-wrp mx-md-3">
-                                            <input type="text" name="degree" id="degree" class="form-control"
+                                            <input type="text" name="degree" id="degree" value="{{enquiry.degree}}" class="form-control"
                                                 aria-label="degree" placeholder=" " autocomplete="off" autofocus>
                                             <label class="floating-label">&nbsp;Degree <span class="required">*</span> &nbsp;</label>
                                             <span id="degree_error" class="error-div">
@@ -354,7 +354,7 @@
                                     <!-- grade-persentage field -->
                                     <div class="col-12 col-md-12">
                                         <div class="user-input-wrp mx-md-3 mt-md-5">
-                                            <input type="text" name="grade_persentage" id="grade_persentage" class="form-control"
+                                            <input type="text" name="grade_persentage" id="grade_persentage" value="{{enquiry.grade_percentage}}" class="form-control"
                                                 aria-label="collage" placeholder=" " autocomplete="off" autofocus>
                                             <label class="floating-label">&nbsp;Grade-Persentage&nbsp;</label>
                                             <span id="grade_persentage_error" class="error-div">
@@ -369,7 +369,7 @@
                                     <!-- collage field -->
                                     <div class="col-12 col-md-12">
                                         <div class="user-input-wrp me-md-4">
-                                            <input type="text" name="college" id="college" class="form-control"
+                                            <input type="text" name="college" id="college" value="{{enquiry.college}}" class="form-control"
                                                 aria-label="college" placeholder=" " autocomplete="off" autofocus>
                                             <label class="floating-label">&nbsp;Collage <span class="required">*</span> &nbsp;</label>
                                             <span id="college_error" class="error-div">
@@ -383,7 +383,7 @@
                                     <!-- Year Of Graduation field -->
                                     <div class="col-12 col-md-12">
                                         <div class="user-input-wrp me-md-4 mt-md-5">
-                                            <input type="text" name="year_of_graduation" id="year_of_graduation" class="form-control"
+                                            <input type="text" name="year_of_graduation" id="year_of_graduation" value="{{enquiry.year_of_graduation}}" class="form-control"
                                                 aria-label="collage" placeholder=" " autocomplete="off" autofocus>
                                             <label class="floating-label">&nbsp;Year Of Graduation <span class="required">*</span> &nbsp;</label>
                                             <span id="year_of_graduation_error" class="error-div">
@@ -410,7 +410,7 @@
                                     <!-- Mode of Enquiry field -->
                                     <div class="col-12 col-md-12">
                                         <div class="user-input-wrp mx-md-3 mb-md-5">
-                                            <select name="mode_of_enquiry" id="mode_of_enquiry" class="form-select select" onchange="handleModeOfEnquiryChange()">
+                                            <select name="mode_of_enquiry" id="mode_of_enquiry" value="{{enquiry.mode_of_enquiry}}" class="form-select select" onchange="handleModeOfEnquiryChange()">
                                                 <option value="" selected>Select Mode of Enquiry</option>
                                                 <!-- <option value="Reference">Reference</option>
                                                 <option value="Others">Others</option> -->
@@ -430,7 +430,7 @@
                                     <!-- Refferenc Name -->
                                     <div class="col-12 col-md-12" style="display: none;" id="reference_name_div">
                                         <div class="user-input-wrp mx-md-3 mb-md-5">
-                                            <input type="text" name="reference_name" id="reference_name" class="form-control"
+                                            <input type="text" name="reference_name" id="reference_name" value="{{enquiry.reference_name}}" class="form-control"
                                                 aria-label="collage" placeholder=" " autocomplete="off" autofocus>
                                             <label class="floating-label">&nbsp;Refference Name <span class="required">*</span> &nbsp;</label>
                                             <span id="reference_name_error" class="error-div">
@@ -444,7 +444,7 @@
                                     <!-- Father's Contact No field -->
                                     <div class="col-12 col-md-12" style="display: none;" id="reference_contact_div">
                                         <div class="user-input-wrp mx-md-3 mb-md-5">
-                                            <input type="text" name="reference_contact" id="reference_contact" maxlength="10" class="form-control" placeholder=" "
+                                            <input type="text" name="reference_contact" id="reference_contact" value="{{enquiry.reference_contact_no}}" maxlength="10" class="form-control" placeholder=" "
                                                 autocomplete="off" autofocus>
                                             <label class="floating-label">&nbsp;Contact No <span class="required">*</span> &nbsp;</label>
                                             <span id="reference_contact_error" class="error-div error-right">
@@ -458,7 +458,7 @@
                                     <!-- Others field -->
                                     <div class="col-12 col-md-12" style="display: none;" id="other_enquiry_details_div">
                                         <div class="user-input-wrp mx-md-3 mb-md-5">
-                                            <input type="text" name="other_enquiry_details" id="other_enquiry_details" class="form-control"
+                                            <input type="text" name="other_enquiry_details" value="{{enquiry.other_enquiry_details}}" id="other_enquiry_details" class="form-control"
                                                 aria-label="collage" placeholder=" " autocomplete="off" autofocus>
                                             <!-- <label class="floating-label">&nbsp;Refference Name&nbsp;</label> -->
                                             <span id="other_enquiry_details_error" class="error-div">
@@ -474,7 +474,7 @@
                                     <!-- Status Field -->
                                     <div class="col-12 col-md-12">
                                         <div class="user-input-wrp ms-md-0 me-md-4 mb-md-5">
-                                            <textarea name="address" id="address" class="form-control text-area" rows="5" cols="1" placeholder=" " autocomplete="off" autofocus>
+                                            <textarea name="address" id="address" value="{{enquiry.status}}" class="form-control text-area" rows="5" cols="1" placeholder=" " autocomplete="off" autofocus>
                                             
                                             </textarea>
                                             <label class="floating-label">&nbsp;Status&nbsp;</label>
@@ -483,41 +483,20 @@
                                             </span>
                                         </div>
                                     </div>
-                                    <div class="row">
-                                        <!-- Next Follow-Up Date field -->
-                                        <div class="col-12 col-md-6">
-                                            <div class="user-input-wrp">
-                                                <input type="date" name="next_follow_up_date" id="next_follow_up_date" class="form-control"
-                                                    aria-label="date" placeholder=" " autocomplete="off" autofocus>
-                                                <label class="floating-label">&nbsp;Next Follow-Up Date <span class="required">*</span> &nbsp;</label>
-                                                <span id="next_follow_up_date_error" class="error-div">
-                                                    {% if next_follow_up_date %}
-                                                        {{next_follow_up_date}}
-                                                    {% endif %}
-                                                </span>
-                                            </div>
-                                        </div>
 
-                                        <!-- Mode of Enquiry field -->
-                                        <div class="col-12 col-md-6">
-                                            <div class="user-input-wrp me-md-4 mb-md-5">
-                                                <select name="mode_of_enquiry" id="mode_of_enquiry" class="form-select select" onchange="handleModeOfEnquiryChange()">
-                                                    <option value="" selected>Select</option>
-                                                    <option value="Others">Netural</option>
-                                                    <option value="Others">Positive</option>
-                                                    <option value="Reference">Dead</option>
-                                        
-                                                </select>
-                                                <label class="floating-label">&nbsp;Lead Type <span class="required">*</span> &nbsp;</label>
-                                                <span id="mode_of_enquiry_error" class="error-div">
-                                                    {% if mode_of_enquiry %}
-                                                            {{mode_of_enquiry}}
-                                                    {% endif %}
-                                                </span>
-                                            </div>
+                                    <!-- Next Follow-Up Date field -->
+                                    <div class="col-12 col-md-12">
+                                        <div class="user-input-wrp me-md-4 mt-md-5">
+                                            <input type="date" name="next_follow_up_date" value="{{enquiry.next_follow_up_date}}" id="next_follow_up_date" class="form-control"
+                                                aria-label="date" placeholder=" " autocomplete="off" autofocus>
+                                            <label class="floating-label">&nbsp;Next Follow-Up Date <span class="required">*</span> &nbsp;</label>
+                                            <span id="next_follow_up_date_error" class="error-div">
+                                                {% if next_follow_up_date %}
+                                                    {{next_follow_up_date}}
+                                                {% endif %}
+                                            </span>
                                         </div>
                                     </div>
-                                    
                                 </div>
 
                                 <div class="row d-flex justify-content-between">

@@ -38,7 +38,13 @@ class CourseSerializer(serializers.ModelSerializer):
         model = Course
         fields = '__all__'
         
+class EnquiryModeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Enquiry_Mode
+        fields = '__all__'
+        
 class EnquirySerializer(serializers.ModelSerializer):
+    # course_name = serializers.CharField(source='course_name.course_name', read_only=True)
     class Meta:
         model = Enquiry
         fields = '__all__'
