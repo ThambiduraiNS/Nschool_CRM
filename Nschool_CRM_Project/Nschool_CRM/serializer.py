@@ -44,7 +44,8 @@ class EnquiryModeSerializer(serializers.ModelSerializer):
         fields = '__all__'
         
 class EnquirySerializer(serializers.ModelSerializer):
-    # course_name = serializers.CharField(source='course_name.course_name', read_only=True)
+    # course_name = serializers.CharField(source='course_name.course_name')
+    # mode_of_enquiry = serializers.CharField(source='mode_of_enquiry.mode_of_enquiry')
     class Meta:
         model = Enquiry
         fields = '__all__'

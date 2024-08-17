@@ -10,6 +10,7 @@
 <link rel="stylesheet" href="{% static '/css/new_user.css' %}">
 <link rel="stylesheet" href="{% static '/css/header.css' %}">
 <link rel="stylesheet" href="{% static '/css/new_enquiry.css' %}">
+<link rel="stylesheet" href="{% static '/css/update_enquiry.css' %}">
 {% endblock %}
 
 {% block header %}
@@ -45,6 +46,9 @@
                     <li class="nav-item" role="presentation">
                         <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile" type="button" role="tab" aria-controls="profile" aria-selected="false">Education Details</button>
                     </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="notes-tab" data-bs-toggle="tab" data-bs-target="#notes" type="button" role="tab" aria-controls="notes" aria-selected="false">Notes</button>
+                    </li>
                 </ul>
             </div>
         </div>
@@ -76,7 +80,7 @@
                                     <div class="row d-flex justify-content-between pe-0">
                                         <div class="col-12 col-md-6">
                                             <div class="user-input-wrp mx-md-2">
-                                                <input type="date" name="enquiry_date" id="enquiry_date" value="{{enquiry.enquiry_date}}" class="form-control"
+                                                <input type="date" name="enquiry_date" id="enquiry_date" value="{{enquiry.enquiry_date|date:'Y-m-d' }}" class="form-control"
                                                     aria-label="date" placeholder=" " autocomplete="off" autofocus>
                                                 <label class="floating-label">&nbsp;Date <span class="required">*</span> &nbsp;</label>
                                                 <span id="date_error" class="error-div">
@@ -91,7 +95,7 @@
                                         <div class="col-12 col-md-6 p-0">
                                             <div class="user-input-wrp ms-4">
                                                 <input type="text" name="enquiry_number" id="enquiry_number" value="{{enquiry.enquiry_no}}" class="form-control"
-                                                    aria-label="number" placeholder=" " autocomplete="off" autofocus>
+                                                    aria-label="text" placeholder=" " autocomplete="off" autofocus>
                                                 <label class="floating-label">&nbsp;Enquiry No&nbsp;</label>
                                                 <span id="enquiry_no_error" class="error-div">
                                                     <!-- {% if enquiry_no %}
@@ -108,9 +112,9 @@
                                                     aria-label="student_name" placeholder=" " autocomplete="off" autofocus>
                                                 <label class="floating-label">&nbsp;Name <span class="required">*</span> &nbsp;</label>
                                                 <span id="user_error" class="error-div">
-                                                    {% if name %}
+                                                    <!-- {% if name %}
                                                         {{name}}
-                                                    {% endif %}
+                                                    {% endif %} -->
                                                 </span>
                                             </div>
                                         </div>
@@ -146,7 +150,7 @@
                                         <!-- student date of birth field -->
                                         <div class="col-12 col-md-6 p-0">
                                             <div class="user-input-wrp ms-4">
-                                                <input type="date" name="dob" id="dob" value="{{enquiry.date_of_birth}}" class="form-control" placeholder=" "
+                                                <input type="date" name="dob" id="dob" value="{{ enquiry.date_of_birth|date:'Y-m-d' }}" class="form-control" placeholder=" "
                                                     autocomplete="off" autofocus>
                                                 <label class="floating-label">&nbsp;Date Of Birth&nbsp;</label>
                                                 <span id="dob_error" class="error-div error-right">
@@ -206,9 +210,9 @@
                                                 <div class="col-12 col-md-12 pe-md-0">
                                                     <div class="user-input-wrp mx-md-2 my-md-5">
                                                         <select class="form-select select" id="courseName" value="{{enquiry.course_name}}" name="course_name" onchange="handleCourseNameChange()">
-                                                            <option value="select" selected>Select Your Course</option>
+                                                            <option value="" selected>Select Your Course</option>
                                                             {% for course in courses %}
-                                                            <option value="{{ course.id }}">{{ course.course_name }}</option>
+                                                                <option value="{{ course.id }}">{{ course.course_name }}</option>
                                                             {% endfor %}
                                                         </select>
                                                         <label for="courseName" class="floating-label float">&nbsp;Course Name <span class="required">*</span> &nbsp;</label>
@@ -220,15 +224,29 @@
                                                     </div>
                                                 </div>
 
-                                                <!-- Technology field -->
+                                                <!-- Inplant Technology field -->
                                                 <div class="col-12 col-md-12 pe-md-0" style="display: none;" id="technology_div">
                                                     <div class="user-input-wrp mx-md-2 mt-md-5">
-                                                        <input type="text" name="technology" id="technology" value="{{enquiry.inplant_technology}}" class="form-control" placeholder=" "
-                                                            autocomplete="off" autofocus>
+                                                        <input type="text" name="technology" id="technology" value="{{inplant_technology}}" class="form-control" placeholder=" "
+                                                            autocomplete="off">
                                                         <label class="floating-label">&nbsp;Technology <span class="required">*</span> &nbsp;</label>
                                                         <span id="technology_error" class="error-div error-right">
-                                                            {% if inplant_technology %}
-                                                                {{inplant_technology}}
+                                                            {% if errors.inplant_technology %}
+                                                                {{errors.inplant_technology}}
+                                                            {% endif %}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                                
+                                                <!-- Internship Technology field -->
+                                                <div class="col-12 col-md-12 pe-md-0" style="display: none;" id="internship_technology_div">
+                                                    <div class="user-input-wrp mx-md-2 mt-md-5">
+                                                        <input type="text" name="internship_technology" id="internship_technology" value="{{internship_technology}}" class="form-control" placeholder=" "
+                                                            autocomplete="off" autofocus>
+                                                        <label class="floating-label">&nbsp;Technology <span class="required">*</span> &nbsp;</label>
+                                                        <span id="internship_technology_error" class="error-div error-right">
+                                                            {% if errors.internship_technology %}
+                                                                {{errors.internship_technology}}
                                                             {% endif %}
                                                         </span>
                                                     </div>
@@ -238,12 +256,12 @@
                                                     <!-- No.of Days field -->
                                                     <div class="col-12 col-md-6 pe-md-0"  style="display: none;" id="no_of_days_div">
                                                         <div class="user-input-wrp mx-md-2">
-                                                            <input type="text" name="inplant_no_of_days" id="inplant_no_of_days" value="{{enquiry.inplant_no_of_days}}" class="form-control" placeholder=" "
+                                                            <input type="text" name="inplant_no_of_days" id="inplant_no_of_days" value="{{inplant_no_of_days}}" class="form-control" placeholder=" "
                                                                 autocomplete="off" autofocus>
                                                             <label class="floating-label">&nbsp;No.of Days <span class="required">*</span> &nbsp;</label>
                                                             <span id="inplant_no_of_days_error" class="error-div error-right">
-                                                                {% if inplant_no_of_days %}
-                                                                    {{inplant_no_of_days}}
+                                                                {% if errors.inplant_no_of_days %}
+                                                                    {{errors.inplant_no_of_days}}
                                                                 {% endif %}
                                                             </span>
                                                         </div>
@@ -252,12 +270,42 @@
                                                     <!-- No.of Students -->
                                                     <div class="col-12 col-md-6" style="display: none;" id="no_of_students_div">
                                                         <div class="user-input-wrp me-md-2">
-                                                            <input type="text" name="inplant_no_of_students" id="inplant_no_of_students" value="{{enquiry.inplant_no_of_students}}" class="form-control" placeholder=" "
+                                                            <input type="text" name="inplant_no_of_students" id="inplant_no_of_students" value="{{inplant_no_of_students}}" class="form-control" placeholder=" "
                                                                 autocomplete="off" autofocus>
                                                             <label class="floating-label">&nbsp;No.of Students <span class="required">*</span> &nbsp;</label>
                                                             <span id="inplant_no_of_students_error" class="error-div error-right">
-                                                                {% if inplant_no_of_students %}
-                                                                    {{inplant_no_of_students}}
+                                                                {% if errors.inplant_no_of_students %}
+                                                                    {{errors.inplant_no_of_students}}
+                                                                {% endif %}
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                
+                                                <div class="row">
+                                                    <!-- No.of Days field -->
+                                                    <div class="col-12 col-md-6 pe-md-0"  style="display: none;" id="internship_no_of_days_div">
+                                                        <div class="user-input-wrp mx-md-2">
+                                                            <input type="text" name="internship_no_of_days" id="internship_no_of_days" value="{{inplant_no_of_days}}" class="form-control" placeholder=" "
+                                                                autocomplete="off" autofocus>
+                                                            <label class="floating-label">&nbsp;No.of Days <span class="required">*</span> &nbsp;</label>
+                                                            <span id="internship_no_of_days_error" class="error-div error-right">
+                                                                {% if errors.internship_no_of_days %}
+                                                                    {{errors.internship_no_of_days}}
+                                                                {% endif %}
+                                                            </span>
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- No.of Students -->
+                                                    <div class="col-12 col-md-6" style="display: none;" id="internship_no_of_students_div">
+                                                        <div class="user-input-wrp me-md-2">
+                                                            <input type="text" name="internship_no_of_students" id="internship_no_of_students" value="{{inplant_no_of_students}}" class="form-control" placeholder=" "
+                                                                autocomplete="off" autofocus>
+                                                            <label class="floating-label">&nbsp;No.of Students <span class="required">*</span> &nbsp;</label>
+                                                            <span id="internship_no_of_students_error" class="error-div error-right">
+                                                                {% if errors.internship_no_of_students %}
+                                                                    {{errors.internship_no_of_students}}
                                                                 {% endif %}
                                                             </span>
                                                         </div>
@@ -281,20 +329,6 @@
                                                         </span>
                                                     </div>
                                                 </div>
-
-                                                <!-- Next Follow-Up Date field -->
-                                                <!-- <div class="col-12 col-md-12 ms-md-4">
-                                                    <div class="user-input-wrp ms-md-3 mt-md-5">
-                                                        <input type="text" name="next_follow_up_date" id="next_follow_up_date" class="form-control"
-                                                            aria-label="date" placeholder=" " autocomplete="off" autofocus>
-                                                        <label class="floating-label">&nbsp;Next Follow-Up Date <span class="required">*</span> &nbsp;</label>
-                                                        <span id="next_follow_up_date_error" class="error-div">
-                                                            {% if next_follow_up_date %}
-                                                                {{next_follow_up_date}}
-                                                            {% endif %}
-                                                        </span>
-                                                    </div>
-                                                </div> -->
                                             </div>
                                         </div>
                                     </div>
@@ -410,18 +444,16 @@
                                     <!-- Mode of Enquiry field -->
                                     <div class="col-12 col-md-12">
                                         <div class="user-input-wrp mx-md-3 mb-md-5">
-                                            <select name="mode_of_enquiry" id="mode_of_enquiry" value="{{enquiry.mode_of_enquiry}}" class="form-select select" onchange="handleModeOfEnquiryChange()">
+                                            <select name="mode_of_enquiry" id="mode_of_enquiry" class="form-select select" onchange="handleModeOfEnquiryChange()">
                                                 <option value="" selected>Select Mode of Enquiry</option>
-                                                <!-- <option value="Reference">Reference</option>
-                                                <option value="Others">Others</option> -->
                                                 {% for mode in mode_of_enquiry_choices %}
-                                                    <option value="{{ mode.0 }}">{{ mode.1 }}</option>
+                                                    <option value="{{ mode.id }}" {% if mode.id == mode_of_enquiry %}selected{% endif %}>{{ mode.mode_of_enquiry }}</option>
                                                 {% endfor %}
                                             </select>
                                             <label class="floating-label">&nbsp;Mode of Enquiry <span class="required">*</span> &nbsp;</label>
                                             <span id="mode_of_enquiry_error" class="error-div">
-                                                {% if mode_of_enquiry %}
-                                                        {{mode_of_enquiry}}
+                                                {% if errors.mode_of_enquiry %}
+                                                        {{errors.mode_of_enquiry}}
                                                 {% endif %}
                                             </span>
                                         </div>
@@ -430,12 +462,12 @@
                                     <!-- Refferenc Name -->
                                     <div class="col-12 col-md-12" style="display: none;" id="reference_name_div">
                                         <div class="user-input-wrp mx-md-3 mb-md-5">
-                                            <input type="text" name="reference_name" id="reference_name" value="{{enquiry.reference_name}}" class="form-control"
+                                            <input type="text" name="reference_name" value="{{reference_name}}" id="reference_name" class="form-control"
                                                 aria-label="collage" placeholder=" " autocomplete="off" autofocus>
                                             <label class="floating-label">&nbsp;Refference Name <span class="required">*</span> &nbsp;</label>
                                             <span id="reference_name_error" class="error-div">
-                                                {% if reference_name %}
-                                                        {{reference_name}}
+                                                {% if errors.reference_name %}
+                                                        {{errors.reference_name}}
                                                 {% endif %}
                                             </span>
                                         </div>
@@ -444,12 +476,12 @@
                                     <!-- Father's Contact No field -->
                                     <div class="col-12 col-md-12" style="display: none;" id="reference_contact_div">
                                         <div class="user-input-wrp mx-md-3 mb-md-5">
-                                            <input type="text" name="reference_contact" id="reference_contact" value="{{enquiry.reference_contact_no}}" maxlength="10" class="form-control" placeholder=" "
+                                            <input type="text" name="reference_contact" value="{{reference_contact_no}}" id="reference_contact" maxlength="10" class="form-control" placeholder=" "
                                                 autocomplete="off" autofocus>
                                             <label class="floating-label">&nbsp;Contact No <span class="required">*</span> &nbsp;</label>
                                             <span id="reference_contact_error" class="error-div error-right">
-                                                {% if reference_contact_no %}
-                                                        {{reference_contact_no}}
+                                                {% if errors.reference_contact_no %}
+                                                        {{errors.reference_contact_no}}
                                                 {% endif %}
                                             </span>
                                         </div>
@@ -458,12 +490,12 @@
                                     <!-- Others field -->
                                     <div class="col-12 col-md-12" style="display: none;" id="other_enquiry_details_div">
                                         <div class="user-input-wrp mx-md-3 mb-md-5">
-                                            <input type="text" name="other_enquiry_details" value="{{enquiry.other_enquiry_details}}" id="other_enquiry_details" class="form-control"
+                                            <input type="text" name="other_enquiry_details" value="{{other_enquiry_details}}" id="other_enquiry_details" class="form-control"
                                                 aria-label="collage" placeholder=" " autocomplete="off" autofocus>
                                             <!-- <label class="floating-label">&nbsp;Refference Name&nbsp;</label> -->
                                             <span id="other_enquiry_details_error" class="error-div">
-                                                {% if other_enquiry_details %}
-                                                        {{other_enquiry_details}}
+                                                {% if errors.other_enquiry_details %}
+                                                        {{errors.other_enquiry_details}}
                                                 {% endif %}
                                             </span>
                                         </div>
@@ -474,8 +506,8 @@
                                     <!-- Status Field -->
                                     <div class="col-12 col-md-12">
                                         <div class="user-input-wrp ms-md-0 me-md-4 mb-md-5">
-                                            <textarea name="address" id="address" value="{{enquiry.status}}" class="form-control text-area" rows="5" cols="1" placeholder=" " autocomplete="off" autofocus>
-                                            
+                                            <textarea name="address" id="address" class="form-control text-area" rows="5" cols="1" placeholder=" " autocomplete="off" autofocus>
+                                                {{enquiry.status}}
                                             </textarea>
                                             <label class="floating-label">&nbsp;Status&nbsp;</label>
                                             <span id="degree_error" class="error-div">
@@ -484,17 +516,38 @@
                                         </div>
                                     </div>
 
-                                    <!-- Next Follow-Up Date field -->
-                                    <div class="col-12 col-md-12">
-                                        <div class="user-input-wrp me-md-4 mt-md-5">
-                                            <input type="date" name="next_follow_up_date" value="{{enquiry.next_follow_up_date}}" id="next_follow_up_date" class="form-control"
-                                                aria-label="date" placeholder=" " autocomplete="off" autofocus>
-                                            <label class="floating-label">&nbsp;Next Follow-Up Date <span class="required">*</span> &nbsp;</label>
-                                            <span id="next_follow_up_date_error" class="error-div">
-                                                {% if next_follow_up_date %}
-                                                    {{next_follow_up_date}}
-                                                {% endif %}
-                                            </span>
+                                    <div class="row">
+                                        <!-- Next Follow-Up Date field -->
+                                        <div class="col-12 col-md-6">
+                                            <div class="user-input-wrp">
+                                                <input type="date" name="next_follow_up_date" id="next_follow_up_date" value="{{enquiry.next_follow_up_date|date:'Y-m-d'}}" class="form-control"
+                                                    aria-label="date" placeholder=" " autocomplete="off" autofocus>
+                                                <label class="floating-label">&nbsp;Next Follow-Up Date <span class="required">*</span> &nbsp;</label>
+                                                <span id="next_follow_up_date_error" class="error-div">
+                                                    {% if errors.next_follow_up_date %}
+                                                        {{errors.next_follow_up_date}}
+                                                    {% endif %}
+                                                </span>
+                                            </div>
+                                        </div>
+
+                                        <!-- Mode of Enquiry field -->
+                                        <div class="col-12 col-md-6">
+                                            <div class="user-input-wrp me-md-4 mb-md-5">
+                                                <select name="lead_type" id="lead_type" class="form-select select" onchange="handleModeOfEnquiryChange()">
+                                                    <option value="" selected>Select</option>
+                                                    <option value="Netural">Netural</option>
+                                                    <option value="Positive">Positive</option>
+                                                    <option value="Dead">Dead</option>
+                                        
+                                                </select>
+                                                <label class="floating-label">&nbsp;Lead Type <span class="required">*</span> &nbsp;</label>
+                                                <span id="lead_type_error" class="error-div">
+                                                    {% if errors.lead_type %}
+                                                            {{errors.lead_type}}
+                                                    {% endif %}
+                                                </span>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -503,13 +556,97 @@
                                     <div class="col-6 d-flex justify-content-md-end p-0 pe-4 pe-lg-4">
                                     </div>
                                     <div class="col-6 d-flex justify-content-lg-end ps-lg-4 p-0 ps-4 gap-5">
-                                        <button class="btn login-btn nav-link active " id="student-tab" data-bs-toggle="tab" data-bs-target="#home" type="button" role="tab" aria-controls="home" aria-selected="true">Back</button>
-                                        <input type="submit" value="submit" class="btn login-btn">
+                                        <button class="btn login-btn nav-link active " id="student-tab" data-bs-toggle="tab" data-bs-target="#home" type="button" role="tab" aria-controls="home" aria-selected="true">Next</button>
+                                        <!-- <input type="submit" value="submit" class="btn login-btn"> -->
                                     </div>
                                 </div>
 
                             </div>
+
                         </div>
+                    
+                        <div class="tab-pane fade" id="notes" role="tabpanel" aria-labelledby="notes-tab">
+                            <div class="row m-0 p-0">
+                                    <div class="col-12 mt-4 ms-md-2 position-relative">
+                                        <h5 class="fw-bold st-details">Notes</h5>
+                                        <span class="message" id="message">
+                                            {% for message in messages %}
+                                            <div>
+                                                {{ message }}
+                                            </div>
+                                        {% endfor %}
+                                        </span>
+                                    </div>
+
+                                    <!-- Note field -->
+                                    <div class="col-12 col-md-12">
+                                        <div class="user-input-wrp me-md-4 mt-md-5">
+                                            <div class="notes">
+                                                <!-- <form id="notes_form" class="pe-lg-2" action="" method="post"> -->
+                                                    <textarea name="notes" id="notes" class="form-control text-area text-notes" rows="5" cols="40" placeholder="Add input" autocomplete="off" autofocus>
+                                                        {{enquiry.notes}}
+                                                    </textarea>
+                                                    <!-- <label class="floating-label">&nbsp;Add input&nbsp;</label> -->
+                                                    <div class="d-flex container">
+                                                        <div class="col-6 fileUploadInput">
+                                                            <button>
+                                                                <?xml version="1.0" ?><svg fill="none" height="28" viewBox="0 0 28 28" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M12.4797 4.15793C14.6095 0.833113 19.0267 -0.132589 22.3457 2.00098C25.6648 4.13454 26.6288 8.55944 24.4989 11.8843L22.6498 10.6956C24.1243 8.39379 23.4569 5.3304 21.1591 3.85332C18.8614 2.37624 15.8033 3.0448 14.3288 5.3466L12.4797 4.15793Z" fill="black"/><path d="M14.3278 5.34752L5.1311 19.7042C4.14959 21.2384 4.5946 23.2789 6.12591 24.263C7.65789 25.2475 9.69685 24.8018 10.68 23.2674L13.0534 19.5629L13.0519 19.5619L18.9849 10.3002L18.9863 10.3012C19.4777 9.53391 19.2553 8.51284 18.4894 8.0205C17.7234 7.52814 16.7041 7.751 16.2126 8.51826L16.2111 8.51733L11.5 16.001C11.2118 16.4509 10.6138 16.5814 10.1643 16.2925L9.94284 16.1501C9.49339 15.8612 9.36268 15.2622 9.65088 14.8123L14.3621 7.32857L14.3635 7.3295C15.5104 5.53929 17.8888 5.01934 19.676 6.16816C21.4631 7.317 21.9822 9.69964 20.8354 11.4899L20.8339 11.489L18.4613 15.1927L18.4632 15.1939L12.5297 24.4564C10.891 27.0135 7.49232 27.756 4.93909 26.1152C2.38578 24.4743 1.64432 21.071 3.28299 18.5136L12.4787 4.15885L14.3278 5.34752Z" fill="black"/><path d="M15.4516 23.7222C15.0022 23.4333 14.8715 22.8343 15.1597 22.3844L22.6473 10.6957L24.4965 11.8844L17.0088 23.5731C16.7206 24.023 16.1226 24.1535 15.6731 23.8646L15.4516 23.7222Z" fill="black"/></svg>
+                                                            </button>
+                                                            <!-- <span class="slash-span">|</span> -->
+                                                            <input type="file" id="files" name="files" />
+                                                        </div>
+                                                        <div class="col-6 d-flex justify-content-lg-end ps-lg-4 p-0 pe-4 gap-5">
+                                                            <button type="reset" class="btn login-btn nav-link active " id="notes-tab" data-bs-toggle="tab" data-bs-target="#notes" type="button" role="tab" aria-controls="notes" aria-selected="true">Cancel</button>
+                                                            <input type="submit" value="save" class="btn login-btn w-25">
+                                                        </div>
+                                                    </div>
+                                                <!-- </form> -->
+                                                <span id="notes_error" class="error-div">
+                                                    
+                                                </span>
+                                            </div>
+                                            {% if enquiry.notes %}
+                                            <div class="row mt-5">
+                                                <div class="col-8">
+                                                    <input type="text" name="" id="" value="{{enquiry.notes}}" readonly>
+                                                </div>
+                                                <div class="col-2">
+                                                    <input type="text" value="{{enquiry.created_at}}" readonly>
+                                                </div>
+                                                <div class="col-2">
+                                                    <div>
+                                                        <a href="/update_enquiry/{{user.id}}">
+                                                            <span class="edit">
+                                                                <?xml version="1.0" ?><svg class="edit-icon action-div" id="Outlined" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg"><title/><g id="Fill"><path d="M29.12,6.05,26,2.88a3,3,0,0,0-4.24,0L6.29,18.29a3.06,3.06,0,0,0-.72,1.18L2.08,29.92l10.46-3.49a3.15,3.15,0,0,0,1.17-.72L29.12,10.29a3,3,0,0,0,0-4.24Zm-21,13.28,8.75-8.74,1.58,1.58L9.67,20.92ZM18.24,9.17l1.59-1.58,4.58,4.58-1.58,1.59ZM7.1,21.19l3.72,3.71L5.25,26.75Zm5.57,2.73-1.59-1.59,8.75-8.74,1.58,1.58Zm15-15-1.88,1.88L21.24,6.17l1.88-1.88A1,1,0,0,1,23.83,4a1,1,0,0,1,.71.29l3.17,3.18a1,1,0,0,1,.29.7A1,1,0,0,1,27.71,8.88Z"/></g></svg>
+                                                            </span>
+                                                        </a>
+                                                        <a href="/delete_enquiry/{{user.id}}">
+                                                            <span class="delete">
+                                                                <?xml version="1.0" ?><!DOCTYPE svg  PUBLIC '-//W3C//DTD SVG 1.1//EN'  'http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd'><svg class="delete-icon action-div" height="512px" id="Layer_1" style="enable-background:new 0 0 512 512;" version="1.1" viewBox="0 0 512 512" width="512px" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g><path d="M400,113.3h-80v-20c0-16.2-13.1-29.3-29.3-29.3h-69.5C205.1,64,192,77.1,192,93.3v20h-80V128h21.1l23.6,290.7   c0,16.2,13.1,29.3,29.3,29.3h141c16.2,0,29.3-13.1,29.3-29.3L379.6,128H400V113.3z M206.6,93.3c0-8.1,6.6-14.7,14.6-14.7h69.5   c8.1,0,14.6,6.6,14.6,14.7v20h-98.7V93.3z M341.6,417.9l0,0.4v0.4c0,8.1-6.6,14.7-14.6,14.7H186c-8.1,0-14.6-6.6-14.6-14.7v-0.4   l0-0.4L147.7,128h217.2L341.6,417.9z"/><g><rect class="action-div" height="241" width="14" x="249" y="160"/><polygon class="action-div" points="320,160 305.4,160 294.7,401 309.3,401   "/><polygon class="action-div" points="206.5,160 192,160 202.7,401 217.3,401   "/></g></g></svg>
+                                                            </span>
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            {% endif %}
+                                        </div>
+
+                                        <!-- <div class="row d-flex justify-content-between">
+                                            <div class="col-6 d-flex justify-content-md-end p-0 pe-4 pe-lg-4">
+                                            </div>
+                                            <div class="col-6 d-flex justify-content-lg-end ps-lg-4 p-0 ps-4 gap-5">
+                                                <button class="btn login-btn nav-link active " id="notes-tab" data-bs-toggle="tab" data-bs-target="#home" type="button" role="tab" aria-controls="home" aria-selected="true">Back</button>
+                                                <input type="submit" value="submit" class="btn login-btn">
+                                            </div>
+                                        </div> -->
+
+                                    </div>
+                                </div>    
+                            </div> 
+                               
+                        </div>
+                        
+
                     </div>
                 </form>
             </div>
@@ -532,7 +669,13 @@
     
     document.getElementById('student-tab').addEventListener('click', function () {
         event.preventDefault();
-        var profileTab = new bootstrap.Tab(document.getElementById('home-tab'));
+        var profileTab = new bootstrap.Tab(document.getElementById('notes-tab'));
+        profileTab.show();
+    });
+
+    document.getElementById('notes-tab').addEventListener('click', function () {
+        event.preventDefault();
+        var profileTab = new bootstrap.Tab(document.getElementById('student-tab'));
         profileTab.show();
     });
 
@@ -584,24 +727,19 @@
         // Get the entered date and today's date
         const enteredDate = new Date(document.getElementById('enquiry_date').value);
 
-        console.log(enteredDate)
-
         const formattedToday = new Date(today.toISOString().split('T')[0]);
-
-        console.log(formattedToday)
 
         // Date Validation
         var dateField = document.getElementById('enquiry_date');
-        console.log(dateField)
         if (dateField.value.trim() === "") {
-            console.log("date field trigred")
             document.getElementById('date_error').innerText = "Date Field is required.";
             hasError = true;
-        } else if (enteredDate < formattedToday) {
-            document.getElementById('date_error').innerText = "The date cannot be before today.";
-            dateField.value = today.toISOString().split('T')[0];
-            hasError = true;
-        }
+        } 
+        // else if (enteredDate < formattedToday) {
+        //     document.getElementById('date_error').innerText = "The date cannot be before today.";
+        //     dateField.value = today.toISOString().split('T')[0];
+        //     hasError = true;
+        // }
         else {
             document.getElementById('date_error').innerText = "";
         }
@@ -642,28 +780,6 @@
             document.getElementById('email_error').innerText = "";
         }
 
-        // Date of Birth Validation
-        // var dobField = document.getElementById('dob');
-        // if(dobField.value.trim() === "") {
-        //     document.getElementById('dob_error').innerText = "Date of Birth Field is required.";
-        //     hasError = true;
-        // }
-        // else if (!validateDate(dobField.value)) {
-        //     document.getElementById('dob_error').innerText = "Please enter a valid date in yyyy/mm/dd format.";
-        //     hasError = true;
-        // } else {
-        //     document.getElementById('dob_error').innerText = "";
-        // }
-
-        // Father Name Validation
-        // var studentName = document.getElementById('father_name');
-        // if (studentName.value.trim() === "") {
-        //     document.getElementById('father_name_error').innerText = "Father Name Field is required.";
-        //     hasError = true;
-        // } else {
-        //     document.getElementById('father_name_error').innerText = "";
-        // }
-
         // Father's Contact Number Validation
         var fatherContactField = document.getElementById('father_contact');
         if (fatherContactField.value.trim() === "") {
@@ -684,33 +800,6 @@
         } else {
             document.getElementById('course_name_error').innerText = "";
         }
-
-        // Technology field validation
-        var technology = document.getElementById('technology');
-        if (technology.value.trim() === "") {
-            document.getElementById('technology_error').innerText = "Technology Field is required.";
-            hasError = true;
-        } else {
-            document.getElementById('technology_error').innerText = "";
-        }
-
-        // Number of days fields validation
-        var No_of_Days = document.getElementById('inplant_no_of_days');
-        if (No_of_Days.value.trim() === "") {
-            document.getElementById('inplant_no_of_days_error').innerText = "No.of Days Field is required.";
-            hasError = true;
-        } else {
-            document.getElementById('inplant_no_of_days_error').innerText = "";
-        }
-        
-        // Number of Students fields validation
-        var No_of_Days = document.getElementById('inplant_no_of_students');
-        if (No_of_Days.value.trim() === "") {
-            document.getElementById('inplant_no_of_students_error').innerText = "No.of Student Field is required.";
-            hasError = true;
-        } else {
-            document.getElementById('inplant_no_of_students_error').innerText = "";
-        }
         
         const enteredFollowUpDate = new Date(document.getElementById('next_follow_up_date').value);
 
@@ -719,11 +808,13 @@
         if (Next_follow_up.value.trim() === "") {
             document.getElementById('next_follow_up_date_error').innerText = "Next follow-up Field is required.";
             hasError = true;
-        } else if (enteredFollowUpDate < formattedToday) {
-            document.getElementById('next_follow_up_date_error').innerText = "The date cannot be before today.";
-            dateField.value = today.toISOString().split('T')[0];
-            hasError = true;
-        } else {
+        } 
+        // else if (enteredFollowUpDate < formattedToday) {
+        //     document.getElementById('next_follow_up_date_error').innerText = "The date cannot be before today.";
+        //     dateField.value = today.toISOString().split('T')[0];
+        //     hasError = true;
+        // } 
+        else {
             document.getElementById('next_follow_up_date_error').innerText = "";
         }
 
@@ -745,15 +836,6 @@
             document.getElementById('college_error').innerText = "";
         }
         
-        // grade_persentage fields validation
-        // var grade_persentage = document.getElementById('grade_persentage');
-        // if (grade_persentage.value.trim() === "") {
-        //     document.getElementById('grade_persentage_error').innerText = "Grade Persentage Field is required.";
-        //     hasError = true;
-        // } else {
-        //     document.getElementById('grade_persentage_error').innerText = "";
-        // }
-        
         // year_of_graduation fields validation
         var year_of_graduation = document.getElementById('year_of_graduation');
         if (year_of_graduation.value.trim() === "") {
@@ -770,6 +852,16 @@
             hasError = true;
         } else {
             document.getElementById('mode_of_enquiry_error').innerText = "";
+        }
+        
+        // Lead Type fields validation
+        var lead_type = document.getElementById('lead_type').value.trim();
+        console.log("Lead Type : ", lead_type)
+        if (lead_type === "") {
+            document.getElementById('lead_type_error').innerText = "Please Select Your Lead Type.";
+            hasError = true;
+        } else {
+            document.getElementById('lead_type_error').innerText = "";
         }
 
         console.log(hasError)
@@ -812,55 +904,116 @@
 
 
     function handleModeOfEnquiryChange() {
-        console.log("hello")
-        const modeOfEnquiry = document.getElementById('mode_of_enquiry').value;
-        const referenceName = document.getElementById('reference_name_div');
-        const referenceContact = document.getElementById('reference_contact_div');
-        const otherEnquiryDetailsDiv = document.getElementById('other_enquiry_details_div');
+        // Get the select element and its selected value
+        const modeOfEnquiryElement = document.getElementById('mode_of_enquiry');
+        const selectedValue = modeOfEnquiryElement.value;
+        const selectedText = modeOfEnquiryElement.options[modeOfEnquiryElement.selectedIndex].text.trim().toLowerCase();
 
-        console.log(modeOfEnquiry)
-        console.log(referenceName)
-        console.log(otherEnquiryDetailsDiv)
+        // Get the div elements by their IDs
+        const referenceNameDiv = document.getElementById('reference_name_div');
+        const referenceNameInput = document.getElementById('reference_name');
+        const referenceContactDiv = document.getElementById('reference_contact_div');
+        const referenceContactInput = document.getElementById('reference_contact');
+        const otherEnquiryDetailsDiv = document.getElementById('other_enquiry_details_div');
+        const otherEnquiryDetailsInput = document.getElementById('other_enquiry_details');
 
         // Hide all fields initially
-        referenceName.style.display = 'none';
+        referenceNameDiv.style.display = 'none';
+        referenceContactDiv.style.display = 'none';
         otherEnquiryDetailsDiv.style.display = 'none';
-        referenceContact.style.display = 'none';
 
         // Show relevant fields based on selected mode of enquiry
-        if (modeOfEnquiry === 'Reference') {
-            referenceName.style.display = 'block';
-            referenceContact.style.display = 'block';
-        } else if (modeOfEnquiry === 'Others') {
+        if (selectedText === 'reference') {
+            referenceNameDiv.style.display = 'block';
+            referenceContactDiv.style.display = 'block';
+
+            validateField(referenceNameInput, 'reference_name_error');
+            validateField(referenceContactInput, 'reference_contact_error');
+
+        } else if (selectedText === 'other' || selectedText === 'others') {
             otherEnquiryDetailsDiv.style.display = 'block';
+
+            validateField(otherEnquiryDetailsInput, 'other_enquiry_details_error');
         }
     }
 
-    // handel course
+    
     function handleCourseNameChange() {
-        console.log("hello")
         const courseNameElement = document.getElementById('courseName');
         const courseName = courseNameElement.options[courseNameElement.selectedIndex].text.trim().toLowerCase();
-        const technology = document.getElementById('technology_div');
-        const days = document.getElementById('no_of_days_div');
-        const students = document.getElementById('no_of_students_div');
+
+        const technologyDiv = document.getElementById('technology_div');
+        const internshipDiv = document.getElementById('internship_technology_div');
+        const daysDiv = document.getElementById('no_of_days_div');
+        const studentsDiv = document.getElementById('no_of_students_div');
+        const internshipDaysDiv = document.getElementById('internship_no_of_days_div');
+        const internshipStudentsDiv = document.getElementById('internship_no_of_students_div');
+
+        const technologyInput = document.getElementById('technology');
+        const internshipInput = document.getElementById('internship_technology');
+        const daysInput = document.getElementById('inplant_no_of_days');
+        const studentsInput = document.getElementById('inplant_no_of_students');
+        const internshipNoOfDaysInput = document.getElementById('internship_no_of_days');
+        const internshipNoOfStudentsInput = document.getElementById('internship_no_of_students');
+
+        clearErrors(); // Clear previous error messages
 
         // Hide all fields initially
-        technology.style.display = 'none';
-        days.style.display = 'none';
-        students.style.display = 'none';
+        technologyDiv.style.display = 'none';
+        internshipDiv.style.display = 'none';
+        daysDiv.style.display = 'none';
+        studentsDiv.style.display = 'none';
+        internshipDaysDiv.style.display = 'none';
+        internshipStudentsDiv.style.display = 'none';
 
-        // Show relevant fields based on selected mode of enquiry
         if (courseName === 'inplant training') {
-            technology.style.display = 'block';
-            days.style.display = 'block';
-            students.style.display = 'block';
+            technologyDiv.style.display = 'block';
+            daysDiv.style.display = 'block';
+            studentsDiv.style.display = 'block';
+
+            
+            // Validate fields
+            validateField(technologyInput, 'technology_error');
+            validateField(daysInput, 'inplant_no_of_days_error');
+            validateField(studentsInput, 'inplant_no_of_students_error');
+
         } else if (courseName === 'internship training') {
-            technology.style.display = 'block';
-            days.style.display = 'block';
-            students.style.display = 'block';
+            internshipDiv.style.display = 'block';
+            internshipDaysDiv.style.display = 'block';
+            internshipStudentsDiv.style.display = 'block';
+
+            // Validate fields
+            validateField(internshipInput, 'internship_technology_error');
+            validateField(internshipNoOfDaysInput, 'internship_no_of_days_error');
+            validateField(internshipNoOfStudentsInput, 'internship_no_of_students_error');
         }
     }
+
+    function validateField(inputElement, errorElementId) {
+        const errorElement = document.getElementById(errorElementId);
+        if (!inputElement || !errorElement) {
+            return; // Ensure elements exist
+        }
+
+        if (inputElement.value.trim() === '') {
+            // If the field is empty, display an error message
+            errorElement.innerText = "This field can't be empty";
+            errorElement.innerText = "";
+            inputElement.required = true;
+        } else {
+            // If the field has a value, clear the error message
+            errorElement.innerText = "";
+            inputElement.required = false;
+        }
+    }
+
+    function clearErrors() {
+        const errorElements = document.querySelectorAll('.error-div');
+        errorElements.forEach(element => {
+            element.innerText = "";
+        });
+    }
+
 
     // Function to format the current date as YYYY-MM-DD
     function getCurrentDate() {
@@ -871,30 +1024,43 @@
         return `${year}-${month}-${day}`;
     }
 
-    // Function to format the current date as YYYY-MM-DD
-    function getCurrentDateplusOne() {
-        const today = new Date();
-        const year = today.getFullYear();
-        const month = String(today.getMonth() + 1).padStart(2, '0'); // Months are zero-based
-        const day = String(today.getDate() + 1).padStart(2, '0');
-        return `${year}-${month}-${day}`;
-    }
+    // // Function to format the current date as YYYY-MM-DD
+    // function getCurrentDateplusOne() {
+    //     const today = new Date();
+    //     const year = today.getFullYear();
+    //     const month = String(today.getMonth() + 1).padStart(2, '0'); // Months are zero-based
+    //     const day = String(today.getDate() + 1).padStart(2, '0');
+    //     return `${year}-${month}-${day}`;
+    // }
 
-    // Set the default value of the date input field to the current date
-    document.addEventListener('DOMContentLoaded', (event) => {
-        document.getElementById('dob').value = getCurrentDate();
-    });
+    // // Set the default value of the date input field to the current date
+    // document.addEventListener('DOMContentLoaded', (event) => {
+    //     document.getElementById('dob').value = getCurrentDate();
+    // });
     
-    // Set the default value of the date input field to the current date
-    document.addEventListener('DOMContentLoaded', (event) => {
-        document.getElementById('enquiry_date').value = getCurrentDate();
-        document.getElementById('enquiry_date').setAttribute('min', getCurrentDate());
-    });
+    // // Set the default value of the date input field to the current date
+    // document.addEventListener('DOMContentLoaded', (event) => {
+    //     document.getElementById('enquiry_date').value = getCurrentDate();
+    //     document.getElementById('enquiry_date').setAttribute('min', getCurrentDate());
+    // });
     
-    // Set the default value of the date input field to the current date
-    document.addEventListener('DOMContentLoaded', (event) => {
-        document.getElementById('next_follow_up_date').value = getCurrentDateplusOne();
-        document.getElementById('next_follow_up_date').setAttribute('min', getCurrentDate())
-    });
+    // // Set the default value of the date input field to the current date
+    // document.addEventListener('DOMContentLoaded', (event) => {
+    //     document.getElementById('next_follow_up_date').value = getCurrentDateplusOne();
+    //     document.getElementById('next_follow_up_date').setAttribute('min', getCurrentDate())
+    // });
+
+
+    // function validateNotesForm() {
+    //     const addressField = document.getElementById("address").value.trim();
+
+    //     if (addressField === "") {
+    //         alert("Please enter some notes before submitting.");
+    //         return false;
+    //     }
+
+    //     // Add more validation if needed
+    //     return true; // Return true if validation passes
+    // }
 </script>
 {% endblock %}

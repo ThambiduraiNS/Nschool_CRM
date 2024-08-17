@@ -146,6 +146,8 @@
                                 <th class="thead">Enquiry Date</th>
                                 <th class="thead">Contact No</th>
                                 <th class="thead">Course Name </th>
+                                <th class="thead">Mode of Enquiry</th>
+                                <th class="thead">Lead Type</th>
                                 <th class="thead">Follow-up date</th>
                                 <th class="thead status">Status</th>
                                 <th class="action">Action</th>
@@ -160,9 +162,37 @@
                                 <td class="tdata">{{ user.name }}</td>
                                 <td class="tdata">{{ user.enquiry_date }}</td>
                                 <td class="tdata">{{ user.contact_no }}</td>
-                                <td class="tdata">{{ user.course_name }}</td>
+                                
+                                <td class="tdata">
+                                    {% for item in course_name %}
+                                        {% if item.id == user.course_name %}
+                                            {{ item.course_name }}
+                                        {% endif %}
+                                    {% endfor %}
+                                </td>
+                                
+                                <td class="tdata">
+                                    {% for item in enquiry %}
+                                        {% if item.id == user.mode_of_enquiry %}
+                                            {{ item.mode_of_enquiry }}
+                                        {% endif %}
+                                    {% endfor %}
+                                </td>
+                                <td class="permission">
+                                    <div class="perm">
+                                        {% if user.lead_type == 'Netural' %}
+                                            <span class="netural permission-class">{{ user.lead_type }}</span>
+                                        {% elif user.lead_type == 'Positive' %}
+                                            <span class="positive permission-class">{{ user.lead_type }}</span>
+                                        {% elif user.lead_type == 'Dead' %}
+                                            <span class="dead permission-class">{{ user.lead_type }}</span>
+                                        {% endif %}
+                                    </div>
+                                </td>
                                 <td class="tdata">{{ user.next_follow_up_date }}</td>
-                                <td class="tdata status">{{ user.status }}</td>
+                                <td class="tdata status" title="{{ user.status }}">
+                                    <div class="status-display">{{ user.status }}</div>
+                                </td>
                                 <td class="tdata">
                                     <div>
                                         <a href="/update_enquiry/{{user.id}}">
@@ -292,7 +322,7 @@
                 formData.append('ids', ids.join(','));  // Convert ids array to comma-separated string
                 formData.append('csrfmiddlewaretoken', csrftoken);
 
-                let response = await fetch('/export_course_csv/', {
+                let response = await fetch('/export_enquiry_csv/', {
                     method: 'POST',
                     body: formData
                 });
@@ -307,7 +337,7 @@
                 const a = document.createElement('a');
                 a.style.display = 'none';
                 a.href = url;
-                a.download = 'course_list_csv.csv';
+                a.download = 'enquiry_list_csv.csv';
                 document.body.appendChild(a);
                 a.click();
                 window.URL.revokeObjectURL(url);
@@ -326,7 +356,7 @@
 
                 formData.append('csrfmiddlewaretoken', csrftoken);
 
-                let response = await fetch('/export_course_excel/', {
+                let response = await fetch('/export_enquiry_excel/', {
                     method: 'POST',
                     body: formData
                 });
@@ -342,7 +372,7 @@
                 const a = document.createElement('a');
                 a.style.display = 'none';
                 a.href = url;
-                a.download = 'course_list_excel.xlsx';
+                a.download = 'enquiry_list_excel.xlsx';
                 document.body.appendChild(a);
                 a.click();
                 window.URL.revokeObjectURL(url);
@@ -361,7 +391,7 @@
 
                 formData.append('csrfmiddlewaretoken', csrftoken);
 
-                let response = await fetch('/export_course_pdf/', {
+                let response = await fetch('/export_enquiry_pdf/', {
                     method: 'POST',
                     body: formData
                 });
@@ -376,7 +406,7 @@
                 const a = document.createElement('a');
                 a.style.display = 'none';
                 a.href = url;
-                a.download = 'course_list_pdf.pdf';
+                a.download = 'enquiry_list_pdf.pdf';
                 document.body.appendChild(a);
                 a.click();
                 window.URL.revokeObjectURL(url);
@@ -551,7 +581,19 @@
     });
 
 
-
+    function updateText() {
+        const textArea = document.getElementById("textArea");
+        const textDisplay = document.getElementById("textDisplay");
+        
+        const text = textArea.value;
+        if (text.length > 100) {
+            textDisplay.textContent = text.substring(0, 100) + '...';
+            textDisplay.title = text; // Shows full text on hover as a tooltip
+        } else {
+            textDisplay.textContent = text;
+            textDisplay.title = ''; // No tooltip if text is 100 characters or less
+        }
+    }
 
 </script>
 {% endblock %}

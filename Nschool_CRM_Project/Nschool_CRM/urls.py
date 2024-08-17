@@ -58,6 +58,11 @@ urlpatterns = [
     path('export_attributes_excel/', export_attributes_excel, name='export_attributes_excel'),
     path('export_attributes_pdf/', export_attributes_pdf, name='export_attributes_pdf'),
     
+    # file formate for attributes
+    path('export_enquiry_csv/', export_enquiry_csv, name='export_enquiry_csv'),
+    path('export_enquiry_excel/', export_enquiry_excel, name='export_enquiry_excel'),
+    path('export_enquiry_pdf/', export_enquiry_pdf, name='export_enquiry_pdf'),
+    
     # API for login and logout
     path('api/login/', user_login, name='login'),
     path('api/logout/', user_logout, name='api-logout'),

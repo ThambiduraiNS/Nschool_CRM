@@ -1144,150 +1144,160 @@ class SearchCourseResultsView(ListView):
         
         return object_list
 
-def enquiry_view(request):
+# def enquiry_view(request):
     
-    # Extract data from the form
-    last_enquiry_no = Enquiry.objects.latest('enquiry_date').enquiry_no
+#     # Extract data from the form
+#     # last_enquiry_no = Enquiry.objects.latest('enquiry_date').enquiry_no
     
-    print("Last Enquiry No : ", last_enquiry_no)
+#     # Get the last enquiry_no
+#     try:
+#         last_enquiry_no = Enquiry.objects.latest('id').enquiry_no
+#     except Enquiry.DoesNotExist:
+#         last_enquiry_no = "EWT-0000" 
+
+#     print(last_enquiry_no)
+#     # Extract the numeric part and increment it
+#     numeric_part = int(last_enquiry_no.split('-')[1])
+#     incremented_numeric_part = numeric_part + 1
+
+#     print(incremented_numeric_part)
+
+#     # Format the incremented value with leading zeros
+#     new_enquiry_no = f"EWT-{incremented_numeric_part:04d}"
     
-    # Get the last enquiry_no
+#     print(new_enquiry_no)
+    
+#     if request.method == 'POST':
+#         enquiry_data = {
+#             'enquiry_date': request.POST.get('enquiry_date', '').strip(),
+#             'enquiry_no': request.POST.get('enquiry_number', '').strip(),
+#             'enquiry_no': new_enquiry_no,
+#             'name': request.POST.get('student_name', '').strip(),
+#             'contact_no': request.POST.get('contact', '').strip(),
+#             'email_id': request.POST.get('email', '').strip(),
+#             'date_of_birth': request.POST.get('dob', '').strip(),
+#             'fathers_name': request.POST.get('father_name', '').strip(),
+#             'fathers_contact_no': request.POST.get('father_contact', '').strip(),
+#             'fathers_occupation': request.POST.get('fathers_occupation', '').strip(),
+#             'address': request.POST.get('address', '').strip(),
+#             'status': request.POST.get('status', '').strip(),
+#             'course_name': request.POST.get('course_name', '').strip(),
+#             'inplant_technology': request.POST.get('technology', '').strip(),
+#             'inplant_no_of_days': request.POST.get('inplant_no_of_days', '').strip(),
+#             'inplant_no_of_students': request.POST.get('inplant_no_of_students', '').strip(),
+#             'internship_technology': request.POST.get('technology', '').strip(),
+#             'internship_no_of_days': request.POST.get('internship_no_of_days', '').strip(),
+#             'next_follow_up_date': request.POST.get('next_follow_up_date', '').strip(),
+#             'degree': request.POST.get('degree', '').strip(),
+#             'college': request.POST.get('college', '').strip(),
+#             'grade_persentage': request.POST.get('grade_persentage', '').strip(),
+#             'year_of_graduation': request.POST.get('year_of_graduation', '').strip(),
+#             'mode_of_enquiry': request.POST.get('mode_of_enquiry', '').strip(),
+#             'reference_name': request.POST.get('reference_name', '').strip(),
+#             'reference_contact_no': request.POST.get('reference_contact', '').strip(),
+#             'other_enquiry_details': request.POST.get('other_enquiry_details', '').strip(),
+#         }
+        
+#         print(enquiry_data['enquiry_no'])
+        
+#         # Get the token
+#         try:
+#             token = Token.objects.get(user=request.user)
+#         except Token.DoesNotExist:
+#             context = {
+#                 'error': 'Authentication token not found'
+#             }
+#             return render(request, 'new_enquiry.html', context)
+        
+#         api_url = 'http://127.0.0.1:8000/api/enquiry/'  # Adjust the URL as needed
+#         headers = {
+#             'Authorization': f'Token {token.key}',
+#             'Content-Type': 'application/json'
+#         }
+
+#         try:
+#             response = requests.post(api_url, json=enquiry_data, headers=headers)
+#             response_data = response.json()
+            
+#             print(response_data.get('name'))
+            
+#         except requests.exceptions.HTTPError as http_err:
+#             # Handle specific HTTP errors
+#             context = {
+#                 'error': f'HTTP error occurred: {http_err}',
+#                 'response_data': response.json()
+#             }
+#             return render(request, 'new_enquiry.html', context)
+#         except requests.exceptions.RequestException as req_err:
+#             # Handle general request exceptions
+#             print(f'Error during API create Enquiry: {req_err}')
+#             context = {
+#                 'error': 'An error occurred while creating the enquiry.'
+#             }
+#             return render(request, 'new_enquiry.html', context)        
+        
+#         if response.status_code == 201:
+#             messages.success(request, 'New Enquiry Created Successfully')
+#             return redirect('enquiry')
+#         else:
+#             # Fetch available courses and mode of enquiry choices for the form
+#             courses = Course.objects.all()
+#             mode_of_enquiry_choices = Enquiry_Mode.objects.all()
+#             context = {
+#                 'error': response_data.get('error', 'An error occurred during enquiry creation.'),
+#                 'enquiry_date': response_data.get('enquiry_date', ''),
+#                 'enquiry_no': response_data.get('enquiry_no', ''),
+#                 'name': response_data.get('name', ''),
+#                 'contact_no': response_data.get('contact_no', ''),
+#                 'email_id': response_data.get('email_id', ''),
+#                 'date_of_birth': response_data.get('date_of_birth', ''),
+#                 'fathers_name': response_data.get('fathers_name', ''),
+#                 'fathers_contact_no': response_data.get('fathers_contact_no', ''),
+#                 'fathers_occupation': response_data.get('fathers_occupation', ''),
+#                 'address': response_data.get('address', ''),
+#                 'status': response_data.get('status', ''),
+#                 'course_name': response_data.get('course_name', ''),
+#                 'inplant_technology': response_data.get('inplant_technology', ''),
+#                 'inplant_no_of_days': response_data.get('inplant_no_of_days', ''),
+#                 'inplant_no_of_students': response_data.get('inplant_no_of_students', ''),
+#                 'internship_technology': response_data.get('internship_technology', ''),
+#                 'internship_no_of_days': response_data.get('internship_no_of_days', ''),
+#                 'next_follow_up_date': response_data.get('next_follow_up_date', ''),
+#                 'degree': response_data.get('degree', ''),
+#                 'college': response_data.get('college', ''),
+#                 'grade_percentage': response_data.get('grade_percentage', ''),
+#                 'year_of_graduation': response_data.get('year_of_graduation', ''),
+#                 'mode_of_enquiry': response_data.get('mode_of_enquiry', ''),
+#                 'reference_name': response_data.get('reference_name', ''),
+#                 'reference_contact_no': response_data.get('reference_contact_no', ''),
+#                 'other_enquiry_details': response_data.get('other_enquiry_details', ''),
+#                 'courses': courses,
+#                 'mode_of_enquiry_choices': mode_of_enquiry_choices,
+#             }
+#             return render(request, 'new_enquiry.html', context)
+        
+#     # Fetch available courses and mode of enquiry choices for the form
+#     courses = Course.objects.all()
+#     mode_of_enquiry_choices = Enquiry_Mode.objects.all()
+
+#     context = {
+#         'courses': courses,
+#         'mode_of_enquiry_choices': mode_of_enquiry_choices,
+#         'enquiry_no': new_enquiry_no
+#     }
+    
+#     return render(request, 'new_enquiry.html', context)
+
+def generate_new_enquiry_no():
     try:
-        last_enquiry_no = Enquiry.objects.latest('id').enquiry_no
+        last_enquiry = Enquiry.objects.latest('id')
+        last_enquiry_no = last_enquiry.enquiry_no
     except Enquiry.DoesNotExist:
         last_enquiry_no = "EWT-0000" 
 
-    # Extract the numeric part and increment it
     numeric_part = int(last_enquiry_no.split('-')[1])
     incremented_numeric_part = numeric_part + 1
-
-    print(incremented_numeric_part)
-
-    # Format the incremented value with leading zeros
-    new_enquiry_no = f"EWT-{incremented_numeric_part:04d}"
-    
-    print(new_enquiry_no)
-    
-    if request.method == 'POST':
-        enquiry_data = {
-            'enquiry_date': request.POST.get('enquiry_date', '').strip(),
-            # 'enquiry_no': request.POST.get('enquiry_number', '').strip(),
-            'enquiry_no': new_enquiry_no,
-            'name': request.POST.get('student_name', '').strip(),
-            'contact_no': request.POST.get('contact', '').strip(),
-            'email_id': request.POST.get('email', '').strip(),
-            'date_of_birth': request.POST.get('dob', '').strip(),
-            'fathers_name': request.POST.get('father_name', '').strip(),
-            'fathers_contact_no': request.POST.get('father_contact', '').strip(),
-            'fathers_occupation': request.POST.get('fathers_occupation', '').strip(),
-            'address': request.POST.get('address', '').strip(),
-            'status': request.POST.get('status', '').strip(),
-            'course_name': request.POST.get('course_name', '').strip(),
-            'inplant_technology': request.POST.get('technology', '').strip(),
-            'inplant_no_of_days': request.POST.get('inplant_no_of_days', '').strip(),
-            'inplant_no_of_students': request.POST.get('inplant_no_of_students', '').strip(),
-            # 'internship_technology': request.POST.get('technology', '').strip(),
-            # 'internship_no_of_days': request.POST.get('internship_no_of_days', '').strip(),
-            'next_follow_up_date': request.POST.get('next_follow_up_date', '').strip(),
-            'degree': request.POST.get('degree', '').strip(),
-            'college': request.POST.get('college', '').strip(),
-            'grade_persentage': request.POST.get('grade_persentage', '').strip(),
-            'year_of_graduation': request.POST.get('year_of_graduation', '').strip(),
-            'mode_of_enquiry': request.POST.get('mode_of_enquiry', '').strip(),
-            'reference_name': request.POST.get('reference_name', '').strip(),
-            'reference_contact_no': request.POST.get('reference_contact', '').strip(),
-            'other_enquiry_details': request.POST.get('other_enquiry_details', '').strip(),
-        }
-        
-        print(enquiry_data['enquiry_no'])
-        
-        # Get the token
-        try:
-            token = Token.objects.get(user=request.user)
-        except Token.DoesNotExist:
-            context = {
-                'error': 'Authentication token not found'
-            }
-            return render(request, 'new_enquiry.html', context)
-        
-        api_url = 'http://127.0.0.1:8000/api/enquiry/'  # Adjust the URL as needed
-        headers = {
-            'Authorization': f'Token {token.key}',
-            'Content-Type': 'application/json'
-        }
-
-        try:
-            response = requests.post(api_url, json=enquiry_data, headers=headers)
-            response_data = response.json()
-            
-            print(response_data)
-            
-        except requests.exceptions.HTTPError as http_err:
-            # Handle specific HTTP errors
-            context = {
-                'error': f'HTTP error occurred: {http_err}',
-                'response_data': response.json()
-            }
-            return render(request, 'new_enquiry.html', context)
-        except requests.exceptions.RequestException as req_err:
-            # Handle general request exceptions
-            print(f'Error during API create Enquiry: {req_err}')
-            context = {
-                'error': 'An error occurred while creating the enquiry.'
-            }
-            return render(request, 'new_enquiry.html', context)        
-        
-        if response.status_code == 201:
-            messages.success(request, 'New Enquiry Created Successfully')
-            return redirect('enquiry')
-        else:
-            # Fetch available courses and mode of enquiry choices for the form
-            courses = Course.objects.all()
-            mode_of_enquiry_choices = Enquiry_Mode.objects.all()
-            context = {
-                'error': response_data.get('error', 'An error occurred during enquiry creation.'),
-                'enquiry_date': response_data.get('enquiry_date', ''),
-                'enquiry_no': response_data.get('enquiry_no', ''),
-                'name': response_data.get('name', ''),
-                'contact_no': response_data.get('contact_no', ''),
-                'email_id': response_data.get('email_id', ''),
-                'date_of_birth': response_data.get('date_of_birth', ''),
-                'fathers_name': response_data.get('fathers_name', ''),
-                'fathers_contact_no': response_data.get('fathers_contact_no', ''),
-                'fathers_occupation': response_data.get('fathers_occupation', ''),
-                'address': response_data.get('address', ''),
-                'status': response_data.get('status', ''),
-                'course_name': response_data.get('course_name', ''),
-                'inplant_technology': response_data.get('inplant_technology', ''),
-                'inplant_no_of_days': response_data.get('inplant_no_of_days', ''),
-                'inplant_no_of_students': response_data.get('inplant_no_of_students', ''),
-                # 'internship_technology': response_data.get('internship_technology', ''),
-                # 'internship_no_of_days': response_data.get('internship_no_of_days', ''),
-                'next_follow_up_date': response_data.get('next_follow_up_date', ''),
-                'degree': response_data.get('degree', ''),
-                'college': response_data.get('college', ''),
-                'grade_percentage': response_data.get('grade_percentage', ''),
-                'year_of_graduation': response_data.get('year_of_graduation', ''),
-                'mode_of_enquiry': response_data.get('mode_of_enquiry', ''),
-                'reference_name': response_data.get('reference_name', ''),
-                'reference_contact_no': response_data.get('reference_contact_no', ''),
-                'other_enquiry_details': response_data.get('other_enquiry_details', ''),
-                'courses': courses,
-                'mode_of_enquiry_choices': mode_of_enquiry_choices,
-            }
-            return render(request, 'new_enquiry.html', context)
-        
-    # Fetch available courses and mode of enquiry choices for the form
-    courses = Course.objects.all()
-    mode_of_enquiry_choices = Enquiry_Mode.objects.all()
-
-    context = {
-        'courses': courses,
-        'mode_of_enquiry_choices': mode_of_enquiry_choices,
-        'enquiry_no': new_enquiry_no
-    }
-    
-    return render(request, 'new_enquiry.html', context)
+    return f"EWT-{incremented_numeric_part:04d}"
 
 def add_attribute_view(request):
     if request.method == 'POST':
@@ -1367,6 +1377,8 @@ def manage_attribute_view(request):
         response = requests.get(api_url, headers=headers)
         response.raise_for_status()  # Raise an HTTPError for bad responses
         response_data = response.json()
+        
+        print(response_data)
         
     except requests.exceptions.RequestException as err:
         # Catch any request-related exceptions
@@ -1606,11 +1618,126 @@ class SearchAttributeResultsView(ListView):
         
         return object_list
 
+# Enquiry view
+
+def enquiry_view(request):
+    new_enquiry_no = generate_new_enquiry_no()
+
+    if request.method == 'POST':
+        try:
+            inplant_no_of_days = int(request.POST.get('inplant_no_of_days', 0)) if request.POST.get('inplant_no_of_days') else None
+            inplant_no_of_students = int(request.POST.get('inplant_no_of_students', 0)) if request.POST.get('inplant_no_of_students') else None
+            internship_no_of_students = int(request.POST.get('internship_no_of_students', 0)) if request.POST.get('internship_no_of_students') else None
+            internship_no_of_days = int(request.POST.get('internship_no_of_days', 0)) if request.POST.get('internship_no_of_days') else None
+            grade_percentage = float(request.POST.get('grade_percentage', 0.00)) if request.POST.get('grade_percentage') else None
+            year_of_graduation = int(request.POST.get('year_of_graduation', 0)) if request.POST.get('year_of_graduation') else None
+        except ValueError:
+            # Handle invalid integer or float conversion
+            inplant_no_of_days = None
+            inplant_no_of_students = None
+            internship_no_of_students = None
+            internship_no_of_days = None
+            grade_percentage = None
+            year_of_graduation = None
+
+        enquiry_data = {
+            'enquiry_date': request.POST.get('enquiry_date', '').strip(),
+            'enquiry_no': new_enquiry_no,
+            'name': request.POST.get('student_name', '').strip(),
+            'contact_no': request.POST.get('contact', '').strip(),
+            'email_id': request.POST.get('email', '').strip(),
+            'date_of_birth': request.POST.get('dob', '').strip(),
+            'fathers_name': request.POST.get('father_name', '').strip(),
+            'fathers_contact_no': request.POST.get('father_contact', '').strip(),
+            'fathers_occupation': request.POST.get('fathers_occupation', '').strip(),
+            'address': request.POST.get('address', '').strip(),
+            'status': request.POST.get('status', '').strip(),
+            'course_name': request.POST.get('course_name', '').strip(),
+            'inplant_technology': request.POST.get('inplant_technology', '').strip(),
+            'inplant_no_of_days': inplant_no_of_days,
+            'inplant_no_of_students': inplant_no_of_students,
+            'internship_technology': request.POST.get('internship_technology', '').strip(),
+            'internship_no_of_days': internship_no_of_days,
+            'internship_no_of_students': internship_no_of_students,
+            'next_follow_up_date': request.POST.get('next_follow_up_date', '').strip(),
+            'degree': request.POST.get('degree', '').strip(),
+            'college': request.POST.get('college', '').strip(),
+            'grade_percentage': grade_percentage,
+            'year_of_graduation': year_of_graduation,
+            'mode_of_enquiry': request.POST.get('mode_of_enquiry', '').strip(),
+            'reference_name': request.POST.get('reference_name', '').strip(),
+            'reference_contact_no': request.POST.get('reference_contact', '').strip(),
+            'other_enquiry_details': request.POST.get('other_enquiry_details', '').strip(),
+            'lead_type': request.POST.get('lead_type', '').strip(),
+        }
+
+        # Get the token
+        try:
+            token = Token.objects.get(user=request.user)
+        except Token.DoesNotExist:
+            context = {
+                'error': 'Authentication token not found',
+                **enquiry_data,
+            }
+            return render(request, 'new_enquiry.html', context)
+        
+        api_url = 'http://127.0.0.1:8000/api/enquiry/'
+        headers = {
+            'Authorization': f'Token {token.key}',
+            'Content-Type': 'application/json'
+        }
+
+        try:
+            response = requests.post(api_url, json=enquiry_data, headers=headers)
+            response_data = response.json()
+            print(response_data)
+            
+        except requests.exceptions.RequestException:
+            context = {
+                'error': 'An error occurred while creating the enquiry.',
+                **enquiry_data,
+            }
+            return render(request, 'new_enquiry.html', context)        
+        
+        if response.status_code == 201:
+            messages.success(request, 'Created Successfully')
+            return redirect('enquiry')
+        else:
+            # Handle API error messages
+            error_message = response_data.get('error', 'An error occurred during enquiry creation.')
+            errors = response_data
+            
+            print(errors)
+            
+            courses = Course.objects.all()
+            mode_of_enquiry_choices = Enquiry_Mode.objects.all()
+            context = {
+                'error': error_message,
+                'errors': errors,
+                **enquiry_data,
+                'courses': courses,
+                'mode_of_enquiry_choices': mode_of_enquiry_choices,
+            }
+            return render(request, 'new_enquiry.html', context)
+    
+    courses = Course.objects.all()
+    mode_of_enquiry_choices = Enquiry_Mode.objects.all()
+
+    context = {
+        'courses': courses,
+        'mode_of_enquiry_choices': mode_of_enquiry_choices,
+        'enquiry_no': new_enquiry_no
+    }
+    
+    return render(request, 'new_enquiry.html', context)
+
 
 def manage_enquiry_view(request):
     # Fetch the token
     
-    enquiry_data = Enquiry.objects.all()
+    enquiry_data = Enquiry_Mode.objects.all().values()
+    
+    course = Course.objects.all().values()
     
     try:
         token = Token.objects.get(user=request.user)  # Assuming you only have one token and it's safe to get the first one
@@ -1652,8 +1779,123 @@ def manage_enquiry_view(request):
     context = {
         'page_obj': page_obj,
         'per_page': per_page,
+        'course_name': course,
+        'enquiry': enquiry_data,
     }
     return render(request, 'manage_enquiry.html', context)
+
+# def update_enquiry_view(request, id):
+#     # new_enquiry_no = generate_new_enquiry_no()
+    
+#     print("Welcome to update")
+    
+#     print("ID : ", id)
+    
+#     try:
+#         enquiry = Enquiry.objects.get(id=id)
+#         print("Enquiry id : ", enquiry.pk)
+#     except Enquiry.DoesNotExist:
+#         context = {'error': 'Enquiry not found'}
+#         return render(request, 'manage_enquiry.html', context)
+    
+#     if request.method == 'POST':
+#         print("POST")
+#         # Get the token
+#         try:
+#             token = Token.objects.get(user=request.user)
+            
+#             print("Token : ", token)
+            
+#         except Token.DoesNotExist:
+#             context = {
+#                 'error': 'Authentication token not found',
+#             }
+#             return render(request, 'update_enquiry.html', context)
+        
+#         api_url = f'http://127.0.0.1:8000/api/update_enquiry/{enquiry.pk}/'
+#         headers = {
+#             'Authorization': f'Token {token.key}',
+#             'Content-Type': 'application/json'
+#         }
+        
+#         enquiry_data = {
+#             'enquiry_date': request.POST.get('enquiry_date', enquiry.enquiry_date),
+#             'enquiry_no': request.POST.get('enquiry_number', enquiry.enquiry_no),
+#             'name': request.POST.get('student_name', enquiry.name),
+#             'contact_no': request.POST.get('contact', enquiry.contact_no),
+#             'email_id': request.POST.get('email', enquiry.email_id),
+#             'date_of_birth': request.POST.get('dob', enquiry.date_of_birth),
+#             'fathers_name': request.POST.get('father_name', enquiry.fathers_name),
+#             'fathers_contact_no': request.POST.get('father_contact', enquiry.fathers_contact_no),
+#             'fathers_occupation': request.POST.get('fathers_occupation', enquiry.fathers_occupation),
+#             'address': request.POST.get('address', enquiry.address),
+#             'status': request.POST.get('status', enquiry.status),
+#             'course_name': request.POST.get('course_name', enquiry.course_name),
+#             'inplant_technology': request.POST.get('technology', enquiry.inplant_technology),
+#             'inplant_no_of_days': request.POST.get('inplant_no_of_days', enquiry.inplant_no_of_days),
+#             'inplant_no_of_students': request.POST.get('inplant_no_of_students', enquiry.inplant_no_of_students),
+#             'internship_technology': request.POST.get('technology', enquiry.internship_technology),
+#             'internship_no_of_days': request.POST.get('internship_no_of_days', enquiry.internship_no_of_days),
+#             'next_follow_up_date': request.POST.get('next_follow_up_date', enquiry.next_follow_up_date),
+#             'degree': request.POST.get('degree', enquiry.degree),
+#             'college': request.POST.get('college', enquiry.college),
+#             'grade_persentage': request.POST.get('grade_persentage', enquiry.grade_percentage),
+#             'year_of_graduation': request.POST.get('year_of_graduation', enquiry.year_of_graduation),
+#             'mode_of_enquiry': request.POST.get('mode_of_enquiry', enquiry.reference_name),
+#             'reference_name': request.POST.get('reference_name', enquiry.reference_name),
+#             'reference_contact_no': request.POST.get('reference_contact', enquiry.reference_contact_no),
+#             'other_enquiry_details': request.POST.get('other_enquiry_details', enquiry.other_enquiry_details),
+#         }
+        
+#         print("Data : ", enquiry_data['college'])
+
+#         try:
+#             print("Ding")
+#             response = requests.patch(api_url, data=json.dumps(enquiry_data), headers=headers)
+#             response_data = response.json()
+            
+#             print("Response Data : ", response_data)
+            
+#         except requests.exceptions.RequestException:
+#             print("Except")
+#             context = {
+#                 'error': 'An error occurred while creating the enquiry.',
+#                 **enquiry_data,
+#             }
+#             return render(request, 'update_enquiry.html', context)        
+        
+#         if response.status_code == 201:
+#             messages.success(request, 'Created Successfully')
+#             return redirect('enquiry')
+#         else:
+#             # Handle API error messages
+#             error_message = response_data.get('error', 'An error occurred during enquiry creation.')
+#             errors = response_data
+            
+#             print(errors)
+            
+#             courses = Course.objects.all()
+#             mode_of_enquiry_choices = Enquiry_Mode.objects.all()
+#             context = {
+#                 'error': error_message,
+#                 'errors': errors,
+#                 **enquiry_data,
+#                 'courses': courses,
+#                 'mode_of_enquiry_choices': mode_of_enquiry_choices,
+#             }
+#             return render(request, 'update_enquiry.html', context)
+    
+#     courses = Course.objects.all()
+#     mode_of_enquiry_choices = Enquiry_Mode.objects.all()
+
+#     context = {
+#         'courses': courses,
+#         'mode_of_enquiry_choices': mode_of_enquiry_choices,
+#         # 'enquiry_no': new_enquiry_no
+#     }
+        
+#     return render(request, 'update_enquiry.html', context)
+
 
 def update_enquiry_view(request, id):
     try:
@@ -1664,6 +1906,8 @@ def update_enquiry_view(request, id):
 
     if request.method == 'POST':
         
+        print("Welcome")
+        
         try:
             token = Token.objects.first()  # Get the first token for simplicity
             if not token:
@@ -1673,18 +1917,17 @@ def update_enquiry_view(request, id):
             return render(request, 'manage_enquiry.html', context)
         
         api_url = f'http://127.0.0.1:8000/api/update_enquiry/{enquiry.pk}/'
+        
+        print("Api URL : ", api_url)
+        
         headers = {
             'Authorization': f'Token {token.key}',
             'Content-Type': 'application/json'
         }
         
-        # user_data = {
-        #     'course_name': request.POST.get('course', user.course_name),
-        # }
-        
         enquiry_data = {
             'enquiry_date': request.POST.get('enquiry_date', enquiry.enquiry_date),
-            'enquiry_no': request.POST.get('enquiry_number', enquiry.enquiry_no)(),
+            'enquiry_no': request.POST.get('enquiry_no', 'EWT-0085'),
             'name': request.POST.get('student_name', enquiry.name),
             'contact_no': request.POST.get('contact', enquiry.contact_no),
             'email_id': request.POST.get('email', enquiry.email_id),
@@ -1703,13 +1946,20 @@ def update_enquiry_view(request, id):
             'next_follow_up_date': request.POST.get('next_follow_up_date', enquiry.next_follow_up_date),
             'degree': request.POST.get('degree', enquiry.degree),
             'college': request.POST.get('college', enquiry.college),
-            'grade_persentage': request.POST.get('grade_persentage', enquiry.grade_percentage),
+            'grade_persentage': request.POST.get('grade_persentage', "8.85"),
             'year_of_graduation': request.POST.get('year_of_graduation', enquiry.year_of_graduation),
             'mode_of_enquiry': request.POST.get('mode_of_enquiry', enquiry.reference_name),
             'reference_name': request.POST.get('reference_name', enquiry.reference_name),
             'reference_contact_no': request.POST.get('reference_contact', enquiry.reference_contact_no),
             'other_enquiry_details': request.POST.get('other_enquiry_details', enquiry.other_enquiry_details),
+            'notes': request.POST.get('notes', enquiry.notes),
+            'files': request.POST.get('files', enquiry.files),
         }
+        
+        print("Enquiry Data : ", enquiry_data)
+        
+        print(enquiry_data['notes'])
+        print(enquiry_data['files'])
 
         try:
             response = requests.patch(api_url, data=json.dumps(enquiry_data), headers=headers)
@@ -1726,7 +1976,7 @@ def update_enquiry_view(request, id):
         
         if response.status_code in [200, 204]:  # 204 No Content is also a valid response for updates
             print("Update successful")
-            return redirect('manage_enquiry')
+            return redirect('update_enquiry')
         else:
             context = {
                 'error': response_data.get('error', 'An error occurred during enquiry creation.'),
@@ -1745,8 +1995,9 @@ def update_enquiry_view(request, id):
                 'inplant_technology': response_data.get('inplant_technology', ''),
                 'inplant_no_of_days': response_data.get('inplant_no_of_days', ''),
                 'inplant_no_of_students': response_data.get('inplant_no_of_students', ''),
-                # 'internship_technology': response_data.get('internship_technology', ''),
-                # 'internship_no_of_days': response_data.get('internship_no_of_days', ''),
+                'internship_technology': response_data.get('internship_technology', ''),
+                'internship_no_of_students': response_data.get('inplant_no_of_students', ''),
+                'internship_no_of_days': response_data.get('internship_no_of_days', ''),
                 'next_follow_up_date': response_data.get('next_follow_up_date', ''),
                 'degree': response_data.get('degree', ''),
                 'college': response_data.get('college', ''),
@@ -1756,10 +2007,21 @@ def update_enquiry_view(request, id):
                 'reference_name': response_data.get('reference_name', ''),
                 'reference_contact_no': response_data.get('reference_contact_no', ''),
                 'other_enquiry_details': response_data.get('other_enquiry_details', ''),
+                'notes': response_data.get('notes', ''),
+                'files': response_data.get('files', ''),
             }
             return render(request, 'update_enquiry.html', context)
+    
+    courses = Course.objects.all()
+    mode_of_enquiry_choices = Enquiry_Mode.objects.all()
+
+    context = {
+        'courses': courses,
+        'mode_of_enquiry_choices': mode_of_enquiry_choices,
+        "enquiry": enquiry
+    }    
         
-    return render(request, 'update_enquiry.html', {"enquiry": enquiry})
+    return render(request, 'update_enquiry.html', context)
 
 
 def delete_enquiry_view(request, id):
@@ -1817,9 +2079,223 @@ def delete_all_enquiry_view(request):
             
             if user_ids:
                 Enquiry.objects.filter(id__in=user_ids).delete()
-                return JsonResponse({'success': True})
+                return redirect('manage_enquiry')
+                # return JsonResponse({'success': True})
             else:
                 return JsonResponse({'success': False, 'error': 'No users selected for deletion'})
         except json.JSONDecodeError:
             return JsonResponse({'success': False, 'error': 'Invalid JSON'})
     return JsonResponse({'success': False, 'error': 'Invalid request method'})
+
+# csv file formate for attributes
+@csrf_exempt
+def export_enquiry_csv(request):
+    if request.method == 'POST':
+        ids = request.POST.get('ids', '').split(',')  # Get the ids from AJAX request
+
+        # Create the HttpResponse object with the appropriate CSV header
+        response = HttpResponse(content_type='text/csv')
+        response['Content-Disposition'] = 'attachment; filename="attributes_list_csv.csv"'
+
+        writer = csv.writer(response)
+
+        # Write the header row with capitalized first letters
+        writer.writerow([
+            'Enquiry Date', 'Enquiry No', 'Name', 'Contact No', 'Email ID',
+            'Date of Birth', 'Father\'s Name', 'Father\'s Contact No', 'Father\'s Occupation',
+            'Address', 'Status', 'Course Name', 'Inplant Technology',
+            'Inplant No of Days', 'Inplant No of Students', 'Internship Technology',
+            'Internship No of Days', 'Next Follow Up Date', 'Degree', 'College',
+            'Grade Percentage', 'Year of Graduation', 'Mode of Enquiry', 'Reference Name',
+            'Reference Contact No', 'Other Enquiry Details'
+        ])
+
+        # Fetch selected enquiries based on IDs
+        selected_enquiries = Enquiry.objects.filter(id__in=ids)
+
+        for enquiry in selected_enquiries:
+            writer.writerow([
+                enquiry.enquiry_date,
+                enquiry.enquiry_no,
+                enquiry.name,
+                enquiry.contact_no,
+                enquiry.email_id,
+                enquiry.date_of_birth,
+                enquiry.fathers_name,
+                enquiry.fathers_contact_no,
+                enquiry.fathers_occupation,
+                enquiry.address,
+                enquiry.status,
+                enquiry.course_name.course_name if enquiry.course_name else '',  # Use the course name
+                enquiry.inplant_technology,
+                enquiry.inplant_no_of_days,
+                enquiry.inplant_no_of_students,
+                enquiry.internship_technology,
+                enquiry.internship_no_of_days,
+                enquiry.next_follow_up_date,
+                enquiry.degree,
+                enquiry.college,
+                enquiry.grade_percentage,
+                enquiry.year_of_graduation,
+                enquiry.mode_of_enquiry.mode_of_enquiry if enquiry.mode_of_enquiry else '',  # Use the mode of enquiry name
+                enquiry.reference_name,
+                enquiry.reference_contact_no,
+                enquiry.other_enquiry_details
+            ])
+
+        return response
+
+    # Handle GET request or non-AJAX POST request here if needed
+    return HttpResponse(status=400)  # Bad request if not POST or AJAX
+
+# Excel file format for course
+@csrf_exempt
+def export_enquiry_excel(request):
+    if request.method == 'POST':
+        ids = request.POST.get('ids', '').split(',')  # Get the ids from AJAX request
+
+        # Fetch selected courses based on IDs
+        selected_attributes = Enquiry.objects.filter(id__in=ids)
+
+        # Create an Excel workbook
+        wb = openpyxl.Workbook()
+        ws = wb.active
+
+        # Define header row with font style and alignment
+        # Define header row with capitalized first letters
+        headers = [
+            'Enquiry Date', 'Enquiry No', 'Name', 'Contact No', 'Email ID',
+            'Date of Birth', 'Father\'s Name', 'Father\'s Contact No', 'Father\'s Occupation',
+            'Address', 'Status', 'Course Name', 'Inplant Technology',
+            'Inplant No of Days', 'Inplant No of Students', 'Internship Technology',
+            'Internship No of Days', 'Next Follow Up Date', 'Degree', 'College',
+            'Grade Percentage', 'Year of Graduation', 'Mode of Enquiry', 'Reference Name',
+            'Reference Contact No', 'Other Enquiry Details'
+        ]
+        
+        # Append the header row to the sheet
+        ws.append(headers)
+
+        for enquiry in selected_attributes:
+            ws.append([
+                enquiry.enquiry_date.strftime('%Y-%m-%d') if enquiry.enquiry_date else '',
+                enquiry.enquiry_no,
+                enquiry.name,
+                enquiry.contact_no,
+                enquiry.email_id,
+                enquiry.date_of_birth.strftime('%Y-%m-%d') if enquiry.date_of_birth else '',
+                enquiry.fathers_name,
+                enquiry.fathers_contact_no,
+                enquiry.fathers_occupation,
+                enquiry.address,
+                enquiry.status,
+                enquiry.course_name.course_name if enquiry.course_name else '',
+                enquiry.inplant_technology,
+                enquiry.inplant_no_of_days if enquiry.inplant_no_of_days is not None else '',
+                enquiry.inplant_no_of_students if enquiry.inplant_no_of_students is not None else '',
+                enquiry.internship_technology,
+                enquiry.internship_no_of_days if enquiry.internship_no_of_days is not None else '',
+                enquiry.next_follow_up_date.strftime('%Y-%m-%d') if enquiry.next_follow_up_date else '',
+                enquiry.degree,
+                enquiry.college,
+                enquiry.grade_percentage if enquiry.grade_percentage is not None else '',
+                enquiry.year_of_graduation if enquiry.year_of_graduation is not None else '',
+                enquiry.mode_of_enquiry.mode_of_enquiry if enquiry.mode_of_enquiry else '',
+                enquiry.reference_name,
+                enquiry.reference_contact_no,
+                enquiry.other_enquiry_details
+            ])
+
+        # Create an in-memory file-like object to save the workbook
+        output = BytesIO()
+        wb.save(output)
+        output.seek(0)
+
+        # Create the HTTP response with Excel content type and attachment header
+        response = HttpResponse(output, content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+        response['Content-Disposition'] = 'attachment; filename="generated_excel.xlsx"'
+        
+        return response
+
+    # Handle GET request or non-AJAX POST request here if needed
+    return HttpResponse(status=400)  # Bad request if not POST or AJAX
+
+@csrf_protect
+@require_POST
+def export_enquiry_pdf(request):
+    if request.method == 'POST':
+        ids = request.POST.get('ids', '').split(',')
+        selected_attribute = Enquiry.objects.filter(id__in=ids)
+        
+        if not selected_attribute:
+            return JsonResponse({'error': 'No users available.'}, status=404)
+        
+        attribute_list = []
+        for enquiry in selected_attribute:    
+            attribute_list.append({
+                'enquiry_date': enquiry.enquiry_date.strftime('%Y-%m-%d') if enquiry.enquiry_date else '',
+                'enquiry_no': enquiry.enquiry_no,
+                'name': enquiry.name,
+                'contact_no': enquiry.contact_no,
+                'email_id': enquiry.email_id,
+                'date_of_birth': enquiry.date_of_birth.strftime('%Y-%m-%d') if enquiry.date_of_birth else '',
+                'fathers_name': enquiry.fathers_name,
+                'fathers_contact_no': enquiry.fathers_contact_no,
+                'fathers_occupation': enquiry.fathers_occupation,
+                'address': enquiry.address,
+                'status': enquiry.status,
+                'course_name': enquiry.course_name.course_name if enquiry.course_name else '',
+                'inplant_technology': enquiry.inplant_technology,
+                'inplant_no_of_days': enquiry.inplant_no_of_days if enquiry.inplant_no_of_days is not None else '',
+                'inplant_no_of_students': enquiry.inplant_no_of_students if enquiry.inplant_no_of_students is not None else '',
+                'internship_technology': enquiry.internship_technology,
+                'internship_no_of_days': enquiry.internship_no_of_days if enquiry.internship_no_of_days is not None else '',
+                'next_follow_up_date': enquiry.next_follow_up_date.strftime('%Y-%m-%d') if enquiry.next_follow_up_date else '',
+                'degree': enquiry.degree,
+                'college': enquiry.college,
+                'grade_percentage': enquiry.grade_percentage if enquiry.grade_percentage is not None else '',
+                'year_of_graduation': enquiry.year_of_graduation if enquiry.year_of_graduation is not None else '',
+                'mode_of_enquiry': enquiry.mode_of_enquiry.mode_of_enquiry if enquiry.mode_of_enquiry else '',
+                'reference_name': enquiry.reference_name,
+                'reference_contact_no': enquiry.reference_contact_no,
+                'other_enquiry_details': enquiry.other_enquiry_details
+            })
+        
+        print(attribute_list)
+        
+        content = {'attribute_list': attribute_list}
+        return renderers.render_to_pdf('enquiry_data_list.html', content)
+    
+    # Handle GET request or non-AJAX POST request here if needed
+    return HttpResponse(status=400)  # Bad request if not POST or AJAX
+
+class SearchAttributeResultsView(ListView):
+    model = Enquiry
+    template_name = 'search_attribute_result.html'
+
+    def get_queryset(self):
+        query = self.request.GET.get("q", "")
+        start_date = self.request.GET.get("start_date", "")
+        end_date = self.request.GET.get("end_date", "")
+
+        object_list = Enquiry.objects.all()
+
+        # Apply text search if query is provided
+        if query:
+            object_list = object_list.filter(
+                Q(mode_of_enquiry__icontains=query) |
+                Q(name__icontains=query) |
+                Q(contact_no__icontains=query) |
+                Q(email_id__icontains=query)
+            )
+
+        # Apply date range filter if dates are provided
+        if start_date and end_date:
+            try:
+                start_date = datetime.strptime(start_date, '%Y-%m-%d').date()
+                end_date = datetime.strptime(end_date, '%Y-%m-%d').date()
+                object_list = object_list.filter(enquiry_date__range=(start_date, end_date))
+            except ValueError:
+                pass  # Handle invalid date format if necessary
+
+        return object_list

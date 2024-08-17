@@ -1,3 +1,46 @@
 .status {
-    width: 22%;
+    width: 15%;
+}
+
+.netural {
+    display: inline-block;
+    border: 1px solid #06469b;
+    font-size: 11px;
+    background-color: #dbdbf5;
+    padding: 5px 18px;
+    border-radius: 15px;
+    margin: 5px 3px;
+    color: #1f05ca;
+}
+.positive {
+    display: inline-block;
+    border: 1px solid #0eda07;
+    font-size: 11px;
+    background-color: #ebf9ef;
+    padding: 5px 18px;
+    border-radius: 15px;
+    margin: 5px 3px;
+    color: #05b91d;
+}
+.dead {
+    display: inline-block;
+    border: 1px solid #c72571;
+    font-size: 11px;
+    background-color: #fff5fa;
+    padding: 5px 18px;
+    border-radius: 15px;
+    margin: 5px 3px;
+    color: #c72571;
+}
+
+.tdata.status .status-display {
+    max-width: 100px; /* Adjust based on your table layout */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    cursor: pointer;
+}
+
+.thead {
+    width: 9%;
 }

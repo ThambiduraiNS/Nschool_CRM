@@ -1,3 +1,4 @@
+import os
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.core.validators import MinLengthValidator
@@ -84,7 +85,12 @@ class Enquiry_Mode(models.Model):
 
     def __str__(self):
         return self.mode_of_enquiry
-    
+
+def getFileName(request, filename):
+    now_time = datetime.datetime.now().strftime('%Y%m%d%X')
+    new_filename = "{}{}".format(now_time, filename)
+    return os.path.join('Images/', new_filename)
+ 
 class Enquiry(models.Model):
     enquiry_date = models.DateField()
     enquiry_no = models.CharField(unique=True, blank=True)
@@ -93,57 +99,43 @@ class Enquiry(models.Model):
     name = models.CharField(max_length=100)
     contact_no = models.CharField(max_length=10, unique=True)
     email_id = models.EmailField(max_length=255, unique=True)
-    date_of_birth = models.DateField(null=True, blank=True, default=0000-00-00)
+    date_of_birth = models.DateField(null=True, blank=True)  # Removed invalid default
     fathers_name = models.CharField(max_length=100, null=True, blank=True)
     fathers_contact_no = models.CharField(max_length=10, unique=True)
     fathers_occupation = models.CharField(max_length=100, null=True, blank=True)
     address = models.TextField(null=True, blank=True)
-    status = models.CharField(max_length=255, null=True, blank=True)
+    status = models.CharField(null=True, blank=True)
 
     # Course Name (Foreign Key)
     course_name = models.ForeignKey('Course', on_delete=models.CASCADE)
-    inplant_technology = models.CharField(max_length=100, null=True)
-    inplant_no_of_days = models.PositiveIntegerField(default=0)
-    inplant_no_of_students = models.PositiveIntegerField(default=0)
+    inplant_technology = models.CharField(max_length=100, null=True, blank=True)
+    inplant_no_of_days = models.CharField(null=True, blank=True)
+    inplant_no_of_students = models.CharField(null=True, blank=True)
     internship_technology = models.CharField(max_length=100, null=True, blank=True)
-    internship_no_of_days = models.PositiveIntegerField(null=True, blank=True)
+    internship_no_of_days = models.CharField(null=True, blank=True)
     next_follow_up_date = models.DateField()
 
     # Educational Details
     degree = models.CharField(max_length=100, null=True)
     college = models.CharField(max_length=100)
-    grade_percentage = models.DecimalField(max_digits=5, decimal_places=2, blank=True, default=0.00)
+    grade_percentage = models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True)
     year_of_graduation = models.PositiveIntegerField()
-    
-    # Mode of Enquiry
-    GOOGLE = 'Google'
-    FACEBOOK = 'Facebook'
-    INSTAGRAM = 'Instagram'
-    LINKEDIN = 'LinkedIn'
-    WHATSAPP = 'WhatsApp'
-    DIRECT_WALK_IN = 'Direct Walk-in'
-    EMAIL_ENQUIRY = 'Email Enquiry'
-    DIRECT_CALL = 'Direct Call'
-    REFERENCE = 'Reference'
-    OTHER = 'Other'
 
-    MODE_OF_ENQUIRY_CHOICES = [
-        (GOOGLE, 'Google'),
-        (FACEBOOK, 'Facebook'),
-        (INSTAGRAM, 'Instagram'),
-        (LINKEDIN, 'LinkedIn'),
-        (WHATSAPP, 'Whatsapp'),
-        (DIRECT_WALK_IN, 'Direct walk-in'),
-        (EMAIL_ENQUIRY, 'Email Enquiry'),
-        (DIRECT_CALL, 'Direct call'),
-        (REFERENCE, 'Reference'),
-        (OTHER, 'Other'),
-    ]
-
-    mode_of_enquiry = models.CharField(max_length=20, choices=MODE_OF_ENQUIRY_CHOICES)
-    reference_name = models.CharField(max_length=100, null=True)
-    reference_contact_no = models.CharField(max_length=10, null=True)
+    mode_of_enquiry = models.ForeignKey('Enquiry_Mode', on_delete=models.CASCADE)
+    reference_name = models.CharField(max_length=100, null=True, blank=True)
+    reference_contact_no = models.CharField(max_length=10, null=True, blank=True)
     other_enquiry_details = models.TextField(null=True, blank=True)
+    lead_type = models.CharField(null=True, blank=True)
+    
+    enquiry_count = models.IntegerField(default=0)
+    notes = models.CharField(blank=True, null=True)
+    files = models.ImageField(upload_to=getFileName, blank=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    modified_at = models.DateTimeField(auto_now=True)
+    created_by = models.IntegerField(null=True, blank=True)
+    modified_by = models.IntegerField(null=True)
+    is_active = models.BooleanField(default=True)
+    is_deleted = models.BooleanField(default=False)
 
     def __str__(self):
         return f"{self.enquiry_no} - {self.name}"
@@ -159,7 +151,19 @@ class Enquiry(models.Model):
             if last_enquiry:
                 last_pk = last_enquiry.pk
         
-            self.enquiry_no = "EWT-" + str(last_pk+1).zfill(4)
+            self.enquiry_no = "EWT-" + str(last_pk + 1).zfill(4)
 
         super(Enquiry, self).save(*args, **kwargs)
         
+class Notes(models.Model):
+    notes = models.CharField(blank=True, null=True)
+    files = models.ImageField(blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    modified_at = models.DateTimeField(auto_now=True)
+    created_by = models.IntegerField(null=True, blank=True)
+    modified_by = models.IntegerField(null=True)
+    is_active = models.BooleanField(default=True)
+    is_deleted = models.BooleanField(default=False)
+    
+    def __str__(self):
+        return self.notes
