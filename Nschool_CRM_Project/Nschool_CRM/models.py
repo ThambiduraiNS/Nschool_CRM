@@ -87,9 +87,7 @@ class Enquiry_Mode(models.Model):
         return self.mode_of_enquiry
 
 def getFileName(request, filename):
-    now_time = datetime.datetime.now().strftime('%Y%m%d%X')
-    new_filename = "{}{}".format(now_time, filename)
-    return os.path.join('Images/', new_filename)
+    return os.path.join('Images/', filename)
  
 class Enquiry(models.Model):
     enquiry_date = models.DateField()
@@ -129,7 +127,7 @@ class Enquiry(models.Model):
     
     enquiry_count = models.IntegerField(default=0)
     notes = models.CharField(blank=True, null=True)
-    files = models.ImageField(upload_to=getFileName, blank=False)
+    files = models.ImageField(upload_to=getFileName, blank=False, default='React.png')
     created_at = models.DateTimeField(auto_now_add=True)
     modified_at = models.DateTimeField(auto_now=True)
     created_by = models.IntegerField(null=True, blank=True)

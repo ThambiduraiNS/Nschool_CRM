@@ -18,6 +18,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 BASE_DIR1 = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 TEMPLATES_DIR = os.path.join(BASE_DIR1, 'templates')
 STATIC_DIR = os.path.join(BASE_DIR1, 'static')
+MEDIA_ROOT = BASE_DIR / 'media'
+MEDIA_URL = '/media/'
 STATIC_ROOT = os.path.join(STATIC_DIR, 'canvasjs')
 ENCRYPTION_KEY_FILE = os.path.join(BASE_DIR, 'secure_keys', 'secure_keys', 'keyfile.key')
 

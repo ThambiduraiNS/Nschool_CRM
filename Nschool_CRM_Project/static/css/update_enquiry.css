@@ -106,8 +106,23 @@
 }
 
 .action-div {
+    margin: 11px 0px 0px 0px;
     width: 40px;
     height: 20px;
+}
+
+.note {
+    border: none !important;
+    color: #aaa;
+}
+
+.time {
+    width: 40px;
+    height: 20px;  
+}
+
+.notes-error-div {
+    right: 42px;
 }
 
 /* textarea::placeholder {
