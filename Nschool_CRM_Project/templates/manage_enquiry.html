@@ -150,7 +150,7 @@
                                 <th class="thead">Lead Type</th>
                                 <th class="thead">Follow-up date</th>
                                 <th class="thead status">Status</th>
-                                <th class="thead status">Comments</th>
+                                <!-- <th class="thead status">Comments</th> -->
                                 <th class="action">Action</th>
                             </tr>
                             {% for user in page_obj %}
@@ -191,12 +191,15 @@
                                     </div>
                                 </td>
                                 <td class="tdata">{{ user.next_follow_up_date }}</td>
+                                {% if user.status%}
                                 <td class="tdata status" title="{{ user.status }}">
                                     <div class="status-display">{{ user.status }}</div>
                                 </td>
+                                {% else %}
                                 <td class="tdata status" title="{{ user.notes }}">
                                     <div class="status-display">{{ user.notes }}</div>
                                 </td>
+                                {% endif %}
                                 <td class="tdata">
                                     <div>
                                         <a href="/update_enquiry/{{user.id}}">

@@ -49,11 +49,12 @@ urlpatterns = [
     
     path('enquiry/', enquiry_view, name='enquiry'),
     path('manage_enquiry/', manage_enquiry_view, name='manage_enquiry'),
-    path('update_enquiry/<int:id>/', update_enquiry_view, name='update_enquiry'),
+    path('update_enquiry/<int:id>/', update_enquiry_view, name='update_enquiry_view'),
     path('delete_enquiry/<int:id>/', delete_enquiry_view, name='delete_enquiry'),
     path('delete_all_enquiry/', delete_all_enquiry_view, name='delete_all_enquiry'),
     
     path('delete_notes/<int:id>/', delete_notes_view, name='delete_notes_view'),
+    path('update_notes/<int:id>/', update_notes_view, name='delete_notes_view'),
     
     # file formate for attributes
     path('export_attributes_csv/', export_attributes_csv, name='export_attributes_csv'),
@@ -88,6 +89,7 @@ urlpatterns = [
     path('api/delete_enquiry_mode/<int:pk>/', EnquiryModeDeleteView.as_view(), name='enquiry_mode_delete'),
     
     path('api/notes/<int:pk>/', NotesDetailView.as_view(), name='notes'),
+    path('api/update_notes/<int:pk>/', NotesUpdateView.as_view(), name='notes_update'),
     
     # API for enquiry module
     path('api/enquiry/', EnquiryListCreateView.as_view(), name='enquiry_list_create'),

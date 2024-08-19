@@ -1,6 +1,7 @@
 
 from io import BytesIO
 import json, requests
+from django.core.files.uploadedfile import InMemoryUploadedFile
 
 from django.shortcuts import redirect, render
 from django.contrib.auth import authenticate
@@ -613,8 +614,7 @@ class EnquiryUpdateView(generics.RetrieveUpdateAPIView):
     queryset = Enquiry.objects.all()
     serializer_class = EnquirySerializer
     permission_classes = [IsAuthenticated]
-    partial = True
-    
+    partial = True    
     
 class EnquiryDeleteView(generics.DestroyAPIView):
     queryset = Enquiry.objects.all()
@@ -632,6 +632,12 @@ class NotesDetailView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = NotesSerializer
     permission_classes = [IsAuthenticated]
     lookup_field = 'pk'
+    
+class NotesUpdateView(generics.RetrieveUpdateAPIView):
+    queryset = Notes.objects.all()
+    serializer_class = NotesSerializer
+    permission_classes = [IsAuthenticated]
+    partial = True
 
 
 @csrf_exempt
@@ -1803,7 +1809,8 @@ def update_enquiry_view(request, id):
         print("Welcome")
         
         try:
-            token = Token.objects.first()  # Get the first token for simplicity
+            token = Token.objects.get(user=request.user)  # Get the first token for simplicity
+            print(token)
             if not token:
                 raise Token.DoesNotExist
         except Token.DoesNotExist:
@@ -1852,9 +1859,9 @@ def update_enquiry_view(request, id):
         
         files = {}
         if 'files' in request.FILES:
-            files['files'] = request.FILES['files']
+            files = {'files': request.FILES['files']}
         else:
-            files['files'] = enquiry.files  # Or handle the case when no new file is uploaded
+            files = {'files': enquiry.files} # Or handle the case when no new file is uploaded
             
         # Log the data and files to be sent
         print("Enquiry Data:", enquiry_data)
@@ -2367,8 +2374,8 @@ def delete_notes_view(request, id):
         }
         return render(request, 'update_enquiry.html', context)
     
-    if response.status_code == 204:
-        return redirect('delete_notes_view')
+    if response.status_code == [200, 204]:
+        return redirect('update_enquiry_view')
     
     else:
         response_data = response.json()
@@ -2376,3 +2383,56 @@ def delete_notes_view(request, id):
             'detail': response_data.get('detail', 'An error occurred while deleting the Attributes'),
         }
         return render(request, 'update_enquiry.html', context)
+    
+
+def update_notes_view(request, id):
+    try:
+        user = Notes.objects.get(id=id)
+    except Notes.DoesNotExist:
+        context = {'error': 'Notes not found'}
+        return render(request, 'update_enquiry.html', context)
+
+    if request.method == 'POST':
+        
+        try:
+            token = Token.objects.get(user=request.user) # Get the first token for simplicity
+            if not token:
+                raise Token.DoesNotExist
+        except Token.DoesNotExist:
+            context = {'error': 'Authentication token not found'}
+            return render(request, 'update_enquiry.html', context)
+        
+        api_url = f'http://127.0.0.1:8000/api/update_notes/{user.pk}/'
+        headers = {
+            'Authorization': f'Token {token.key}',
+            'Content-Type': 'application/json'
+        }
+        
+        user_data = {
+            'notes': request.POST.get('attribute', user.notes),
+        }
+
+        try:
+            response = requests.patch(api_url, json=user_data, headers=headers)
+            print("API Response Status Code:", response.status_code)
+            response.raise_for_status()
+            response_data = response.json()
+            print("API Response Data:", response_data)
+        except requests.exceptions.RequestException as err:
+            context = {
+                'error': f'Request error occurred: {err}',
+                'response_data': response.json() if response.content else {}
+            }
+            return render(request, 'update_enquiry.html', context)
+        
+        if response.status_code in [200, 204]:  # 204 No Content is also a valid response for updates
+            print("Update successful")
+            return redirect('manage_enquiry')
+        else:
+            context = {
+                'error': 'Failed to update user information',
+                'notes': response_data.get('notes', ''),
+            }
+            return render(request, 'update_enquiry.html', context)
+        
+    return render(request, 'update_enquiry.html', {"notes": user})

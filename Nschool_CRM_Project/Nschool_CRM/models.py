@@ -116,7 +116,7 @@ class Enquiry(models.Model):
     # Educational Details
     degree = models.CharField(max_length=100, null=True)
     college = models.CharField(max_length=100)
-    grade_percentage = models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True)
+    grade_percentage = models.CharField(blank=True, null=True)
     year_of_graduation = models.PositiveIntegerField()
 
     mode_of_enquiry = models.ForeignKey('Enquiry_Mode', on_delete=models.CASCADE)
