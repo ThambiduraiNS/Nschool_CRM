@@ -49,7 +49,7 @@ urlpatterns = [
     
     path('enquiry/', enquiry_view, name='enquiry'),
     path('manage_enquiry/', manage_enquiry_view, name='manage_enquiry'),
-    path('update_enquiry/<int:id>/', update_enquiry_view, name='update_enquiry_view'),
+    path('update_enquiry/<int:id>/', update_enquiry_view, name='update_enquiry'),
     path('delete_enquiry/<int:id>/', delete_enquiry_view, name='delete_enquiry'),
     path('delete_all_enquiry/', delete_all_enquiry_view, name='delete_all_enquiry'),
     
@@ -90,6 +90,7 @@ urlpatterns = [
     
     path('api/notes/<int:pk>/', NotesDetailView.as_view(), name='notes'),
     path('api/update_notes/<int:pk>/', NotesUpdateView.as_view(), name='notes_update'),
+    path('api/delete_notes/<int:pk>/', NotesDeleteView.as_view(), name='notes_delete'),
     
     # API for enquiry module
     path('api/enquiry/', EnquiryListCreateView.as_view(), name='enquiry_list_create'),

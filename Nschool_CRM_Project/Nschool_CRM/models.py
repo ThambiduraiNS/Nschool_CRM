@@ -156,6 +156,7 @@ class Enquiry(models.Model):
 class Notes(models.Model):
     notes = models.CharField(blank=True, null=True)
     files = models.ImageField(blank=True, null=True)
+    user_id = models.IntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
     modified_at = models.DateTimeField(auto_now=True)
     created_by = models.IntegerField(null=True, blank=True)

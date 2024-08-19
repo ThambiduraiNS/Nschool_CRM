@@ -638,6 +638,16 @@ class NotesUpdateView(generics.RetrieveUpdateAPIView):
     serializer_class = NotesSerializer
     permission_classes = [IsAuthenticated]
     partial = True
+    
+class NotesDeleteView(generics.DestroyAPIView):
+    queryset = Notes.objects.all()
+    serializer_class = NotesSerializer
+    permission_classes = [IsAuthenticated]
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        instance.delete()
+        return Response({'Message': 'Successfully deleted'})
 
 
 @csrf_exempt
@@ -1837,7 +1847,7 @@ def update_enquiry_view(request, id):
             'fathers_contact_no': request.POST.get('father_contact', enquiry.fathers_contact_no),
             'fathers_occupation': request.POST.get('fathers_occupation', enquiry.fathers_occupation),
             'address': request.POST.get('address', enquiry.address),
-            'status': request.POST.get('status', enquiry.status),
+            # 'status': request.POST.get('status', enquiry.status),
             'course_name': request.POST.get('course_name', enquiry.course_name),
             'inplant_technology': request.POST.get('technology', enquiry.inplant_technology),
             'inplant_no_of_days': request.POST.get('inplant_no_of_days', enquiry.inplant_no_of_days),
@@ -1854,6 +1864,7 @@ def update_enquiry_view(request, id):
             'reference_contact_no': request.POST.get('reference_contact', enquiry.reference_contact_no),
             'other_enquiry_details': request.POST.get('other_enquiry_details', enquiry.other_enquiry_details),
             'notes': request.POST.get('notes', enquiry.notes),
+            'status': request.POST.get('notes', enquiry.notes),
             'lead_type': request.POST.get('lead_type', enquiry.lead_type),
         }
         
@@ -1895,6 +1906,7 @@ def update_enquiry_view(request, id):
                 notes_data = Notes.objects.create(
                     notes=notes_content,
                     files=uploaded_file,
+                    user_id = enquiry.pk,
                     created_by=request.user.id,  # Assuming the request user is authenticated
                     modified_by=request.user.id
                 )
@@ -1913,16 +1925,15 @@ def update_enquiry_view(request, id):
             return render(request, 'update_enquiry.html', context)
     
     courses = Course.objects.all()
-    notes = Notes.objects.all().order_by('-created_at')
+    notes = Notes.objects.all().values().order_by("-created_at")
     mode_of_enquiry_choices = Enquiry_Mode.objects.all()
-
-    print("Notes Data : ", notes)
     
     context = {
         'courses': courses,
         'mode_of_enquiry_choices': mode_of_enquiry_choices,
         "enquiry": enquiry,
-        "notes": notes
+        "notes": notes,
+        "enquiry_id": id,
     }    
         
     return render(request, 'update_enquiry.html', context)
@@ -2118,6 +2129,7 @@ def delete_all_enquiry_view(request):
             
             if user_ids:
                 Enquiry.objects.filter(id__in=user_ids).delete()
+                print("delete successfully!")
                 return redirect('manage_enquiry')
                 # return JsonResponse({'success': True})
             else:
@@ -2357,7 +2369,7 @@ def delete_notes_view(request, id):
         context = {'error': 'Authentication token not found'}
         return render(request, 'update_enquiry.html', context)
     
-    api_url = f'http://127.0.0.1:8000/api/notes/{user_id.pk}/'
+    api_url = f'http://127.0.0.1:8000/api/delete_notes/{user_id.pk}/'
     headers = {
         'Authorization': f'Token {token.key}',
         'Content-Type': 'application/json'
@@ -2366,7 +2378,9 @@ def delete_notes_view(request, id):
     try:
         response = requests.delete(api_url, headers=headers)
         response.raise_for_status()
-
+        
+        if response.status_code == 200:
+            return redirect('manage_enquiry')
     except requests.exceptions.RequestException as err:
         context = {
             'error': f'Request error occurred: {err}',
@@ -2374,28 +2388,21 @@ def delete_notes_view(request, id):
         }
         return render(request, 'update_enquiry.html', context)
     
-    if response.status_code == [200, 204]:
-        return redirect('update_enquiry_view')
-    
-    else:
-        response_data = response.json()
-        context = {
-            'detail': response_data.get('detail', 'An error occurred while deleting the Attributes'),
-        }
-        return render(request, 'update_enquiry.html', context)
-    
 
 def update_notes_view(request, id):
+    print("Welcome to update notes!")
     try:
         user = Notes.objects.get(id=id)
+        print("User : ", user)
     except Notes.DoesNotExist:
+        print("User Does not Exist!")
         context = {'error': 'Notes not found'}
         return render(request, 'update_enquiry.html', context)
 
     if request.method == 'POST':
-        
+        print("Request Method is POST!")
         try:
-            token = Token.objects.get(user=request.user) # Get the first token for simplicity
+            token = Token.objects.get(user=request.user)
             if not token:
                 raise Token.DoesNotExist
         except Token.DoesNotExist:
@@ -2405,16 +2412,23 @@ def update_notes_view(request, id):
         api_url = f'http://127.0.0.1:8000/api/update_notes/{user.pk}/'
         headers = {
             'Authorization': f'Token {token.key}',
-            'Content-Type': 'application/json'
         }
         
+        files = {}
+        if 'files' in request.FILES:
+            files['files'] = request.FILES['files']
+        
         user_data = {
-            'notes': request.POST.get('attribute', user.notes),
+            'notes': request.POST.get('notes', user.notes),
         }
+        
+        print("User Data : ", user_data)
+        print("Files : ", files)
 
         try:
-            response = requests.patch(api_url, json=user_data, headers=headers)
+            response = requests.patch(api_url, data=user_data, files=files, headers=headers)
             print("API Response Status Code:", response.status_code)
+            print("API Response Text:", response.text)
             response.raise_for_status()
             response_data = response.json()
             print("API Response Data:", response_data)
@@ -2425,14 +2439,15 @@ def update_notes_view(request, id):
             }
             return render(request, 'update_enquiry.html', context)
         
-        if response.status_code in [200, 204]:  # 204 No Content is also a valid response for updates
+        if response.status_code == 200:  # 204 No Content is also a valid response for updates
             print("Update successful")
             return redirect('manage_enquiry')
         else:
+            print("Fail to update!")
             context = {
                 'error': 'Failed to update user information',
                 'notes': response_data.get('notes', ''),
             }
             return render(request, 'update_enquiry.html', context)
         
-    return render(request, 'update_enquiry.html', {"notes": user})
+    return render(request, 'update_notes.html')

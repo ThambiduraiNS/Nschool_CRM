@@ -191,15 +191,15 @@
                                     </div>
                                 </td>
                                 <td class="tdata">{{ user.next_follow_up_date }}</td>
-                                {% if user.status%}
+                                
                                 <td class="tdata status" title="{{ user.status }}">
                                     <div class="status-display">{{ user.status }}</div>
                                 </td>
-                                {% else %}
-                                <td class="tdata status" title="{{ user.notes }}">
+                                
+                                <!-- <td class="tdata status" title="{{ user.notes }}">
                                     <div class="status-display">{{ user.notes }}</div>
-                                </td>
-                                {% endif %}
+                                </td> -->
+                                
                                 <td class="tdata">
                                     <div>
                                         <a href="/update_enquiry/{{user.id}}">

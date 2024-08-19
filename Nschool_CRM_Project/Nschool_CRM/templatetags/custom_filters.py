@@ -23,3 +23,8 @@ def custom_timesince(value):
     else:
         # Default to Django's timesince for longer durations (like days, weeks)
         return timesince(value) + " ago"
+
+
+@register.filter
+def typeof(value):
+    return type(value).__name__

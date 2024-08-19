@@ -635,31 +635,33 @@
                                             </div>
                                             {% endif %} -->
                                             {% for note in notes %}
-                                            <div class="row mt-3">
-                                                <div class="col-7">
-                                                    <input type="text" name="" id="" class="note" value="{{ note.notes }}" readonly>
-                                                </div>
-                                                <div class="col-3 d-flex align-items-center">
-                                                    <?xml version="1.0" ?><svg class="time" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg"><defs><style>.cls-1{fill:#101820;}</style></defs><title/><g data-name="Layer 15" id="Layer_15"><path class="cls-1" d="M16,31A15,15,0,1,1,31,16,15,15,0,0,1,16,31ZM16,3A13,13,0,1,0,29,16,13,13,0,0,0,16,3Z"/><path class="cls-1" d="M20.24,21.66l-4.95-4.95A1,1,0,0,1,15,16V8h2v7.59l4.66,4.65Z"/></g></svg>
-                                                    <input type="text" class="note" value="{{ note.created_at|custom_timesince }}" readonly>
-                                                </div>
-                                                <div class="col-2">
-                                                    <div>
-                                                        <a href="/update_notes/{{ note.id }}">
-                                                            <span class="edit">
-                                                                <!-- SVG for edit icon -->
-                                                                <?xml version="1.0" ?><svg class="edit-icon action-div" id="Outlined" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg"><title/><g id="Fill"><path d="M29.12,6.05,26,2.88a3,3,0,0,0-4.24,0L6.29,18.29a3.06,3.06,0,0,0-.72,1.18L2.08,29.92l10.46-3.49a3.15,3.15,0,0,0,1.17-.72L29.12,10.29a3,3,0,0,0,0-4.24Zm-21,13.28,8.75-8.74,1.58,1.58L9.67,20.92ZM18.24,9.17l1.59-1.58,4.58,4.58-1.58,1.59ZM7.1,21.19l3.72,3.71L5.25,26.75Zm5.57,2.73-1.59-1.59,8.75-8.74,1.58,1.58Zm15-15-1.88,1.88L21.24,6.17l1.88-1.88A1,1,0,0,1,23.83,4a1,1,0,0,1,.71.29l3.17,3.18a1,1,0,0,1,.29.7A1,1,0,0,1,27.71,8.88Z"/></g></svg>
-                                                            </span>
-                                                        </a>
-                                                        <a href="/delete_notes/{{ note.id }}">
-                                                            <span class="delete">
-                                                                <!-- SVG for delete icon -->
-                                                                <?xml version="1.0" ?><!DOCTYPE svg  PUBLIC '-//W3C//DTD SVG 1.1//EN'  'http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd'><svg class="delete-icon action-div" height="512px" id="Layer_1" style="enable-background:new 0 0 512 512;" version="1.1" viewBox="0 0 512 512" width="512px" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g><path d="M400,113.3h-80v-20c0-16.2-13.1-29.3-29.3-29.3h-69.5C205.1,64,192,77.1,192,93.3v20h-80V128h21.1l23.6,290.7   c0,16.2,13.1,29.3,29.3,29.3h141c16.2,0,29.3-13.1,29.3-29.3L379.6,128H400V113.3z M206.6,93.3c0-8.1,6.6-14.7,14.6-14.7h69.5   c8.1,0,14.6,6.6,14.6,14.7v20h-98.7V93.3z M341.6,417.9l0,0.4v0.4c0,8.1-6.6,14.7-14.6,14.7H186c-8.1,0-14.6-6.6-14.6-14.7v-0.4   l0-0.4L147.7,128h217.2L341.6,417.9z"/><g><rect class="action-div" height="241" width="14" x="249" y="160"/><polygon class="action-div" points="320,160 305.4,160 294.7,401 309.3,401   "/><polygon class="action-div" points="206.5,160 192,160 202.7,401 217.3,401   "/></g></g></svg>
-                                                            </span>
-                                                        </a>
+                                                {% if note.user_id == enquiry.id %}
+                                                    <div class="row mt-3">
+                                                        <div class="col-7">
+                                                            <input type="text" name="" id="" class="note" value="{{ note.notes }}" readonly>
+                                                        </div>
+                                                        <div class="col-3 d-flex align-items-center">
+                                                            <?xml version="1.0" ?><svg class="time" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg"><defs><style>.cls-1{fill:#101820;}</style></defs><title/><g data-name="Layer 15" id="Layer_15"><path class="cls-1" d="M16,31A15,15,0,1,1,31,16,15,15,0,0,1,16,31ZM16,3A13,13,0,1,0,29,16,13,13,0,0,0,16,3Z"/><path class="cls-1" d="M20.24,21.66l-4.95-4.95A1,1,0,0,1,15,16V8h2v7.59l4.66,4.65Z"/></g></svg>
+                                                            <input type="text" class="note" value="{{ note.created_at|custom_timesince }}" readonly>
+                                                        </div>
+                                                        <div class="col-2">
+                                                            <div>
+                                                                <a href="/update_notes/{{ note.id }}">
+                                                                    <span class="edit">
+                                                                        <!-- SVG for edit icon -->
+                                                                        <?xml version="1.0" ?><svg class="edit-icon action-div" id="Outlined" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg"><title/><g id="Fill"><path d="M29.12,6.05,26,2.88a3,3,0,0,0-4.24,0L6.29,18.29a3.06,3.06,0,0,0-.72,1.18L2.08,29.92l10.46-3.49a3.15,3.15,0,0,0,1.17-.72L29.12,10.29a3,3,0,0,0,0-4.24Zm-21,13.28,8.75-8.74,1.58,1.58L9.67,20.92ZM18.24,9.17l1.59-1.58,4.58,4.58-1.58,1.59ZM7.1,21.19l3.72,3.71L5.25,26.75Zm5.57,2.73-1.59-1.59,8.75-8.74,1.58,1.58Zm15-15-1.88,1.88L21.24,6.17l1.88-1.88A1,1,0,0,1,23.83,4a1,1,0,0,1,.71.29l3.17,3.18a1,1,0,0,1,.29.7A1,1,0,0,1,27.71,8.88Z"/></g></svg>
+                                                                    </span>
+                                                                </a>
+                                                                <a href="/delete_notes/{{ note.id }}">
+                                                                    <span class="delete">
+                                                                        <!-- SVG for delete icon -->
+                                                                        <?xml version="1.0" ?><!DOCTYPE svg  PUBLIC '-//W3C//DTD SVG 1.1//EN'  'http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd'><svg class="delete-icon action-div" height="512px" id="Layer_1" style="enable-background:new 0 0 512 512;" version="1.1" viewBox="0 0 512 512" width="512px" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g><path d="M400,113.3h-80v-20c0-16.2-13.1-29.3-29.3-29.3h-69.5C205.1,64,192,77.1,192,93.3v20h-80V128h21.1l23.6,290.7   c0,16.2,13.1,29.3,29.3,29.3h141c16.2,0,29.3-13.1,29.3-29.3L379.6,128H400V113.3z M206.6,93.3c0-8.1,6.6-14.7,14.6-14.7h69.5   c8.1,0,14.6,6.6,14.6,14.7v20h-98.7V93.3z M341.6,417.9l0,0.4v0.4c0,8.1-6.6,14.7-14.6,14.7H186c-8.1,0-14.6-6.6-14.6-14.7v-0.4   l0-0.4L147.7,128h217.2L341.6,417.9z"/><g><rect class="action-div" height="241" width="14" x="249" y="160"/><polygon class="action-div" points="320,160 305.4,160 294.7,401 309.3,401   "/><polygon class="action-div" points="206.5,160 192,160 202.7,401 217.3,401   "/></g></g></svg>
+                                                                    </span>
+                                                                </a>
+                                                            </div>
+                                                        </div>
                                                     </div>
-                                                </div>
-                                            </div>
+                                                {% endif %}
                                             {% endfor %}
                                         </div>
 
