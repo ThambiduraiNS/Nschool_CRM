@@ -135,7 +135,7 @@ h5::before {
 .error-div {
     position: absolute;
     font-size: 12px;
-    color: #8d0f4c;
+    color: red;
     margin-top: 5px;
 }
 

@@ -1,5 +1,66 @@
-.status {
-    width: 15%;
+.message {
+    position: absolute;
+    color: green;
+    right: 30px;
+    top: 108px;
+}
+
+.table-responsive {
+    overflow-y: auto;
+}
+
+.search-input {
+    margin-top: 20px;
+    border-radius: 20px;
+    width: 541px;
+    height: 40px;
+    background-color: #fff5fa !important;
+    border: 1px solid #c72571;
+}
+
+.search-input::placeholder {
+    font-size: 14px;
+}
+
+.submit-btn {
+    position: absolute;
+    width: 18%;
+    font-size: 16px;
+    border: 1px solid #842029 !important;
+    border-radius: 50px !important;
+    background-color: #b31d5d;
+    color: #fff;
+    padding: 6px;
+    top: 21px;
+    right: 0px;
+}
+
+.start_date {
+    position: absolute;
+    top: 27px;
+    left: 176px;
+    background: transparent;
+    border: none;
+    width: 116px;
+    color: #999;
+    padding: 0px 0px 0px 6px;
+    border-left: 2px solid #888;
+}
+
+.end_date {
+    position: absolute;
+    top: 27px;
+    right: 116px;
+    background: transparent;
+    border: none;
+    width: 116px;
+    color: #999;
+    padding: 0px 0px 0px 6px;
+    border-left: 2px solid #888;
+}
+
+.start_date:focus-visible, .end_date:focus-visible {
+    outline: none;
 }
 
 .netural {
@@ -34,13 +95,33 @@
 }
 
 .tdata.status .status-display {
-    max-width: 100px; /* Adjust based on your table layout */
+    max-width: 350px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
     cursor: pointer;
 }
 
-.thead {
-    width: 9%;
+.status-div {
+    width: 100%;
+}
+
+.tabel_body_div {
+    width: 80rem;
+    overflow: scroll;
+}
+
+.table-container {
+    overflow-x: auto;
+    scrollbar-width: thin;
+}
+
+.table-container table {
+    width: 100%;
+    min-width: 800px;
+    border-collapse: collapse;
+}
+
+.table-container th, .table-container td {
+    white-space: nowrap;
 }

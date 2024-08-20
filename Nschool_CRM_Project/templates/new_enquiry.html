@@ -208,7 +208,7 @@
                                                         <select class="form-select select" id="courseName" name="course_name" onchange="handleCourseNameChange()">
                                                             <option value="select" selected>Select Your Course</option>
                                                             {% for course in courses %}
-                                                            <option value="{{ course.id }}" {% if course_name == course.id %}selected{% endif %}>{{ course.course_name }}</option>
+                                                            <option value="{{ course.id }}" {% if course_name == course.id %}selected{% endif %}>{{ course.course_name|title }}</option>
                                                             {% endfor %}
                                                         </select>
                                                         <label for="courseName" class="floating-label float">&nbsp;Course Name <span class="required">*</span> &nbsp;</label>
@@ -314,7 +314,7 @@
                                                 <!-- Address field -->
                                                 <div class="col-12 col-md-12 ms-md-4">
                                                     <div class="user-input-wrp ms-md-3">
-                                                        <textarea name="address" id="address" class="form-control text-area" rows="9" cols="1" placeholder=" "
+                                                        <textarea name="address" id="address" class="form-control text-area p-0 m-0" rows="9" cols="1" placeholder=" "
                                                             autocomplete="off" autofocus>{{ address }}
                                                         </textarea>
                                                         <label class="floating-label">&nbsp;Address&nbsp;</label>
@@ -457,7 +457,7 @@
                                             <select name="mode_of_enquiry" id="mode_of_enquiry" class="form-select select" onchange="handleModeOfEnquiryChange()">
                                                 <option value="" selected>Select Mode of Enquiry</option>
                                                 {% for mode in mode_of_enquiry_choices %}
-                                                    <option value="{{ mode.id }}" {% if mode.id == mode_of_enquiry %}selected{% endif %}>{{ mode.mode_of_enquiry }}</option>
+                                                    <option value="{{ mode.id }}" {% if mode.id == mode_of_enquiry %}selected{% endif %}>{{ mode.mode_of_enquiry|title }}</option>
                                                 {% endfor %}
                                             </select>
                                             <label class="floating-label">&nbsp;Mode of Enquiry <span class="required">*</span> &nbsp;</label>
@@ -588,6 +588,11 @@
 
 {% block scripts %}
 <script>
+
+    document.getElementById('address').value = document.getElementById('address').value.trim();
+    document.getElementById('status').value = document.getElementById('status').value.trim();
+
+
     // tab functionality
     document.getElementById('next-tab').addEventListener('click', function () {
         event.preventDefault();
@@ -688,17 +693,16 @@
         }
 
         // Email Validation
-        var emailField = document.getElementById('email');
-        var emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
-        if (emailField.value.trim() === "") {
-            document.getElementById('email_error').innerText = "Email Field is required.";
+        var email = document.getElementById('email').value.trim();
+        console.log("Email : ", email)
+        if (email === "") {
+            document.getElementById("email_error").innerText = "Email Field is required";
             hasError = true;
-        }
-        else if (!emailRegex.test(emailField.value)) {
-            document.getElementById('email_error').innerText = "Please enter a valid email address.";
+        } else if (!(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email))) {
+            document.getElementById("email_error").innerText = "You have entered an invalid email address!";
             hasError = true;
         } else {
-            document.getElementById('email_error').innerText = "";
+            document.getElementById("email_error").innerText = "";
         }
 
         // Father's Contact Number Validation
@@ -714,8 +718,8 @@
         }
 
         // course name field validation
-        var courseName = document.getElementById('courseName');
-        if (courseName.value.trim() === "select") {
+        var courseName = document.getElementById('courseName').value.trim();
+        if (courseName === "select") {
             document.getElementById('course_name_error').innerText = "Please select your course.";
             hasError = true;
         } else {
@@ -787,11 +791,6 @@
 
         if (!hasError) {
             document.getElementById("enquiry_form").submit();
-            // Reload the page after a short delay (optional)
-            setTimeout(function() {
-                console.log("ding")
-                window.location.href = "http://127.0.0.1:8000/enquiry/";
-            }, 5000); // Adjust the delay as needed
         }
     });
 

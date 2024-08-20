@@ -30,6 +30,9 @@ urlpatterns = [
     # search Attributes details
     path('search_attribute/', SearchAttributeResultsView.as_view(), name='search_attribute'),
     
+    # search Attributes details
+    path('search_enquiry/', SearchEnquiryResultsView.as_view(), name='search_enquiry'),
+    
     path('logout/', logout, name='logout'),
     
     

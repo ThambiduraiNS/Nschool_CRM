@@ -91,7 +91,7 @@
                 <!-- Pagination controls -->
                 <div class="row">
                     <div class="col d-flex justify-content-end py-3 gap-2">
-                        <form id="perPageForm" method="get" class="d-flex">
+                        <!-- <form id="perPageForm" method="get" class="d-flex">
                             <select class="select-div me-2" name="per_page" id="perPageSelect" onchange="this.form.submit();">
                                 <option class="option" value="10" {% if per_page == '10' %}selected{% endif %}>10 per page</option>
                                 <option class="option" value="15" {% if per_page == '15' %}selected{% endif %}>15 per page</option>
@@ -115,8 +115,8 @@
                             </a>
                             {% endif %}
 
-                        </form>
-                        <span data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-custom-class="custom-tooltip"
+                        </form> -->
+                        <!-- <span data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-custom-class="custom-tooltip"
                             data-bs-title="delete">
                             <a href="javascript:void(0);" id="deleteSelected">
                                 <span class="delete">
@@ -140,7 +140,7 @@
                                 </span>
                             </a>
 
-                        </span>
+                        </span> -->
                     </div>
                 </div>
 
@@ -165,7 +165,7 @@
                                         <!-- <th class="thead status">Comments</th> -->
                                         <th class="action">Action</th>
                                     </tr>
-                                    {% for user in page_obj %}
+                                    {% for user in object_list %}
                                     <tr class="trow">
                                         <td class="check1">
                                             <input type="checkbox" class="form-check-input user-checkbox checked-row" name="user_ids"
@@ -177,19 +177,11 @@
                                         <td class="tdata">{{ user.contact_no }}</td>
                                         
                                         <td class="tdata">
-                                            {% for item in course_name %}
-                                                {% if item.id == user.course_name %}
-                                                    {{ item.course_name }}
-                                                {% endif %}
-                                            {% endfor %}
+                                            {{ user.course_name }}
                                         </td>
                                         
                                         <td class="tdata">
-                                            {% for item in enquiry %}
-                                                {% if item.id == user.mode_of_enquiry %}
-                                                    {{ item.mode_of_enquiry }}
-                                                {% endif %}
-                                            {% endfor %}
+                                            {{ user.mode_of_enquiry }}
                                         </td>
                                         <td class="permission">
                                             <div class="perm">
