@@ -1653,7 +1653,6 @@ def enquiry_view(request):
             inplant_no_of_students = int(request.POST.get('inplant_no_of_students', 0)) if request.POST.get('inplant_no_of_students') else None
             internship_no_of_students = int(request.POST.get('internship_no_of_students', 0)) if request.POST.get('internship_no_of_students') else None
             internship_no_of_days = int(request.POST.get('internship_no_of_days', 0)) if request.POST.get('internship_no_of_days') else None
-            grade_percentage = float(request.POST.get('grade_percentage', 0.00)) if request.POST.get('grade_percentage') else None
             year_of_graduation = int(request.POST.get('year_of_graduation', 0)) if request.POST.get('year_of_graduation') else None
         except ValueError:
             # Handle invalid integer or float conversion
@@ -1661,7 +1660,6 @@ def enquiry_view(request):
             inplant_no_of_students = None
             internship_no_of_students = None
             internship_no_of_days = None
-            grade_percentage = None
             year_of_graduation = None
 
         enquiry_data = {
@@ -1686,7 +1684,7 @@ def enquiry_view(request):
             'next_follow_up_date': request.POST.get('next_follow_up_date', '').strip(),
             'degree': request.POST.get('degree', '').strip(),
             'college': request.POST.get('college', '').strip(),
-            'grade_percentage': grade_percentage,
+            'grade_persentage': request.POST.get('grade_persentage', ''),
             'year_of_graduation': year_of_graduation,
             'mode_of_enquiry': request.POST.get('mode_of_enquiry', '').strip(),
             'reference_name': request.POST.get('reference_name', '').strip(),
@@ -1694,6 +1692,8 @@ def enquiry_view(request):
             'other_enquiry_details': request.POST.get('other_enquiry_details', '').strip(),
             'lead_type': request.POST.get('lead_type', '').strip(),
         }
+        
+        print("Grade Persentage : ", enquiry_data)
 
         # Get the token
         try:
@@ -2031,11 +2031,11 @@ def delete_all_enquiry_view(request):
             
             user_ids = data.get('user_ids', [])
             
+            print("User ID : ", user_ids)
+            
             if user_ids:
                 Enquiry.objects.filter(id__in=user_ids).delete()
-                print("delete successfully!")
-                return redirect('manage_enquiry')
-                # return JsonResponse({'success': True})
+                return JsonResponse({'success': True})
             else:
                 return JsonResponse({'success': False, 'error': 'No users selected for deletion'})
         except json.JSONDecodeError:

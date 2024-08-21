@@ -5,6 +5,10 @@
     top: 108px;
 }
 
+.status {
+    width: 20px;
+}
+
 .table-responsive {
     overflow-y: auto;
 }
@@ -95,11 +99,13 @@
 }
 
 .tdata.status .status-display {
-    max-width: 350px;
-    white-space: nowrap;
+    /* max-width: 350px; */
+    white-space: normal;
     overflow: hidden;
     text-overflow: ellipsis;
     cursor: pointer;
+    width: 300px;
+    height: 76px;
 }
 
 .status-div {

@@ -507,9 +507,7 @@
                                     <!-- Status Field -->
                                     <div class="col-12 col-md-12" style="display: none;">
                                         <div class="user-input-wrp ms-md-0 me-md-4 mb-md-5">
-                                            <textarea name="address" id="address" class="form-control text-area" rows="5" cols="1" placeholder=" " autocomplete="off" autofocus>
-                                        
-                                            </textarea>
+                                            <textarea name="address" id="address" class="form-control text-area" rows="5" cols="1" placeholder=" " autocomplete="off" autofocus></textarea>
                                             <label class="floating-label">&nbsp;Status&nbsp;</label>
                                             <span id="degree_error" class="error-div">
                                                 
@@ -588,9 +586,7 @@
                                         <div class="user-input-wrp me-md-4 mt-md-5">
                                             <div class="notes">
                                                 <!-- <form id="notes_form" class="pe-lg-2" action="" method="post"> -->
-                                                    <textarea name="notes" id="notes" class="form-control text-area text-notes" rows="5" cols="40" placeholder="Add input" autocomplete="off" autofocus>
-                                                        
-                                                    </textarea>
+                                                    <textarea name="notes" id="notes" class="form-control text-area text-notes" rows="5" cols="40" placeholder="Add input" autocomplete="off" autofocus></textarea>
                                                     <!-- <label class="floating-label">&nbsp;Add input&nbsp;</label> -->
                                                     <div class="d-flex container">
                                                         <div class="col-6 fileUploadInput">
@@ -671,11 +667,6 @@
 
 {% block scripts %}
 <script>
-
-    // document.getElementById('address').value = document.getElementById('address').value.trim();
-    // document.getElementById('status').value = document.getElementById('status').value.trim();
-    // document.getElementById('notes').value = document.getElementById('notes').value.trim();
-
     // tab functionality
     document.getElementById('next-tab').addEventListener('click', function () {
         event.preventDefault();
@@ -887,17 +878,8 @@
             document.getElementById('notes_error').innerText = "";
         }
 
-
-
-        console.log(hasError)
-
         if (!hasError) {
             document.getElementById("enquiry_form").submit();
-            // Reload the page after a short delay (optional)
-            setTimeout(function() {
-                console.log("ding")
-                window.location.href = "http://127.0.0.1:8000/enquiry/";
-            }, 5000); // Adjust the delay as needed
         }
     });
 
