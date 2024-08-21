@@ -19,7 +19,9 @@
             border: 1px solid #ddd;
             text-align: left;
             vertical-align: top;
+            overflow-x: scroll;
         }
+
         th {
             background-color: #f4f4f4;
             font-weight: bold;
@@ -42,63 +44,29 @@
     <table>
         <thead>
             <tr>
-                <th>Enquiry Date</th>
                 <th>Enquiry No</th>
                 <th>Name</th>
+                <th>Enquiry Date</th>
                 <th>Contact No</th>
-                <th>Email ID</th>
-                <th>Date of Birth</th>
-                <th>Father's Name</th>
-                <th>Father's Contact No</th>
-                <th>Father's Occupation</th>
-                <th>Address</th>
-                <th>Status</th>
                 <th>Course Name</th>
-                <th>Inplant Technology</th>
-                <th>Inplant No of Days</th>
-                <th>Inplant No of Students</th>
-                <th>Internship Technology</th>
-                <th>Internship No of Days</th>
-                <th>Next Follow Up Date</th>
-                <th>Degree</th>
-                <th>College</th>
-                <th>Grade Percentage</th>
-                <th>Year of Graduation</th>
                 <th>Mode of Enquiry</th>
-                <th>Reference Name</th>
-                <th>Reference Contact No</th>
-                <th>Other Enquiry Details</th>
+                <th>Lead Type</th>
+                <th>Next Follow Up Date</th>
+                <th>Status</th>
             </tr>
         </thead>
         <tbody>
-            {% for user in attribute_list %}
+            {% for user in enquiry_list %}
                 <tr>
-                    <td>{{ user.enquiry_date }}</td>
                     <td>{{ user.enquiry_no }}</td>
                     <td>{{ user.name }}</td>
+                    <td>{{ user.enquiry_date }}</td>
                     <td>{{ user.contact_no }}</td>
-                    <td>{{ user.email_id }}</td>
-                    <td>{{ user.date_of_birth }}</td>
-                    <td>{{ user.fathers_name }}</td>
-                    <td>{{ user.fathers_contact_no }}</td>
-                    <td>{{ user.fathers_occupation }}</td>
-                    <td>{{ user.address }}</td>
-                    <td>{{ user.status }}</td>
                     <td>{{ user.course_name }}</td>
-                    <td>{{ user.inplant_technology }}</td>
-                    <td>{{ user.inplant_no_of_days }}</td>
-                    <td>{{ user.inplant_no_of_students }}</td>
-                    <td>{{ user.internship_technology }}</td>
-                    <td>{{ user.internship_no_of_days }}</td>
-                    <td>{{ user.next_follow_up_date }}</td>
-                    <td>{{ user.degree }}</td>
-                    <td>{{ user.college }}</td>
-                    <td>{{ user.grade_percentage }}</td>
-                    <td>{{ user.year_of_graduation }}</td>
                     <td>{{ user.mode_of_enquiry }}</td>
-                    <td>{{ user.reference_name }}</td>
-                    <td>{{ user.reference_contact_no }}</td>
-                    <td>{{ user.other_enquiry_details }}</td>
+                    <td>{{ user.lead_type }}</td>
+                    <td>{{ user.next_follow_up_date }}</td>
+                    <td>{{ user.status }}</td>
                 </tr>
             {% endfor %}
         </tbody>

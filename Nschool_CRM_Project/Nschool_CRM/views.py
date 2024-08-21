@@ -2054,13 +2054,8 @@ def export_enquiry_csv(request):
 
         # Write the header row with capitalized first letters
         writer.writerow([
-            'Enquiry Date', 'Enquiry No', 'Name', 'Contact No', 'Email ID',
-            'Date of Birth', 'Father\'s Name', 'Father\'s Contact No', 'Father\'s Occupation',
-            'Address', 'Status', 'Course Name', 'Inplant Technology',
-            'Inplant No of Days', 'Inplant No of Students', 'Internship Technology',
-            'Internship No of Days', 'Next Follow Up Date', 'Degree', 'College',
-            'Grade Percentage', 'Year of Graduation', 'Mode of Enquiry', 'Reference Name',
-            'Reference Contact No', 'Other Enquiry Details'
+            'Enquiry Date', 'Enquiry No', 'Name', 'Contact No', 'Course Name', 'Next Follow Up Date', 
+            'Mode of Enquiry', 'Lead Type', 'Status'
         ])
 
         # Fetch selected enquiries based on IDs
@@ -2071,29 +2066,12 @@ def export_enquiry_csv(request):
                 enquiry.enquiry_date,
                 enquiry.enquiry_no,
                 enquiry.name,
-                enquiry.contact_no,
-                enquiry.email_id,
-                enquiry.date_of_birth,
-                enquiry.fathers_name,
-                enquiry.fathers_contact_no,
-                enquiry.fathers_occupation,
-                enquiry.address,
-                enquiry.status,
+                int(enquiry.contact_no),
                 enquiry.course_name.course_name if enquiry.course_name else '',  # Use the course name
-                enquiry.inplant_technology,
-                enquiry.inplant_no_of_days,
-                enquiry.inplant_no_of_students,
-                enquiry.internship_technology,
-                enquiry.internship_no_of_days,
                 enquiry.next_follow_up_date,
-                enquiry.degree,
-                enquiry.college,
-                enquiry.grade_percentage,
-                enquiry.year_of_graduation,
                 enquiry.mode_of_enquiry.mode_of_enquiry if enquiry.mode_of_enquiry else '',  # Use the mode of enquiry name
-                enquiry.reference_name,
-                enquiry.reference_contact_no,
-                enquiry.other_enquiry_details
+                enquiry.lead_type,
+                enquiry.status
             ])
 
         return response
@@ -2117,13 +2095,9 @@ def export_enquiry_excel(request):
         # Define header row with font style and alignment
         # Define header row with capitalized first letters
         headers = [
-            'Enquiry Date', 'Enquiry No', 'Name', 'Contact No', 'Email ID',
-            'Date of Birth', 'Father\'s Name', 'Father\'s Contact No', 'Father\'s Occupation',
-            'Address', 'Status', 'Course Name', 'Inplant Technology',
-            'Inplant No of Days', 'Inplant No of Students', 'Internship Technology',
-            'Internship No of Days', 'Next Follow Up Date', 'Degree', 'College',
-            'Grade Percentage', 'Year of Graduation', 'Mode of Enquiry', 'Reference Name',
-            'Reference Contact No', 'Other Enquiry Details'
+            'Enquiry Date', 'Enquiry No', 'Name', 'Contact No',
+            'Course Name', 'Next Follow Up Date',
+            'Mode of Enquiry', 'Lead Type', 'Status'
         ]
         
         # Append the header row to the sheet
@@ -2134,29 +2108,12 @@ def export_enquiry_excel(request):
                 enquiry.enquiry_date.strftime('%Y-%m-%d') if enquiry.enquiry_date else '',
                 enquiry.enquiry_no,
                 enquiry.name,
-                enquiry.contact_no,
-                enquiry.email_id,
-                enquiry.date_of_birth.strftime('%Y-%m-%d') if enquiry.date_of_birth else '',
-                enquiry.fathers_name,
-                enquiry.fathers_contact_no,
-                enquiry.fathers_occupation,
-                enquiry.address,
-                enquiry.status,
+                int(enquiry.contact_no),
                 enquiry.course_name.course_name if enquiry.course_name else '',
-                enquiry.inplant_technology,
-                enquiry.inplant_no_of_days if enquiry.inplant_no_of_days is not None else '',
-                enquiry.inplant_no_of_students if enquiry.inplant_no_of_students is not None else '',
-                enquiry.internship_technology,
-                enquiry.internship_no_of_days if enquiry.internship_no_of_days is not None else '',
                 enquiry.next_follow_up_date.strftime('%Y-%m-%d') if enquiry.next_follow_up_date else '',
-                enquiry.degree,
-                enquiry.college,
-                enquiry.grade_percentage if enquiry.grade_percentage is not None else '',
-                enquiry.year_of_graduation if enquiry.year_of_graduation is not None else '',
                 enquiry.mode_of_enquiry.mode_of_enquiry if enquiry.mode_of_enquiry else '',
-                enquiry.reference_name,
-                enquiry.reference_contact_no,
-                enquiry.other_enquiry_details
+                enquiry.lead_type,
+                enquiry.status
             ])
 
         # Create an in-memory file-like object to save the workbook
@@ -2211,12 +2168,10 @@ def export_enquiry_pdf(request):
                 'mode_of_enquiry': enquiry.mode_of_enquiry.mode_of_enquiry if enquiry.mode_of_enquiry else '',
                 'reference_name': enquiry.reference_name,
                 'reference_contact_no': enquiry.reference_contact_no,
-                'other_enquiry_details': enquiry.other_enquiry_details
-            })
-        
-        print(attribute_list)
-        
-        content = {'attribute_list': attribute_list}
+                'other_enquiry_details': enquiry.other_enquiry_details,
+                'lead_type': enquiry.lead_type
+            })        
+        content = {'enquiry_list': attribute_list}
         return renderers.render_to_pdf('enquiry_data_list.html', content)
     
     # Handle GET request or non-AJAX POST request here if needed

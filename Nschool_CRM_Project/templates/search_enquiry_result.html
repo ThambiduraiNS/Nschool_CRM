@@ -173,7 +173,7 @@
                                         </td>
                                         <td class="tdata">{{ user.enquiry_no }}</td>
                                         <td class="tdata">{{ user.name }}</td>
-                                        <td class="tdata">{{ user.enquiry_date }}</td>
+                                        <td class="tdata">{{ user.enquiry_date|date:"Y-m-d" }}</td>
                                         <td class="tdata">{{ user.contact_no }}</td>
                                         
                                         <td class="tdata">
@@ -194,7 +194,7 @@
                                                 {% endif %}
                                             </div>
                                         </td>
-                                        <td class="tdata">{{ user.next_follow_up_date }}</td>
+                                        <td class="tdata">{{ user.next_follow_up_date|date:"Y-m-d" }}</td>
                                         
                                         <td class="tdata status" title="{{ user.status }}">
                                             <div class="status-div">

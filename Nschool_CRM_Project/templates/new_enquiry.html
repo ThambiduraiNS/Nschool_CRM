@@ -684,16 +684,23 @@
         }
 
         // Email Validation
-        var email = document.getElementById('email').value.trim();
-        console.log("Email : ", email)
-        if (email === "") {
-            document.getElementById("email_error").innerText = "Email Field is required";
+        let emailField = document.getElementById('email');
+        let emailError = document.getElementById('email_error');
+        let emailValue = emailField.value;
+
+        console.log("Email Value : ", emailValue)
+
+        // Simple regex pattern to match basic email format
+        let emailPattern = /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/;
+
+        if(emailValue === "") {
+            emailError.textContent = "Email field is required.";
             hasError = true;
-        } else if (!(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email))) {
-            document.getElementById("email_error").innerText = "You have entered an invalid email address!";
+        }else if (!emailPattern.test(emailValue)) {
+            emailError.textContent = "Please enter a valid email address.";
             hasError = true;
         } else {
-            document.getElementById("email_error").innerText = "";
+            emailError.textContent = "";  // Clear any previous error messages
         }
 
         // Father's Contact Number Validation
@@ -777,8 +784,6 @@
         } else {
             document.getElementById('lead_type_error').innerText = "";
         }
-
-        console.log(hasError)
 
         if (!hasError) {
             document.getElementById("enquiry_form").submit();
