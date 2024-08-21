@@ -1684,7 +1684,7 @@ def enquiry_view(request):
             'next_follow_up_date': request.POST.get('next_follow_up_date', '').strip(),
             'degree': request.POST.get('degree', '').strip(),
             'college': request.POST.get('college', '').strip(),
-            'grade_persentage': request.POST.get('grade_persentage', ''),
+            'grade_percentage': request.POST.get('grade_percentage', '').strip(),
             'year_of_graduation': year_of_graduation,
             'mode_of_enquiry': request.POST.get('mode_of_enquiry', '').strip(),
             'reference_name': request.POST.get('reference_name', '').strip(),
@@ -1692,8 +1692,6 @@ def enquiry_view(request):
             'other_enquiry_details': request.POST.get('other_enquiry_details', '').strip(),
             'lead_type': request.POST.get('lead_type', '').strip(),
         }
-        
-        print("Grade Persentage : ", enquiry_data)
 
         # Get the token
         try:

@@ -16,7 +16,7 @@
 .search-input {
     margin-top: 20px;
     border-radius: 20px;
-    width: 541px;
+    width: 516px;
     height: 40px;
     background-color: #fff5fa !important;
     border: 1px solid #c72571;
@@ -42,7 +42,7 @@
 .start_date {
     position: absolute;
     top: 27px;
-    left: 176px;
+    left: 165px;
     background: transparent;
     border: none;
     width: 116px;
@@ -54,7 +54,7 @@
 .end_date {
     position: absolute;
     top: 27px;
-    right: 116px;
+    right: 106px;
     background: transparent;
     border: none;
     width: 116px;

@@ -314,9 +314,7 @@
                                                 <!-- Address field -->
                                                 <div class="col-12 col-md-12 ms-md-4">
                                                     <div class="user-input-wrp ms-md-3">
-                                                        <textarea name="address" id="address" class="form-control text-area p-0 m-0" rows="9" cols="1" placeholder=" "
-                                                            autocomplete="off" autofocus>{{ address }}
-                                                        </textarea>
+                                                        <textarea name="address" id="address" class="form-control text-area p-0 m-0" rows="9" cols="1" placeholder=" " autocomplete="off" autofocus>{{ address }}</textarea>
                                                         <label class="floating-label">&nbsp;Address&nbsp;</label>
                                                         <span id="father_occupation_error" class="error-div error-right">
                                                             {% if errors.address %}
@@ -398,10 +396,10 @@
                                     <!-- grade-persentage field -->
                                     <div class="col-12 col-md-12">
                                         <div class="user-input-wrp mx-md-3 mt-md-5">
-                                            <input type="text" name="grade_persentage" id="grade_persentage" value="{{grade_percentage}}" class="form-control"
+                                            <input type="text" name="grade_percentage" id="grade_percentage" value="{{grade_percentage}}" class="form-control"
                                                 aria-label="collage" placeholder=" " autocomplete="off" autofocus>
                                             <label class="floating-label">&nbsp;Grade-Persentage&nbsp;</label>
-                                            <span id="grade_persentage_error" class="error-div">
+                                            <span id="grade_percentage_error" class="error-div">
                                                 {% if errors.grade_percentage %}
                                                     {{errors.grade_percentage}}
                                                 {% endif %}
@@ -516,9 +514,7 @@
                                     <!-- Status Field -->
                                     <div class="col-12 col-md-12">
                                         <div class="user-input-wrp ms-md-0 me-md-4 mb-md-5">
-                                            <textarea name="status" id="status" class="form-control text-area" rows="5" cols="1" placeholder=" " autocomplete="off" autofocus>
-                                                {{status}}
-                                            </textarea>
+                                            <textarea name="status" id="status" class="form-control text-area" rows="5" cols="1" placeholder=" " autocomplete="off" autofocus>{{status}}</textarea>
                                             <label class="floating-label">&nbsp;Status&nbsp;</label>
                                             <span id="degree_error" class="error-div">
                                                 {% if errors.status %}
@@ -588,11 +584,6 @@
 
 {% block scripts %}
 <script>
-
-    document.getElementById('address').value = document.getElementById('address').value.trim();
-    document.getElementById('status').value = document.getElementById('status').value.trim();
-
-
     // tab functionality
     document.getElementById('next-tab').addEventListener('click', function () {
         event.preventDefault();
