@@ -401,7 +401,13 @@
             console.log(selectedIds);  // Check the selected IDs in the console
 
             if (selectedIds.length > 0) {
-                exportCoursesCSV(selectedIds);
+                // exportCoursesCSV(selectedIds);
+                exportCoursesCSV(selectedIds).then(() => {
+                    location.reload();
+                }).catch(error => {
+                    console.error('Error during CSV export:', error);
+                    alert('An error occurred while exporting the CSV.');
+                });
             } else {
                 alert('Please select at least one attribute to export.');
             }
@@ -416,7 +422,13 @@
             console.log(selectedIds);  // Check the selected IDs in the console
 
             if (selectedIds.length > 0) {
-                exportCoursesExcel(selectedIds);
+                // exportCoursesExcel(selectedIds);
+                exportCoursesExcel(selectedIds).then(() => {
+                    location.reload();
+                }).catch(error => {
+                    console.error('Error during Excel export:', error);
+                    alert('An error occurred while exporting the Excel.');
+                });
             } else {
                 alert('Please select at least one attribute to export.');
             }
@@ -431,7 +443,13 @@
             console.log(selectedIds);  // Check the selected IDs in the console
 
             if (selectedIds.length > 0) {
-                exportCoursesPDF(selectedIds);
+                // exportCoursesPDF(selectedIds);
+                exportCoursesPDF(selectedIds).then(() => {
+                    location.reload();
+                }).catch(error => {
+                    console.error('Error during PDF export:', error);
+                    alert('An error occurred while exporting the PDF.');
+                });
             } else {
                 alert('Please select at least one attribute to export.');
             }

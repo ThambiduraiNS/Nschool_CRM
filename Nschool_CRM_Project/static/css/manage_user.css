@@ -101,7 +101,7 @@ input:-internal-autofill-selected {
 /* Style the search button */
 .search-button {
     position: absolute;
-    top: 2px;
+    top: 4px;
     left: 10px;
     height: 100%;
     background: none;
@@ -151,8 +151,8 @@ input:-internal-autofill-selected {
 }
 
 .bi-search {
-    width: 14px;
-    height: 14px;
+    width: 12px;
+    height: 12px;
 }
 
 .border-div {
@@ -267,7 +267,7 @@ table {
 
 .check {
     border: 1px solid #aaa;
-    background-color: #fff5fa;
+    background-color: #fcddec;
     padding: 10px;
     width: 0px;
 }
@@ -277,7 +277,7 @@ table {
 }
 
 .thead {
-    background-color: #fff5fa;
+    background-color: #fcddec ;
     padding: 5px 5px 5px 10px;
     font-size: 12px;
     width: 11%;

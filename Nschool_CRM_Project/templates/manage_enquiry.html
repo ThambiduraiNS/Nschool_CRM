@@ -48,11 +48,11 @@
 
                 <div class="row m-0 p-0">
 
-                    <div class="col-3 mt-4 p-0">
+                    <div class="col-4 mt-4 p-0">
                         <h5 class="fw-bold">Manage Enquiry</h5>
                     </div>
 
-                    <div class="col-7 d-flex pe-0">
+                    <div class="col-6 d-flex pe-0">
                         <form class="search-form" action="{% url 'search_enquiry' %}" method="get">
                             <input type="text" name="q" class="search-input" placeholder="Search" autocomplete="off">
                             <input type="date" name="start_date" class="start_date">
@@ -476,7 +476,14 @@
             console.log(selectedIds);  // Check the selected IDs in the console
 
             if (selectedIds.length > 0) {
-                exportCoursesCSV(selectedIds);
+                // exportCoursesCSV(selectedIds);
+                exportCoursesCSV(selectedIds).then(() => {
+                    location.reload();
+                }).catch(error => {
+                    console.error('Error during CSV export:', error);
+                    alert('An error occurred while exporting the CSV.');
+                });
+
             } else {
                 alert('Please select at least one course to export.');
             }
@@ -491,7 +498,13 @@
             console.log(selectedIds);  // Check the selected IDs in the console
 
             if (selectedIds.length > 0) {
-                exportCoursesExcel(selectedIds);
+                // exportCoursesExcel(selectedIds);
+                exportCoursesExcel(selectedIds).then(() => {
+                    location.reload();
+                }).catch(error => {
+                    console.error('Error during Excel export:', error);
+                    alert('An error occurred while exporting the Excel.');
+                });
             } else {
                 alert('Please select at least one course to export.');
             }
@@ -506,7 +519,13 @@
             console.log(selectedIds);  // Check the selected IDs in the console
 
             if (selectedIds.length > 0) {
-                exportCoursesPDF(selectedIds);
+                // exportCoursesPDF(selectedIds);
+                exportCoursesPDF(selectedIds).then(() => {
+                    location.reload();
+                }).catch(error => {
+                    console.error('Error during PDF export:', error);
+                    alert('An error occurred while exporting the PDF.');
+                });
             } else {
                 alert('Please select at least one course to export.');
             }

@@ -5,6 +5,10 @@
     top: 108px;
 }
 
+.search-input::placeholder {
+    font-size: 8px;
+}
+
 .status {
     width: 20px;
 }
@@ -16,9 +20,9 @@
 .search-input {
     margin-top: 20px;
     border-radius: 20px;
-    width: 516px;
+    width: 438px;
     height: 40px;
-    background-color: #fff5fa !important;
+    background-color: #fcddec !important;
     border: 1px solid #c72571;
 }
 
@@ -28,36 +32,38 @@
 
 .submit-btn {
     position: absolute;
-    width: 18%;
-    font-size: 16px;
+    width: 15%;
+    font-size: 14px;
     border: 1px solid #842029 !important;
     border-radius: 50px !important;
     background-color: #b31d5d;
     color: #fff;
-    padding: 6px;
-    top: 21px;
-    right: 0px;
+    padding: 5px;
+    top: 24px;
+    right: 6px;
 }
 
 .start_date {
     position: absolute;
-    top: 27px;
-    left: 165px;
+    top: 30px;
+    left: 140px;
     background: transparent;
     border: none;
-    width: 116px;
+    width: 101px;
     color: #999;
     padding: 0px 0px 0px 6px;
+    font-size: 13px;
     border-left: 2px solid #888;
 }
 
 .end_date {
     position: absolute;
-    top: 27px;
-    right: 106px;
+    top: 29px;
+    right: 85px;
     background: transparent;
     border: none;
-    width: 116px;
+    width: 101px;
+    font-size: 13px;
     color: #999;
     padding: 0px 0px 0px 6px;
     border-left: 2px solid #888;

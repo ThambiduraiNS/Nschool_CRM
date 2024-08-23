@@ -712,6 +712,9 @@ def export_user_excel(request):
 
         # Fetch selected courses based on IDs
         selected_courses = NewUser.objects.filter(id__in=ids)
+        
+        if not selected_courses:
+            return JsonResponse({'error': 'No users available.'}, status=404)
 
         # Create an Excel workbook
         wb = openpyxl.Workbook()
@@ -2087,6 +2090,9 @@ def export_enquiry_excel(request):
 
         # Fetch selected courses based on IDs
         selected_attributes = Enquiry.objects.filter(id__in=ids)
+        
+        if not selected_attributes:
+            return JsonResponse({'error': 'No Enquires available.'}, status=404)
 
         # Create an Excel workbook
         wb = openpyxl.Workbook()
