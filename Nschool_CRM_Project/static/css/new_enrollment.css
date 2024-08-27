@@ -1,0 +1,13 @@
+.experience {
+    
+    margin: 0px 0px 10px 16px;
+}
+
+.experience_p, .experience>label {
+    color: #aaa;
+    padding: 0px 10px 0px 0px;
+}
+
+.experience input[type="radio"] {
+    accent-color: #000;
+}

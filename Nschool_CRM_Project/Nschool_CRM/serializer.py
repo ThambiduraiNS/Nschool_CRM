@@ -52,3 +52,8 @@ class NotesSerializer(serializers.ModelSerializer):
     class Meta:
         model = Notes
         fields = '__all__'
+        
+class EnrollmentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Enrollment
+        fields = '__all__'

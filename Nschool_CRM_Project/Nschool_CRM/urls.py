@@ -50,6 +50,7 @@ urlpatterns = [
     path('update_attribute/<int:id>/', update_attribute_view, name='update_attribute'),
     path('delete_all_attributes/', delete_all_attributes_view, name='delete_all_attributes'),
     
+    # enquiry module
     path('enquiry/', enquiry_view, name='enquiry'),
     path('manage_enquiry/', manage_enquiry_view, name='manage_enquiry'),
     path('update_enquiry/<int:id>/', update_enquiry_view, name='update_enquiry'),
@@ -58,6 +59,11 @@ urlpatterns = [
     
     path('delete_notes/<int:id>/', delete_notes_view, name='delete_notes_view'),
     path('update_notes/<int:id>/', update_notes_view, name='delete_notes_view'),
+    
+    # enrollment module
+    path('enrollment/', new_enrollment_view, name='enrollment'),
+    path('manage_enrollment/', manage_enrollment_view, name='manage_enrollment'),
+    path('get-enquiry-details/', get_enquiry_details, name='get_enquiry_details'),
     
     # file formate for attributes
     path('export_attributes_csv/', export_attributes_csv, name='export_attributes_csv'),
@@ -100,4 +106,12 @@ urlpatterns = [
     path('api/enquiry/<int:pk>/', EnquiryDetailView.as_view(), name='enquiry_detail'),
     path('api/update_enquiry/<int:pk>/', EnquiryUpdateView.as_view(), name='enquirye_update'),
     path('api/delete_enquiry/<int:pk>/', EnquiryDeleteView.as_view(), name='enquiry_delete'),
+    
+    # API for Enrollment module
+    path('api/enrollment/', EnrollmentListCreateView.as_view(), name='enrollment_list_create'),
+    path('api/enrollment/<int:pk>/', EnrollmentDetailView.as_view(), name='enrollment_detail'),
+    path('api/update_enrollment/<int:pk>/', EnrollmentUpdateView.as_view(), name='enrollment_update'),
+    path('api/delete_enrollment/<int:pk>/', EnrollmentDeleteView.as_view(), name='enrollment_delete'),
+    
+    
 ]

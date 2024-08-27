@@ -21,6 +21,7 @@ from .serializer import NewUserSerializer
 from rest_framework.authtoken.models import Token
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_protect
+from django.views.decorators.http import require_GET
 
 from django.core.exceptions import ObjectDoesNotExist
 from rest_framework.decorators import api_view, permission_classes
@@ -642,6 +643,43 @@ class NotesUpdateView(generics.RetrieveUpdateAPIView):
 class NotesDeleteView(generics.DestroyAPIView):
     queryset = Notes.objects.all()
     serializer_class = NotesSerializer
+    permission_classes = [IsAuthenticated]
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        instance.delete()
+        return Response({'Message': 'Successfully deleted'})
+    
+# Enrollment Api
+
+class EnrollmentListCreateView(generics.ListCreateAPIView):
+    queryset = Enrollment.objects.all().order_by('-id')
+    serializer_class = EnrollmentSerializer
+    permission_classes = [IsAuthenticated]
+    
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        if not queryset.exists():
+            return Response({'Message': 'No Enrollment found'}, status=status.HTTP_404_NOT_FOUND)
+        
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+class EnrollmentDetailView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Enrollment.objects.all()
+    serializer_class = EnrollmentSerializer
+    permission_classes = [IsAuthenticated]
+    lookup_field = 'pk'
+
+class EnrollmentUpdateView(generics.RetrieveUpdateAPIView):
+    queryset = Enrollment.objects.all()
+    serializer_class = EnrollmentSerializer
+    permission_classes = [IsAuthenticated]
+    partial = True    
+    
+class EnrollmentDeleteView(generics.DestroyAPIView):
+    queryset = Enrollment.objects.all()
+    serializer_class = EnrollmentSerializer
     permission_classes = [IsAuthenticated]
 
     def destroy(self, request, *args, **kwargs):
@@ -1326,6 +1364,17 @@ def generate_new_enquiry_no():
     incremented_numeric_part = numeric_part + 1
     return f"EWT-{incremented_numeric_part:04d}"
 
+def generate_new_registration_no():
+    try:
+        last_enrollment = Enrollment.objects.latest('id')
+        last_registration_no = last_enrollment.registration_no
+    except Enrollment.DoesNotExist:
+        last_registration_no = "EWRNO-0000" 
+
+    numeric_part = int(last_registration_no.split('-')[1])
+    incremented_numeric_part = numeric_part + 1
+    return f"EWRNO-{incremented_numeric_part:04d}"
+
 def add_attribute_view(request):
     if request.method == 'POST':
         # Extract data from the form
@@ -1939,52 +1988,6 @@ def update_enquiry_view(request, id):
         
     return render(request, 'update_enquiry.html', context)
 
-
-# def delete_enquiry_view(request, id):
-#     user_id = Enquiry.objects.get(id=id)
-    
-#     print(user_id.pk)
-    
-#     if not user_id:
-#         context = {'error': 'Enquiry ID not provided'}
-#         return render(request, 'manage_enquiry.html', context)
-    
-#     try:
-#         token = Token.objects.get(user=request.user)  # Get the first token for simplicity
-#         if not token:
-#             raise Token.DoesNotExist
-#     except Token.DoesNotExist:
-#         context = {'error': 'Authentication token not found'}
-#         return render(request, 'manage_enquiry.html', context)
-    
-#     api_url = f'http://127.0.0.1:8000/api/enquiry/{user_id.pk}/'
-#     headers = {
-#         'Authorization': f'Token {token.key}',
-#         'Content-Type': 'application/json'
-#     }
-    
-#     try:
-#         response = requests.delete(api_url, headers=headers)
-#         response.raise_for_status()
-
-#     except requests.exceptions.RequestException as err:
-#         context = {
-#             'error': f'Request error occurred: {err}',
-#             'response_data': response.json() if response else {}
-#         }
-#         return render(request, 'manage_enquiry.html', context)
-    
-#     if response.status_code == 200:
-#         print("enquiry")
-#         return redirect('manage_enquiry')
-    
-#     else:
-#         response_data = response.json()
-#         context = {
-#             'detail': response_data.get('detail', 'An error occurred while deleting the Enquiry'),
-#         }
-#         return render(request, 'manage_enquiry.html', context)
-
 def delete_enquiry_view(request, id):
     user_id = Enquiry.objects.get(id=id)
     
@@ -2306,3 +2309,269 @@ def update_notes_view(request, id):
             return render(request, 'update_enquiry.html', context)
         
     return render(request, 'update_notes.html')
+
+# def new_enrollment_view(request):
+#     if request.method == 'POST':
+#         enrollment_data = {
+#             'enquiry_no' : request.POST.get('enquiry_no'),
+#             'registration_no' : request.POST.get('registration_no'),
+#             'registration_date' : request.POST.get('registration_date'),
+#             'name' : request.POST.get('name'),
+#             'phonenumber' : request.POST.get('phonenumber'),
+#             'date_of_birth' : request.POST.get('date_of_birth'),
+#             'gender' : request.POST.get('gender'),
+#             'email_id' : request.POST.get('email_id'),
+#             'father_name' : request.POST.get('father_name'),
+#             'fathers_contact_no' : request.POST.get('fathers_contact_no'),
+#             'degree' : request.POST.get('degree'),
+#             'institution' : request.POST.get('institution'),
+#             'subject' : request.POST.get('subject'),
+#             'grade_percentage' : request.POST.get('grade_percentage'),
+#             'work_experience' : request.POST.get('work_experience'),
+#             'designation' : request.POST.get('designation'),
+#             'company_name' : request.POST.get('company_name'),
+#             'from_date' : request.POST.get('from_date'),
+#             'to_date' : request.POST.get('to_date'),
+#             'course_name' : request.POST.get('course_name'),
+#             'duration' : request.POST.get('duration'),
+#             'total_fees_amount' : request.POST.get('total_fees_amount'),
+#         }
+        
+#         try:
+#            token = Token.objects.get(user=request.user)
+#         except Token.DoesNotExist:
+#             context = {
+#                 'error': 'Authentication Token not Found',
+#             }
+#             return render(request, 'new_enrollment.html', context)
+        
+#         api_url = 'http://127.0.0.1:8000/api/enrollment/'
+        
+#         headers = {
+#             'Authorization' : f'Token {token.key}',
+#             'Content-Type' : 'application/json',
+#         }
+        
+#         try:
+#             response = requests.post(api_url, json=enrollment_data, headers=headers)
+#             response_data = response.json()
+            
+#             print("Response Data : ", response_data)
+            
+#         except requests.exceptions.RequestException:
+#             context = {
+#                 'error': 'An Error Occured While Creating an Enrollment',
+#             }
+#             return render(request, 'new_enrollment.html', context)
+        
+#         if response.status_code == [200, 201]:
+#             messages.success(request, 'Created Successfully')
+#             return redirect('manage_enrollment')
+        
+#         else:
+#             error_message = response_data.get('error', 'An Error Occured Duraing Creation.')
+            
+#             courses = Course.objects.all()
+#             context = {
+#                 'error': error_message,
+#                 'courses': courses,
+#             }
+#             return render(request, 'new_enrollment.html', context)
+
+#     courses = Course.objects.all()
+    
+#     context = {
+#         'courses': courses,
+#     }
+    
+#     return render(request, 'new_enrollment.html', context)
+
+@require_GET
+def get_enquiry_details(request):
+    enquiry_no = request.GET.get('enquiry_no')
+    
+    print("Enquiry No : ", enquiry_no)
+    
+    if not enquiry_no:
+        return JsonResponse({'error': 'No enquiry number provided'}, status=400)
+    
+    try:
+        enquiry = Enquiry.objects.get(enquiry_no=enquiry_no)
+        
+        data = {
+            'name': enquiry.name,
+            'contact_no': enquiry.contact_no,
+            'date_of_birth': enquiry.date_of_birth.strftime('%Y-%m-%d') if enquiry.date_of_birth else '',
+            'email_id': enquiry.email_id,
+            'fathers_name': enquiry.fathers_name,
+            'fathers_contact_no': enquiry.fathers_contact_no,
+            'degree': enquiry.degree,
+            'grade_percentage': enquiry.grade_percentage,
+            'year_of_graduation': enquiry.year_of_graduation,
+            'college': enquiry.college,
+            'course_name': enquiry.course_name.course_name,  # Assuming course_name is a ForeignKey
+        }
+        
+        print("Data : ", data)
+        
+        return JsonResponse(data, status=200)
+    
+    except Enquiry.DoesNotExist:
+        return JsonResponse({'error': 'Enquiry not found'}, status=404)
+
+def new_enrollment_view(request):
+    
+    new_registration_no = generate_new_registration_no()
+    
+    print("Registration Number : ", new_registration_no)
+    
+    if request.method == 'POST':
+        enquiry_no = request.POST.get('enquiry_no')
+        
+        # Fetch the related Enquiry object
+        try:
+            enquiry = Enquiry.objects.get(enquiry_no=enquiry_no)
+        except Enquiry.DoesNotExist:
+            context = {
+                'error': 'Enquiry with the provided Enquiry Number does not exist.',
+            }
+            return render(request, 'new_enrollment.html', context)
+
+        # Ensure that grade_percentage is not None
+        grade_percentage = enquiry.grade_percentage if enquiry.grade_percentage is not None else request.POST.get('grade_percentage')
+
+        print("Grade Percentage : ", grade_percentage)
+        
+        # Auto-populate fields based on the related Enquiry object
+        enrollment_data = {
+            'enquiry_no': enquiry.enquiry_no,
+            'registration_no': new_registration_no,
+            'registration_date': request.POST.get('registration_date'),
+            'name': enquiry.name,
+            'phonenumber': enquiry.contact_no,
+            'date_of_birth': enquiry.date_of_birth.strftime('%Y-%m-%d') if enquiry.date_of_birth else '',
+            'gender': request.POST.get('gender'),
+            'email_id': enquiry.email_id,
+            'father_name': enquiry.fathers_name,
+            'fathers_contact_no': enquiry.fathers_contact_no,
+            'degree': enquiry.degree,
+            'institution': request.POST.get('institution'),
+            'subject': request.POST.get('subject'),
+            # 'grade_percentage': enquiry.grade_percentage,
+            'grade_percentage' : grade_percentage,
+            'year_of_passed_out': enquiry.year_of_graduation,
+            'designation': request.POST.get('designation'),
+            'company_name': request.POST.get('company_name'),
+            'from_date': request.POST.get('from_date'),
+            'to_date': request.POST.get('to_date'),
+            'course_name': enquiry.course_name.id,
+            'duration': request.POST.get('duration'),
+            'payment_type': request.POST.get('payment_type'),
+            'total_fees_amount': request.POST.get('total_fees_amount'),
+        }
+        
+        print("Course Name : ", enquiry.course_name.id)
+        
+        print("Enrollment Data : ", enrollment_data)
+
+        try:
+            token = Token.objects.get(user=request.user)
+        except Token.DoesNotExist:
+            context = {
+                'error': 'Authentication Token not Found',
+                **enrollment_data,
+            }
+            return render(request, 'new_enrollment.html', context)
+
+        api_url = 'http://127.0.0.1:8000/api/enrollment/'
+        
+        headers = {
+            'Authorization': f'Token {token.key}',
+            'Content-Type': 'application/json',
+        }
+
+        try:
+            response = requests.post(api_url, json=enrollment_data, headers=headers)
+            response_data = response.json()
+            
+            print("Response Data : ",response_data)
+
+        except requests.exceptions.RequestException:
+            context = {
+                'error': 'An Error Occurred While Creating an Enrollment',
+                **enrollment_data,
+            }
+            return render(request, 'new_enrollment.html', context)
+
+        if response.status_code in [200, 201]:
+            messages.success(request, 'Created Successfully')
+            return redirect('enrollment')  # Redirect to a success page or another view
+        else:
+            error_message = response_data.get('error', 'An Error Occurred During Creation.')
+            errors = response_data
+            courses = Course.objects.all()
+            context = {
+                'error': error_message,
+                'errors': errors,
+                'courses': courses,
+                **enrollment_data,
+            }
+            return render(request, 'new_enrollment.html', context)
+
+    courses = Course.objects.all()
+    
+    context = {
+        'courses': courses,
+        'registration_no': new_registration_no,
+    }
+    
+    return render(request, 'new_enrollment.html', context)
+
+
+def manage_enrollment_view(request):
+    
+    course = Course.objects.all().values()
+    
+    try:
+        token = Token.objects.get(user=request.user)  # Assuming you only have one token and it's safe to get the first one
+    except Token.DoesNotExist:
+        context = {
+            'error': 'Authentication token not found'
+        }
+        return render(request, 'manage_enrollment.html', context)
+    
+    api_url = 'http://127.0.0.1:8000/api/enrollment/'
+    
+    headers = {
+        'Authorization': f'Token {token.key}',
+        'Content-Type': 'application/json'
+    }
+
+    try:
+        response = requests.get(api_url, headers=headers)
+        response.raise_for_status()  # Raise an HTTPError for bad responses
+        response_data = response.json()
+        
+    except requests.exceptions.RequestException as err:
+        # Catch any request-related exceptions
+        context = {
+            'error': f'Request error occurred: {err}',
+            'response_data': response.json() if response else {}
+        }
+        return render(request, 'manage_enrollment.html', context)
+
+    # Get the per_page value from the request, default to 10 if not provided
+    per_page = request.GET.get('per_page', '10')
+
+    # Apply pagination
+    paginator = Paginator(response_data, per_page)  # Use response_data for pagination
+    
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    context = {
+        'page_obj': page_obj,
+        'per_page': per_page,
+        'course_name': course,
+    }
+    return render(request, 'manage_enrollment.html', context)

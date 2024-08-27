@@ -166,3 +166,44 @@ class Notes(models.Model):
     
     def __str__(self):
         return self.notes
+    
+class Enrollment(models.Model):
+    
+    enquiry_no = models.ForeignKey('Enquiry', on_delete=models.CASCADE, to_field='enquiry_no', db_column='enquiry_no')
+    registration_no = models.CharField(max_length=20, unique=True)
+    registration_date = models.DateField()
+
+    name = models.CharField(max_length=255)
+    phonenumber = models.CharField(max_length=15)
+    date_of_birth = models.DateField(blank=True, null=True)
+    gender = models.CharField(null=True)
+    email_id = models.EmailField()
+
+    father_name = models.CharField(max_length=255, blank=True, null=True)
+    fathers_contact_no = models.CharField(max_length=15)
+    fathers_email_id = models.EmailField(null=True, blank=True)
+
+    degree = models.CharField(max_length=255)
+    institution = models.CharField(max_length=255)
+    subject = models.CharField(max_length=255)
+    grade_percentage = models.DecimalField(max_digits=5, decimal_places=2)
+    place = models.CharField(max_length=255, blank=True, null=True)
+    year_of_passed_out = models.PositiveIntegerField()
+    
+    designation = models.CharField(max_length=255, null=True, blank=True)
+    company_name = models.CharField(max_length=255, null=True, blank=True)
+    work_experience = models.CharField(null=True, default=0)
+    nature_of_work = models.CharField(max_length=255, null=True)
+
+    course_name = models.ForeignKey('Course', on_delete=models.CASCADE)
+    duration = models.CharField(max_length=50)
+    payment_type = models.CharField()
+    total_fees_amount = models.DecimalField(max_digits=10, decimal_places=2)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    modified_at = models.DateTimeField(auto_now=True)
+    is_active = models.BooleanField(default=True)
+    is_deleted = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"{self.name} - {self.course_name}"
