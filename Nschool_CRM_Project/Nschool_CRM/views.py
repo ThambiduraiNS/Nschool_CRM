@@ -2425,6 +2425,18 @@ def new_enrollment_view(request):
     
     print("Registration Number : ", new_registration_no)
     
+    try:
+        inplant_no_of_days = int(request.POST.get('inplant_no_of_days', 0)) if request.POST.get('inplant_no_of_days') else None
+        inplant_no_of_students = int(request.POST.get('inplant_no_of_students', 0)) if request.POST.get('inplant_no_of_students') else None
+        internship_no_of_students = int(request.POST.get('internship_no_of_students', 0)) if request.POST.get('internship_no_of_students') else None
+        internship_no_of_days = int(request.POST.get('internship_no_of_days', 0)) if request.POST.get('internship_no_of_days') else None
+    except ValueError:
+        # Handle invalid integer or float conversion
+        inplant_no_of_days = None
+        inplant_no_of_students = None
+        internship_no_of_students = None
+        internship_no_of_days = None
+    
     if request.method == 'POST':
         enquiry_no = request.POST.get('enquiry_no')
         
@@ -2465,6 +2477,12 @@ def new_enrollment_view(request):
             'from_date': request.POST.get('from_date'),
             'to_date': request.POST.get('to_date'),
             'course_name': enquiry.course_name.id,
+            'inplant_technology': request.POST.get('inplant_technology', '').strip(),
+            'inplant_no_of_days': inplant_no_of_days,
+            'inplant_no_of_students': inplant_no_of_students,
+            'internship_technology': request.POST.get('internship_technology', '').strip(),
+            'internship_no_of_days': internship_no_of_days,
+            'internship_no_of_students': internship_no_of_students,
             'duration': request.POST.get('duration'),
             'payment_type': request.POST.get('payment_type'),
             'total_fees_amount': request.POST.get('total_fees_amount'),
@@ -2575,3 +2593,151 @@ def manage_enrollment_view(request):
         'course_name': course,
     }
     return render(request, 'manage_enrollment.html', context)
+
+def update_enrollment_view(request, id):
+    try:
+        enrollment = Enrollment.objects.get(id=id)
+    except Enrollment.DoesNotExist:
+        context = {'error': 'Enrollment not found'}
+        return render(request, 'manage_enrollment.html', context)
+
+    if request.method == 'POST':
+        
+        try:
+            token = Token.objects.get(user=request.user)  # Get the first token for simplicity
+            if not token:
+                raise Token.DoesNotExist
+        except Token.DoesNotExist:
+            context = {'error': 'Authentication token not found'}
+            return render(request, 'manage_enrollment.html', context)
+        
+        api_url = f'http://127.0.0.1:8000/api/update_enrollment/{enrollment.pk}/'
+        
+        headers = {
+            'Authorization': f'Token {token.key}',
+        }
+        
+        # Auto-populate fields based on the related Enquiry object
+        enrollment_data = {
+            'enquiry_no': request.POST.get('enquiry_no', enrollment.enquiry_no),
+            'registration_no': request.POST.get('registration_no', enrollment.registration_no),
+            'registration_date': request.POST.get('registration_date', enrollment.registration_date),
+            'name': request.POST.get('name', enrollment.name),
+            'phonenumber': request.POST.get('phonenumber', enrollment.phonenumber),
+            'date_of_birth': request.POST.get('date_of_birth', enrollment.date_of_birth),
+            'gender': request.POST.get('gender', enrollment.gender),
+            'email_id': request.POST.get('email_id', enrollment.email_id),
+            'father_name': request.POST.get('father_name', enrollment.father_name),
+            'fathers_contact_no': request.POST.get('fathers_contact_no', enrollment.fathers_contact_no),
+            'degree': request.POST.get('degree', enrollment.degree),
+            'institution': request.POST.get('institution', enrollment.institution),
+            'subject': request.POST.get('subject', enrollment.subject),
+            'grade_percentage' : request.POST.get('grade_percentage', enrollment.grade_percentage),
+            'year_of_passed_out': request.POST.get('year_of_passed_out', enrollment.year_of_passed_out),
+            'designation': request.POST.get('designation', enrollment.designation),
+            'company_name': request.POST.get('company_name', enrollment.company_name),
+            'work_experience': request.POST.get('work_experience', enrollment.work_experience),
+            'course_name': request.POST.get('course_name', enrollment.course_name),
+            'inplant_technology': request.POST.get('technology', enrollment.inplant_technology),
+            'inplant_no_of_days': request.POST.get('inplant_no_of_days', enrollment.inplant_no_of_days),
+            'inplant_no_of_students': request.POST.get('inplant_no_of_students', enrollment.inplant_no_of_students),
+            'internship_technology': request.POST.get('internship_technology', enrollment.internship_technology),
+            'internship_no_of_days': request.POST.get('internship_no_of_days', enrollment.internship_no_of_days),
+            'internship_no_of_students': request.POST.get('internship_no_of_students', enrollment.internship_no_of_students),
+            'duration': request.POST.get('duration', enrollment.duration),
+            'payment_type': request.POST.get('payment_type', enrollment.payment_type),
+            'total_fees_amount': request.POST.get('total_fees_amount', enrollment.total_fees_amount),
+        }
+        
+        try:
+            response = requests.patch(api_url, data=enrollment_data, headers=headers)
+            print("API Response Status Code:", response.status_code)
+            response.raise_for_status()
+            response_data = response.json()
+            print("API Response Data:", response_data)
+        except requests.exceptions.RequestException as err:
+            print(f'Request error occurred: {err}')
+            context = {
+                'error': f'Request error occurred: {err}',
+                'response_data': response.json() if response.content else {}
+            }
+            return render(request, 'manage_enrollment.html', context)
+        
+        if response.status_code in [200, 204]:  # 204 No Content is also a valid response for updates
+            print("Update successful")
+            return redirect('manage_enrollment')
+        else:
+            context = {
+                'error': response_data.get('error', 'An error occurred during enquiry creation.'),
+                'enrollment_data': enrollment_data,
+            }
+            return render(request, 'update_enrollment.html', context)
+    
+    courses = Course.objects.all()
+    
+    context = {
+        'courses': courses,
+        "enrollment": enrollment,
+        "enquiry_id": id,
+    }
+    
+    print("Registration Date : ", enrollment.registration_date)
+        
+    return render(request, 'update_enrollment.html', context)
+
+def delete_enrollment_view(request, id):
+    user_id = Enrollment.objects.get(id=id)
+    
+    if not user_id:
+        context = {'error': 'Enrollment ID not provided'}
+        return render(request, 'manage_enrollment.html', context)
+    
+    try:
+        token = Token.objects.get(user=request.user)  # Get the first token for simplicity
+        if not token:
+            raise Token.DoesNotExist
+    except Token.DoesNotExist:
+        context = {'error': 'Authentication token not found'}
+        return render(request, 'manage_enquiry.html', context)
+    
+    api_url = f'http://127.0.0.1:8000/api/delete_enrollment/{user_id.pk}/'
+    headers = {
+        'Authorization': f'Token {token.key}',
+        'Content-Type': 'application/json'
+    }
+    
+    try:
+        response = requests.delete(api_url, headers=headers)
+        response.raise_for_status()
+        
+        if response.status_code == 200:
+            messages.success(request, 'Successfully Deleted')
+            return redirect('manage_enrollment')
+
+    except requests.exceptions.RequestException as err:
+        context = {
+            'error': f'Request error occurred: {err}',
+            'response_data': response.json() if response else {}
+        }
+        return render(request, 'manage_enrollment.html', context)
+    
+def delete_all_enrollment_view(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            
+            print("Data : ", data)
+            
+            user_ids = data.get('user_ids', [])
+            
+            print("User ID : ", user_ids)
+            
+            if user_ids:
+                Enrollment.objects.filter(id__in=user_ids).delete()
+                messages.success(request, 'Successfully Deleted')
+                return JsonResponse({'success': True})
+            else:
+                return JsonResponse({'success': False, 'error': 'No users selected for deletion'})
+        except json.JSONDecodeError:
+            return JsonResponse({'success': False, 'error': 'Invalid JSON'})
+    return JsonResponse({'success': False, 'error': 'Invalid request method'})

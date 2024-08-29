@@ -29,7 +29,7 @@
                 <nav style="--bs-breadcrumb-divider: '|';" aria-label="breadcrumb">
                     <ol class="breadcrumb pt-3 mb-3 ps-lg-3">
                         <li class="breadcrumb-item"><a class="user-a" href="#">Enrollment</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">New Enrollment</li>
+                        <li class="breadcrumb-item active" aria-current="page">Update Enrollment</li>
                     </ol>
                 </nav>
             </div>
@@ -80,7 +80,7 @@
                                     <!-- enquiry number field -->
                                     <div class="col-12 col-md-6 p-0">
                                         <div class="user-input-wrp ms-4">
-                                            <input type="text" name="enquiry_no" id="enquiry_no" value="{{enquiry_no}}" class="form-control"
+                                            <input type="text" name="enquiry_no" id="enquiry_no" value="{{enrollment.enquiry_no.enquiry_no}}" class="form-control"
                                                 aria-label="enquiry_no" placeholder=" " autocomplete="off" autofocus>
                                             <label class="floating-label">&nbsp;Enquiry No&nbsp;</label>
                                             <span id="enquiry_no_error" class="error-div">
@@ -94,7 +94,7 @@
                                     <!-- Registration Number Field -->
                                     <div class="col-12 col-md-6 p-0">
                                         <div class="user-input-wrp ms-5">
-                                            <input type="text" name="registration_no" id="registration_no" value="{{registration_no}}" class="form-control"
+                                            <input type="text" name="registration_no" id="registration_no" value="{{enrollment.registration_no}}" class="form-control"
                                                 aria-label="registration_no" placeholder=" " autocomplete="off" autofocus>
                                             <label class="floating-label">&nbsp;Registration No <span class="required">*</span> &nbsp;</label>
                                             <span id="registration_no_error" class="error-div">
@@ -108,7 +108,7 @@
                                     <!-- Registration Date Field -->
                                     <div class="col-12 col-md-6 ps-0 ms-2 pe-2">
                                         <div class="user-input-wrp ms-md-3">
-                                            <input type="date" name="registration_date" id="registration_date" value="{{registration_date}}" class="form-control"
+                                            <input type="date" name="registration_date" id="registration_date" value="{{enrollment.registration_date|date:'Y-m-d'}}" class="form-control"
                                                 aria-label="registration_date" placeholder=" " autocomplete="off" autofocus>
                                             <label class="floating-label">&nbsp;Registration Date <span class="required">*</span> &nbsp;</label>
                                             <span id="registration_date_error" class="error-div">
@@ -129,7 +129,7 @@
                                 <!-- student name field -->
                                 <div class="col-12 col-md-6 p-0">
                                     <div class="user-input-wrp ms-md-4">
-                                        <input type="text" name="name" id="name" value="{{name}}" class="form-control"
+                                        <input type="text" name="name" id="name" value="{{enrollment.name}}" class="form-control"
                                             aria-label="name" placeholder=" " autocomplete="off" autofocus>
                                         <label class="floating-label">&nbsp;Name <span class="required">*</span> &nbsp;</label>
                                         <span id="name_error" class="error-div">
@@ -143,7 +143,7 @@
                                 <!-- phonenumber field -->
                                 <div class="col-12 col-md-6 p-0">
                                     <div class="user-input-wrp ms-md-5 me-md-2">
-                                        <input type="text" name="phonenumber" id="phonenumber" value="{{phonenumber}}" maxlength="10" class="form-control"
+                                        <input type="text" name="phonenumber" id="phonenumber" value="{{enrollment.phonenumber}}" maxlength="10" class="form-control"
                                             aria-label="phonenumber" placeholder=" " autocomplete="off" autofocus>
                                         <label class="floating-label">&nbsp;Contact No <span class="required">*</span> &nbsp;</label>
                                         <span id="phonenumber_error" class="error-div">
@@ -157,7 +157,7 @@
                                 <!-- student date of birth field -->
                                 <div class="col-12 col-md-6 p-0">
                                     <div class="user-input-wrp ms-4">
-                                        <input type="date" name="date_of_birth" id="date_of_birth" value="{{date_of_birth}}" class="form-control" placeholder=" "
+                                        <input type="date" name="date_of_birth" id="date_of_birth" value="{{enrollment.date_of_birth|date:'Y-m-d'}}" class="form-control" placeholder=" "
                                             autocomplete="off" autofocus>
                                         <label class="floating-label">&nbsp;Date Of Birth&nbsp;</label>
                                         <span id="date_of_birth_error" class="error-div error-right">
@@ -173,9 +173,9 @@
                                     <div class="user-input-wrp ms-md-5 pe-md-2">
                                         <select name="gender" id="gender" class="form-select select">
                                             <option value="" selected>Gender</option>
-                                            <option value="Male">Male</option>
-                                            <option value="Female">Female</option>
-                                            <option value="Others">Other</option>
+                                            <option value="Male" {% if enrollment.gender == "Male" %} selected {%endif%}>Male</option>
+                                            <option value="Female" {% if enrollment.gender == "Female" %} selected {%endif%}>Female</option>
+                                            <option value="Others" {% if enrollment.gender == "Others" %} selected {%endif%}>Other</option>
                                         </select>
                                         <!-- <label class="floating-label">&nbsp;Gender <span class="required">*</span> &nbsp;</label> -->
                                         <span id="gender_error" class="error-div">
@@ -189,7 +189,7 @@
                                 <!-- email field -->
                                 <div class="col-12 col-md-6 p-0">
                                     <div class="user-input-wrp ms-md-4">
-                                        <input type="email" name="email_id" id="email_id" value="{{email_id}}" class="form-control" placeholder=" "
+                                        <input type="email" name="email_id" id="email_id" value="{{enrollment.email_id}}" class="form-control" placeholder=" "
                                             autocomplete="off" autofocus>
                                         <label class="floating-label">&nbsp;E-Mail-ID <span class="required">*</span> &nbsp;</label>
                                         <span id="email_error" class="error-div error-right">
@@ -203,7 +203,7 @@
                                 <!-- student father name / guardian field -->
                                 <div class="col-12 col-md-6 p-0">
                                     <div class="user-input-wrp ms-md-5 me-md-2">
-                                        <input type="text" name="father_name" id="father_name" value="{{father_name}}" class="form-control" placeholder=" "
+                                        <input type="text" name="father_name" id="father_name" value="{{enrollment.father_name}}" class="form-control" placeholder=" "
                                             autocomplete="off" autofocus>
                                         <label class="floating-label">&nbsp;Father/Guardian's Name&nbsp;</label>
                                         <span id="father_name_error" class="error-div error-right">
@@ -217,7 +217,7 @@
                                 <!-- Father's Contact No field -->
                                 <div class="col-12 col-md-6 p-0">
                                     <div class="user-input-wrp ms-4">
-                                        <input type="text" name="father_contact" id="fathers_contact_no" value="{{fathers_contact_no}}" maxlength="10" maxlength="10" class="form-control" placeholder=" "
+                                        <input type="text" name="father_contact" id="fathers_contact_no" value="{{enrollment.fathers_contact_no}}" maxlength="10" maxlength="10" class="form-control" placeholder=" "
                                             autocomplete="off" autofocus>
                                         <label class="floating-label">&nbsp;Father / Guardian's Contact No <span class="required">*</span> &nbsp;</label>
                                         <span id="father_contact_no_error" class="error-div error-right">
@@ -231,7 +231,7 @@
                                 <!-- Father email field -->
                                 <div class="col-12 col-md-6 p-0">
                                     <div class="user-input-wrp ms-md-5 me-md-2">
-                                        <input type="email" name="father_email" id="father_email" value="{{father_email_id}}" class="form-control" placeholder=" "
+                                        <input type="email" name="father_email" id="father_email" value="{{enrollment.father_email_id}}" class="form-control" placeholder=" "
                                             autocomplete="off" autofocus>
                                         <label class="floating-label">&nbsp;Father / Guardian's E-Mail-ID&nbsp;</label>
                                         <span id="father_email_error" class="error-div error-right">
@@ -279,7 +279,7 @@
                                     <!-- degree field -->
                                     <div class="col-12 col-md-6">
                                         <div class="user-input-wrp ms-md-3 me-md-2">
-                                            <input type="text" name="degree" id="degree" value="{{degree}}" class="form-control"
+                                            <input type="text" name="degree" id="degree" value="{{enrollment.degree}}" class="form-control"
                                                 aria-label="degree" placeholder=" " autocomplete="off" autofocus>
                                             <label class="floating-label">&nbsp;Degree/Diplomo <span class="required">*</span> &nbsp;</label>
                                             <span id="degree_error" class="error-div">
@@ -293,7 +293,7 @@
                                     <!-- institution field -->
                                     <div class="col-12 col-md-6">
                                         <div class="user-input-wrp ms-md-2">
-                                            <input type="text" name="institution" id="institution" value="{{institution}}" class="form-control"
+                                            <input type="text" name="institution" id="institution" value="{{enrollment.institution}}" class="form-control"
                                                 aria-label="institution" placeholder=" " autocomplete="off" autofocus>
                                             <label class="floating-label">&nbsp;Institution <span class="required">*</span> &nbsp;</label>
                                             <span id="institution_error" class="error-div">
@@ -309,7 +309,7 @@
                                     <!-- subject/area field -->
                                     <div class="col-12 col-md-6">
                                         <div class="user-input-wrp ms-md-3 me-md-2 mt-md-4">
-                                            <input type="text" name="subject" id="subject" value="{{subject}}" class="form-control"
+                                            <input type="text" name="subject" id="subject" value="{{enrollment.subject}}" class="form-control"
                                                 aria-label="subject" placeholder=" " autocomplete="off" autofocus>
                                             <label class="floating-label">&nbsp;Subject / Area <span class="required">*</span> &nbsp;</label>
                                             <span id="subject_error" class="error-div">
@@ -323,7 +323,7 @@
                                     <!-- grade-persentage field -->
                                     <div class="col-12 col-md-6">
                                         <div class="user-input-wrp ms-md-2 mt-md-4">
-                                            <input type="text" name="grade_percentage" id="grade_percentage" value="{{grade_percentage}}" class="form-control"
+                                            <input type="text" name="grade_percentage" id="grade_percentage" value="{{enrollment.grade_percentage}}" class="form-control"
                                                 aria-label="collage" placeholder=" " autocomplete="off" autofocus>
                                             <label class="floating-label">&nbsp;Persentage of Marks / CGPA  <span class="required">*</span> &nbsp;</label>
                                             <span id="grade_percentage_error" class="error-div">
@@ -354,7 +354,7 @@
                                     <!-- Year of Passed Out field -->
                                     <div class="col-12 col-md-6">
                                         <div class="user-input-wrp ms-md-2 mt-md-4">
-                                            <input type="text" name="year_of_passed_out" id="year_of_passed_out" value="{{year_of_passed_out}}" class="form-control"
+                                            <input type="text" name="year_of_passed_out" id="year_of_passed_out" value="{{enrollment.year_of_passed_out}}" class="form-control"
                                                 aria-label="place" placeholder=" " autocomplete="off" autofocus>
                                             <label class="floating-label">&nbsp;Year of Passed Out <span class="required">*</span> &nbsp;</label>
                                             <span id="year_of_passed_out_error" class="error-div">
@@ -382,7 +382,7 @@
                                     <!-- Designation field -->
                                     <div class="col-12 col-md-6"  style="display: none;" id="designation_div">
                                         <div class="user-input-wrp ms-md-3 me-md-2 mt-md-4">
-                                            <input type="text" name="designation" id="designation" value="{{designation}}" class="form-control"
+                                            <input type="text" name="designation" id="designation" value="{{enrollment.designation}}" class="form-control"
                                                 aria-label="designation" placeholder=" " autocomplete="off" autofocus>
                                             <label class="floating-label">&nbsp;Designation <span class="required">*</span> &nbsp;</label>
                                             <span id="designation_error" class="error-div">
@@ -396,7 +396,7 @@
                                     <!-- Company Name field -->
                                     <div class="col-12 col-md-6 pe-md-0"  style="display: none;" id="company_name_div">
                                         <div class="user-input-wrp ms-md-3 me-md-2 mt-md-4">
-                                            <input type="text" name="company_name" id="company_name" value="{{company_name}}" class="form-control"
+                                            <input type="text" name="company_name" id="company_name" value="{{enrollment.company_name}}" class="form-control"
                                                 aria-label="company_name" placeholder=" " autocomplete="off" autofocus>
                                             <label class="floating-label">&nbsp;Company Name <span class="required">*</span> &nbsp;</label>
                                             <span id="company_name_error" class="error-div">
@@ -410,7 +410,7 @@
                                     <!-- Work Experience field -->
                                     <div class="col-12 col-md-6"  style="display: none;" id="work_experience_div">
                                         <div class="user-input-wrp ms-md-3 me-md-2 mt-md-4">
-                                            <input type="text" name="work_experience" id="work_experience" value="{{work_experience}}" class="form-control"
+                                            <input type="text" name="work_experience" id="work_experience" value="{{enrollment.work_experience}}" class="form-control"
                                                 aria-label="work_experience" placeholder=" " autocomplete="off" autofocus>
                                             <label class="floating-label">&nbsp;Work Experience <span class="required">*</span> &nbsp;</label>
                                             <span id="work_experience_error" class="error-div">
@@ -452,7 +452,7 @@
                                     <!-- Nature of Work field -->
                                     <div class="col-12 col-md-6 pe-md-0"  style="display: none;" id="nature_of_work_div">
                                         <div class="user-input-wrp ms-md-3 me-md-2 mt-md-4">
-                                            <input type="text" name="nature_of_work" id="nature_of_work" value="{{nature_of_work}}" class="form-control"
+                                            <input type="text" name="nature_of_work" id="nature_of_work" value="{{enrollment.nature_of_work}}" class="form-control"
                                                 aria-label="nature_of_work" placeholder=" " autocomplete="off" autofocus>
                                             <label class="floating-label">&nbsp;Nature of Work <span class="required">*</span> &nbsp;</label>
                                             <span id="nature_of_work_error" class="error-div">
@@ -483,7 +483,7 @@
                                             <select class="form-select select" id="course_name" name="course_name" onchange="handleCourseNameChange()">
                                                 <option value="" selected>Select Your Course</option>
                                                 {% for course in courses %}
-                                                <option value="{{ course.id }}" {% if course_name == course.id %}selected{% endif %}>{{ course.course_name|title }}</option>
+                                                    <option value="{{ course.id }}" {% if course.id == enrollment.course_name_id %}selected{% endif %}>{{ course.course_name|title }}</option>
                                                 {% endfor %}
                                             </select>
                                             <label for="course_name" class="floating-label float">&nbsp;Course Name <span class="required">*</span> &nbsp;</label>
@@ -498,7 +498,7 @@
                                     <!-- Duration -->
                                     <div class="col-12 col-md-6 pe-md-0" id="duration_div">
                                         <div class="user-input-wrp ms-md-3 me-md-2 mt-md-4">
-                                            <input type="text" name="duration" value="{{duration}}" id="duration" class="form-control"
+                                            <input type="text" name="duration" value="{{enrollment.duration}}" id="duration" class="form-control"
                                                 aria-label="Duration" placeholder=" " autocomplete="off" autofocus>
                                             <label class="floating-label">&nbsp;Duration <span class="required">*</span> &nbsp;</label>
                                             <span id="duration_error" class="error-div">
@@ -512,7 +512,7 @@
                                     <!-- Inplant Technology field -->
                                     <div class="col-12 col-md-6 pe-md-0" style="display: none;" id="technology_div">
                                         <div class="user-input-wrp ms-md-3 me-md-2 mt-md-4">
-                                            <input type="text" name="technology" id="technology" value="{{inplant_technology}}" class="form-control" placeholder=" "
+                                            <input type="text" name="technology" id="technology" value="{{enrollment.inplant_technology}}" class="form-control" placeholder=" "
                                                 autocomplete="off">
                                             <label class="floating-label">&nbsp;Technology <span class="required">*</span> &nbsp;</label>
                                             <span id="technology_error" class="error-div error-right">
@@ -526,7 +526,7 @@
                                     <!-- Internship Technology field -->
                                     <div class="col-12 col-md-6 pe-md-0" style="display: none;" id="internship_technology_div">
                                         <div class="user-input-wrp ms-md-3 me-md-2 mt-md-4">
-                                            <input type="text" name="internship_technology" id="internship_technology" value="{{internship_technology}}" class="form-control" placeholder=" "
+                                            <input type="text" name="internship_technology" id="internship_technology" value="{{enrollment.internship_technology}}" class="form-control" placeholder=" "
                                                 autocomplete="off" autofocus>
                                             <label class="floating-label">&nbsp;Technology <span class="required">*</span> &nbsp;</label>
                                             <span id="internship_technology_error" class="error-div error-right">
@@ -541,7 +541,7 @@
                                     <!-- No.of Days field -->
                                     <div class="col-12 col-md-6 pe-md-0"  style="display: none;" id="no_of_days_div">
                                         <div class="user-input-wrp ms-md-3 me-md-2 mt-md-4">
-                                            <input type="number" name="inplant_no_of_days" id="inplant_no_of_days" value="{{inplant_no_of_days}}" class="form-control" placeholder=" "
+                                            <input type="number" name="inplant_no_of_days" id="inplant_no_of_days" value="{{enrollment.inplant_no_of_days}}" class="form-control" placeholder=" "
                                                 autocomplete="off" autofocus>
                                             <label class="floating-label">&nbsp;No.of Days <span class="required">*</span> &nbsp;</label>
                                             <span id="inplant_no_of_days_error" class="error-div error-right">
@@ -555,7 +555,7 @@
                                     <!-- No.of Students -->
                                     <div class="col-12 col-md-6 pe-md-0" style="display: none;" id="no_of_students_div">
                                         <div class="user-input-wrp ms-md-3 me-md-2 mt-md-4">
-                                            <input type="number" name="inplant_no_of_students" id="inplant_no_of_students" value="{{inplant_no_of_students}}" class="form-control" placeholder=" "
+                                            <input type="number" name="inplant_no_of_students" id="inplant_no_of_students" value="{{enrollment.inplant_no_of_students}}" class="form-control" placeholder=" "
                                                 autocomplete="off" autofocus>
                                             <label class="floating-label">&nbsp;No.of Students <span class="required">*</span> &nbsp;</label>
                                             <span id="inplant_no_of_students_error" class="error-div error-right">
@@ -571,7 +571,7 @@
                                     <!-- No.of Days field -->
                                     <div class="col-12 col-md-6 pe-md-0"  style="display: none;" id="internship_no_of_days_div">
                                         <div class="user-input-wrp ms-md-3 me-md-2 mt-md-4">
-                                            <input type="number" name="internship_no_of_days" id="internship_no_of_days" value="{{inplant_no_of_days}}" class="form-control" placeholder=" "
+                                            <input type="number" name="internship_no_of_days" id="internship_no_of_days" value="{{enrollment.inplant_no_of_days}}" class="form-control" placeholder=" "
                                                 autocomplete="off" autofocus>
                                             <label class="floating-label">&nbsp;No.of Days <span class="required">*</span> &nbsp;</label>
                                             <span id="internship_no_of_days_error" class="error-div error-right">
@@ -585,7 +585,7 @@
                                     <!-- No.of Students -->
                                     <div class="col-12 col-md-6 pe-md-0" style="display: none;" id="internship_no_of_students_div">
                                         <div class="user-input-wrp ms-md-3 me-md-2 mt-md-4">
-                                            <input type="number" name="internship_no_of_students" id="internship_no_of_students" value="{{inplant_no_of_students}}" class="form-control" placeholder=" "
+                                            <input type="number" name="internship_no_of_students" id="internship_no_of_students" value="{{enrollment.inplant_no_of_students}}" class="form-control" placeholder=" "
                                                 autocomplete="off" autofocus>
                                             <label class="floating-label">&nbsp;No.of Students <span class="required">*</span> &nbsp;</label>
                                             <span id="internship_no_of_students_error" class="error-div error-right">
@@ -600,9 +600,9 @@
                                     <div class="col-12 col-md-6 pe-md-0">
                                         <div class="user-input-wrp ms-md-3 me-md-2 mt-md-4">
                                             <select class="form-select select" name="payment_type" id="payment_type">
-                                                <option value="select" selected>Select Your Payment Type</option>
-                                                <option class="option" value="Single Payment">Single Payment</option>
-                                                <option class="option" value="EMI">EMI</option>
+                                                <option value="" selected>Select Your Payment Type</option>
+                                                <option class="option" value="Single Payment" {% if enrollment.payment_type == "Single Payment" %}selected{% endif %}>Single Payment</option>
+                                                <option class="option" value="EMI" {% if enrollment.payment_type == "EMI" %}selected{% endif %}>EMI</option>
                                             </select>
                                             <span id="internship_no_of_students_error" class="error-div error-right">
                                                 {% if errors.payment_type %}
@@ -615,7 +615,7 @@
                                     <!-- Total Fees Amount field -->
                                     <div class="col-12 col-md-6 pe-md-0">
                                         <div class="user-input-wrp ms-md-3 me-md-2 mt-md-4">
-                                            <input type="text" name="total_fees_amount" value="{{total_fees_amount}}" id="total_fees_amount" maxlength="10" class="form-control" placeholder=" "
+                                            <input type="text" name="total_fees_amount" value="{{enrollment.total_fees_amount}}" id="total_fees_amount" maxlength="10" class="form-control" placeholder=" "
                                                 autocomplete="off" autofocus>
                                             <label class="floating-label">&nbsp;Total Fees Amount <span class="required">*</span> &nbsp;</label>
                                             <span id="total_fees_amount_error" class="error-div error-right">

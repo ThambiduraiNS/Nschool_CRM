@@ -196,6 +196,12 @@ class Enrollment(models.Model):
     nature_of_work = models.CharField(max_length=255, null=True)
 
     course_name = models.ForeignKey('Course', on_delete=models.CASCADE)
+    inplant_technology = models.CharField(max_length=100, null=True, blank=True)
+    inplant_no_of_days = models.CharField(null=True, blank=True)
+    inplant_no_of_students = models.CharField(null=True, blank=True)
+    internship_technology = models.CharField(max_length=100, null=True, blank=True)
+    internship_no_of_days = models.CharField(null=True, blank=True)
+    internship_no_of_students = models.CharField(null=True, blank=True)
     duration = models.CharField(max_length=50)
     payment_type = models.CharField()
     total_fees_amount = models.DecimalField(max_digits=10, decimal_places=2)

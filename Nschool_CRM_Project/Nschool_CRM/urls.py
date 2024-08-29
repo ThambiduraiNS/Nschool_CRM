@@ -63,6 +63,9 @@ urlpatterns = [
     # enrollment module
     path('enrollment/', new_enrollment_view, name='enrollment'),
     path('manage_enrollment/', manage_enrollment_view, name='manage_enrollment'),
+    path('update_enrollment/<int:id>/', update_enrollment_view, name='update_enrollment'),
+    path('delete_enrollment/<int:id>/', delete_enrollment_view, name='delete_enrollment'),
+    path('delete_all_enrollment/', delete_all_enrollment_view, name='delete_all_enrollment'),
     path('get-enquiry-details/', get_enquiry_details, name='get_enquiry_details'),
     
     # file formate for attributes
