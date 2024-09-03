@@ -11,6 +11,7 @@ class Command(BaseCommand):
         parser.add_argument('--contact', type=str, help='Contact number for the superuser.')
         parser.add_argument('--enquiry', action='store_true', help='Enquiry permission')
         parser.add_argument('--enrollment', action='store_true', help='Enrollment permission')
+        parser.add_argument('--payment', action='store_true', help='Payment permission')
         parser.add_argument('--attendance', action='store_true', help='Attendance permission')
         parser.add_argument('--staff', action='store_true', help='Staff permission')
         parser.add_argument('--placement', action='store_true', help='Placement permission')
@@ -24,6 +25,7 @@ class Command(BaseCommand):
         contact = options['contact']
         enquiry = options['enquiry']
         enrollment = options['enrollment']
+        payment = options['payment']
         attendance = options['attendance']
         staff = options['staff']
         placement = options['placement']
@@ -39,6 +41,7 @@ class Command(BaseCommand):
                 contact=contact,
                 enquiry=enquiry,
                 enrollment=enrollment,
+                payment=payment,
                 attendance=attendance,
                 staff=staff,
                 placement=placement,

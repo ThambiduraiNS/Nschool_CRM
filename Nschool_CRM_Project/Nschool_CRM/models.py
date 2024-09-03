@@ -45,6 +45,7 @@ class NewUser(AbstractBaseUser, PermissionsMixin):
     designation = models.CharField(max_length=255)
     enquiry = models.BooleanField(default=False)
     enrollment = models.BooleanField(default=False)
+    payment = models.BooleanField(default=False)
     attendance = models.BooleanField(default=False)
     staff = models.BooleanField(default=False)
     placement = models.BooleanField(default=False)

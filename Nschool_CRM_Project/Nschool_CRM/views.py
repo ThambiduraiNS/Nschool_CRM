@@ -718,6 +718,9 @@ def export_user_csv(request):
             if user.enrollment == True:
                 permission.append('Enrollment')
             
+            if user.enrollment == True:
+                permission.append('Enrollment')
+            
             if user.attendance == True:
                 permission.append('Attendance')
                 
@@ -2310,81 +2313,6 @@ def update_notes_view(request, id):
         
     return render(request, 'update_notes.html')
 
-# def new_enrollment_view(request):
-#     if request.method == 'POST':
-#         enrollment_data = {
-#             'enquiry_no' : request.POST.get('enquiry_no'),
-#             'registration_no' : request.POST.get('registration_no'),
-#             'registration_date' : request.POST.get('registration_date'),
-#             'name' : request.POST.get('name'),
-#             'phonenumber' : request.POST.get('phonenumber'),
-#             'date_of_birth' : request.POST.get('date_of_birth'),
-#             'gender' : request.POST.get('gender'),
-#             'email_id' : request.POST.get('email_id'),
-#             'father_name' : request.POST.get('father_name'),
-#             'fathers_contact_no' : request.POST.get('fathers_contact_no'),
-#             'degree' : request.POST.get('degree'),
-#             'institution' : request.POST.get('institution'),
-#             'subject' : request.POST.get('subject'),
-#             'grade_percentage' : request.POST.get('grade_percentage'),
-#             'work_experience' : request.POST.get('work_experience'),
-#             'designation' : request.POST.get('designation'),
-#             'company_name' : request.POST.get('company_name'),
-#             'from_date' : request.POST.get('from_date'),
-#             'to_date' : request.POST.get('to_date'),
-#             'course_name' : request.POST.get('course_name'),
-#             'duration' : request.POST.get('duration'),
-#             'total_fees_amount' : request.POST.get('total_fees_amount'),
-#         }
-        
-#         try:
-#            token = Token.objects.get(user=request.user)
-#         except Token.DoesNotExist:
-#             context = {
-#                 'error': 'Authentication Token not Found',
-#             }
-#             return render(request, 'new_enrollment.html', context)
-        
-#         api_url = 'http://127.0.0.1:8000/api/enrollment/'
-        
-#         headers = {
-#             'Authorization' : f'Token {token.key}',
-#             'Content-Type' : 'application/json',
-#         }
-        
-#         try:
-#             response = requests.post(api_url, json=enrollment_data, headers=headers)
-#             response_data = response.json()
-            
-#             print("Response Data : ", response_data)
-            
-#         except requests.exceptions.RequestException:
-#             context = {
-#                 'error': 'An Error Occured While Creating an Enrollment',
-#             }
-#             return render(request, 'new_enrollment.html', context)
-        
-#         if response.status_code == [200, 201]:
-#             messages.success(request, 'Created Successfully')
-#             return redirect('manage_enrollment')
-        
-#         else:
-#             error_message = response_data.get('error', 'An Error Occured Duraing Creation.')
-            
-#             courses = Course.objects.all()
-#             context = {
-#                 'error': error_message,
-#                 'courses': courses,
-#             }
-#             return render(request, 'new_enrollment.html', context)
-
-#     courses = Course.objects.all()
-    
-#     context = {
-#         'courses': courses,
-#     }
-    
-#     return render(request, 'new_enrollment.html', context)
 
 @require_GET
 def get_enquiry_details(request):
@@ -2741,3 +2669,161 @@ def delete_all_enrollment_view(request):
         except json.JSONDecodeError:
             return JsonResponse({'success': False, 'error': 'Invalid JSON'})
     return JsonResponse({'success': False, 'error': 'Invalid request method'})
+
+# csv file formate for attributes
+@csrf_exempt
+def export_enrollment_csv(request):
+    if request.method == 'POST':
+        ids = request.POST.get('ids', '').split(',')  # Get the ids from AJAX request
+
+        # Create the HttpResponse object with the appropriate CSV header
+        response = HttpResponse(content_type='text/csv')
+        response['Content-Disposition'] = 'attachment; filename="enrollment_list_csv.csv"'
+
+        writer = csv.writer(response)
+
+        # Write the header row with capitalized first letters
+        
+        writer.writerow([
+            'Registratio No', 'Registratio Date', 'Name', 'Contact No', 'Course Name', 'Course Duration', 
+            'Total Fees',
+        ])
+
+        # Fetch selected enquiries based on IDs
+        selected_enrollments = Enrollment.objects.filter(id__in=ids)
+
+        for enrollment in selected_enrollments:
+            writer.writerow([
+                enrollment.registration_no,
+                enrollment.registration_date,
+                enrollment.name,
+                int(enrollment.phonenumber),
+                enrollment.course_name.course_name if enrollment.course_name else '',  # Use the course name
+                enrollment.duration,
+                enrollment.total_fees_amount,
+            ])
+
+        return response
+
+    # Handle GET request or non-AJAX POST request here if needed
+    return HttpResponse(status=400)  # Bad request if not POST or AJAX
+
+# Excel file format for course
+@csrf_exempt
+def export_enrollment_excel(request):
+    if request.method == 'POST':
+        ids = request.POST.get('ids', '').split(',')  # Get the ids from AJAX request
+
+        # Fetch selected courses based on IDs
+        selected_enrollments = Enrollment.objects.filter(id__in=ids)
+        
+        if not selected_enrollments:
+            return JsonResponse({'error': 'No Enrollment available.'}, status=404)
+
+        # Create an Excel workbook
+        wb = openpyxl.Workbook()
+        ws = wb.active
+
+        # Define header row with font style and alignment
+        # Define header row with capitalized first letters
+        headers = [
+            'Registratio No', 'Registratio Date', 'Name', 'Contact No', 'Course Name', 'Course Duration', 
+            'Total Fees',
+        ]
+        
+        # Append the header row to the sheet
+        ws.append(headers)
+
+        for enrollment in selected_enrollments:
+            ws.append([
+                enrollment.registration_no,
+                enrollment.registration_date,
+                enrollment.name,
+                int(enrollment.phonenumber),
+                enrollment.course_name.course_name if enrollment.course_name else '',  # Use the course name
+                int(enrollment.duration),
+                enrollment.total_fees_amount,
+            ])
+
+        # Create an in-memory file-like object to save the workbook
+        output = BytesIO()
+        wb.save(output)
+        output.seek(0)
+
+        # Create the HTTP response with Excel content type and attachment header
+        response = HttpResponse(output, content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+        response['Content-Disposition'] = 'attachment; filename="generated_excel.xlsx"'
+        
+        return response
+
+    # Handle GET request or non-AJAX POST request here if needed
+    return HttpResponse(status=400)  # Bad request if not POST or AJAX
+
+@csrf_protect
+@require_POST
+def export_enrollment_pdf(request):
+    if request.method == 'POST':
+        ids = request.POST.get('ids', '').split(',')
+        selected_enrollments = Enrollment.objects.filter(id__in=ids)
+        
+        if not selected_enrollments:
+            return JsonResponse({'error': 'No users available.'}, status=404)
+        
+        attribute_list = []
+        for enrollment in selected_enrollments:    
+            attribute_list.append({
+                'registration_no': enrollment.registration_no,
+                'registration_date': enrollment.registration_date,
+                'name':enrollment.name,
+                'phonenumber': enrollment.phonenumber,
+                'course_name': enrollment.course_name.course_name,
+                'duration': enrollment.duration,
+                'total_fees_amount': enrollment.total_fees_amount,
+            })        
+        content = {'enrollment_list': attribute_list}
+        return renderers.render_to_pdf('enrollment_data_list.html', content)
+    
+    # Handle GET request or non-AJAX POST request here if needed
+    return HttpResponse(status=400)  # Bad request if not POST or AJAX
+
+class SearchEnrollmentResultsView(ListView):
+    model = Enrollment
+    template_name = 'search_enrollment_result.html'
+
+    def get_queryset(self):
+        start_date = self.request.GET.get("start_date", "")
+        end_date = self.request.GET.get("end_date", "")
+        query = self.request.GET.get("q", "")
+
+        # Start with all enrollments
+        object_list = Enrollment.objects.all()
+
+        # Apply text search if query is provided
+        if query:
+            object_list = object_list.filter(
+                Q(registration_no__icontains=query) |
+                Q(name__icontains=query) |
+                Q(phonenumber__icontains=query) |
+                Q(course_name__course_name__icontains=query) |
+                Q(duration__icontains=query) |
+                Q(total_fees_amount__icontains=query)
+            )
+            
+        # Apply date range filter if dates are provided
+        if start_date and end_date:
+            try:
+                start_date = datetime.strptime(start_date, '%Y-%m-%d').date()
+                end_date = datetime.strptime(end_date, '%Y-%m-%d').date()
+                object_list = object_list.filter(registration_date__range=(start_date, end_date))
+                
+            except ValueError:
+                messages.add_message(self.request, messages.ERROR, "Invalid date format. Please use YYYY-MM-DD.")
+        
+        # Optimize the query by selecting related course_name objects
+        object_list = object_list.select_related('course_name')
+
+        return object_list
+    
+    
+def new_payment_view(request):
+    return render(request, 'new_payment.html')

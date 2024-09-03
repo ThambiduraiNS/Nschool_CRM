@@ -33,6 +33,9 @@ urlpatterns = [
     # search Attributes details
     path('search_enquiry/', SearchEnquiryResultsView.as_view(), name='search_enquiry'),
     
+    # search Attributes details
+    path('search_enrollment/', SearchEnrollmentResultsView.as_view(), name='search_enrollment'),
+    
     path('logout/', logout, name='logout'),
     
     
@@ -67,6 +70,15 @@ urlpatterns = [
     path('delete_enrollment/<int:id>/', delete_enrollment_view, name='delete_enrollment'),
     path('delete_all_enrollment/', delete_all_enrollment_view, name='delete_all_enrollment'),
     path('get-enquiry-details/', get_enquiry_details, name='get_enquiry_details'),
+    
+    
+    
+    path('payment/', new_payment_view, name='payment'),
+    
+    # file formate for enrollment
+    path('export_enrollment_csv/', export_enrollment_csv, name='export_enrollment_csv'),
+    path('export_enrollment_excel/', export_enrollment_excel, name='export_enrollment_excel'),
+    path('export_enrollment_pdf/', export_enrollment_pdf, name='export_enrollment_pdf'),
     
     # file formate for attributes
     path('export_attributes_csv/', export_attributes_csv, name='export_attributes_csv'),

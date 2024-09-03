@@ -11,6 +11,7 @@
 <link rel="stylesheet" href="{% static '/css/header.css' %}">
 <link rel="stylesheet" href="{% static '/css/manage_user.css' %}">
 <link rel="stylesheet" href="{% static '/css/manage_enquiry.css' %}">
+<link rel="stylesheet" href="{% static '/css/manage_enrollment.css' %}">
 {% endblock %}
 
 {% block header %}
@@ -48,12 +49,12 @@
 
                 <div class="row m-0 p-0">
 
-                    <div class="col-4 mt-4 p-0">
+                    <div class="col-3 mt-4 p-0">
                         <h5 class="fw-bold">Manage Enrollment</h5>
                     </div>
 
                     <div class="col-6 d-flex pe-0">
-                        <form class="search-form" action="{% url 'search_enquiry' %}" method="get">
+                        <form class="search-form" action="{% url 'search_enrollment' %}" method="get">
                             <input type="text" name="q" class="search-input" placeholder="Search" autocomplete="off">
                             <input type="date" name="start_date" class="start_date">
                             <input type="date" name="end_date" class="end_date">
@@ -64,7 +65,7 @@
                         </form>
                     </div>
 
-                    <div class="col-2 d-flex mt-2 mb-1 p-2 text-center gap-1">
+                    <div class="col-2 d-flex mt-2 mb-1 p-2 ps-4 ms-5 text-center gap-1">
                         <div class="col border-div">
                             <a href="javascript:void(0);" id="export-csv-link">
                                 {% bs_icon 'filetype-csv' %}
@@ -334,7 +335,7 @@
                 formData.append('ids', ids.join(','));  // Convert ids array to comma-separated string
                 formData.append('csrfmiddlewaretoken', csrftoken);
 
-                let response = await fetch('/export_enquiry_csv/', {
+                let response = await fetch('/export_enrollment_csv/', {
                     method: 'POST',
                     body: formData
                 });
@@ -349,7 +350,7 @@
                 const a = document.createElement('a');
                 a.style.display = 'none';
                 a.href = url;
-                a.download = 'enquiry_list_csv.csv';
+                a.download = 'enrollment_list_csv.csv';
                 document.body.appendChild(a);
                 a.click();
                 window.URL.revokeObjectURL(url);
@@ -368,7 +369,7 @@
 
                 formData.append('csrfmiddlewaretoken', csrftoken);
 
-                let response = await fetch('/export_enquiry_excel/', {
+                let response = await fetch('/export_enrollment_excel/', {
                     method: 'POST',
                     body: formData
                 });
@@ -384,7 +385,7 @@
                 const a = document.createElement('a');
                 a.style.display = 'none';
                 a.href = url;
-                a.download = 'enquiry_list_excel.xlsx';
+                a.download = 'enrollment_list_excel.xlsx';
                 document.body.appendChild(a);
                 a.click();
                 window.URL.revokeObjectURL(url);
@@ -403,7 +404,7 @@
 
                 formData.append('csrfmiddlewaretoken', csrftoken);
 
-                let response = await fetch('/export_enquiry_pdf/', {
+                let response = await fetch('/export_enrollment_pdf/', {
                     method: 'POST',
                     body: formData
                 });
@@ -418,7 +419,7 @@
                 const a = document.createElement('a');
                 a.style.display = 'none';
                 a.href = url;
-                a.download = 'enquiry_list_pdf.pdf';
+                a.download = 'enrollment_list_pdf.pdf';
                 document.body.appendChild(a);
                 a.click();
                 window.URL.revokeObjectURL(url);
@@ -461,7 +462,7 @@
                 });
 
             } else {
-                alert('Please select at least one course to export.');
+                alert('Please select at least one Enrollment to export.');
             }
         });
 
@@ -482,7 +483,7 @@
                     alert('An error occurred while exporting the Excel.');
                 });
             } else {
-                alert('Please select at least one course to export.');
+                alert('Please select at least one Enrollment to export.');
             }
         });
 
@@ -503,7 +504,7 @@
                     alert('An error occurred while exporting the PDF.');
                 });
             } else {
-                alert('Please select at least one course to export.');
+                alert('Please select at least one Enrollment to export.');
             }
         });
 

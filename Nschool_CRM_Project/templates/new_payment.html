@@ -28,8 +28,8 @@
             <div class="col border bg-white rounded mt-4 ms-xll-4 mb-2 px-xll-4">
                 <nav style="--bs-breadcrumb-divider: '|';" aria-label="breadcrumb">
                     <ol class="breadcrumb pt-3 mb-3 ps-lg-3">
-                        <li class="breadcrumb-item"><a class="user-a" href="#">Enrollment</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">New Enrollment</li>
+                        <li class="breadcrumb-item"><a class="user-a" href="#">Payment</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">New Payment</li>
                     </ol>
                 </nav>
             </div>
@@ -63,7 +63,7 @@
                                 {% csrf_token %}
 
                                 <div class="col-12 mt-4 ms-md-2 position-relative">
-                                    <h5 class="fw-bold st-details">Enrollment</h5>
+                                    <h5 class="fw-bold st-details">Payment</h5>
                                     <p class="user-para">Use the below form to update your profile</p>
                                     <span class="message" id="message">
                                         {% for message in messages %}
@@ -78,7 +78,7 @@
                                 <div class="row d-flex justify-content-between pe-0">
 
                                     <!-- enquiry number field -->
-                                    <div class="col-12 col-md-6 p-0">
+                                    <!-- <div class="col-12 col-md-6 p-0">
                                         <div class="user-input-wrp ms-4">
                                             <input type="text" name="enquiry_no" id="enquiry_no" value="{{enquiry_no}}" class="form-control"
                                                 aria-label="enquiry_no" placeholder=" " autocomplete="off" autofocus>
@@ -89,7 +89,7 @@
                                                 {% endif %}
                                             </span>
                                         </div>
-                                    </div>
+                                    </div> -->
 
                                     <!-- Registration Number Field -->
                                     <div class="col-12 col-md-6 p-0">
@@ -105,12 +105,72 @@
                                         </div>
                                     </div>
 
+                                    <!-- student name field -->
+                                    <div class="col-12 col-md-6 p-0">
+                                        <div class="user-input-wrp ms-md-4">
+                                            <input type="text" name="name" id="name" value="{{name}}" class="form-control"
+                                                aria-label="name" placeholder=" " autocomplete="off" autofocus>
+                                            <label class="floating-label">&nbsp;Student Name <span class="required">*</span> &nbsp;</label>
+                                            <span id="name_error" class="error-div">
+                                                {% if errors.name %}
+                                                    {{errors.name}}
+                                                {% endif %}
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    <!-- Course Name field -->
+                                    <div class="col-12 col-md-6 pe-md-0">
+                                        <div class="user-input-wrp ms-md-3 me-md-2 mt-md-4">
+                                            <select class="form-select select" id="course_name" name="course_name" onchange="handleCourseNameChange()">
+                                                <option value="" selected>Select Your Course</option>
+                                                {% for course in courses %}
+                                                <option value="{{ course.id }}" {% if course_name == course.id %}selected{% endif %}>{{ course.course_name|title }}</option>
+                                                {% endfor %}
+                                            </select>
+                                            <label for="course_name" class="floating-label float">&nbsp;Course Name <span class="required">*</span> &nbsp;</label>
+                                            <span id="course_name_error" class="error-div error-right">
+                                                {% if errors.course_name %}
+                                                    {{errors.course_name}}
+                                                {% endif %}
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    <!-- Duration -->
+                                    <div class="col-12 col-md-6 pe-md-0" id="duration_div">
+                                        <div class="user-input-wrp ms-md-3 me-md-2 mt-md-4">
+                                            <input type="text" name="duration" value="{{duration}}" id="duration" class="form-control"
+                                                aria-label="Duration" placeholder=" " autocomplete="off" autofocus>
+                                            <label class="floating-label">&nbsp;Duration <span class="required">*</span> &nbsp;</label>
+                                            <span id="duration_error" class="error-div">
+                                                {% if errors.duration %}
+                                                        {{errors.duration}}
+                                                {% endif %}
+                                            </span>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- total fees -->
+                                    <div class="col-12 col-md-6 pe-md-0" id="duration_div">
+                                        <div class="user-input-wrp ms-md-3 me-md-2 mt-md-4">
+                                            <input type="text" name="duration" value="{{duration}}" id="duration" class="form-control"
+                                                aria-label="Duration" placeholder=" " autocomplete="off" autofocus>
+                                            <label class="floating-label">&nbsp;Total Fees <span class="required">*</span> &nbsp;</label>
+                                            <span id="duration_error" class="error-div">
+                                                {% if errors.duration %}
+                                                        {{errors.duration}}
+                                                {% endif %}
+                                            </span>
+                                        </div>
+                                    </div>
+
                                     <!-- Registration Date Field -->
                                     <div class="col-12 col-md-6 ps-0 ms-2 pe-2">
                                         <div class="user-input-wrp ms-md-3">
                                             <input type="date" name="registration_date" id="registration_date" value="{{registration_date}}" class="form-control"
                                                 aria-label="registration_date" placeholder=" " autocomplete="off" autofocus>
-                                            <label class="floating-label">&nbsp;Registration Date <span class="required">*</span> &nbsp;</label>
+                                            <label class="floating-label">&nbsp;Joining Date <span class="required">*</span> &nbsp;</label>
                                             <span id="registration_date_error" class="error-div">
                                                 {% if errors.registration_date %}
                                                     {{errors.registration_date}}
@@ -118,30 +178,67 @@
                                             </span>
                                         </div>
                                     </div>
+
+                                    <div class="col-12 col-md-6 p-0">
+                                        <div class="user-input-wrp ms-md-5 pe-md-2">
+                                            <select name="gender" id="gender" class="form-select select">
+                                                <option value="" selected>Fees Type</option>
+                                                <option value="Male">Single Payment</option>
+                                                <option value="Installment">Installment</option>
+                                            </select>
+                                            <label class="floating-label">&nbsp; Fees Type <span class="required">*</span> &nbsp;</label>
+                                            <span id="gender_error" class="error-div">
+                                                {% if errors.gender %}
+                                                        {{errors.gender}}
+                                                {% endif %}
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    <!-- gender -->
+                                    <div class="col-12 col-md-6 p-0">
+                                        <div class="user-input-wrp ms-md-5 pe-md-2">
+                                            <select name="gender" id="gender" class="form-select select">
+                                                <option value="" selected>Payment Mode</option>
+                                                <option value="Male">Cash</option>
+                                                <option value="Female">UPI</option>
+                                                <option value="Others">Checque</option>
+                                                <option value="Others">Bank Transfer</option>
+                                            </select>
+                                            <label class="floating-label">&nbsp;Payment Mode <span class="required">*</span> &nbsp;</label>
+                                            <span id="gender_error" class="error-div">
+                                                {% if errors.gender %}
+                                                        {{errors.gender}}
+                                                {% endif %}
+                                            </span>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- installment -->
+                                    <div class="col-12 col-md-6 p-0">
+                                        <div class="user-input-wrp ms-md-5 pe-md-2">
+                                            <select name="gender" id="gender" class="form-select select">
+                                                <option value="" selected>Installment</option>
+                                                <option value="Male">1</option>
+                                                <option value="Female">2</option>
+                                                <option value="Others">3</option>
+                                                <option value="Others">4</option>
+                                                <option value="Others">5</option>
+                                                <option value="Others">6</option>
+                                            </select>
+                                            <label class="floating-label">&nbsp; Installment <span class="required">*</span> &nbsp;</label>
+                                            <span id="gender_error" class="error-div">
+                                                {% if errors.gender %}
+                                                        {{errors.gender}}
+                                                {% endif %}
+                                            </span>
+                                        </div>
+                                    </div>
                                     
                                 </div>
 
-                                <div class="col-12 mt-4 ms-md-2 position-relative">
-                                    <h5 class="fw-bold st-details">Personal Details</h5>
-                                    <p class="user-para">Use the below form to update your profile</p>
-                                </div>
-
-                                <!-- student name field -->
-                                <div class="col-12 col-md-6 p-0">
-                                    <div class="user-input-wrp ms-md-4">
-                                        <input type="text" name="name" id="name" value="{{name}}" class="form-control"
-                                            aria-label="name" placeholder=" " autocomplete="off" autofocus>
-                                        <label class="floating-label">&nbsp;Name <span class="required">*</span> &nbsp;</label>
-                                        <span id="name_error" class="error-div">
-                                            {% if errors.name %}
-                                                {{errors.name}}
-                                            {% endif %}
-                                        </span>
-                                    </div>
-                                </div>
-
                                 <!-- phonenumber field -->
-                                <div class="col-12 col-md-6 p-0">
+                                <!-- <div class="col-12 col-md-6 p-0">
                                     <div class="user-input-wrp ms-md-5 me-md-2">
                                         <input type="text" name="phonenumber" id="phonenumber" value="{{phonenumber}}" maxlength="10" class="form-control"
                                             aria-label="phonenumber" placeholder=" " autocomplete="off" autofocus>
@@ -152,10 +249,10 @@
                                             {% endif %}
                                         </span>
                                     </div>
-                                </div>
+                                </div> -->
 
                                 <!-- student date of birth field -->
-                                <div class="col-12 col-md-6 p-0">
+                                <!-- <div class="col-12 col-md-6 p-0">
                                     <div class="user-input-wrp ms-4">
                                         <input type="date" name="date_of_birth" id="date_of_birth" value="{{date_of_birth}}" class="form-control" placeholder=" "
                                             autocomplete="off" autofocus>
@@ -166,10 +263,10 @@
                                             {% endif %}
                                         </span>
                                     </div>
-                                </div>
+                                </div> -->
 
                                 <!-- gender -->
-                                <div class="col-12 col-md-6 p-0">
+                                <!-- <div class="col-12 col-md-6 p-0">
                                     <div class="user-input-wrp ms-md-5 pe-md-2">
                                         <select name="gender" id="gender" class="form-select select">
                                             <option value="" selected>Gender</option>
@@ -184,10 +281,10 @@
                                             {% endif %}
                                         </span>
                                     </div>
-                                </div>
+                                </div> -->
   
                                 <!-- email field -->
-                                <div class="col-12 col-md-6 p-0">
+                                <!-- <div class="col-12 col-md-6 p-0">
                                     <div class="user-input-wrp ms-md-4">
                                         <input type="email" name="email_id" id="email_id" value="{{email_id}}" class="form-control" placeholder=" "
                                             autocomplete="off" autofocus>
@@ -198,10 +295,10 @@
                                             {% endif %}
                                         </span>
                                     </div>
-                                </div>
+                                </div> -->
 
                                 <!-- student father name / guardian field -->
-                                <div class="col-12 col-md-6 p-0">
+                                <!-- <div class="col-12 col-md-6 p-0">
                                     <div class="user-input-wrp ms-md-5 me-md-2">
                                         <input type="text" name="father_name" id="father_name" value="{{father_name}}" class="form-control" placeholder=" "
                                             autocomplete="off" autofocus>
@@ -212,10 +309,10 @@
                                             {% endif %}
                                         </span>
                                     </div>
-                                </div>
+                                </div> -->
 
                                 <!-- Father's Contact No field -->
-                                <div class="col-12 col-md-6 p-0">
+                                <!-- <div class="col-12 col-md-6 p-0">
                                     <div class="user-input-wrp ms-4">
                                         <input type="text" name="father_contact" id="fathers_contact_no" value="{{fathers_contact_no}}" maxlength="10" maxlength="10" class="form-control" placeholder=" "
                                             autocomplete="off" autofocus>
@@ -226,10 +323,10 @@
                                             {% endif %}
                                         </span>
                                     </div>
-                                </div>
+                                </div> -->
 
                                 <!-- Father email field -->
-                                <div class="col-12 col-md-6 p-0">
+                                <!-- <div class="col-12 col-md-6 p-0">
                                     <div class="user-input-wrp ms-md-5 me-md-2">
                                         <input type="email" name="father_email" id="father_email" value="{{father_email_id}}" class="form-control" placeholder=" "
                                             autocomplete="off" autofocus>
@@ -240,7 +337,7 @@
                                             {% endif %}
                                         </span>
                                     </div>
-                                </div>
+                                </div> -->
                             
                                 <div class="row d-flex justify-content-between">
                                     <div class="col-6 d-flex justify-content-md-end p-0 pe-4 pe-lg-4">
