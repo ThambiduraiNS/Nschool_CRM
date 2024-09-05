@@ -35,707 +35,384 @@
             </div>
         </div>
 
-        
-        <div class="row m-0 p-0">
-            <div class="col border-end bg-white rounded ms-xll-4 mb-2 p-0">
-                <!-- Tab Navigation -->
-                <ul class="nav nav-tabs" id="myTab" role="tablist">
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home" type="button" role="tab" aria-controls="home" aria-selected="true">Personal Details</button>
-                    </li>
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile" type="button" role="tab" aria-controls="profile" aria-selected="false">Education Details</button>
-                    </li>
-                </ul>
-            </div>
-        </div>
-        
-
         <div class="row m-0 p-0">
             <div class="col border bg-white rounded mt-2 ms-xll-4 mb-2 px-xll-4">
-
-                <!-- Tab Content -->
-                <form id="enrollment_form" class="pe-lg-2" action="" method="post">
+                <form id="payment_form" class="pe-lg-2" action="" method="post">
                     <!-- Student details -->
                     <div class="tab-content" id="myTabContent">
-                        <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
-                            <div class="row m-0 p-0">
-                                {% csrf_token %}
+                        <div class="row m-0 p-0">
+                            {% csrf_token %}
 
-                                <div class="col-12 mt-4 ms-md-2 position-relative">
-                                    <h5 class="fw-bold st-details">Payment</h5>
-                                    <p class="user-para">Use the below form to update your profile</p>
-                                    <span class="message" id="message">
-                                        {% for message in messages %}
-                                        <div>
-                                            {{ message }}
-                                        </div>
-                                    {% endfor %}
-                                    </span>
-                                </div>
-
-                                <!-- date field -->
-                                <div class="row d-flex justify-content-between pe-0">
-
-                                    <!-- enquiry number field -->
-                                    <!-- <div class="col-12 col-md-6 p-0">
-                                        <div class="user-input-wrp ms-4">
-                                            <input type="text" name="enquiry_no" id="enquiry_no" value="{{enquiry_no}}" class="form-control"
-                                                aria-label="enquiry_no" placeholder=" " autocomplete="off" autofocus>
-                                            <label class="floating-label">&nbsp;Enquiry No <span class="required">*</span> &nbsp;</label>
-                                            <span id="enquiry_no_error" class="error-div">
-                                                {% if errors.enquiry_no %}
-                                                    {{errors.enquiry_no}}
-                                                {% endif %}
-                                            </span>
-                                        </div>
-                                    </div> -->
-
-                                    <!-- Registration Number Field -->
-                                    <div class="col-12 col-md-6 p-0">
-                                        <div class="user-input-wrp ms-5">
-                                            <input type="text" name="registration_no" id="registration_no" value="{{registration_no}}" class="form-control"
-                                                aria-label="registration_no" placeholder=" " autocomplete="off" autofocus>
-                                            <label class="floating-label">&nbsp;Registration No <span class="required">*</span> &nbsp;</label>
-                                            <span id="registration_no_error" class="error-div">
-                                                {% if errors.registration_no %}
-                                                    {{errors.registration_no}}
-                                                {% endif %}
-                                            </span>
-                                        </div>
+                            <div class="col-12 mt-4 ms-md-2 position-relative">
+                                <h5 class="fw-bold st-details">Payment</h5>
+                                <p class="user-para">Use the below form to update your profile</p>
+                                <span class="message" id="message">
+                                    {% for message in messages %}
+                                    <div>
+                                        {{ message }}
                                     </div>
-
-                                    <!-- student name field -->
-                                    <div class="col-12 col-md-6 p-0">
-                                        <div class="user-input-wrp ms-md-4">
-                                            <input type="text" name="name" id="name" value="{{name}}" class="form-control"
-                                                aria-label="name" placeholder=" " autocomplete="off" autofocus>
-                                            <label class="floating-label">&nbsp;Student Name <span class="required">*</span> &nbsp;</label>
-                                            <span id="name_error" class="error-div">
-                                                {% if errors.name %}
-                                                    {{errors.name}}
-                                                {% endif %}
-                                            </span>
-                                        </div>
-                                    </div>
-
-                                    <!-- Course Name field -->
-                                    <div class="col-12 col-md-6 pe-md-0">
-                                        <div class="user-input-wrp ms-md-3 me-md-2 mt-md-4">
-                                            <select class="form-select select" id="course_name" name="course_name" onchange="handleCourseNameChange()">
-                                                <option value="" selected>Select Your Course</option>
-                                                {% for course in courses %}
-                                                <option value="{{ course.id }}" {% if course_name == course.id %}selected{% endif %}>{{ course.course_name|title }}</option>
-                                                {% endfor %}
-                                            </select>
-                                            <label for="course_name" class="floating-label float">&nbsp;Course Name <span class="required">*</span> &nbsp;</label>
-                                            <span id="course_name_error" class="error-div error-right">
-                                                {% if errors.course_name %}
-                                                    {{errors.course_name}}
-                                                {% endif %}
-                                            </span>
-                                        </div>
-                                    </div>
-
-                                    <!-- Duration -->
-                                    <div class="col-12 col-md-6 pe-md-0" id="duration_div">
-                                        <div class="user-input-wrp ms-md-3 me-md-2 mt-md-4">
-                                            <input type="text" name="duration" value="{{duration}}" id="duration" class="form-control"
-                                                aria-label="Duration" placeholder=" " autocomplete="off" autofocus>
-                                            <label class="floating-label">&nbsp;Duration <span class="required">*</span> &nbsp;</label>
-                                            <span id="duration_error" class="error-div">
-                                                {% if errors.duration %}
-                                                        {{errors.duration}}
-                                                {% endif %}
-                                            </span>
-                                        </div>
-                                    </div>
-                                    
-                                    <!-- total fees -->
-                                    <div class="col-12 col-md-6 pe-md-0" id="duration_div">
-                                        <div class="user-input-wrp ms-md-3 me-md-2 mt-md-4">
-                                            <input type="text" name="duration" value="{{duration}}" id="duration" class="form-control"
-                                                aria-label="Duration" placeholder=" " autocomplete="off" autofocus>
-                                            <label class="floating-label">&nbsp;Total Fees <span class="required">*</span> &nbsp;</label>
-                                            <span id="duration_error" class="error-div">
-                                                {% if errors.duration %}
-                                                        {{errors.duration}}
-                                                {% endif %}
-                                            </span>
-                                        </div>
-                                    </div>
-
-                                    <!-- Registration Date Field -->
-                                    <div class="col-12 col-md-6 ps-0 ms-2 pe-2">
-                                        <div class="user-input-wrp ms-md-3">
-                                            <input type="date" name="registration_date" id="registration_date" value="{{registration_date}}" class="form-control"
-                                                aria-label="registration_date" placeholder=" " autocomplete="off" autofocus>
-                                            <label class="floating-label">&nbsp;Joining Date <span class="required">*</span> &nbsp;</label>
-                                            <span id="registration_date_error" class="error-div">
-                                                {% if errors.registration_date %}
-                                                    {{errors.registration_date}}
-                                                {% endif %}
-                                            </span>
-                                        </div>
-                                    </div>
-
-                                    <div class="col-12 col-md-6 p-0">
-                                        <div class="user-input-wrp ms-md-5 pe-md-2">
-                                            <select name="gender" id="gender" class="form-select select">
-                                                <option value="" selected>Fees Type</option>
-                                                <option value="Male">Single Payment</option>
-                                                <option value="Installment">Installment</option>
-                                            </select>
-                                            <label class="floating-label">&nbsp; Fees Type <span class="required">*</span> &nbsp;</label>
-                                            <span id="gender_error" class="error-div">
-                                                {% if errors.gender %}
-                                                        {{errors.gender}}
-                                                {% endif %}
-                                            </span>
-                                        </div>
-                                    </div>
-
-                                    <!-- gender -->
-                                    <div class="col-12 col-md-6 p-0">
-                                        <div class="user-input-wrp ms-md-5 pe-md-2">
-                                            <select name="gender" id="gender" class="form-select select">
-                                                <option value="" selected>Payment Mode</option>
-                                                <option value="Male">Cash</option>
-                                                <option value="Female">UPI</option>
-                                                <option value="Others">Checque</option>
-                                                <option value="Others">Bank Transfer</option>
-                                            </select>
-                                            <label class="floating-label">&nbsp;Payment Mode <span class="required">*</span> &nbsp;</label>
-                                            <span id="gender_error" class="error-div">
-                                                {% if errors.gender %}
-                                                        {{errors.gender}}
-                                                {% endif %}
-                                            </span>
-                                        </div>
-                                    </div>
-                                    
-                                    <!-- installment -->
-                                    <div class="col-12 col-md-6 p-0">
-                                        <div class="user-input-wrp ms-md-5 pe-md-2">
-                                            <select name="gender" id="gender" class="form-select select">
-                                                <option value="" selected>Installment</option>
-                                                <option value="Male">1</option>
-                                                <option value="Female">2</option>
-                                                <option value="Others">3</option>
-                                                <option value="Others">4</option>
-                                                <option value="Others">5</option>
-                                                <option value="Others">6</option>
-                                            </select>
-                                            <label class="floating-label">&nbsp; Installment <span class="required">*</span> &nbsp;</label>
-                                            <span id="gender_error" class="error-div">
-                                                {% if errors.gender %}
-                                                        {{errors.gender}}
-                                                {% endif %}
-                                            </span>
-                                        </div>
-                                    </div>
-                                    
-                                </div>
-
-                                <!-- phonenumber field -->
-                                <!-- <div class="col-12 col-md-6 p-0">
-                                    <div class="user-input-wrp ms-md-5 me-md-2">
-                                        <input type="text" name="phonenumber" id="phonenumber" value="{{phonenumber}}" maxlength="10" class="form-control"
-                                            aria-label="phonenumber" placeholder=" " autocomplete="off" autofocus>
-                                        <label class="floating-label">&nbsp;Contact No <span class="required">*</span> &nbsp;</label>
-                                        <span id="phonenumber_error" class="error-div">
-                                            {% if errors.phonenumber %}
-                                                {{ errors.phonenumber }}
-                                            {% endif %}
-                                        </span>
-                                    </div>
-                                </div> -->
-
-                                <!-- student date of birth field -->
-                                <!-- <div class="col-12 col-md-6 p-0">
-                                    <div class="user-input-wrp ms-4">
-                                        <input type="date" name="date_of_birth" id="date_of_birth" value="{{date_of_birth}}" class="form-control" placeholder=" "
-                                            autocomplete="off" autofocus>
-                                        <label class="floating-label">&nbsp;Date Of Birth&nbsp;</label>
-                                        <span id="date_of_birth_error" class="error-div error-right">
-                                            {% if errors.date_of_birth %}
-                                                {{errors.date_of_birth}}
-                                            {% endif %}
-                                        </span>
-                                    </div>
-                                </div> -->
-
-                                <!-- gender -->
-                                <!-- <div class="col-12 col-md-6 p-0">
-                                    <div class="user-input-wrp ms-md-5 pe-md-2">
-                                        <select name="gender" id="gender" class="form-select select">
-                                            <option value="" selected>Gender</option>
-                                            <option value="Male">Male</option>
-                                            <option value="Female">Female</option>
-                                            <option value="Others">Other</option>
-                                        </select>
-                                        <label class="floating-label">&nbsp;Gender <span class="required">*</span> &nbsp;</label>
-                                        <span id="gender_error" class="error-div">
-                                            {% if errors.gender %}
-                                                    {{errors.gender}}
-                                            {% endif %}
-                                        </span>
-                                    </div>
-                                </div> -->
-  
-                                <!-- email field -->
-                                <!-- <div class="col-12 col-md-6 p-0">
-                                    <div class="user-input-wrp ms-md-4">
-                                        <input type="email" name="email_id" id="email_id" value="{{email_id}}" class="form-control" placeholder=" "
-                                            autocomplete="off" autofocus>
-                                        <label class="floating-label">&nbsp;E-Mail-ID <span class="required">*</span> &nbsp;</label>
-                                        <span id="email_error" class="error-div error-right">
-                                            {% if errors.email_id %}
-                                                {{errors.email_id}}
-                                            {% endif %}
-                                        </span>
-                                    </div>
-                                </div> -->
-
-                                <!-- student father name / guardian field -->
-                                <!-- <div class="col-12 col-md-6 p-0">
-                                    <div class="user-input-wrp ms-md-5 me-md-2">
-                                        <input type="text" name="father_name" id="father_name" value="{{father_name}}" class="form-control" placeholder=" "
-                                            autocomplete="off" autofocus>
-                                        <label class="floating-label">&nbsp;Father/Guardian's Name&nbsp;</label>
-                                        <span id="father_name_error" class="error-div error-right">
-                                            {% if errors.fathers_name %}
-                                                {{errors.fathers_name}}
-                                            {% endif %}
-                                        </span>
-                                    </div>
-                                </div> -->
-
-                                <!-- Father's Contact No field -->
-                                <!-- <div class="col-12 col-md-6 p-0">
-                                    <div class="user-input-wrp ms-4">
-                                        <input type="text" name="father_contact" id="fathers_contact_no" value="{{fathers_contact_no}}" maxlength="10" maxlength="10" class="form-control" placeholder=" "
-                                            autocomplete="off" autofocus>
-                                        <label class="floating-label">&nbsp;Father / Guardian's Contact No <span class="required">*</span> &nbsp;</label>
-                                        <span id="father_contact_no_error" class="error-div error-right">
-                                            {% if errors.fathers_contact_no %}
-                                                {{errors.fathers_contact_no}}
-                                            {% endif %}
-                                        </span>
-                                    </div>
-                                </div> -->
-
-                                <!-- Father email field -->
-                                <!-- <div class="col-12 col-md-6 p-0">
-                                    <div class="user-input-wrp ms-md-5 me-md-2">
-                                        <input type="email" name="father_email" id="father_email" value="{{father_email_id}}" class="form-control" placeholder=" "
-                                            autocomplete="off" autofocus>
-                                        <label class="floating-label">&nbsp;Father / Guardian's E-Mail-ID&nbsp;</label>
-                                        <span id="father_email_error" class="error-div error-right">
-                                            {% if errors.father_email_id %}
-                                                {{errors.father_email_id}}
-                                            {% endif %}
-                                        </span>
-                                    </div>
-                                </div> -->
-                            
-                                <div class="row d-flex justify-content-between">
-                                    <div class="col-6 d-flex justify-content-md-end p-0 pe-4 pe-lg-4">
-                                    </div>
-                                    <div class="col-6 d-flex justify-content-lg-end ps-lg-4 p-0 ps-4 gap-5">
-                                        <button class="btn login-btn" id="next-tab">Next</button>
-                                    </div>
-                                </div>
-                            
-                                <span>
-                                    {% if error_messages %}
-                                    <div class="errors-common">
-                                        <ul class="ul-errors">
-                                            {% for field, message in error_messages.items %}
-                                                {% if message %}
-                                                    <li>{{ message }}</li>
-                                                {% endif %}
-                                            {% endfor %}
-                                        </ul>
-                                    </div>
-                                    {% endif %}
+                                {% endfor %}
                                 </span>
                             </div>
-                        </div>
 
-                        <!-- Education details -->
-                        <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
-                            <div class="col-12 mt-4 ms-md-3 position-relative">
-                                <h5 class="fw-bold st-details">Education Details</h5>
-                                <p class="user-para">Use the below form to update your profile</p>
-                                <!-- <span class="message" id="message">{{message}}</span> -->
-                            </div>
+                            <!-- date field -->
+                            <div class="row d-flex justify-content-between pe-0">
 
-                            <div class="row">
-                                <div class="row">
-                                    <!-- degree field -->
-                                    <div class="col-12 col-md-6">
-                                        <div class="user-input-wrp ms-md-3 me-md-2">
-                                            <input type="text" name="degree" id="degree" value="{{degree}}" class="form-control"
-                                                aria-label="degree" placeholder=" " autocomplete="off" autofocus>
-                                            <label class="floating-label">&nbsp;Degree/Diplomo <span class="required">*</span> &nbsp;</label>
-                                            <span id="degree_error" class="error-div">
-                                                {% if errors.degree %}
-                                                    {{errors.degree}}
-                                                {% endif %}
-                                            </span>
-                                        </div>
-                                    </div>
-
-                                    <!-- institution field -->
-                                    <div class="col-12 col-md-6">
-                                        <div class="user-input-wrp ms-md-2">
-                                            <input type="text" name="institution" id="institution" value="{{institution}}" class="form-control"
-                                                aria-label="institution" placeholder=" " autocomplete="off" autofocus>
-                                            <label class="floating-label">&nbsp;Institution <span class="required">*</span> &nbsp;</label>
-                                            <span id="institution_error" class="error-div">
-                                                {% if errors.institution %}
-                                                    {{errors.institution}}
-                                                {% endif %}
-                                            </span>
-                                        </div>
+                                <!-- Registration Number Field -->
+                                <div class="col-12 col-md-6 p-md-0">
+                                    <div class="user-input-wrp ms-4 me-2 mt-4">
+                                        <input type="text" name="registration_no" id="registration_no" value="{{registration_no}}" class="form-control"
+                                            aria-label="registration_no" placeholder=" " autocomplete="off" autofocus>
+                                        <label class="floating-label">&nbsp;Registration No <span class="required">*</span> &nbsp;</label>
+                                        <span id="registration_no_error" class="error-div">
+                                            {% if errors.registration_no %}
+                                                {{errors.registration_no}}
+                                            {% endif %}
+                                        </span>
                                     </div>
                                 </div>
 
-                                <div class="row">
-                                    <!-- subject/area field -->
-                                    <div class="col-12 col-md-6">
-                                        <div class="user-input-wrp ms-md-3 me-md-2 mt-md-4">
-                                            <input type="text" name="subject" id="subject" value="{{subject}}" class="form-control"
-                                                aria-label="subject" placeholder=" " autocomplete="off" autofocus>
-                                            <label class="floating-label">&nbsp;Subject / Area <span class="required">*</span> &nbsp;</label>
-                                            <span id="subject_error" class="error-div">
-                                                {% if errors.subject %}
-                                                    {{errors.subject}}
-                                                {% endif %}
-                                            </span>
-                                        </div>
-                                    </div>
-                                    
-                                    <!-- grade-persentage field -->
-                                    <div class="col-12 col-md-6">
-                                        <div class="user-input-wrp ms-md-2 mt-md-4">
-                                            <input type="text" name="grade_percentage" id="grade_percentage" value="{{grade_percentage}}" class="form-control"
-                                                aria-label="collage" placeholder=" " autocomplete="off" autofocus>
-                                            <label class="floating-label">&nbsp;Persentage of Marks / CGPA  <span class="required">*</span> &nbsp;</label>
-                                            <span id="grade_percentage_error" class="error-div">
-                                                {% if errors.grade_percentage %}
-                                                    {{errors.grade_percentage}}
-                                                {% endif %}
-                                            </span>
-                                        </div>
-                                    </div>
-
-                                </div>
-
-                                <div class="row">
-                                    <!-- Place field -->
-                                    <div class="col-12 col-md-6">
-                                        <div class="user-input-wrp ms-md-3 me-md-2 mt-md-4">
-                                            <input type="text" name="place" id="place" value="{{place}}" class="form-control"
-                                                aria-label="place" placeholder=" " autocomplete="off" autofocus>
-                                            <label class="floating-label">&nbsp;Place&nbsp;</label>
-                                            <span id="place_error" class="error-div">
-                                                {% if errors.place %}
-                                                    {{errors.place}}
-                                                {% endif %}
-                                            </span>
-                                        </div>
-                                    </div>
-
-                                    <!-- Year of Passed Out field -->
-                                    <div class="col-12 col-md-6">
-                                        <div class="user-input-wrp ms-md-2 mt-md-4">
-                                            <input type="text" name="year_of_passed_out" id="year_of_passed_out" value="{{year_of_passed_out}}" class="form-control"
-                                                aria-label="place" placeholder=" " autocomplete="off" autofocus>
-                                            <label class="floating-label">&nbsp;Year of Passed Out <span class="required">*</span> &nbsp;</label>
-                                            <span id="year_of_passed_out_error" class="error-div">
-                                                {% if errors.year_of_passed_out %}
-                                                    {{errors.year_of_passed_out}}
-                                                {% endif %}
-                                            </span>
-                                        </div>
+                                <!-- student name field -->
+                                <div class="col-12 col-md-6 pe-md-0">
+                                    <div class="user-input-wrp ms-md-4 mt-md-4">
+                                        <input type="text" name="student_name" id="student_name" value="{{name}}" class="form-control"
+                                            aria-label="student_name" placeholder=" " autocomplete="off" autofocus>
+                                        <label class="floating-label">&nbsp;Student Name <span class="required">*</span> &nbsp;</label>
+                                        <span id="student_name_error" class="error-div">
+                                            {% if errors.student_name %}
+                                                {{errors.student_name}}
+                                            {% endif %}
+                                        </span>
                                     </div>
                                 </div>
 
-                                <div class="experience">
-                                    <!-- Work Experience field -->
-                                    <p class="experience_p">Work Experience</p>
-                                    <input id="yes" type="radio" name="s" onclick="handleWorkExperienceChange()"><label for="yes">&nbsp;Yes</label>
-                                    <input id="no" type="radio" name="s" onclick="handleWorkExperienceChange()"><label for="no">&nbsp;No</label>
-                                    <span id="experience_error" class="error-div">
-                                        {% if errors.work_experience %}
-                                            {{errors.work_experience}}
-                                        {% endif %}
-                                    </span>
+                                <!-- Course Name field -->
+                                <div class="col-12 col-md-6 p-md-0">
+                                    <div class="user-input-wrp ms-4 me-2 mt-4">
+                                        <input type="text" name="course_name" id="course_name" value="{{course_name}}" class="form-control"
+                                            aria-label="course_name" placeholder=" " autocomplete="off" autofocus>
+                                        <label for="course_name" class="floating-label float">&nbsp;Course Name <span class="required">*</span> &nbsp;</label>
+                                        <span id="course_name_error" class="error-div error-right">
+                                            <!-- {% if errors.course_name %}
+                                                {{errors.course_name}}
+                                            {% endif %} -->
+                                        </span>
+                                    </div>
                                 </div>
-                                
-                                <div class="row">
-                                    <!-- Designation field -->
-                                    <div class="col-12 col-md-6"  style="display: none;" id="designation_div">
-                                        <div class="user-input-wrp ms-md-3 me-md-2 mt-md-4">
-                                            <input type="text" name="designation" id="designation" value="{{designation}}" class="form-control"
-                                                aria-label="designation" placeholder=" " autocomplete="off" autofocus>
-                                            <label class="floating-label">&nbsp;Designation <span class="required">*</span> &nbsp;</label>
-                                            <span id="designation_error" class="error-div">
-                                                {% if errors.designation %}
-                                                    {{errors.designation}}
-                                                {% endif %}
-                                            </span>
-                                        </div>
+                                <!-- <div class="col-12 col-md-6 p-md-0">
+                                    <div class="user-input-wrp ms-4 me-2 mt-4">
+                                        <select class="form-select select" id="course_name" name="course_name" onchange="handleCourseNameChange()">
+                                            <option value="" selected>Select Your Course</option>
+                                            {% for course in courses %}
+                                            <option value="{{ course.id }}" {% if course_name == course.id %}selected{% endif %}>{{ course.course_name|title }}</option>
+                                            {% endfor %}
+                                        </select>
+                                        <label for="course_name" class="floating-label float">&nbsp;Course Name <span class="required">*</span> &nbsp;</label>
+                                        <span id="course_name_error" class="error-div error-right">
+                                            {% if errors.course_name %}
+                                                {{errors.course_name}}
+                                            {% endif %}
+                                        </span>
                                     </div>
+                                </div> -->
 
-                                    <!-- Company Name field -->
-                                    <div class="col-12 col-md-6 pe-md-0"  style="display: none;" id="company_name_div">
-                                        <div class="user-input-wrp ms-md-3 me-md-2 mt-md-4">
-                                            <input type="text" name="company_name" id="company_name" value="{{company_name}}" class="form-control"
-                                                aria-label="company_name" placeholder=" " autocomplete="off" autofocus>
-                                            <label class="floating-label">&nbsp;Company Name <span class="required">*</span> &nbsp;</label>
-                                            <span id="company_name_error" class="error-div">
-                                                {% if errors.company_name %}
-                                                    {{errors.company_name}}
-                                                {% endif %}
-                                            </span>
-                                        </div>
-                                    </div>
-                                    
-                                    <!-- Work Experience field -->
-                                    <div class="col-12 col-md-6"  style="display: none;" id="work_experience_div">
-                                        <div class="user-input-wrp ms-md-3 me-md-2 mt-md-4">
-                                            <input type="text" name="work_experience" id="work_experience" value="{{work_experience}}" class="form-control"
-                                                aria-label="work_experience" placeholder=" " autocomplete="off" autofocus>
-                                            <label class="floating-label">&nbsp;Work Experience <span class="required">*</span> &nbsp;</label>
-                                            <span id="work_experience_error" class="error-div">
-                                                {% if errors.work_experience %}
-                                                    {{errors.work_experience}}
-                                                {% endif %}
-                                            </span>
-                                        </div>
-                                    </div>
-
-                                    <!-- From Date field -->
-                                    <!-- <div class="col-12 col-md-6"  style="display: none;" id="from_date_div">
-                                        <div class="user-input-wrp ms-md-3 me-md-2 mt-md-4">
-                                            <input type="date" name="from_date" id="from_date" value="{{from_date}}" class="form-control" placeholder=" "
-                                                autocomplete="off" autofocus>
-                                            <label class="floating-label">&nbsp;From Date&nbsp;</label>
-                                            <span id="from_date_error" class="error-div error-right">
-                                                {% if errors.from_date %}
-                                                    {{errors.from_date}}
-                                                {% endif %}
-                                            </span>
-                                        </div>
-                                    </div> -->
-
-                                    <!-- To Date field -->
-                                    <!-- <div class="col-12 col-md-6 pe-md-0" style="display: none;" id="to_date_div">
-                                        <div class="user-input-wrp ms-md-3 me-md-2 mt-md-4">
-                                            <input type="date" name="to_date" id="to_date" value="{{to_date}}" class="form-control" placeholder=" "
-                                                autocomplete="off" autofocus>
-                                            <label class="floating-label">&nbsp;To Date&nbsp;</label>
-                                            <span id="to_date_error" class="error-div error-right">
-                                                {% if errors.to_date %}
-                                                    {{errors.to_date}}
-                                                {% endif %}
-                                            </span>
-                                        </div>
-                                    </div> -->
-
-                                    <!-- Nature of Work field -->
-                                    <div class="col-12 col-md-6 pe-md-0"  style="display: none;" id="nature_of_work_div">
-                                        <div class="user-input-wrp ms-md-3 me-md-2 mt-md-4">
-                                            <input type="text" name="nature_of_work" id="nature_of_work" value="{{nature_of_work}}" class="form-control"
-                                                aria-label="nature_of_work" placeholder=" " autocomplete="off" autofocus>
-                                            <label class="floating-label">&nbsp;Nature of Work <span class="required">*</span> &nbsp;</label>
-                                            <span id="nature_of_work_error" class="error-div">
-                                                {% if errors.nature_of_work %}
-                                                    {{errors.nature_of_work}}
-                                                {% endif %}
-                                            </span>
-                                        </div>
+                                <!-- Duration -->
+                                <div class="col-12 col-md-6 pe-md-0" id="duration_div">
+                                    <div class="user-input-wrp ms-md-4 mt-md-4">
+                                        <input type="text" name="duration" value="{{duration}}" id="duration" class="form-control"
+                                            aria-label="Duration" placeholder=" " autocomplete="off" autofocus>
+                                        <label class="floating-label">&nbsp;Duration <span class="required">*</span> &nbsp;</label>
+                                        <span id="duration_error" class="error-div">
+                                            {% if errors.duration %}
+                                                    {{errors.duration}}
+                                            {% endif %}
+                                        </span>
                                     </div>
                                 </div>
                                 
-                            </div>
+                                <!-- total fees -->
+                                <div class="col-12 col-md-6 p-md-0" id="duration_div">
+                                    <div class="user-input-wrp ms-4 me-2 mt-4">
+                                        <input type="text" name="total_fees" value="{{total_fees}}" id="total_fees" class="form-control"
+                                            aria-label="Duration" placeholder=" " autocomplete="off" autofocus>
+                                        <label class="floating-label">&nbsp;Total Fees <span class="required">*</span> &nbsp;</label>
+                                        <span id="total_fees_error" class="error-div">
+                                            {% if errors.duration %}
+                                                    {{errors.duration}}
+                                            {% endif %}
+                                        </span>
+                                    </div>
+                                </div>
 
-                            <!-- Registration Details -->
+                                <!-- Joining Date Field -->
+                                <div class="col-12 col-md-6 pe-md-0">
+                                    <div class="user-input-wrp ms-4 mt-md-4">
+                                        <input type="date" name="joining_date" id="joining_date" value="{{registration_date}}" class="form-control"
+                                            aria-label="joining_date" placeholder=" " autocomplete="off" autofocus>
+                                        <label class="floating-label">&nbsp;Joining Date <span class="required">*</span> &nbsp;</label>
+                                        <span id="joining_date_error" class="error-div">
+                                            {% if errors.joining_date %}
+                                                {{errors.joining_date}}
+                                            {% endif %}
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <!-- Fees Type Field -->
+                                <div class="col-12 col-md-6 p-md-0">
+                                    <div class="user-input-wrp ms-4 me-2 mt-4">
+                                        <select name="fees_type" id="fees_type" class="form-select select" onclick="handleFeesTypeChange()">
+                                            <option value="" selected>Select Any One</option>
+                                            <option value="single payment">Single Payment</option>
+                                            <option value="installment">Installment</option>
+                                        </select>
+                                        <label class="floating-label">&nbsp; Fees Type <span class="required">*</span> &nbsp;</label>
+                                        <span id="fees_type_error" class="error-div">
+                                            {% if errors.fees_type %}
+                                                    {{errors.fees_type}}
+                                            {% endif %}
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <!-- Payment Mode Field -->
+                                <div class="col-12 col-md-6 pe-md-0">
+                                    <div class="user-input-wrp ms-md-4 mt-md-4">
+                                        <select name="payment_mode" id="payment_mode" class="form-select select" onclick="handleCashChange()">
+                                            <option value="" selected>Select Any One</option>
+                                            <option value="cash">Cash</option>
+                                            <option value="upi">UPI</option>
+                                            <option value="bank transfer">Bank Transfer</option>
+                                        </select>
+                                        <label class="floating-label">&nbsp;Payment Mode <span class="required">*</span> &nbsp;</label>
+                                        <span id="payment_mode_error" class="error-div">
+                                            {% if errors.payment_mode %}
+                                                    {{errors.payment_mode}}
+                                            {% endif %}
+                                        </span>
+                                    </div>
+                                </div>
+                                
+                                <!-- installment -->
+                                <div class="col-12 col-md-6 p-md-0" style="display: none;" id="installment_div">
+                                    <div class="user-input-wrp ms-4 me-2 mt-4">
+                                        <select name="installment" id="installment" class="form-select select">
+                                            <option value="" selected>Select Any One</option>
+                                            <option value="EMI-1">EMI-1</option>
+                                            <option value="EMI-2">EMI-2</option>
+                                            <option value="EMI-3">EMI-3</option>
+                                            <option value="EMI-4">EMI-4</option>
+                                            <option value="EMI-5">EMI-5</option>
+                                            <option value="EMI-6">EMI-6</option>
+                                        </select>
+                                        <label class="floating-label">&nbsp; Installment <span class="required">*</span> &nbsp;</label>
+                                        <span id="installment_error" class="error-div">
+                                            {% if errors.installment %}
+                                                    {{errors.installment}}
+                                            {% endif %}
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="row ms-md-2 ps-md-2 pe-md-0">
+                                    <div class="col-12 col-md-6 p-md-0" style="display: none;" id="empty_div"></div>
+                                    <!-- cash field -->
+                                    <div class="col-12 col-md-6 p-md-0" style="display: none;" id="cash_div">
+                                        <div class="user-input-wrp ms-4 me-2 mt-4">
+                                            <input type="text" name="cash" value="{{cash}}" id="cash" class="form-control"
+                                                aria-label="cash" placeholder=" " autocomplete="off" autofocus>
+                                            <label class="floating-label">&nbsp;Enter Amount <span class="required">*</span> &nbsp;</label>
+                                            <span id="cash_error" class="error-div">
+                                                {% if errors.cash %}
+                                                        {{errors.cash}}
+                                                {% endif %}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Upi fields -->
+
+                                <!-- date field -->
+                                <div class="col-12 col-md-6 p-md-0" style="display: none;" id="upi_date_div">
+                                    <div class="user-input-wrp ms-4 me-2 mt-4">
+                                        <input type="date" name="date" id="upi_date" value="{{upi_date}}" class="form-control"
+                                            aria-label="upi_date" placeholder=" " autocomplete="off" autofocus>
+                                        <label class="floating-label">&nbsp;Date <span class="required">*</span> &nbsp;</label>
+                                        <span id="upi_date_error" class="error-div">
+                                            {% if errors.upi_date %}
+                                                {{errors.upi_date}}
+                                            {% endif %}
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <!-- transaction_id field -->
+                                <div class="col-12 col-md-6 pe-md-0" style="display: none;" id="transaction_id_div">
+                                    <div class="user-input-wrp ms-md-4 mt-md-4">
+                                        <input type="text" name="transaction_id" value="{{transaction_id}}" id="transaction_id" class="form-control"
+                                            aria-label="transaction_id" placeholder=" " autocomplete="off" autofocus>
+                                        <label class="floating-label">&nbsp;Enter UPI Transaction ID <span class="required">*</span> &nbsp;</label>
+                                        <span id="transaction_id_error" class="error-div">
+                                            {% if errors.transaction_id %}
+                                                    {{errors.transaction_id}}
+                                            {% endif %}
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <!-- Amount field -->
+                                <div class="col-12 col-md-6 p-md-0" style="display: none;" id="amount_div">
+                                    <div class="user-input-wrp ms-4 me-2 mt-4">
+                                        <input type="text" name="cash" value="{{cash}}" id="amount" class="form-control"
+                                            aria-label="amount" placeholder=" " autocomplete="off" autofocus>
+                                        <label class="floating-label">&nbsp;Enter Amount <span class="required">*</span> &nbsp;</label>
+                                        <span id="amount_error" class="error-div">
+                                            {% if errors.cash %}
+                                                    {{errors.cash}}
+                                            {% endif %}
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <!-- Account / Bank Name -->
+                                <div class="col-12 col-md-6 pe-md-0" style="display: none;" id="bank_name_div">
+                                    <div class="user-input-wrp ms-md-4 mt-md-4">
+                                        <input type="text" name="bank_name" value="{{bank_name}}" id="bank_name" class="form-control"
+                                            aria-label="bank_name" placeholder=" " autocomplete="off" autofocus>
+                                        <label class="floating-label">&nbsp;Account / Bank Name <span class="required">*</span> &nbsp;</label>
+                                        <span id="bank_name_error" class="error-div">
+                                            {% if errors.amount %}
+                                                    {{errors.amount}}
+                                            {% endif %}
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <!-- App Name -->
+                                <div class="col-12 col-md-6 p-md-0" style="display: none;" id="app_name_div">
+                                    <div class="user-input-wrp ms-4 me-2 mt-4">
+                                        <input type="text" name="app_name" value="{{app_name}}" id="app_name" class="form-control"
+                                            aria-label="app_name" placeholder=" " autocomplete="off" autofocus>
+                                        <label class="floating-label">&nbsp;Enter App Name <span class="required">*</span> &nbsp;</label>
+                                        <span id="app_name_error" class="error-div">
+                                            {% if errors.app_name %}
+                                                    {{errors.app_name}}
+                                            {% endif %}
+                                        </span>
+                                    </div>
+                                </div>
+                                
+                                <!-- Bank Transfer fields -->
+
+                                <!-- date field -->
+                                <div class="col-12 col-md-6 p-md-0" style="display: none;" id="bank_date_div">
+                                    <div class="user-input-wrp ms-4 me-2 mt-4">
+                                        <input type="date" name="date" id="bank_date" value="{{date}}" class="form-control"
+                                            aria-label="bank_date" placeholder=" " autocomplete="off" autofocus>
+                                        <label class="floating-label">&nbsp;Date <span class="required">*</span> &nbsp;</label>
+                                        <span id="bank_date_error" class="error-div">
+                                            {% if errors.date %}
+                                                {{errors.date}}
+                                            {% endif %}
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <!-- Account Number field -->
+                                <div class="col-12 col-md-6 pe-md-0" style="display: none;" id="account_no_div">
+                                    <div class="user-input-wrp ms-md-4 mt-md-4">
+                                        <input type="text" name="account_no" value="{{account_no}}" id="account_no" class="form-control"
+                                            aria-label="account_no" placeholder=" " autocomplete="off" autofocus>
+                                        <label class="floating-label">&nbsp;Account Number <span class="required">*</span> &nbsp;</label>
+                                        <span id="account_no_error" class="error-div">
+                                            {% if errors.account_no %}
+                                                    {{errors.account_no}}
+                                            {% endif %}
+                                        </span>
+                                    </div>
+                                </div>
+                                
+                                <!-- IFSC Code field -->
+                                <div class="col-12 col-md-6 p-md-0" style="display: none;" id="ifsc_code_div">
+                                    <div class="user-input-wrp ms-4 me-2 mt-4">
+                                        <input type="text" name="ifsc_code" value="{{ifsc_code}}" id="ifsc_code" class="form-control"
+                                            aria-label="ifsc_code" placeholder=" " autocomplete="off" autofocus>
+                                        <label class="floating-label">&nbsp;IFSC Code <span class="required">*</span> &nbsp;</label>
+                                        <span id="ifsc_code_error" class="error-div">
+                                            {% if errors.ifsc_code %}
+                                                    {{errors.ifsc_code}}
+                                            {% endif %}
+                                        </span>
+                                    </div>
+                                </div>
+                                
+                                <!-- Branch Name field -->
+                                <div class="col-12 col-md-6 pe-md-0" style="display: none;" id="branch_name_div">
+                                    <div class="user-input-wrp ms-md-4 mt-md-4">
+                                        <input type="text" name="branch_name" value="{{branch_name}}" id="branch_name" class="form-control"
+                                            aria-label="branch_name" placeholder=" " autocomplete="off" autofocus>
+                                        <label class="floating-label">&nbsp;Branch Name <span class="required">*</span> &nbsp;</label>
+                                        <span id="branch_name_error" class="error-div">
+                                            {% if errors.branch_name %}
+                                                    {{errors.branch_name}}
+                                            {% endif %}
+                                        </span>
+                                    </div>
+                                </div>
+                                
+                                <!-- Account Holder Name field -->
+                                <div class="col-12 col-md-6 p-md-0" style="display: none;" id="account_holder_name_div">
+                                    <div class="user-input-wrp ms-4 me-2 mt-4">
+                                        <input type="text" name="account_holder_name" value="{{account_holder_name}}" id="account_holder_name" class="form-control"
+                                            aria-label="account_holder_name" placeholder=" " autocomplete="off" autofocus>
+                                        <label class="floating-label">&nbsp;Account Holder Name <span class="required">*</span> &nbsp;</label>
+                                        <span id="account_holder_name_error" class="error-div">
+                                            {% if errors.account_holder_name %}
+                                                    {{errors.account_holder_name}}
+                                            {% endif %}
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <!-- Amount field -->
+                                <div class="col-12 col-md-6 pe-md-0" style="display: none;" id="bank_amount_div">
+                                    <div class="user-input-wrp ms-md-4 mt-md-4">
+                                        <input type="text" name="cash" value="{{cash}}" id="bank_amount" class="form-control"
+                                            aria-label="amount" placeholder=" " autocomplete="off" autofocus>
+                                        <label class="floating-label">&nbsp;Enter Amount <span class="required">*</span> &nbsp;</label>
+                                        <span id="bank_amount_error" class="error-div">
+                                            {% if errors.cash %}
+                                                    {{errors.cash}}
+                                            {% endif %}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
                         
-                            <div class="col-12 mt-4 ms-md-3 position-relative">
-                                <h5 class="fw-bold st-details">Registration Details</h5>
-                                <p class="user-para">Use the below form to update your profile</p>
-                                <!-- <span class="message" id="message">{{message}}</span> -->
-                            </div>
-
-                            <div class="row">
-                                <div class="row">
-                                
-                                    <!-- Course Name field -->
-                                    <div class="col-12 col-md-6 pe-md-0">
-                                        <div class="user-input-wrp ms-md-3 me-md-2 mt-md-4">
-                                            <select class="form-select select" id="course_name" name="course_name" onchange="handleCourseNameChange()">
-                                                <option value="" selected>Select Your Course</option>
-                                                {% for course in courses %}
-                                                <option value="{{ course.id }}" {% if course_name == course.id %}selected{% endif %}>{{ course.course_name|title }}</option>
-                                                {% endfor %}
-                                            </select>
-                                            <label for="course_name" class="floating-label float">&nbsp;Course Name <span class="required">*</span> &nbsp;</label>
-                                            <span id="course_name_error" class="error-div error-right">
-                                                {% if errors.course_name %}
-                                                    {{errors.course_name}}
-                                                {% endif %}
-                                            </span>
-                                        </div>
-                                    </div>
-
-                                    <!-- Duration -->
-                                    <div class="col-12 col-md-6 pe-md-0" id="duration_div">
-                                        <div class="user-input-wrp ms-md-3 me-md-2 mt-md-4">
-                                            <input type="text" name="duration" value="{{duration}}" id="duration" class="form-control"
-                                                aria-label="Duration" placeholder=" " autocomplete="off" autofocus>
-                                            <label class="floating-label">&nbsp;Duration <span class="required">*</span> &nbsp;</label>
-                                            <span id="duration_error" class="error-div">
-                                                {% if errors.duration %}
-                                                        {{errors.duration}}
-                                                {% endif %}
-                                            </span>
-                                        </div>
-                                    </div>
-
-                                    <!-- Inplant Technology field -->
-                                    <div class="col-12 col-md-6 pe-md-0" style="display: none;" id="technology_div">
-                                        <div class="user-input-wrp ms-md-3 me-md-2 mt-md-4">
-                                            <input type="text" name="technology" id="technology" value="{{inplant_technology}}" class="form-control" placeholder=" "
-                                                autocomplete="off">
-                                            <label class="floating-label">&nbsp;Technology <span class="required">*</span> &nbsp;</label>
-                                            <span id="technology_error" class="error-div error-right">
-                                                {% if errors.inplant_technology %}
-                                                    {{errors.inplant_technology}}
-                                                {% endif %}
-                                            </span>
-                                        </div>
-                                    </div>
-                                    
-                                    <!-- Internship Technology field -->
-                                    <div class="col-12 col-md-6 pe-md-0" style="display: none;" id="internship_technology_div">
-                                        <div class="user-input-wrp ms-md-3 me-md-2 mt-md-4">
-                                            <input type="text" name="internship_technology" id="internship_technology" value="{{internship_technology}}" class="form-control" placeholder=" "
-                                                autocomplete="off" autofocus>
-                                            <label class="floating-label">&nbsp;Technology <span class="required">*</span> &nbsp;</label>
-                                            <span id="internship_technology_error" class="error-div error-right">
-                                                {% if errors.internship_technology %}
-                                                    {{errors.internship_technology}}
-                                                {% endif %}
-                                            </span>
-                                        </div>
-                                    </div>
-
-                                    
-                                    <!-- No.of Days field -->
-                                    <div class="col-12 col-md-6 pe-md-0"  style="display: none;" id="no_of_days_div">
-                                        <div class="user-input-wrp ms-md-3 me-md-2 mt-md-4">
-                                            <input type="number" name="inplant_no_of_days" id="inplant_no_of_days" value="{{inplant_no_of_days}}" class="form-control" placeholder=" "
-                                                autocomplete="off" autofocus>
-                                            <label class="floating-label">&nbsp;No.of Days <span class="required">*</span> &nbsp;</label>
-                                            <span id="inplant_no_of_days_error" class="error-div error-right">
-                                                {% if errors.inplant_no_of_days %}
-                                                    {{errors.inplant_no_of_days}}
-                                                {% endif %}
-                                            </span>
-                                        </div>
-                                    </div>
-
-                                    <!-- No.of Students -->
-                                    <div class="col-12 col-md-6 pe-md-0" style="display: none;" id="no_of_students_div">
-                                        <div class="user-input-wrp ms-md-3 me-md-2 mt-md-4">
-                                            <input type="number" name="inplant_no_of_students" id="inplant_no_of_students" value="{{inplant_no_of_students}}" class="form-control" placeholder=" "
-                                                autocomplete="off" autofocus>
-                                            <label class="floating-label">&nbsp;No.of Students <span class="required">*</span> &nbsp;</label>
-                                            <span id="inplant_no_of_students_error" class="error-div error-right">
-                                                {% if errors.inplant_no_of_students %}
-                                                    {{errors.inplant_no_of_students}}
-                                                {% endif %}
-                                            </span>
-                                        </div>
-                                    </div>
-                                
-                                
-                                
-                                    <!-- No.of Days field -->
-                                    <div class="col-12 col-md-6 pe-md-0"  style="display: none;" id="internship_no_of_days_div">
-                                        <div class="user-input-wrp ms-md-3 me-md-2 mt-md-4">
-                                            <input type="number" name="internship_no_of_days" id="internship_no_of_days" value="{{inplant_no_of_days}}" class="form-control" placeholder=" "
-                                                autocomplete="off" autofocus>
-                                            <label class="floating-label">&nbsp;No.of Days <span class="required">*</span> &nbsp;</label>
-                                            <span id="internship_no_of_days_error" class="error-div error-right">
-                                                {% if errors.internship_no_of_days %}
-                                                    {{errors.internship_no_of_days}}
-                                                {% endif %}
-                                            </span>
-                                        </div>
-                                    </div>
-
-                                    <!-- No.of Students -->
-                                    <div class="col-12 col-md-6 pe-md-0" style="display: none;" id="internship_no_of_students_div">
-                                        <div class="user-input-wrp ms-md-3 me-md-2 mt-md-4">
-                                            <input type="number" name="internship_no_of_students" id="internship_no_of_students" value="{{inplant_no_of_students}}" class="form-control" placeholder=" "
-                                                autocomplete="off" autofocus>
-                                            <label class="floating-label">&nbsp;No.of Students <span class="required">*</span> &nbsp;</label>
-                                            <span id="internship_no_of_students_error" class="error-div error-right">
-                                                {% if errors.internship_no_of_students %}
-                                                    {{errors.internship_no_of_students}}
-                                                {% endif %}
-                                            </span>
-                                        </div>
-                                    </div>
-                                    
-                                    <!-- Payment Type -->
-                                    <div class="col-12 col-md-6 pe-md-0">
-                                        <div class="user-input-wrp ms-md-3 me-md-2 mt-md-4">
-                                            <select class="form-select select" name="payment_type" id="payment_type">
-                                                <option value="" selected>Select Your Payment Type</option>
-                                                <option class="option" value="Single Payment">Single Payment</option>
-                                                <option class="option" value="EMI">EMI</option>
-                                            </select>
-                                            <label class="floating-label">&nbsp;Select Your Payment Type <span class="required">*</span> &nbsp;</label>
-                                            <span id="payment_type_error" class="error-div error-right">
-                                                {% if errors.payment_type %}
-                                                    {{errors.payment_type}}
-                                                {% endif %}
-                                            </span>
-                                        </div>
-                                    </div>
-                                    
-                                    <!-- Total Fees Amount field -->
-                                    <div class="col-12 col-md-6 pe-md-0">
-                                        <div class="user-input-wrp ms-md-3 me-md-2 mt-md-4">
-                                            <input type="text" name="total_fees_amount" value="{{total_fees_amount}}" id="total_fees_amount" maxlength="10" class="form-control" placeholder=" "
-                                                autocomplete="off" autofocus>
-                                            <label class="floating-label">&nbsp;Total Fees Amount <span class="required">*</span> &nbsp;</label>
-                                            <span id="total_fees_amount_error" class="error-div error-right">
-                                                {% if errors.total_fees_amount %}
-                                                        {{errors.total_fees_amount}}
-                                                {% endif %}
-                                            </span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
                             <div class="row">
                                 <div class="row d-flex justify-content-between">
                                     <div class="col-6 d-flex justify-content-md-end p-0 pe-4 pe-lg-4">
                                     </div>
                                     <div class="col-6 d-flex justify-content-lg-end ps-lg-4 p-0 ps-4 gap-5">
-                                        <button class="btn login-btn nav-link active " id="student-tab" data-bs-toggle="tab" data-bs-target="#home" type="button" role="tab" aria-controls="home" aria-selected="true">Back</button>
+                                        <input type="reset" value="Cancel" class="btn login-btn">
                                         <input type="submit" value="submit" class="btn login-btn">
                                     </div>
                                 </div>
                             </div>
+                        
+                            <span>
+                                {% if error_messages %}
+                                <div class="errors-common">
+                                    <ul class="ul-errors">
+                                        {% for field, message in error_messages.items %}
+                                            {% if message %}
+                                                <li>{{ message }}</li>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                                {% endif %}
+                            </span>
                         </div>
                     </div>
                 </form>
@@ -752,12 +429,12 @@
 <script>
 
 document.addEventListener('DOMContentLoaded', function() {
-    const enquiryNoField = document.getElementById('enquiry_no');
+    const registrationNoField = document.getElementById('registration_no');
     
-    enquiryNoField.addEventListener('change', function() {
-        const enquiry_no = this.value;
-        if (enquiry_no) {
-            fetch(`/get-enquiry-details/?enquiry_no=${encodeURIComponent(enquiry_no)}`)
+    registrationNoField.addEventListener('change', function() {
+        const registration_no = this.value;
+        if (registration_no) {
+            fetch(`/get-enrollment-details/?registration_no=${encodeURIComponent(registration_no)}`)
                 .then(response => {
                     if (!response.ok) {
                         throw new Error('Network response was not ok');
@@ -781,68 +458,19 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     
     function populateFields(data) {
-        document.getElementById('name').value = data.name || '';
-        document.getElementById('phonenumber').value = data.contact_no || '';
-        document.getElementById('date_of_birth').value = data.date_of_birth || '';
-        document.getElementById('email_id').value = data.email_id || '';
-        document.getElementById('father_name').value = data.fathers_name || '';
-        document.getElementById('fathers_contact_no').value = data.fathers_contact_no || '';
-        document.getElementById('degree').value = data.degree || '';
-        document.getElementById('grade_percentage').value = data.grade_percentage || '';
-        document.getElementById('institution').value = data.college || '';
-        document.getElementById('year_of_passed_out').value = data.year_of_graduation || '';
-        
-        // Match course_name with the dropdown option
-        const courseDropdown = document.getElementById('course_name');
-        console.log("Course Dropdown:", courseDropdown);
-        
-        let courseFound = false;
-        
-        for (let i = 0; i < courseDropdown.options.length; i++) {
-            const optionText = courseDropdown.options[i].textContent.trim().toLowerCase();
-            console.log("Option Text : ", optionText);
-            const courseName = data.course_name.trim().toLowerCase();
-            
-            if (optionText === courseName) {
-                courseDropdown.selectedIndex = courseDropdown.options[i.value];
-                console.log("ID : ", courseDropdown.selectedIndex)
-                courseFound = true;
-                break;
-            }
-        }
-        
-        if (!courseFound) {
-            console.warn("Course name not found in the dropdown:", data.course_name);
-        } else {
-            console.log("Selected course:", courseDropdown.options[courseDropdown.selectedIndex].text.toLowerCase());
-        }
+        document.getElementById('student_name').value = data.student_name || '';
+        document.getElementById('course_name').value = data.course_name || '';
+        document.getElementById('duration').value = data.duration || '';
+        document.getElementById('joining_date').value = data.joining_date || '';
     }
     
     function clearFields() {
-        document.getElementById('name').value = '';
-        document.getElementById('phonenumber').value = '';
-        document.getElementById('date_of_birth').value = '';
-        document.getElementById('email_id').value = '';
-        document.getElementById('father_name').value = '';
-        document.getElementById('fathers_contact_no').value = '';
-        document.getElementById('degree').value = '';
-        document.getElementById('grade_percentage').value = '';
+        document.getElementById('student_name').value = '';
         document.getElementById('course_name').value = '';
+        document.getElementById('duration').value = '';
+        document.getElementById('joining_date').value = '';
     }
 });
-
-    // tab functionality
-    document.getElementById('next-tab').addEventListener('click', function () {
-        event.preventDefault();
-        var profileTab = new bootstrap.Tab(document.getElementById('profile-tab'));
-        profileTab.show();
-    });
-    
-    document.getElementById('student-tab').addEventListener('click', function () {
-        event.preventDefault();
-        var profileTab = new bootstrap.Tab(document.getElementById('home-tab'));
-        profileTab.show();
-    });
 
     // dropdown functionality
     function toggleDropdown(element) {
@@ -951,144 +579,143 @@ document.addEventListener('DOMContentLoaded', function() {
     // Ensure the function runs on DOMContentLoaded
     document.addEventListener('DOMContentLoaded', () => handleCourseNameChange());
 
-    function handleWorkExperienceChange() {
-        // Get the elements for the work experience fields
-        let designation_div = document.getElementById('designation_div');
-        let company_name_div = document.getElementById('company_name_div');
-        
-        let work_experience_div = document.getElementById('work_experience_div');
-        let nature_of_work_div = document.getElementById('nature_of_work_div');
+    function handleFeesTypeChange() {
 
         // Check if the "Yes" radio button is selected
-        let workExperienceYes = document.getElementById('yes').checked;
+        let fees_type = document.getElementById('fees_type');
+        let fees_type_value = fees_type.value;
+        let installment_div = document.getElementById('installment_div');
 
-        console.log("Work Experience Yes:", workExperienceYes);
+        console.log("Fees Type : ", fees_type_value);
 
         clearErrors(); // Clear previous error messages
 
         // Show or hide fields based on the selection
-        let displayStyle = workExperienceYes ? 'block' : 'none';
-        designation_div.style.display = displayStyle;
-        company_name_div.style.display = displayStyle;
-        work_experience_div.style.display = displayStyle;
-        nature_of_work_div.style.display = displayStyle;
+        let displayStyle = fees_type_value === "installment" ? 'block' : 'none';
+
+        installment_div.style.display = displayStyle;
+    }
+    
+    // handel Payment Mode
+    function handleCashChange() {
+
+        // Check if the "Yes" radio button is selected
+        let payment_mode = document.getElementById('payment_mode');
+        let payment_mode_value = payment_mode.value;
+        // cash
+        let cash_div = document.getElementById('cash_div');
+        let empty_div = document.getElementById('empty_div');
+        // upi
+        let upi_date_div = document.getElementById('upi_date_div');
+        let transaction_id_div = document.getElementById('transaction_id_div');
+        let amount_div = document.getElementById('amount_div');
+        let bank_name_div = document.getElementById('bank_name_div');
+        let app_name_div = document.getElementById('app_name_div');
+        // bank transfer
+        let bank_date_div = document.getElementById('bank_date_div');
+        let account_no_div = document.getElementById('account_no_div');
+        let ifsc_code_div = document.getElementById('ifsc_code_div');
+        let branch_name_div = document.getElementById('branch_name_div');
+        let account_holder_name_div = document.getElementById('account_holder_name_div');
+        let bank_amount_div = document.getElementById('bank_amount_div');
+
+
+        console.log("Cash Value : ", payment_mode_value);
+
+        clearErrors(); // Clear previous error messages
+
+        // Show or hide fields based on the selection
+        let displayStyle = payment_mode_value === "cash" ? 'block' : 'none';
+        let displayStyleUpi = payment_mode_value === "upi" ? 'block' : 'none';
+        let displayStyleBank = payment_mode_value === "bank transfer" ? 'block' : 'none';
+
+        cash_div.style.display = displayStyle;
+        empty_div.style.display = displayStyle;
+
+        upi_date_div.style.display = displayStyleUpi;
+        transaction_id_div.style.display = displayStyleUpi;
+        amount_div.style.display = displayStyleUpi;
+        bank_name_div.style.display = displayStyleUpi;
+        app_name_div.style.display = displayStyleUpi;
+        
+        bank_date_div.style.display = displayStyleBank;
+        account_no_div.style.display = displayStyleBank;
+        ifsc_code_div.style.display = displayStyleBank;
+        branch_name_div.style.display = displayStyleBank;
+        account_holder_name_div.style.display = displayStyleBank;
+        bank_amount_div.style.display = displayStyleBank;
+
     }
 
-    document.getElementById('enrollment_form').addEventListener('submit', function(event) {
+    document.getElementById('payment_form').addEventListener('submit', function(event) {
         event.preventDefault();
         let hasError = false;
 
-        let enquiry_no = document.getElementById("enquiry_no").value.trim();
         let registration_no = document.getElementById("registration_no").value.trim();
-        let registration_date = document.getElementById("registration_date").value.trim();
-        let name = document.getElementById("name").value.trim();
-        let contactField = document.getElementById('phonenumber').value.trim();
-        let emailField = document.getElementById('email_id').value.trim();
-        let fathers_contact_no = document.getElementById('fathers_contact_no').value.trim();
-        let gender = document.getElementById('gender').value.trim();
-        let degree = document.getElementById('degree').value.trim();
-        let institution = document.getElementById('institution').value.trim();
-        let subject = document.getElementById('subject').value.trim();
-        let grade_percentage = document.getElementById('grade_percentage').value.trim();
-        let year_of_passed_out = document.getElementById('year_of_passed_out').value.trim();
-        let duration = document.getElementById('duration').value.trim();
+        let student_name = document.getElementById("student_name").value.trim();
         let course_name = document.getElementById('course_name').value.trim();
-        let technology = document.getElementById('technology').value.trim();
-        let internship_technology = document.getElementById('internship_technology').value.trim();
-        let inplant_no_of_days = document.getElementById('inplant_no_of_days').value.trim();
-        let internship_no_of_days = document.getElementById('internship_no_of_days').value.trim();
-        let inplant_no_of_students = document.getElementById('inplant_no_of_students').value.trim();
-        let internship_no_of_students = document.getElementById('internship_no_of_students').value.trim();
-        let payment_type = document.getElementById('payment_type').value.trim();
-        let total_fees_amount = document.getElementById('total_fees_amount').value.trim();
-        let designation = document.getElementById('designation').value.trim();
-        let company_name = document.getElementById('company_name').value.trim();
-        let work_experience = document.getElementById('work_experience').value.trim();
-        let nature_of_work = document.getElementById('nature_of_work').value.trim();
-
-        const courseNameElement = document.getElementById('course_name');
-        const courseName = courseNameElement.options[courseNameElement.selectedIndex].text.trim().toLowerCase();
-
-        console.log(technology, inplant_no_of_days, inplant_no_of_students)
-
-        // Field validations
-        if (validateFields(enquiry_no, "enquiry_no_error")) hasError = true;
-        if (validateFields(registration_no, "registration_no_error")) hasError = true;
-        if (validateFields(registration_date, "registration_date_error")) hasError = true;
-        if (validateFields(name, "name_error")) hasError = true;
-
-        // Contact number validation
-        if (contactField === "") {
-            document.getElementById('phonenumber_error').innerText = "This Field is required.";
-            hasError = true;
-        } else if (contactField.length != 10 || isNaN(contactField)) {
-            document.getElementById('phonenumber_error').innerText = "Please enter a valid 10-digit contact number.";
-            hasError = true;
-        } else {
-            document.getElementById('phonenumber_error').innerText = "";
-        }
-
-        // Email validation
-        let emailPattern = /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/;
-        if (emailField === "") {
-            document.getElementById('email_error').innerText = "This field is required.";
-            hasError = true;
-        } else if (!emailPattern.test(emailField)) {
-            document.getElementById('email_error').innerText = "Please enter a valid email address.";
-            hasError = true;
-        } else {
-            document.getElementById('email_error').innerText = "";  // Clear any previous error messages
-        }
-
-        // Father's contact number validation
-        if (fathers_contact_no === "") {
-            document.getElementById('father_contact_no_error').innerText = "This Field is required.";
-            hasError = true;
-        } else if (fathers_contact_no.length != 10 || isNaN(fathers_contact_no)) {
-            document.getElementById('father_contact_no_error').innerText = "Please enter a valid 10-digit contact number.";
-            hasError = true;
-        } else {
-            document.getElementById('father_contact_no_error').innerText = "";
-        }
+        let duration = document.getElementById('duration').value.trim();
+        let total_fees = document.getElementById('total_fees').value.trim();
+        let joining_date = document.getElementById("joining_date").value.trim();
+        let fees_type = document.getElementById('fees_type').value.trim();
+        let payment_mode = document.getElementById('payment_mode').value.trim();
+        let installment = document.getElementById('installment').value.trim();
+        
+        let cash = document.getElementById('cash').value.trim();
+        
+        let upi_date = document.getElementById('upi_date').value.trim();
+        let transaction_id = document.getElementById('transaction_id').value.trim();
+        let bank_name = document.getElementById('bank_name').value.trim();
+        let app_name = document.getElementById('app_name').value.trim();
+        let amount = document.getElementById('amount').value.trim();
+        
+        let bank_date = document.getElementById('bank_date').value.trim();
+        let account_no = document.getElementById('account_no').value.trim();
+        let ifsc_code = document.getElementById('ifsc_code').value.trim();
+        let branch_name = document.getElementById('branch_name').value.trim();
+        let account_holder_name = document.getElementById('account_holder_name').value.trim();
+        let bank_amount = document.getElementById('bank_amount').value.trim();
+        
+        console.log("Course Name : ", course_name)
 
         // Additional field validations
-        if (validateFields(gender, "gender_error")) hasError = true;
-        if (validateFields(degree, "degree_error")) hasError = true;
-        if (validateFields(institution, "institution_error")) hasError = true;
-        if (validateFields(subject, "subject_error")) hasError = true;
-        if (validateFields(grade_percentage, "grade_percentage_error")) hasError = true;
-        if (validateFields(year_of_passed_out, "year_of_passed_out_error")) hasError = true;
-        if (validateFields(duration, "duration_error")) hasError = true;
+        if (validateFields(registration_no, "registration_no_error")) hasError = true;
+        if (validateFields(student_name, "student_name_error")) hasError = true;
         if (validateFields(course_name, "course_name_error")) hasError = true;
-        if (validateFields(payment_type, "payment_type_error")) hasError = true;
-        if (validateFields(total_fees_amount, "total_fees_amount_error")) hasError = true;
+        if (validateFields(duration, "duration_error")) hasError = true;
+        if (validateFields(total_fees, "total_fees_error")) hasError = true;
+        if (validateFields(joining_date, "joining_date_error")) hasError = true;
+        if (validateFields(fees_type, "fees_type_error")) hasError = true;
+        if (validateFields(payment_mode, "payment_mode_error")) hasError = true;
         
-        if(document.getElementById('yes').checked === true) {
+        if(payment_mode === "cash") {
             console.log("display")
-            if (validateFields(designation, "designation_error")) hasError = true;
-            if (validateFields(company_name, "company_name_error")) hasError = true;
-            if (validateFields(work_experience, "work_experience_error")) hasError = true;
-            if (validateFields(nature_of_work, "nature_of_work_error")) hasError = true;
+            if (validateFields(cash, "cash_error")) hasError = true;
         }
 
-        if(courseName === 'inplant training') {
-            console.log("inplant")
-            if (validateFields(technology, "technology_error")) hasError = true;
-            if (validateFields(inplant_no_of_days, "inplant_no_of_days_error")) hasError = true;
-            if (validateFields(inplant_no_of_students, "inplant_no_of_students_error")) hasError = true;
+        if(payment_mode === 'upi') {
+            console.log("upi")
+            if (validateFields(upi_date, "upi_date_error")) hasError = true;
+            if (validateFields(transaction_id, "transaction_id_error")) hasError = true;
+            if (validateFields(amount, "amount_error")) hasError = true;
+            if (validateFields(bank_name, "bank_name_error")) hasError = true;
+            if (validateFields(app_name, "app_name_error")) hasError = true;
         }
         
-        if(courseName === 'internship training') {
-            console.log("internship")
-            if (validateFields(internship_technology, "internship_technology_error")) hasError = true;
-            if (validateFields(internship_no_of_days, "internship_no_of_days_error")) hasError = true;
-            if (validateFields(internship_no_of_students, "internship_no_of_students_error")) hasError = true;
+        if(payment_mode === 'bank transfer') {
+            console.log("bank transfer")
+            if (validateFields(bank_date, "bank_date_error")) hasError = true;
+            if (validateFields(account_no, "account_no_error")) hasError = true;
+            if (validateFields(ifsc_code, "ifsc_code_error")) hasError = true;
+            if (validateFields(branch_name, "branch_name_error")) hasError = true;
+            if (validateFields(account_holder_name, "account_holder_name_error")) hasError = true;
+            if (validateFields(bank_amount, "bank_amount_error")) hasError = true;
         }
 
         console.log("Has Error:", hasError);
 
         if (!hasError) {
-            document.getElementById("enrollment_form").submit();
+            document.getElementById("payment_form").submit();
         }
     });
 

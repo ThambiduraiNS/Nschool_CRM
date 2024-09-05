@@ -209,8 +209,41 @@ class Enrollment(models.Model):
 
     created_at = models.DateTimeField(auto_now_add=True)
     modified_at = models.DateTimeField(auto_now=True)
+    created_by = models.IntegerField(null=True, blank=True)
+    modified_by = models.IntegerField(null=True)
     is_active = models.BooleanField(default=True)
     is_deleted = models.BooleanField(default=False)
 
     def __str__(self):
         return f"{self.name} - {self.course_name}"
+
+class Payment(models.Model):
+    
+    registration_no = models.CharField(max_length=20)
+    student_name = models.CharField(max_length=255)
+    course_name = models.CharField()
+    duration = models.CharField(max_length=50)
+    total_fees = models.DecimalField(max_digits=10, decimal_places=2)
+    joining_date = models.DateField()
+    fees_type = models.CharField()
+    payment_mode = models.CharField()
+    installment = models.CharField(null=True, blank=True)
+    cash = models.CharField(null=True, blank=True)
+    date = models.DateField(null=True, blank=True)
+    transaction_id = models.CharField(null=True, blank=True)
+    bank_name = models.CharField(null=True, blank=True)
+    app_name = models.CharField(null=True, blank=True)
+    account_no = models.CharField(null=True, blank=True)
+    ifsc_code = models.CharField(null=True, blank=True)
+    branch_name = models.CharField(null=True, blank=True)
+    account_holder_name = models.CharField(null=True, blank=True)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    modified_at = models.DateTimeField(auto_now=True)
+    created_by = models.IntegerField(null=True, blank=True)
+    modified_by = models.IntegerField(null=True)
+    is_active = models.BooleanField(default=True)
+    is_deleted = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"{self.student_name} - {self.course_name}"

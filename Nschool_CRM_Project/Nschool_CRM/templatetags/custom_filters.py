@@ -28,3 +28,11 @@ def custom_timesince(value):
 @register.filter
 def typeof(value):
     return type(value).__name__
+
+@register.filter
+def sub(value, arg):
+    """Subtract the arg from the value, handling possible type conversions."""
+    try:
+        return int(float(value)) - int(float(arg))
+    except (ValueError, TypeError):
+        return 0  # Or handle in a way that suits your application

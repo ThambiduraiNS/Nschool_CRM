@@ -71,9 +71,10 @@ urlpatterns = [
     path('delete_all_enrollment/', delete_all_enrollment_view, name='delete_all_enrollment'),
     path('get-enquiry-details/', get_enquiry_details, name='get_enquiry_details'),
     
-    
-    
+    # payment module
     path('payment/', new_payment_view, name='payment'),
+    path('manage_payment/', manage_payment_view, name='manage_payment'),
+    path('get-enrollment-details/', get_enrollment_details, name='get_enrollment_details'),
     
     # file formate for enrollment
     path('export_enrollment_csv/', export_enrollment_csv, name='export_enrollment_csv'),
@@ -128,5 +129,9 @@ urlpatterns = [
     path('api/update_enrollment/<int:pk>/', EnrollmentUpdateView.as_view(), name='enrollment_update'),
     path('api/delete_enrollment/<int:pk>/', EnrollmentDeleteView.as_view(), name='enrollment_delete'),
     
-    
+    # API for Enrollment module
+    path('api/payment/', PaymentListCreateView.as_view(), name='payment_list_create'),
+    path('api/payment/<int:pk>/', PaymentDetailView.as_view(), name='payment_detail'),
+    path('api/update_payment/<int:pk>/', PaymentUpdateView.as_view(), name='payment_update'),
+    path('api/delete_payment/<int:pk>/', PaymentDeleteView.as_view(), name='payment_delete'),
 ]

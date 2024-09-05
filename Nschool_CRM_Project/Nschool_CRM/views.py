@@ -687,6 +687,43 @@ class EnrollmentDeleteView(generics.DestroyAPIView):
         instance.delete()
         return Response({'Message': 'Successfully deleted'})
 
+# Enrollment Api
+
+class PaymentListCreateView(generics.ListCreateAPIView):
+    queryset = Payment.objects.all().order_by('-id')
+    serializer_class = PaymentSerializer
+    permission_classes = [IsAuthenticated]
+    
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        if not queryset.exists():
+            return Response({'Message': 'No Payment Records found'}, status=status.HTTP_404_NOT_FOUND)
+        
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+class PaymentDetailView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Payment.objects.all()
+    serializer_class = PaymentSerializer
+    permission_classes = [IsAuthenticated]
+    lookup_field = 'pk'
+
+class PaymentUpdateView(generics.RetrieveUpdateAPIView):
+    queryset = Payment.objects.all()
+    serializer_class = PaymentSerializer
+    permission_classes = [IsAuthenticated]
+    partial = True    
+    
+class PaymentDeleteView(generics.DestroyAPIView):
+    queryset = Payment.objects.all()
+    serializer_class = PaymentSerializer
+    permission_classes = [IsAuthenticated]
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        instance.delete()
+        return Response({'Message': 'Successfully deleted'})
+
 
 @csrf_exempt
 def export_user_csv(request):
@@ -2823,7 +2860,159 @@ class SearchEnrollmentResultsView(ListView):
         object_list = object_list.select_related('course_name')
 
         return object_list
+
+
+@require_GET
+def get_enrollment_details(request):
+    registration_no = request.GET.get('registration_no')
     
+    print("Registration No : ", registration_no)
+    
+    if not registration_no:
+        return JsonResponse({'error': 'No enquiry number provided'}, status=400)
+    
+    try:
+        enrollment = Enrollment.objects.get(registration_no=registration_no)
+        
+        data = {
+            'student_name': enrollment.name,
+            'course_name': enrollment.course_name.course_name,
+            'duration': enrollment.duration,
+            'joining_date': enrollment.registration_date.strftime('%Y-%m-%d') if enrollment.registration_date else '',
+        }
+        
+        print("Data : ", data)
+        
+        return JsonResponse(data, status=200)
+    
+    except Enquiry.DoesNotExist:
+        return JsonResponse({'error': 'Enquiry not found'}, status=404)
+
+# new payment view 
     
 def new_payment_view(request):
+    if request.method == 'POST':
+        registration_no = request.POST.get('registration_no')
+        
+        # Fetch the related Enquiry object
+        try:
+            enrollment = Enrollment.objects.get(registration_no=registration_no)
+        except Enrollment.DoesNotExist:
+            context = {
+                'error': 'Enrollment with the provided Registration Number does not exist.',
+            }
+            return render(request, 'new_payment.html', context)
+        
+        # Auto-populate fields based on the related Enquiry object
+        payment_data = {
+            'registration_no': request.POST.get('registration_no'),
+            'student_name': enrollment.name,
+            'course_name': enrollment.course_name.course_name,
+            'duration': enrollment.duration,
+            'total_fees': request.POST.get('total_fees'),
+            'joining_date': enrollment.registration_date.strftime('%Y-%m-%d'),
+            'fees_type': request.POST.get('fees_type'),
+            'payment_mode': request.POST.get('payment_mode'),
+            'installment': request.POST.get('installment'),
+            'cash': request.POST.get('cash'),
+            'date': request.POST.get('upi_date') if request.POST.get('upi_date') != "None" else null, # type: ignore
+            'date': request.POST.get('bank_date') if request.POST.get('bank_date') != "None" else null, # type: ignore
+            'transaction_id': request.POST.get('transaction_id'),
+            'bank_name': request.POST.get('bank_name'),
+            'app_name': request.POST.get('app_name'),
+            'account_no': request.POST.get('account_no'),
+            'ifsc_code': request.POST.get('ifsc_code'),
+            'branch_name': request.POST.get('branch_name'),
+            'account_holder_name': request.POST.get('account_holder_name'),
+        }
+        
+        print("Payment Data : ", payment_data)
+
+        try:
+            token = Token.objects.get(user=request.user)
+        except Token.DoesNotExist:
+            context = {
+                'error': 'Authentication Token not Found',
+                **payment_data,
+            }
+            return render(request, 'new_payment.html', context)
+
+        api_url = 'http://127.0.0.1:8000/api/payment/'
+        
+        headers = {
+            'Authorization': f'Token {token.key}',
+            'Content-Type': 'application/json',
+        }
+
+        try:
+            response = requests.post(api_url, json=payment_data, headers=headers)
+            response_data = response.json()
+            
+            print("Response Data : ",response_data)
+
+        except requests.exceptions.RequestException:
+            context = {
+                'error': 'An Error Occurred While Creating an Enrollment',
+                **payment_data,
+            }
+            return render(request, 'new_payment.html', context)
+
+        if response.status_code in [200, 201]:
+            messages.success(request, 'Created Successfully')
+            return redirect('payment')  # Redirect to a success page or another view
+        else:
+            error_message = response_data.get('error', 'An Error Occurred During Creation.')
+            errors = response_data
+            context = {
+                'error': error_message,
+                'errors': errors,
+                **payment_data,
+            }
+            return render(request, 'new_payment.html', context)
     return render(request, 'new_payment.html')
+
+
+def manage_payment_view(request):
+    
+    try:
+        token = Token.objects.get(user=request.user)  # Assuming you only have one token and it's safe to get the first one
+    except Token.DoesNotExist:
+        context = {
+            'error': 'Authentication token not found'
+        }
+        return render(request, 'manage_payment.html', context)
+    
+    api_url = 'http://127.0.0.1:8000/api/payment/'
+    
+    headers = {
+        'Authorization': f'Token {token.key}',
+        'Content-Type': 'application/json'
+    }
+
+    try:
+        response = requests.get(api_url, headers=headers)
+        response.raise_for_status()  # Raise an HTTPError for bad responses
+        response_data = response.json()
+        
+    except requests.exceptions.RequestException as err:
+        # Catch any request-related exceptions
+        context = {
+            'error': f'Request error occurred: {err}',
+            'response_data': response.json() if response else {}
+        }
+        return render(request, 'manage_payment.html', context)
+
+    # Get the per_page value from the request, default to 10 if not provided
+    per_page = request.GET.get('per_page', '10')
+
+    # Apply pagination
+    paginator = Paginator(response_data, per_page)  # Use response_data for pagination
+    
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    context = {
+        'page_obj': page_obj,
+        'per_page': per_page,
+    }
+    return render(request, 'manage_payment.html', context)
