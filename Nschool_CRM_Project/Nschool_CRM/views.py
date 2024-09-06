@@ -53,6 +53,8 @@ from django.db.models import Q
 
 from django.contrib import messages
 
+from django.core.exceptions import ValidationError
+
 @csrf_protect
 def admin_login(request):
     if request.method == 'POST':
@@ -2889,7 +2891,16 @@ def get_enrollment_details(request):
         return JsonResponse({'error': 'Enquiry not found'}, status=404)
 
 # new payment view 
-    
+
+def validate_date(date_str):
+    """Validate and convert date string to datetime.date object."""
+    if date_str:
+        try:
+            return datetime.strptime(date_str, '%Y-%m-%d').date()
+        except ValueError:
+            raise ValidationError("Date has wrong format. Use YYYY-MM-DD.")
+    return None
+
 def new_payment_view(request):
     if request.method == 'POST':
         registration_no = request.POST.get('registration_no')
@@ -2904,6 +2915,31 @@ def new_payment_view(request):
             return render(request, 'new_payment.html', context)
         
         # Auto-populate fields based on the related Enquiry object
+        
+        date_str = request.POST.get('date')
+        upi_date_str = request.POST.get('upi_date')
+        bank_date_str = request.POST.get('bank_date')
+        
+        # Initialize a dictionary to store EMI dates
+        emi_dates = {}
+
+        # Loop through all EMI fields (date_EMI_1 to date_EMI_6)
+        for i in range(1, 7):
+            date_emi = request.POST.get(f'date_EMI_{i}')
+            emi_dates[f'date_EMI_{i}'] = validate_date(date_emi) if date_emi and date_emi != "None" else None
+
+        # Accessing the validated EMI dates
+        date_EMI_1 = emi_dates.get('date_EMI_1')
+        date_EMI_2 = emi_dates.get('date_EMI_2')
+        date_EMI_3 = emi_dates.get('date_EMI_3')
+        date_EMI_4 = emi_dates.get('date_EMI_4')
+        date_EMI_5 = emi_dates.get('date_EMI_5')
+        date_EMI_6 = emi_dates.get('date_EMI_6')
+        
+        date = validate_date(date_str) if date_str and date_str != "None" else None
+        upi_date = validate_date(upi_date_str) if upi_date_str and upi_date_str != "None" else None
+        bank_date = validate_date(bank_date_str) if bank_date_str and bank_date_str != "None" else None
+        
         payment_data = {
             'registration_no': request.POST.get('registration_no'),
             'student_name': enrollment.name,
@@ -2913,17 +2949,30 @@ def new_payment_view(request):
             'joining_date': enrollment.registration_date.strftime('%Y-%m-%d'),
             'fees_type': request.POST.get('fees_type'),
             'payment_mode': request.POST.get('payment_mode'),
+            
             'installment': request.POST.get('installment'),
+            'date_EMI_1': date_EMI_1.strftime('%Y-%m-%d') if date_EMI_1 else None,
+            'date_EMI_2': date_EMI_2.strftime('%Y-%m-%d') if date_EMI_2 else None,
+            'date_EMI_3': date_EMI_3.strftime('%Y-%m-%d') if date_EMI_3 else None,
+            'date_EMI_4': date_EMI_4.strftime('%Y-%m-%d') if date_EMI_4 else None,
+            'date_EMI_5': date_EMI_5.strftime('%Y-%m-%d') if date_EMI_5 else None,
+            'date_EMI_6': date_EMI_6.strftime('%Y-%m-%d') if date_EMI_6 else None,
+            
             'cash': request.POST.get('cash'),
-            'date': request.POST.get('upi_date') if request.POST.get('upi_date') != "None" else null, # type: ignore
-            'date': request.POST.get('bank_date') if request.POST.get('bank_date') != "None" else null, # type: ignore
+            'date': date.strftime('%Y-%m-%d') if date else None,
+            
+            'upi_date' :  upi_date.strftime('%Y-%m-%d') if upi_date else None,
             'transaction_id': request.POST.get('transaction_id'),
+            'upi_cash': request.POST.get('upi_cash'),
             'bank_name': request.POST.get('bank_name'),
             'app_name': request.POST.get('app_name'),
+            
+            'bank_date' : bank_date.strftime('%Y-%m-%d') if bank_date else None,
             'account_no': request.POST.get('account_no'),
             'ifsc_code': request.POST.get('ifsc_code'),
             'branch_name': request.POST.get('branch_name'),
             'account_holder_name': request.POST.get('account_holder_name'),
+            'bank_cash': request.POST.get('bank_cash'),
         }
         
         print("Payment Data : ", payment_data)
@@ -3016,3 +3065,39 @@ def manage_payment_view(request):
         'per_page': per_page,
     }
     return render(request, 'manage_payment.html', context)
+
+def delete_payment_view(request, id):
+    user_id = Payment.objects.get(id=id)
+    
+    if not user_id:
+        context = {'error': 'Payment ID not provided'}
+        return render(request, 'manage_payment.html', context)
+    
+    try:
+        token = Token.objects.get(user=request.user)  # Get the first token for simplicity
+        if not token:
+            raise Token.DoesNotExist
+    except Token.DoesNotExist:
+        context = {'error': 'Authentication token not found'}
+        return render(request, 'manage_payment.html', context)
+    
+    api_url = f'http://127.0.0.1:8000/api/delete_payment/{user_id.pk}/'
+    headers = {
+        'Authorization': f'Token {token.key}',
+        'Content-Type': 'application/json'
+    }
+    
+    try:
+        response = requests.delete(api_url, headers=headers)
+        response.raise_for_status()
+        
+        if response.status_code == 200:
+            messages.success(request, 'Successfully Deleted')
+            return redirect('manage_payment')
+
+    except requests.exceptions.RequestException as err:
+        context = {
+            'error': f'Request error occurred: {err}',
+            'response_data': response.json() if response else {}
+        }
+        return render(request, 'manage_payment.html', context)

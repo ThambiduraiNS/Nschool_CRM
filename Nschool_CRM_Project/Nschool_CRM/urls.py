@@ -74,6 +74,7 @@ urlpatterns = [
     # payment module
     path('payment/', new_payment_view, name='payment'),
     path('manage_payment/', manage_payment_view, name='manage_payment'),
+    path('delete_payment/<int:id>/', delete_payment_view, name='delete_payment'),
     path('get-enrollment-details/', get_enrollment_details, name='get_enrollment_details'),
     
     # file formate for enrollment

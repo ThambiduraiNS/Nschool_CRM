@@ -219,7 +219,7 @@ class Enrollment(models.Model):
 
 class Payment(models.Model):
     
-    registration_no = models.CharField(max_length=20)
+    registration_no = models.CharField(max_length=20, unique=True)
     student_name = models.CharField(max_length=255)
     course_name = models.CharField()
     duration = models.CharField(max_length=50)
@@ -227,16 +227,30 @@ class Payment(models.Model):
     joining_date = models.DateField()
     fees_type = models.CharField()
     payment_mode = models.CharField()
+    
     installment = models.CharField(null=True, blank=True)
-    cash = models.CharField(null=True, blank=True)
+    date_EMI_1 = models.DateField(null=True, blank=True)
+    date_EMI_2 = models.DateField(null=True, blank=True)
+    date_EMI_3 = models.DateField(null=True, blank=True)
+    date_EMI_4 = models.DateField(null=True, blank=True)
+    date_EMI_5 = models.DateField(null=True, blank=True)
+    date_EMI_6 = models.DateField(null=True, blank=True)
+    
     date = models.DateField(null=True, blank=True)
+    cash = models.CharField(null=True, blank=True)
+    
+    upi_date = models.DateField(null=True, blank=True)
     transaction_id = models.CharField(null=True, blank=True)
+    upi_cash = models.CharField(null=True, blank=True)
     bank_name = models.CharField(null=True, blank=True)
     app_name = models.CharField(null=True, blank=True)
+    
+    bank_date = models.DateField(null=True, blank=True)
     account_no = models.CharField(null=True, blank=True)
     ifsc_code = models.CharField(null=True, blank=True)
     branch_name = models.CharField(null=True, blank=True)
     account_holder_name = models.CharField(null=True, blank=True)
+    bank_cash = models.CharField(null=True, blank=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
     modified_at = models.DateTimeField(auto_now=True)

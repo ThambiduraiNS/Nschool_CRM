@@ -194,7 +194,7 @@
                                 </div>
                                 
                                 <!-- installment -->
-                                <div class="col-12 col-md-6 p-md-0" style="display: none;" id="installment_div">
+                                <div class="col-12 col-md-6 p-md-0" style="display: none;" id="installment_div" onclick="handleInstallmentChange()">
                                     <div class="user-input-wrp ms-4 me-2 mt-4">
                                         <select name="installment" id="installment" class="form-select select">
                                             <option value="" selected>Select Any One</option>
@@ -213,20 +213,116 @@
                                         </span>
                                     </div>
                                 </div>
-                                <div class="row ms-md-2 ps-md-2 pe-md-0">
-                                    <div class="col-12 col-md-6 p-md-0" style="display: none;" id="empty_div"></div>
-                                    <!-- cash field -->
-                                    <div class="col-12 col-md-6 p-md-0" style="display: none;" id="cash_div">
-                                        <div class="user-input-wrp ms-4 me-2 mt-4">
-                                            <input type="text" name="cash" value="{{cash}}" id="cash" class="form-control"
-                                                aria-label="cash" placeholder=" " autocomplete="off" autofocus>
-                                            <label class="floating-label">&nbsp;Enter Amount <span class="required">*</span> &nbsp;</label>
-                                            <span id="cash_error" class="error-div">
-                                                {% if errors.cash %}
-                                                        {{errors.cash}}
-                                                {% endif %}
-                                            </span>
-                                        </div>
+
+                                <!-- EMI-1 date -->
+                                <div class="col-12 col-md-6 pe-md-0" style="display: none;" id="date_EMI_1_div">
+                                    <div class="user-input-wrp ms-md-4 mt-md-4">
+                                        <input type="date" name="date_EMI_1" id="date_EMI_1" value="{{date_EMI_1}}" class="form-control"
+                                            aria-label="date_EMI_1" placeholder=" " autocomplete="off" autofocus>
+                                        <label class="floating-label">&nbsp;EMI Date <span class="required">*</span> &nbsp;</label>
+                                        <span id="date_EMI_1_error" class="error-div">
+                                            {% if errors.date_EMI_1 %}
+                                                {{errors.date_EMI_1}}
+                                            {% endif %}
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <!-- EMI-2 date -->
+                                <div class="col-12 col-md-6 pe-md-0" style="display: none;" id="date_EMI_2_div">
+                                    <div class="user-input-wrp ms-md-4 mt-md-4">
+                                        <input type="date" name="date_EMI_2" id="date_EMI_2" value="{{date_EMI_2}}" class="form-control"
+                                            aria-label="date_EMI_2" placeholder=" " autocomplete="off" autofocus>
+                                        <label class="floating-label">&nbsp;EMI Date <span class="required">*</span> &nbsp;</label>
+                                        <span id="date_EMI_2_error" class="error-div">
+                                            {% if errors.date_EMI_2 %}
+                                                {{errors.date_EMI_2}}
+                                            {% endif %}
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <!-- EMI-3 date -->
+                                <div class="col-12 col-md-6 pe-md-0" style="display: none;" id="date_EMI_3_div">
+                                    <div class="user-input-wrp ms-md-4 mt-md-4">
+                                        <input type="date" name="date_EMI_3" id="date_EMI_3" value="{{date_EMI_3}}" class="form-control"
+                                            aria-label="date_EMI_3" placeholder=" " autocomplete="off" autofocus>
+                                        <label class="floating-label">&nbsp;EMI Date <span class="required">*</span> &nbsp;</label>
+                                        <span id="date_EMI_3_error" class="error-div">
+                                            {% if errors.date_EMI_3 %}
+                                                {{errors.date_EMI_3}}
+                                            {% endif %}
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <!-- EMI-4 date -->
+                                <div class="col-12 col-md-6 pe-md-0" style="display: none;" id="date_EMI_4_div">
+                                    <div class="user-input-wrp ms-md-4 mt-md-4">
+                                        <input type="date" name="date_EMI_4" id="date_EMI_4" value="{{date_EMI_4}}" class="form-control"
+                                            aria-label="date_EMI_4" placeholder=" " autocomplete="off" autofocus>
+                                        <label class="floating-label">&nbsp;EMI Date <span class="required">*</span> &nbsp;</label>
+                                        <span id="date_EMI_4_error" class="error-div">
+                                            {% if errors.date_EMI_4 %}
+                                                {{errors.date_EMI_4}}
+                                            {% endif %}
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <!-- EMI-5 date -->
+                                <div class="col-12 col-md-6 pe-md-0" style="display: none;" id="date_EMI_5_div">
+                                    <div class="user-input-wrp ms-md-4 mt-md-4">
+                                        <input type="date" name="date_EMI_5" id="date_EMI_5" value="{{date_EMI_5}}" class="form-control"
+                                            aria-label="date_EMI_5" placeholder=" " autocomplete="off" autofocus>
+                                        <label class="floating-label">&nbsp;EMI Date <span class="required">*</span> &nbsp;</label>
+                                        <span id="date_EMI_5_error" class="error-div">
+                                            {% if errors.date_EMI_5 %}
+                                                {{errors.date_EMI_5}}
+                                            {% endif %}
+                                        </span>
+                                    </div>
+                                </div>
+                                <!-- EMI-6 date -->
+                                <div class="col-12 col-md-6 pe-md-0" style="display: none;" id="date_EMI_6_div">
+                                    <div class="user-input-wrp ms-md-4 mt-md-4">
+                                        <input type="date" name="date_EMI_6" id="date_EMI_6" value="{{date_EMI_6}}" class="form-control"
+                                            aria-label="date_EMI_6" placeholder=" " autocomplete="off" autofocus>
+                                        <label class="floating-label">&nbsp;EMI Date <span class="required">*</span> &nbsp;</label>
+                                        <span id="date_EMI_6_error" class="error-div">
+                                            {% if errors.date_EMI_6 %}
+                                                {{errors.date_EMI_6}}
+                                            {% endif %}
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <!-- cash field -->
+
+                                <!-- date field -->
+                                <div class="col-12 col-md-6 p-md-0" style="display: none;" id="date_div">
+                                    <div class="user-input-wrp ms-4 me-2 mt-4">
+                                        <input type="date" name="date" id="date" value="{{date}}" class="form-control"
+                                            aria-label="date" placeholder=" " autocomplete="off" autofocus>
+                                        <label class="floating-label">&nbsp;Cash Payment Date <span class="required">*</span> &nbsp;</label>
+                                        <span id="date_error" class="error-div">
+                                            {% if errors.date %}
+                                                {{errors.date}}
+                                            {% endif %}
+                                        </span>
+                                    </div>
+                                </div>
+                                <!-- amount field -->
+                                <div class="col-12 col-md-6 pe-md-0" style="display: none;" id="cash_div">
+                                    <div class="user-input-wrp ms-md-4 mt-md-4">
+                                        <input type="text" name="cash" value="{{cash}}" id="cash" class="form-control"
+                                            aria-label="cash" placeholder=" " autocomplete="off" autofocus>
+                                        <label class="floating-label">&nbsp;Enter Amount <span class="required">*</span> &nbsp;</label>
+                                        <span id="cash_error" class="error-div">
+                                            {% if errors.cash %}
+                                                    {{errors.cash}}
+                                            {% endif %}
+                                        </span>
                                     </div>
                                 </div>
 
@@ -235,9 +331,9 @@
                                 <!-- date field -->
                                 <div class="col-12 col-md-6 p-md-0" style="display: none;" id="upi_date_div">
                                     <div class="user-input-wrp ms-4 me-2 mt-4">
-                                        <input type="date" name="date" id="upi_date" value="{{upi_date}}" class="form-control"
+                                        <input type="date" name="upi_date" id="upi_date" value="{{upi_date}}" class="form-control"
                                             aria-label="upi_date" placeholder=" " autocomplete="off" autofocus>
-                                        <label class="floating-label">&nbsp;Date <span class="required">*</span> &nbsp;</label>
+                                        <label class="floating-label">&nbsp;UPI Payment Date <span class="required">*</span> &nbsp;</label>
                                         <span id="upi_date_error" class="error-div">
                                             {% if errors.upi_date %}
                                                 {{errors.upi_date}}
@@ -263,12 +359,12 @@
                                 <!-- Amount field -->
                                 <div class="col-12 col-md-6 p-md-0" style="display: none;" id="amount_div">
                                     <div class="user-input-wrp ms-4 me-2 mt-4">
-                                        <input type="text" name="cash" value="{{cash}}" id="amount" class="form-control"
+                                        <input type="text" name="upi_cash" value="{{cash}}" id="amount" class="form-control"
                                             aria-label="amount" placeholder=" " autocomplete="off" autofocus>
                                         <label class="floating-label">&nbsp;Enter Amount <span class="required">*</span> &nbsp;</label>
                                         <span id="amount_error" class="error-div">
-                                            {% if errors.cash %}
-                                                    {{errors.cash}}
+                                            {% if errors.upi_cash %}
+                                                    {{errors.upi_cash}}
                                             {% endif %}
                                         </span>
                                     </div>
@@ -307,9 +403,9 @@
                                 <!-- date field -->
                                 <div class="col-12 col-md-6 p-md-0" style="display: none;" id="bank_date_div">
                                     <div class="user-input-wrp ms-4 me-2 mt-4">
-                                        <input type="date" name="date" id="bank_date" value="{{date}}" class="form-control"
+                                        <input type="date" name="bank_date" id="bank_date" value="{{date}}" class="form-control"
                                             aria-label="bank_date" placeholder=" " autocomplete="off" autofocus>
-                                        <label class="floating-label">&nbsp;Date <span class="required">*</span> &nbsp;</label>
+                                        <label class="floating-label">&nbsp;Bank Payment Date <span class="required">*</span> &nbsp;</label>
                                         <span id="bank_date_error" class="error-div">
                                             {% if errors.date %}
                                                 {{errors.date}}
@@ -377,12 +473,12 @@
                                 <!-- Amount field -->
                                 <div class="col-12 col-md-6 pe-md-0" style="display: none;" id="bank_amount_div">
                                     <div class="user-input-wrp ms-md-4 mt-md-4">
-                                        <input type="text" name="cash" value="{{cash}}" id="bank_amount" class="form-control"
+                                        <input type="text" name="bank_cash" value="{{cash}}" id="bank_amount" class="form-control"
                                             aria-label="amount" placeholder=" " autocomplete="off" autofocus>
                                         <label class="floating-label">&nbsp;Enter Amount <span class="required">*</span> &nbsp;</label>
                                         <span id="bank_amount_error" class="error-div">
-                                            {% if errors.cash %}
-                                                    {{errors.cash}}
+                                            {% if errors.bank_cash %}
+                                                    {{errors.bank_cash}}
                                             {% endif %}
                                         </span>
                                     </div>
@@ -595,6 +691,22 @@ document.addEventListener('DOMContentLoaded', function() {
 
         installment_div.style.display = displayStyle;
     }
+
+    function handleInstallmentChange() {
+        let installment = document.getElementById('installment');
+        let installment_value = installment.value;
+        console.log("Installment Type: ", installment_value);
+
+        clearErrors(); // Clear previous error messages
+
+        // Loop through all EMI divs and show/hide based on the selected installment
+        for (let i = 1; i <= 6; i++) {
+            let emiDiv = document.getElementById(`date_EMI_${i}_div`);
+            emiDiv.style.display = (installment_value === `EMI-${i}`) ? 'block' : 'none';
+        }
+    }
+
+
     
     // handel Payment Mode
     function handleCashChange() {
@@ -604,7 +716,7 @@ document.addEventListener('DOMContentLoaded', function() {
         let payment_mode_value = payment_mode.value;
         // cash
         let cash_div = document.getElementById('cash_div');
-        let empty_div = document.getElementById('empty_div');
+        let date_div = document.getElementById('date_div');
         // upi
         let upi_date_div = document.getElementById('upi_date_div');
         let transaction_id_div = document.getElementById('transaction_id_div');
@@ -630,7 +742,7 @@ document.addEventListener('DOMContentLoaded', function() {
         let displayStyleBank = payment_mode_value === "bank transfer" ? 'block' : 'none';
 
         cash_div.style.display = displayStyle;
-        empty_div.style.display = displayStyle;
+        date_div.style.display = displayStyle;
 
         upi_date_div.style.display = displayStyleUpi;
         transaction_id_div.style.display = displayStyleUpi;
@@ -662,6 +774,12 @@ document.addEventListener('DOMContentLoaded', function() {
         let installment = document.getElementById('installment').value.trim();
         
         let cash = document.getElementById('cash').value.trim();
+        let date_EMI_1 = document.getElementById('date_EMI_1').value.trim();
+        let date_EMI_2 = document.getElementById('date_EMI_2').value.trim();
+        let date_EMI_3 = document.getElementById('date_EMI_3').value.trim();
+        let date_EMI_4 = document.getElementById('date_EMI_4').value.trim();
+        let date_EMI_5 = document.getElementById('date_EMI_5').value.trim();
+        let date_EMI_6 = document.getElementById('date_EMI_6').value.trim();
         
         let upi_date = document.getElementById('upi_date').value.trim();
         let transaction_id = document.getElementById('transaction_id').value.trim();
@@ -691,6 +809,14 @@ document.addEventListener('DOMContentLoaded', function() {
         if(payment_mode === "cash") {
             console.log("display")
             if (validateFields(cash, "cash_error")) hasError = true;
+        }
+        
+        for(let i = 1; i<=6; i++){
+
+            if(installment === `EMI-${i}`) {
+                console.log("display")
+                if (validateFields(`date_EMI_${i}`, `date_EMI_${i}_error`)) hasError = true;
+            }
         }
 
         if(payment_mode === 'upi') {
