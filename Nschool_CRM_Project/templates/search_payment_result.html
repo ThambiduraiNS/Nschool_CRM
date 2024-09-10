@@ -199,13 +199,7 @@
                                         <td class="tdata">{{ user.total_fees }}</td>
                                         <td class="tdata">
                                             {% if user.fees_type == 'single payment' %}
-                                                {% if user.payment_mode == 'cash' %}
-                                                    {{ user.date }}
-                                                {% elif user.payment_mode == 'upi' %}
-                                                    {{ user.upi_date }}
-                                                {% elif user.payment_mode == 'bank transfer' %}
-                                                    {{ user.bank_date }}
-                                                {% endif %}
+                                                {{ user.date }}
                                             {% endif %}   
                                         </td>
                                         <td class="tdata">
@@ -225,15 +219,15 @@
                                             
                                         </td>
                                         <td class="tdata">
-                                            {% if user.payment_mode == 'cash' or user.payment_mode == 'upi' or user.payment_mode == 'bank transfer' %}
+                                            {% if user.payment_mode == 'cash' %}
                                                 {{ user.cash_EMI_1 }}
-                                            {% endif %}
-
-                                            {% if user.payment_mode == 'cash' or user.payment_mode == 'upi' or user.payment_mode == 'bank transfer' %}
+                                            {% elif user.payment_mode == 'upi' %}
                                                 {{ user.upi_cash_EMI_1 }}
-                                            {% endif %}
-
-                                            {% if user.payment_mode == 'cash' or user.payment_mode == 'upi' or user.payment_mode == 'bank transfer' %}
+                                            {% elif user.payment_mode == 'bank transfer' %}
+                                                {{ user.bank_cash_EMI_1 }}
+                                            {% else %}
+                                                {{ user.cash_EMI_1 }}  <!-- Display if there are multiple modes -->
+                                                {{ user.upi_cash_EMI_1 }}
                                                 {{ user.bank_cash_EMI_1 }}
                                             {% endif %}
                                         </td>
@@ -243,15 +237,15 @@
                                             
                                         </td>
                                         <td class="tdata">
-                                            {% if user.payment_mode == 'cash' or user.payment_mode == 'upi' or user.payment_mode == 'bank transfer' %}
+                                            {% if user.payment_mode == 'cash' %}
                                                 {{ user.cash_EMI_2 }}
-                                            {% endif %}
-
-                                            {% if user.payment_mode == 'cash' or user.payment_mode == 'upi' or user.payment_mode == 'bank transfer' %}
+                                            {% elif user.payment_mode == 'upi' %}
                                                 {{ user.upi_cash_EMI_2 }}
-                                            {% endif %}
-
-                                            {% if user.payment_mode == 'cash' or user.payment_mode == 'upi' or user.payment_mode == 'bank transfer' %}
+                                            {% elif user.payment_mode == 'bank transfer' %}
+                                                {{ user.bank_cash_EMI_2 }}
+                                            {% else %}
+                                                {{ user.cash_EMI_2 }}  <!-- Display if there are multiple modes -->
+                                                {{ user.upi_cash_EMI_2 }}
                                                 {{ user.bank_cash_EMI_2 }}
                                             {% endif %}
                                         </td>
@@ -261,17 +255,14 @@
                                             
                                         </td>
                                         <td class="tdata">
-                                            {% if user.payment_mode == 'cash' or user.payment_mode == 'upi' or user.payment_mode == 'bank transfer' %}
-                                                {{ user.cash_EMI_3 }}
-                                            {% endif %}
-
-                                            {% if user.payment_mode == 'cash' or user.payment_mode == 'upi' or user.payment_mode == 'bank transfer' %}
-                                                {{ user.upi_cash_EMI_3 }}
-                                            {% endif %}
-
-                                            {% if user.payment_mode == 'cash' or user.payment_mode == 'upi' or user.payment_mode == 'bank transfer' %}
-                                                {{ user.bank_cash_EMI_3 }}
-                                            {% endif %}
+                                            
+                                                {% if user.payment_mode == 'cash' %}
+                                                    {{ user.cash_EMI_3 }}
+                                                {% elif user.payment_mode == 'upi' %}
+                                                    {{ user.upi_cash_EMI_3 }}
+                                                {% elif user.payment_mode == 'bank transfer' %}
+                                                    {{ user.bank_cash_EMI_3 }}
+                                                {% endif %}
                                             
                                         </td>
                                         <td class="tdata">
@@ -280,17 +271,14 @@
                                             
                                         </td>
                                         <td class="tdata">
-                                            {% if user.payment_mode == 'cash' or user.payment_mode == 'upi' or user.payment_mode == 'bank transfer' %}
-                                                {{ user.cash_EMI_4 }}
-                                            {% endif %}
-
-                                            {% if user.payment_mode == 'cash' or user.payment_mode == 'upi' or user.payment_mode == 'bank transfer' %}
-                                                {{ user.upi_cash_EMI_4 }}
-                                            {% endif %}
-
-                                            {% if user.payment_mode == 'cash' or user.payment_mode == 'upi' or user.payment_mode == 'bank transfer' %}
-                                                {{ user.bank_cash_EMI_4 }}
-                                            {% endif %}
+                                            
+                                                {% if user.payment_mode == 'cash' %}
+                                                    {{ user.cash_EMI_4 }}
+                                                {% elif user.payment_mode == 'upi' %}
+                                                    {{ user.upi_cash_EMI_4 }}
+                                                {% elif user.payment_mode == 'bank transfer' %}
+                                                    {{ user.bank_cash_EMI_4 }}
+                                                {% endif %}
                                             
                                         </td>
                                         <td class="tdata">
@@ -299,17 +287,15 @@
                                             
                                         </td>
                                         <td class="tdata">
-                                            {% if user.payment_mode == 'cash' or user.payment_mode == 'upi' or user.payment_mode == 'bank transfer' %}
-                                                {{ user.cash_EMI_5 }}
-                                            {% endif %}
-
-                                            {% if user.payment_mode == 'cash' or user.payment_mode == 'upi' or user.payment_mode == 'bank transfer' %}
-                                                {{ user.upi_cash_EMI_5 }}
-                                            {% endif %}
-
-                                            {% if user.payment_mode == 'cash' or user.payment_mode == 'upi' or user.payment_mode == 'bank transfer' %}
-                                                {{ user.bank_cash_EMI_5 }}
-                                            {% endif %}
+                                            
+                                                {% if user.payment_mode == 'cash' %}
+                                                    {{ user.cash_EMI_5 }}
+                                                {% elif user.payment_mode == 'upi' %}
+                                                    {{ user.upi_cash_EMI_5 }}
+                                                {% elif user.payment_mode == 'bank transfer' %}
+                                                    {{ user.bank_cash_EMI_5 }}
+                                                {% endif %}
+                                            
                                         </td>
                                         <td class="tdata">
                                             
@@ -317,17 +303,15 @@
                                             
                                         </td>
                                         <td class="tdata">
-                                            {% if user.payment_mode == 'cash' or user.payment_mode == 'upi' or user.payment_mode == 'bank transfer' %}
-                                                {{ user.cash_EMI_6 }}
-                                            {% endif %}
-
-                                            {% if user.payment_mode == 'cash' or user.payment_mode == 'upi' or user.payment_mode == 'bank transfer' %}
-                                                {{ user.upi_cash_EMI_6 }}
-                                            {% endif %}
-
-                                            {% if user.payment_mode == 'cash' or user.payment_mode == 'upi' or user.payment_mode == 'bank transfer' %}
-                                                {{ user.bank_cash_EMI_6 }}
-                                            {% endif %}
+                                            
+                                                {% if user.payment_mode == 'cash' %}
+                                                    {{ user.cash_EMI_6 }}
+                                                {% elif user.payment_mode == 'upi' %}
+                                                    {{ user.upi_cash_EMI_6 }}
+                                                {% elif user.payment_mode == 'bank transfer' %}
+                                                    {{ user.bank_cash_EMI_6 }}
+                                                {% endif %}
+                                            
                                         </td>
                                         <td class="tdata">
                                             {{user.balance}}

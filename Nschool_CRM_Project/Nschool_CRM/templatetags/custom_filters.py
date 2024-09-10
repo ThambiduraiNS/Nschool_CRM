@@ -36,3 +36,7 @@ def sub(value, arg):
         return int(float(value)) - int(float(arg))
     except (ValueError, TypeError):
         return 0  # Or handle in a way that suits your application
+    
+@register.filter
+def range_filter(value):
+    return range(1, value + 1)

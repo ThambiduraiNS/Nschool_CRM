@@ -239,9 +239,25 @@ class Payment(models.Model):
     date = models.DateField(null=True, blank=True)
     cash = models.CharField(null=True, blank=True)
     
+    cash_EMI_1 = models.CharField(null=True, blank=True)
+    cash_EMI_2 = models.CharField(null=True, blank=True)
+    cash_EMI_3 = models.CharField(null=True, blank=True)
+    cash_EMI_4 = models.CharField(null=True, blank=True)
+    cash_EMI_5 = models.CharField(null=True, blank=True)
+    cash_EMI_6 = models.CharField(null=True, blank=True)
+    
     upi_date = models.DateField(null=True, blank=True)
     transaction_id = models.CharField(null=True, blank=True)
     upi_cash = models.CharField(null=True, blank=True)
+    
+    upi_cash_EMI_1 = models.CharField(null=True, blank=True)
+    upi_cash_EMI_2 = models.CharField(null=True, blank=True)
+    upi_cash_EMI_3 = models.CharField(null=True, blank=True)
+    upi_cash_EMI_4 = models.CharField(null=True, blank=True)
+    upi_cash_EMI_5 = models.CharField(null=True, blank=True)
+    upi_cash_EMI_6 = models.CharField(null=True, blank=True)
+    
+    
     bank_name = models.CharField(null=True, blank=True)
     app_name = models.CharField(null=True, blank=True)
     
@@ -251,6 +267,15 @@ class Payment(models.Model):
     branch_name = models.CharField(null=True, blank=True)
     account_holder_name = models.CharField(null=True, blank=True)
     bank_cash = models.CharField(null=True, blank=True)
+    
+    bank_cash_EMI_1 = models.CharField(null=True, blank=True)
+    bank_cash_EMI_2 = models.CharField(null=True, blank=True)
+    bank_cash_EMI_3 = models.CharField(null=True, blank=True)
+    bank_cash_EMI_4 = models.CharField(null=True, blank=True)
+    bank_cash_EMI_5 = models.CharField(null=True, blank=True)
+    bank_cash_EMI_6 = models.CharField(null=True, blank=True)
+    
+    balance = models.CharField(null=True, blank=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
     modified_at = models.DateTimeField(auto_now=True)

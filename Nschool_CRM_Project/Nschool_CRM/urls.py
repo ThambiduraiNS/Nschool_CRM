@@ -30,11 +30,14 @@ urlpatterns = [
     # search Attributes details
     path('search_attribute/', SearchAttributeResultsView.as_view(), name='search_attribute'),
     
-    # search Attributes details
+    # search enquiry details
     path('search_enquiry/', SearchEnquiryResultsView.as_view(), name='search_enquiry'),
     
-    # search Attributes details
+    # search enrollment details
     path('search_enrollment/', SearchEnrollmentResultsView.as_view(), name='search_enrollment'),
+    
+    # search payment details
+    path('search_payment/', SearchPaymentResultsView.as_view(), name='search_payment'),
     
     path('logout/', logout, name='logout'),
     
@@ -75,7 +78,14 @@ urlpatterns = [
     path('payment/', new_payment_view, name='payment'),
     path('manage_payment/', manage_payment_view, name='manage_payment'),
     path('delete_payment/<int:id>/', delete_payment_view, name='delete_payment'),
+    path('update_payment/<int:id>/', update_payment_view, name='update_payment'),
+    path('delete_all_payment/', delete_all_payment_view, name='delete_all_payment'),
     path('get-enrollment-details/', get_enrollment_details, name='get_enrollment_details'),
+    
+    # file formate for enrollment
+    path('export_payment_csv/', export_payment_csv, name='export_payment_csv'),
+    path('export_payment_excel/', export_payment_excel, name='export_payment_excel'),
+    path('export_payment_pdf/', export_payment_pdf, name='export_payment_pdf'),
     
     # file formate for enrollment
     path('export_enrollment_csv/', export_enrollment_csv, name='export_enrollment_csv'),

@@ -2901,6 +2901,62 @@ def validate_date(date_str):
             raise ValidationError("Date has wrong format. Use YYYY-MM-DD.")
     return None
 
+def calculate_balance(request):
+    def safe_int(value, default=0):
+        try:
+            return int(value)
+        except (TypeError, ValueError):
+            return default
+
+    # Extract and convert fields
+    cash = safe_int(request.POST.get('cash'))
+    cash_EMI_1 = safe_int(request.POST.get('cash_EMI_1'))
+    cash_EMI_2 = safe_int(request.POST.get('cash_EMI_2'))
+    cash_EMI_3 = safe_int(request.POST.get('cash_EMI_3'))
+    cash_EMI_4 = safe_int(request.POST.get('cash_EMI_4'))
+    cash_EMI_5 = safe_int(request.POST.get('cash_EMI_5'))
+    cash_EMI_6 = safe_int(request.POST.get('cash_EMI_6'))
+
+    upi_cash = safe_int(request.POST.get('upi_cash'))
+    upi_cash_EMI_1 = safe_int(request.POST.get('upi_cash_EMI_1'))
+    upi_cash_EMI_2 = safe_int(request.POST.get('upi_cash_EMI_2'))
+    upi_cash_EMI_3 = safe_int(request.POST.get('upi_cash_EMI_3'))
+    upi_cash_EMI_4 = safe_int(request.POST.get('upi_cash_EMI_4'))
+    upi_cash_EMI_5 = safe_int(request.POST.get('upi_cash_EMI_5'))
+    upi_cash_EMI_6 = safe_int(request.POST.get('upi_cash_EMI_6'))
+
+    bank_cash = safe_int(request.POST.get('bank_cash'))
+    bank_cash_EMI_1 = safe_int(request.POST.get('bank_cash_EMI_1'))
+    bank_cash_EMI_2 = safe_int(request.POST.get('bank_cash_EMI_2'))
+    bank_cash_EMI_3 = safe_int(request.POST.get('bank_cash_EMI_3'))
+    bank_cash_EMI_4 = safe_int(request.POST.get('bank_cash_EMI_4'))
+    bank_cash_EMI_5 = safe_int(request.POST.get('bank_cash_EMI_5'))
+    bank_cash_EMI_6 = safe_int(request.POST.get('bank_cash_EMI_6'))
+
+    total_fees = safe_int(request.POST.get('total_fees'))
+    
+    print("Total Fees : ", total_fees)
+
+    # Calculate total payments
+    total_cash_payment = (cash + cash_EMI_1 + cash_EMI_2 + cash_EMI_3 +
+                          cash_EMI_4 + cash_EMI_5 + cash_EMI_6)
+
+    total_upi_payment = (upi_cash + upi_cash_EMI_1 + upi_cash_EMI_2 +
+                         upi_cash_EMI_3 + upi_cash_EMI_4 + upi_cash_EMI_5 +
+                         upi_cash_EMI_6)
+
+    total_bank_payment = (bank_cash + bank_cash_EMI_1 + bank_cash_EMI_2 +
+                          bank_cash_EMI_3 + bank_cash_EMI_4 + bank_cash_EMI_5 +
+                          bank_cash_EMI_6)
+
+    total_payment = total_cash_payment + total_upi_payment + total_bank_payment
+
+    # Calculate balance
+    balance = total_fees - total_payment
+
+    return balance
+
+
 def new_payment_view(request):
     if request.method == 'POST':
         registration_no = request.POST.get('registration_no')
@@ -2940,6 +2996,9 @@ def new_payment_view(request):
         upi_date = validate_date(upi_date_str) if upi_date_str and upi_date_str != "None" else None
         bank_date = validate_date(bank_date_str) if bank_date_str and bank_date_str != "None" else None
         
+        
+        balance = calculate_balance(request)
+        
         payment_data = {
             'registration_no': request.POST.get('registration_no'),
             'student_name': enrollment.name,
@@ -2958,12 +3017,25 @@ def new_payment_view(request):
             'date_EMI_5': date_EMI_5.strftime('%Y-%m-%d') if date_EMI_5 else None,
             'date_EMI_6': date_EMI_6.strftime('%Y-%m-%d') if date_EMI_6 else None,
             
-            'cash': request.POST.get('cash'),
+            'cash' : request.POST.get('cash'),
+            'cash_EMI_1' : request.POST.get('cash_EMI_1'),
+            'cash_EMI_2' : request.POST.get('cash_EMI_2'),
+            'cash_EMI_3' : request.POST.get('cash_EMI_3'),
+            'cash_EMI_4' : request.POST.get('cash_EMI_4'),
+            'cash_EMI_5' : request.POST.get('cash_EMI_5'),
+            'cash_EMI_6' : request.POST.get('cash_EMI_6'),
             'date': date.strftime('%Y-%m-%d') if date else None,
             
             'upi_date' :  upi_date.strftime('%Y-%m-%d') if upi_date else None,
             'transaction_id': request.POST.get('transaction_id'),
-            'upi_cash': request.POST.get('upi_cash'),
+            'upi_cash' : request.POST.get('upi_cash'),
+            'upi_cash_EMI_1' : request.POST.get('upi_cash_EMI_1'),
+            'upi_cash_EMI_2' : request.POST.get('upi_cash_EMI_2'),
+            'upi_cash_EMI_3' : request.POST.get('upi_cash_EMI_3'),
+            'upi_cash_EMI_4' : request.POST.get('upi_cash_EMI_4'),
+            'upi_cash_EMI_5' : request.POST.get('upi_cash_EMI_5'),
+            'upi_cash_EMI_6' : request.POST.get('upi_cash_EMI_6'),
+            
             'bank_name': request.POST.get('bank_name'),
             'app_name': request.POST.get('app_name'),
             
@@ -2972,7 +3044,14 @@ def new_payment_view(request):
             'ifsc_code': request.POST.get('ifsc_code'),
             'branch_name': request.POST.get('branch_name'),
             'account_holder_name': request.POST.get('account_holder_name'),
-            'bank_cash': request.POST.get('bank_cash'),
+            'bank_cash' : request.POST.get('bank_cash'),
+            'bank_cash_EMI_1' : request.POST.get('bank_cash_EMI_1'),
+            'bank_cash_EMI_2' : request.POST.get('bank_cash_EMI_2'),
+            'bank_cash_EMI_3' : request.POST.get('bank_cash_EMI_3'),
+            'bank_cash_EMI_4' : request.POST.get('bank_cash_EMI_4'),
+            'bank_cash_EMI_5' : request.POST.get('bank_cash_EMI_5'),
+            'bank_cash_EMI_6' : request.POST.get('bank_cash_EMI_6'),
+            'balance' : balance
         }
         
         print("Payment Data : ", payment_data)
@@ -3101,3 +3180,286 @@ def delete_payment_view(request, id):
             'response_data': response.json() if response else {}
         }
         return render(request, 'manage_payment.html', context)
+    
+
+def update_payment_view(request, id):
+    try:
+        payment = Payment.objects.get(id=id)
+    except Payment.DoesNotExist:
+        return render(request, 'manage_payment.html', {'error': 'Payment not found'})
+
+    if request.method == 'POST':
+        try:
+            token = Token.objects.get(user=request.user)
+        except Token.DoesNotExist:
+            return render(request, 'manage_payment.html', {'error': 'Authentication token not found'})
+
+        api_url = f'http://127.0.0.1:8000/api/update_payment/{payment.pk}/'
+        headers = {
+            'Authorization': f'Token {token.key}',
+        }
+        
+        balance = calculate_balance(request)
+        
+        payment_data = {
+            'registration_no': request.POST.get('registration_no', payment.registration_no),
+            'student_name': request.POST.get('student_name', payment.student_name),
+            'course_name': request.POST.get('course_name', payment.course_name),
+            'duration': request.POST.get('duration', payment.duration),
+            'total_fees': request.POST.get('total_fees', payment.total_fees),
+            'joining_date': request.POST.get('joining_date', payment.joining_date),
+            'fees_type': request.POST.get('fees_type', payment.fees_type),
+            'payment_mode': request.POST.get('payment_mode', payment.payment_mode),
+            'installment': request.POST.get('installment', payment.installment),
+            'date_EMI_1': request.POST.get('date_EMI_1', payment.date_EMI_1),
+            'date_EMI_2': request.POST.get('date_EMI_2', payment.date_EMI_2),
+            'date_EMI_3': request.POST.get('date_EMI_3', payment.date_EMI_3),
+            'date_EMI_4': request.POST.get('date_EMI_4', payment.date_EMI_4),
+            'date_EMI_5': request.POST.get('date_EMI_5', payment.date_EMI_5),
+            'date_EMI_6': request.POST.get('date_EMI_6', payment.date_EMI_6),
+            
+            'cash': request.POST.get('cash', payment.cash),
+            'cash_EMI_1': request.POST.get('cash_EMI_1', payment.cash_EMI_1),
+            'cash_EMI_2': request.POST.get('cash_EMI_2', payment.cash_EMI_2),
+            'cash_EMI_3': request.POST.get('cash_EMI_3', payment.cash_EMI_3),
+            'cash_EMI_4': request.POST.get('cash_EMI_4', payment.cash_EMI_4),
+            'cash_EMI_5': request.POST.get('cash_EMI_5', payment.cash_EMI_5),
+            'cash_EMI_6': request.POST.get('cash_EMI_6', payment.cash_EMI_6),
+            'date': request.POST.get('date', payment.date),
+            
+            'upi_date': request.POST.get('upi_date', payment.upi_date),
+            'transaction_id': request.POST.get('transaction_id', payment.transaction_id),
+            'upi_cash': request.POST.get('upi_cash', payment.upi_cash),
+            'upi_cash_EMI_1': request.POST.get('upi_cash_EMI_1', payment.upi_cash_EMI_1),
+            'upi_cash_EMI_2': request.POST.get('upi_cash_EMI_2', payment.upi_cash_EMI_2),
+            'upi_cash_EMI_3': request.POST.get('upi_cash_EMI_3', payment.upi_cash_EMI_3),
+            'upi_cash_EMI_4': request.POST.get('upi_cash_EMI_4', payment.upi_cash_EMI_4),
+            'upi_cash_EMI_5': request.POST.get('upi_cash_EMI_5', payment.upi_cash_EMI_5),
+            'upi_cash_EMI_6': request.POST.get('upi_cash_EMI_6', payment.upi_cash_EMI_6),
+            'bank_name': request.POST.get('bank_name', payment.bank_name),
+            'app_name': request.POST.get('app_name', payment.app_name),
+            
+            'bank_date': request.POST.get('bank_date', payment.bank_date),
+            'account_no': request.POST.get('account_no', payment.account_no),
+            'ifsc_code': request.POST.get('ifsc_code', payment.ifsc_code),
+            'branch_name': request.POST.get('branch_name', payment.branch_name),
+            'account_holder_name': request.POST.get('account_holder_name', payment.account_holder_name),
+            'bank_cash': request.POST.get('bank_cash', payment.bank_cash),
+            'bank_cash_EMI_1': request.POST.get('bank_cash_EMI_1', payment.bank_cash_EMI_1),
+            'bank_cash_EMI_2': request.POST.get('bank_cash_EMI_2', payment.bank_cash_EMI_2),
+            'bank_cash_EMI_3': request.POST.get('bank_cash_EMI_3', payment.bank_cash_EMI_3),
+            'bank_cash_EMI_4': request.POST.get('bank_cash_EMI_4', payment.bank_cash_EMI_4),
+            'bank_cash_EMI_5': request.POST.get('bank_cash_EMI_5', payment.bank_cash_EMI_5),
+            'bank_cash_EMI_6': request.POST.get('bank_cash_EMI_6', payment.bank_cash_EMI_6),
+            'balance':balance
+        }
+        
+        print("Payment Data : ", payment_data)
+
+        try:
+            response = requests.patch(api_url, data=payment_data, headers=headers)
+            response.raise_for_status()
+            response_data = response.json()
+
+            if response.status_code in [200, 204]:
+                return redirect('manage_payment')
+
+            return render(request, 'update_payment.html', {
+                'error': response_data.get('error', 'An error occurred during the update.'),
+                'payment': payment,
+                'payment_data': payment_data,
+            })
+        except requests.exceptions.RequestException as err:
+            return render(request, 'manage_payment.html', {
+                'error': f'Request error occurred: {err}',
+                'response_data': response.json() if response.content else {}
+            })
+            
+    context = {
+        "payment": payment,
+        'payment_data': {
+            'date_EMI_1': payment.date_EMI_1,
+            'date_EMI_2': payment.date_EMI_2,
+            'date_EMI_3': payment.date_EMI_3,
+            'date_EMI_4': payment.date_EMI_4,
+            'date_EMI_5': payment.date_EMI_5,
+            'date_EMI_6': payment.date_EMI_6,
+        },
+    }
+    return render(request, 'update_payment.html', context)
+
+def delete_all_payment_view(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            
+            print("Data : ", data)
+            
+            user_ids = data.get('user_ids', [])
+            
+            print("User ID : ", user_ids)
+            
+            if user_ids:
+                Payment.objects.filter(id__in=user_ids).delete()
+                messages.success(request, 'Successfully Deleted')
+                return JsonResponse({'success': True})
+            else:
+                return JsonResponse({'success': False, 'error': 'No users selected for deletion'})
+        except json.JSONDecodeError:
+            return JsonResponse({'success': False, 'error': 'Invalid JSON'})
+    return JsonResponse({'success': False, 'error': 'Invalid request method'})
+
+# csv file formate for attributes
+@csrf_exempt
+def export_payment_csv(request):
+    if request.method == 'POST':
+        ids = request.POST.get('ids', '').split(',')  # Get the ids from AJAX request
+
+        # Create the HttpResponse object with the appropriate CSV header
+        response = HttpResponse(content_type='text/csv')
+        response['Content-Disposition'] = 'attachment; filename="enrollment_list_csv.csv"'
+
+        writer = csv.writer(response)
+
+        # Write the header row with capitalized first letters
+        
+        writer.writerow([
+            'Registratio No', 'Joining Date', 'Student Name', 'Course Name', 'Course Duration', 
+            'Total Fees', 'Balance Amount',
+        ])
+
+        # Fetch selected enquiries based on IDs
+        selected_payment = Payment.objects.filter(id__in=ids)
+
+        for payment in selected_payment:
+            writer.writerow([
+                payment.registration_no,
+                payment.joining_date,
+                payment.student_name,
+                payment.course_name,
+                payment.duration,
+                payment.total_fees,
+                payment.balance,
+            ])
+
+        return response
+
+    # Handle GET request or non-AJAX POST request here if needed
+    return HttpResponse(status=400)  # Bad request if not POST or AJAX
+
+# Excel file format for course
+@csrf_exempt
+def export_payment_excel(request):
+    if request.method == 'POST':
+        ids = request.POST.get('ids', '').split(',')  # Get the ids from AJAX request
+
+        # Fetch selected courses based on IDs
+        selected_payment = Payment.objects.filter(id__in=ids)
+        
+        if not selected_payment:
+            return JsonResponse({'error': 'No Payment available.'}, status=404)
+
+        # Create an Excel workbook
+        wb = openpyxl.Workbook()
+        ws = wb.active
+
+        # Define header row with font style and alignment
+        # Define header row with capitalized first letters
+        headers = [
+            'Registratio No', 'Joining Date', 'Student Name', 'Course Name', 'Course Duration', 
+            'Total Fees', 'Balance Amount',
+        ]
+        
+        # Append the header row to the sheet
+        ws.append(headers)
+
+        for payment in selected_payment:
+            ws.append([
+                payment.registration_no,
+                payment.joining_date,
+                payment.student_name,
+                payment.course_name,
+                payment.duration,
+                payment.total_fees,
+                payment.balance,
+            ])
+
+        # Create an in-memory file-like object to save the workbook
+        output = BytesIO()
+        wb.save(output)
+        output.seek(0)
+
+        # Create the HTTP response with Excel content type and attachment header
+        response = HttpResponse(output, content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+        response['Content-Disposition'] = 'attachment; filename="generated_excel.xlsx"'
+        
+        return response
+
+    # Handle GET request or non-AJAX POST request here if needed
+    return HttpResponse(status=400)  # Bad request if not POST or AJAX
+
+@csrf_protect
+@require_POST
+def export_payment_pdf(request):
+    if request.method == 'POST':
+        ids = request.POST.get('ids', '').split(',')
+        selected_payment = Payment.objects.filter(id__in=ids)
+        
+        if not selected_payment:
+            return JsonResponse({'error': 'No Payment available.'}, status=404)
+        
+        attribute_list = []
+        for payment in selected_payment:    
+            attribute_list.append({
+                'registration_no': payment.registration_no,
+                'joining_date': payment.joining_date,
+                'student_name':payment.student_name,
+                'course_name': payment.course_name,
+                'duration': payment.duration,
+                'total_fees': payment.total_fees,
+                'balance': payment.balance,
+            })        
+        content = {'payment_list': attribute_list}
+        return renderers.render_to_pdf('payment_data_list.html', content)
+    
+    # Handle GET request or non-AJAX POST request here if needed
+    return HttpResponse(status=400)  # Bad request if not POST or AJAX
+
+class SearchPaymentResultsView(ListView):
+    model = Payment
+    template_name = 'search_payment_result.html'
+
+    def get_queryset(self):
+        start_date = self.request.GET.get("start_date", "")
+        end_date = self.request.GET.get("end_date", "")
+        query = self.request.GET.get("q", "")
+
+        # Start with all enrollments
+        object_list = Enrollment.objects.all()
+
+        # Apply text search if query is provided
+        if query:
+            object_list = object_list.filter(
+                Q(registration_no__icontains=query) |
+                Q(joining_date__icontains=query) |
+                Q(student_name__icontains=query) |
+                Q(course_name__course_name__icontains=query) |
+                Q(duration__icontains=query) |
+                Q(total_fees__icontains=query) |
+                Q(balance__icontains=query)
+            )
+            
+        # Apply date range filter if dates are provided
+        if start_date and end_date:
+            try:
+                start_date = datetime.strptime(start_date, '%Y-%m-%d').date()
+                end_date = datetime.strptime(end_date, '%Y-%m-%d').date()
+                object_list = object_list.filter(joining_date__range=(start_date, end_date))
+                
+            except ValueError:
+                messages.add_message(self.request, messages.ERROR, "Invalid date format. Please use YYYY-MM-DD.")
+        
+        # Optimize the query by selecting related course_name objects
+        object_list = object_list.select_related('course_name')
+
+        return object_list

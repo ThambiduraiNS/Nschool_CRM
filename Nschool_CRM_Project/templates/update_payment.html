@@ -29,7 +29,7 @@
                 <nav style="--bs-breadcrumb-divider: '|';" aria-label="breadcrumb">
                     <ol class="breadcrumb pt-3 mb-3 ps-lg-3">
                         <li class="breadcrumb-item"><a class="user-a" href="#">Payment</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">New Payment</li>
+                        <li class="breadcrumb-item active" aria-current="page">Update Payment</li>
                     </ol>
                 </nav>
             </div>
@@ -44,7 +44,7 @@
                             {% csrf_token %}
 
                             <div class="col-12 mt-4 ms-md-2 position-relative">
-                                <h5 class="fw-bold st-details">Payment</h5>
+                                <h5 class="fw-bold st-details">Update Payment</h5>
                                 <p class="user-para">Use the below form to update your profile</p>
                                 <span class="message" id="message">
                                     {% for message in messages %}
@@ -61,7 +61,7 @@
                                 <!-- Registration Number Field -->
                                 <div class="col-12 col-md-6 p-md-0">
                                     <div class="user-input-wrp ms-4 me-2 mt-4">
-                                        <input type="text" name="registration_no" id="registration_no" value="{{registration_no}}" class="form-control"
+                                        <input type="text" name="registration_no" id="registration_no" value="{{payment.registration_no}}" class="form-control"
                                             aria-label="registration_no" placeholder=" " autocomplete="off" autofocus>
                                         <label class="floating-label">&nbsp;Registration No <span class="required">*</span> &nbsp;</label>
                                         <span id="registration_no_error" class="error-div">
@@ -75,7 +75,7 @@
                                 <!-- student name field -->
                                 <div class="col-12 col-md-6 pe-md-0">
                                     <div class="user-input-wrp ms-md-4 mt-md-4">
-                                        <input type="text" name="student_name" id="student_name" value="{{name}}" class="form-control"
+                                        <input type="text" name="student_name" id="student_name" value="{{payment.student_name}}" class="form-control"
                                             aria-label="student_name" placeholder=" " autocomplete="off" autofocus>
                                         <label class="floating-label">&nbsp;Student Name <span class="required">*</span> &nbsp;</label>
                                         <span id="student_name_error" class="error-div">
@@ -89,7 +89,7 @@
                                 <!-- Course Name field -->
                                 <div class="col-12 col-md-6 p-md-0">
                                     <div class="user-input-wrp ms-4 me-2 mt-4">
-                                        <input type="text" name="course_name" id="course_name" value="{{course_name}}" class="form-control"
+                                        <input type="text" name="course_name" id="course_name" value="{{payment.course_name}}" class="form-control"
                                             aria-label="course_name" placeholder=" " autocomplete="off" autofocus>
                                         <label for="course_name" class="floating-label float">&nbsp;Course Name <span class="required">*</span> &nbsp;</label>
                                         <span id="course_name_error" class="error-div error-right">
@@ -119,7 +119,7 @@
                                 <!-- Duration -->
                                 <div class="col-12 col-md-6 pe-md-0" id="duration_div">
                                     <div class="user-input-wrp ms-md-4 mt-md-4">
-                                        <input type="text" name="duration" value="{{duration}}" id="duration" class="form-control"
+                                        <input type="text" name="duration" value="{{payment.duration}}" id="duration" class="form-control"
                                             aria-label="Duration" placeholder=" " autocomplete="off" autofocus>
                                         <label class="floating-label">&nbsp;Duration <span class="required">*</span> &nbsp;</label>
                                         <span id="duration_error" class="error-div">
@@ -133,7 +133,7 @@
                                 <!-- total fees -->
                                 <div class="col-12 col-md-6 p-md-0" id="duration_div">
                                     <div class="user-input-wrp ms-4 me-2 mt-4">
-                                        <input type="text" name="total_fees" value="{{total_fees}}" id="total_fees" class="form-control"
+                                        <input type="text" name="total_fees" value="{{payment.total_fees}}" id="total_fees" class="form-control"
                                             aria-label="Duration" placeholder=" " autocomplete="off" autofocus>
                                         <label class="floating-label">&nbsp;Total Fees <span class="required">*</span> &nbsp;</label>
                                         <span id="total_fees_error" class="error-div">
@@ -147,7 +147,7 @@
                                 <!-- Joining Date Field -->
                                 <div class="col-12 col-md-6 pe-md-0">
                                     <div class="user-input-wrp ms-4 mt-md-4">
-                                        <input type="date" name="joining_date" id="joining_date" value="{{registration_date}}" class="form-control"
+                                        <input type="date" name="joining_date" id="joining_date" value="{{payment.joining_date|date:'Y-m-d'}}" class="form-control"
                                             aria-label="joining_date" placeholder=" " autocomplete="off" autofocus>
                                         <label class="floating-label">&nbsp;Joining Date <span class="required">*</span> &nbsp;</label>
                                         <span id="joining_date_error" class="error-div">
@@ -161,10 +161,10 @@
                                 <!-- Fees Type Field -->
                                 <div class="col-12 col-md-6 p-md-0">
                                     <div class="user-input-wrp ms-4 me-2 mt-4">
-                                        <select name="fees_type" id="fees_type" class="form-select select" onchange="handleFeesTypeChange()">
+                                        <select name="fees_type" id="fees_type" class="form-select select" onclick="handleFeesTypeChange()">
                                             <option value="" selected>Select Any One</option>
-                                            <option value="single payment">Single Payment</option>
-                                            <option value="installment">Installment</option>
+                                            <option value="single payment" {% if payment.fees_type == "single payment" %} selected {%endif%}>Single Payment</option>
+                                            <option value="installment" {% if payment.fees_type == "installment" %} selected {%endif%}>Installment</option>
                                         </select>
                                         <label class="floating-label">&nbsp; Fees Type <span class="required">*</span> &nbsp;</label>
                                         <span id="fees_type_error" class="error-div">
@@ -178,11 +178,11 @@
                                 <!-- Payment Mode Field -->
                                 <div class="col-12 col-md-6 pe-md-0">
                                     <div class="user-input-wrp ms-md-4 mt-md-4">
-                                        <select name="payment_mode" id="payment_mode" class="form-select select" onchange="handleCashChange()">
+                                        <select name="payment_mode" id="payment_mode" class="form-select select" onclick="handleCashChange()">
                                             <option value="" selected>Select Any One</option>
-                                            <option value="cash">Cash</option>
-                                            <option value="upi">UPI</option>
-                                            <option value="bank transfer">Bank Transfer</option>
+                                            <option value="cash" {% if payment.payment_mode == "cash" %} selected {%endif%}>Cash</option>
+                                            <option value="upi" {% if payment.payment_mode == "upi" %} selected {%endif%}>UPI</option>
+                                            <option value="bank transfer" {% if payment.payment_mode == "bank transfer" %} selected {%endif%}>Bank Transfer</option>
                                         </select>
                                         <label class="floating-label">&nbsp;Payment Mode <span class="required">*</span> &nbsp;</label>
                                         <span id="payment_mode_error" class="error-div">
@@ -194,16 +194,16 @@
                                 </div>
                                 
                                 <!-- installment -->
-                                <div class="col-12 col-md-6 p-md-0" style="display: none;" id="installment_div" onchange="handleInstallmentChange()">
+                                <div class="col-12 col-md-6 p-md-0" style="display: none;" id="installment_div" onclick="handleInstallmentChange()">
                                     <div class="user-input-wrp ms-4 me-2 mt-4">
                                         <select name="installment" id="installment" class="form-select select">
                                             <option value="" selected>Select Any One</option>
-                                            <option value="EMI-1">EMI-1</option>
-                                            <option value="EMI-2">EMI-2</option>
-                                            <option value="EMI-3">EMI-3</option>
-                                            <option value="EMI-4">EMI-4</option>
-                                            <option value="EMI-5">EMI-5</option>
-                                            <option value="EMI-6">EMI-6</option>
+                                            <option value="EMI-1" {% if payment.installment == "EMI-1" %} selected {%endif%}>EMI-1</option>
+                                            <option value="EMI-2" {% if payment.installment == "EMI-2" %} selected {%endif%}>EMI-2</option>
+                                            <option value="EMI-3" {% if payment.installment == "EMI-3" %} selected {%endif%}>EMI-3</option>
+                                            <option value="EMI-4" {% if payment.installment == "EMI-4" %} selected {%endif%}>EMI-4</option>
+                                            <option value="EMI-5" {% if payment.installment == "EMI-5" %} selected {%endif%}>EMI-5</option>
+                                            <option value="EMI-6" {% if payment.installment == "EMI-6" %} selected {%endif%}>EMI-6</option>
                                         </select>
                                         <label class="floating-label">&nbsp; Installment <span class="required">*</span> &nbsp;</label>
                                         <span id="installment_error" class="error-div">
@@ -217,7 +217,7 @@
                                 <!-- EMI-1 date -->
                                 <div class="col-12 col-md-6 pe-md-0" style="display: none;" id="date_EMI_1_div">
                                     <div class="user-input-wrp ms-md-4 mt-md-4">
-                                        <input type="date" name="date_EMI_1" id="date_EMI_1" value="{{date_EMI_1}}" class="form-control"
+                                        <input type="date" name="date_EMI_1" id="date_EMI_1" value="{{payment.date_EMI_1|date:'Y-m-d'}}" class="form-control"
                                             aria-label="date_EMI_1" placeholder=" " autocomplete="off" autofocus>
                                         <label class="floating-label">&nbsp;EMI Date <span class="required">*</span> &nbsp;</label>
                                         <span id="date_EMI_1_error" class="error-div">
@@ -231,7 +231,7 @@
                                 <!-- EMI-2 date -->
                                 <div class="col-12 col-md-6 pe-md-0" style="display: none;" id="date_EMI_2_div">
                                     <div class="user-input-wrp ms-md-4 mt-md-4">
-                                        <input type="date" name="date_EMI_2" id="date_EMI_2" value="{{date_EMI_2}}" class="form-control"
+                                        <input type="date" name="date_EMI_2" id="date_EMI_2" value="{{payment.date_EMI_2|date:'Y-m-d'}}" class="form-control"
                                             aria-label="date_EMI_2" placeholder=" " autocomplete="off" autofocus>
                                         <label class="floating-label">&nbsp;EMI Date <span class="required">*</span> &nbsp;</label>
                                         <span id="date_EMI_2_error" class="error-div">
@@ -245,7 +245,7 @@
                                 <!-- EMI-3 date -->
                                 <div class="col-12 col-md-6 pe-md-0" style="display: none;" id="date_EMI_3_div">
                                     <div class="user-input-wrp ms-md-4 mt-md-4">
-                                        <input type="date" name="date_EMI_3" id="date_EMI_3" value="{{date_EMI_3}}" class="form-control"
+                                        <input type="date" name="date_EMI_3" id="date_EMI_3" value="{{payment.date_EMI_3|date:'Y-m-d'}}" class="form-control"
                                             aria-label="date_EMI_3" placeholder=" " autocomplete="off" autofocus>
                                         <label class="floating-label">&nbsp;EMI Date <span class="required">*</span> &nbsp;</label>
                                         <span id="date_EMI_3_error" class="error-div">
@@ -259,7 +259,7 @@
                                 <!-- EMI-4 date -->
                                 <div class="col-12 col-md-6 pe-md-0" style="display: none;" id="date_EMI_4_div">
                                     <div class="user-input-wrp ms-md-4 mt-md-4">
-                                        <input type="date" name="date_EMI_4" id="date_EMI_4" value="{{date_EMI_4}}" class="form-control"
+                                        <input type="date" name="date_EMI_4" id="date_EMI_4" value="{{payment.date_EMI_4|date:'Y-m-d'}}" class="form-control"
                                             aria-label="date_EMI_4" placeholder=" " autocomplete="off" autofocus>
                                         <label class="floating-label">&nbsp;EMI Date <span class="required">*</span> &nbsp;</label>
                                         <span id="date_EMI_4_error" class="error-div">
@@ -273,7 +273,7 @@
                                 <!-- EMI-5 date -->
                                 <div class="col-12 col-md-6 pe-md-0" style="display: none;" id="date_EMI_5_div">
                                     <div class="user-input-wrp ms-md-4 mt-md-4">
-                                        <input type="date" name="date_EMI_5" id="date_EMI_5" value="{{date_EMI_5}}" class="form-control"
+                                        <input type="date" name="date_EMI_5" id="date_EMI_5" value="{{payment.date_EMI_5|date:'Y-m-d'}}" class="form-control"
                                             aria-label="date_EMI_5" placeholder=" " autocomplete="off" autofocus>
                                         <label class="floating-label">&nbsp;EMI Date <span class="required">*</span> &nbsp;</label>
                                         <span id="date_EMI_5_error" class="error-div">
@@ -286,7 +286,7 @@
                                 <!-- EMI-6 date -->
                                 <div class="col-12 col-md-6 pe-md-0" style="display: none;" id="date_EMI_6_div">
                                     <div class="user-input-wrp ms-md-4 mt-md-4">
-                                        <input type="date" name="date_EMI_6" id="date_EMI_6" value="{{date_EMI_6}}" class="form-control"
+                                        <input type="date" name="date_EMI_6" id="date_EMI_6" value="{{payment.date_EMI_6|date:'Y-m-d'}}" class="form-control"
                                             aria-label="date_EMI_6" placeholder=" " autocomplete="off" autofocus>
                                         <label class="floating-label">&nbsp;EMI Date <span class="required">*</span> &nbsp;</label>
                                         <span id="date_EMI_6_error" class="error-div">
@@ -302,7 +302,7 @@
                                 <!-- date field -->
                                 <div class="col-12 col-md-6 p-md-0" style="display: none;" id="date_div">
                                     <div class="user-input-wrp ms-4 me-2 mt-4">
-                                        <input type="date" name="date" id="date" value="{{date}}" class="form-control"
+                                        <input type="date" name="date" id="date" value="{{payment.date}}" class="form-control"
                                             aria-label="date" placeholder=" " autocomplete="off" autofocus>
                                         <label class="floating-label">&nbsp;Cash Payment Date <span class="required">*</span> &nbsp;</label>
                                         <span id="date_error" class="error-div">
@@ -315,7 +315,7 @@
                                 <!-- amount field -->
                                 <div class="col-12 col-md-6 pe-md-0" style="display: none;" id="cash_div">
                                     <div class="user-input-wrp ms-md-4 mt-md-4">
-                                        <input type="text" name="cash" value="{{cash}}" id="cash" class="form-control"
+                                        <input type="text" name="cash" value="{{payment.cash}}" id="cash" class="form-control"
                                             aria-label="cash" placeholder=" " autocomplete="off" autofocus>
                                         <label class="floating-label">&nbsp;Enter Amount <span class="required">*</span> &nbsp;</label>
                                         <span id="cash_error" class="error-div">
@@ -329,7 +329,7 @@
                                 <!-- EMI 1 amount field -->
                                 <div class="col-12 col-md-6 pe-md-0" style="display: none;" id="cash_EMI_1_div">
                                     <div class="user-input-wrp ms-md-4 mt-md-4">
-                                        <input type="text" name="cash_EMI_1" value="{{cash_EMI_1}}" id="cash_EMI_1" class="form-control"
+                                        <input type="text" name="cash_EMI_1" value="{{payment.cash_EMI_1}}" id="cash_EMI_1" class="form-control"
                                             aria-label="cash_EMI_1" placeholder=" " autocomplete="off" autofocus>
                                         <label class="floating-label">&nbsp;Enter EMI 1 Amount <span class="required">*</span> &nbsp;</label>
                                         <span id="cash_EMI_1_error" class="error-div">
@@ -343,7 +343,7 @@
                                 <!-- EMI 2 amount field -->
                                 <div class="col-12 col-md-6 pe-md-0" style="display: none;" id="cash_EMI_2_div">
                                     <div class="user-input-wrp ms-md-4 mt-md-4">
-                                        <input type="text" name="cash_EMI_2" value="{{cash_EMI_2}}" id="cash_EMI_2" class="form-control"
+                                        <input type="text" name="cash_EMI_2" value="{{payment.cash_EMI_2}}" id="cash_EMI_2" class="form-control"
                                             aria-label="cash_EMI_2" placeholder=" " autocomplete="off" autofocus>
                                         <label class="floating-label">&nbsp;Enter EMI 2 Amount <span class="required">*</span> &nbsp;</label>
                                         <span id="cash_EMI_2_error" class="error-div">
@@ -357,7 +357,7 @@
                                 <!-- EMI 3 amount field -->
                                 <div class="col-12 col-md-6 pe-md-0" style="display: none;" id="cash_EMI_3_div">
                                     <div class="user-input-wrp ms-md-4 mt-md-4">
-                                        <input type="text" name="cash_EMI_3" value="{{cash_EMI_3}}" id="cash_EMI_3" class="form-control"
+                                        <input type="text" name="cash_EMI_3" value="{{payment.cash_EMI_3}}" id="cash_EMI_3" class="form-control"
                                             aria-label="cash_EMI_3" placeholder=" " autocomplete="off" autofocus>
                                         <label class="floating-label">&nbsp;Enter EMI 3 Amount <span class="required">*</span> &nbsp;</label>
                                         <span id="cash_EMI_3_error" class="error-div">
@@ -371,7 +371,7 @@
                                 <!-- EMI 4 amount field -->
                                 <div class="col-12 col-md-6 pe-md-0" style="display: none;" id="cash_EMI_4_div">
                                     <div class="user-input-wrp ms-md-4 mt-md-4">
-                                        <input type="text" name="cash_EMI_4" value="{{cash_EMI_4}}" id="cash_EMI_4" class="form-control"
+                                        <input type="text" name="cash_EMI_4" value="{{payment.cash_EMI_4}}" id="cash_EMI_4" class="form-control"
                                             aria-label="cash_EMI_4" placeholder=" " autocomplete="off" autofocus>
                                         <label class="floating-label">&nbsp;Enter EMI 4 Amount <span class="required">*</span> &nbsp;</label>
                                         <span id="cash_EMI_4_error" class="error-div">
@@ -385,7 +385,7 @@
                                 <!-- EMI 5 amount field -->
                                 <div class="col-12 col-md-6 pe-md-0" style="display: none;" id="cash_EMI_5_div">
                                     <div class="user-input-wrp ms-md-4 mt-md-4">
-                                        <input type="text" name="cash_EMI_5" value="{{cash_EMI_5}}" id="cash_EMI_5" class="form-control"
+                                        <input type="text" name="cash_EMI_5" value="{{payment.cash_EMI_5}}" id="cash_EMI_5" class="form-control"
                                             aria-label="cash_EMI_5" placeholder=" " autocomplete="off" autofocus>
                                         <label class="floating-label">&nbsp;Enter EMI 5 Amount <span class="required">*</span> &nbsp;</label>
                                         <span id="cash_EMI_5_error" class="error-div">
@@ -399,7 +399,7 @@
                                 <!-- EMI 6 amount field -->
                                 <div class="col-12 col-md-6 pe-md-0" style="display: none;" id="cash_EMI_6_div">
                                     <div class="user-input-wrp ms-md-4 mt-md-4">
-                                        <input type="text" name="cash_EMI_6" value="{{cash_EMI_6}}" id="cash_EMI_6" class="form-control"
+                                        <input type="text" name="cash_EMI_6" value="{{payment.cash_EMI_6}}" id="cash_EMI_6" class="form-control"
                                             aria-label="cash_EMI_6" placeholder=" " autocomplete="off" autofocus>
                                         <label class="floating-label">&nbsp;Enter EMI 6 Amount <span class="required">*</span> &nbsp;</label>
                                         <span id="cash_EMI_6_error" class="error-div">
@@ -416,7 +416,7 @@
                                 <!-- date field -->
                                 <div class="col-12 col-md-6 p-md-0" style="display: none;" id="upi_date_div">
                                     <div class="user-input-wrp ms-4 me-2 mt-4">
-                                        <input type="date" name="upi_date" id="upi_date" value="{{upi_date}}" class="form-control"
+                                        <input type="date" name="upi_date" id="upi_date" value="{{payment.upi_date}}" class="form-control"
                                             aria-label="upi_date" placeholder=" " autocomplete="off" autofocus>
                                         <label class="floating-label">&nbsp;UPI Payment Date <span class="required">*</span> &nbsp;</label>
                                         <span id="upi_date_error" class="error-div">
@@ -430,7 +430,7 @@
                                 <!-- transaction_id field -->
                                 <div class="col-12 col-md-6 pe-md-0" style="display: none;" id="transaction_id_div">
                                     <div class="user-input-wrp ms-md-4 mt-md-4">
-                                        <input type="text" name="transaction_id" value="{{transaction_id}}" id="transaction_id" class="form-control"
+                                        <input type="text" name="transaction_id" value="{{payment.transaction_id}}" id="transaction_id" class="form-control"
                                             aria-label="transaction_id" placeholder=" " autocomplete="off" autofocus>
                                         <label class="floating-label">&nbsp;Enter UPI Transaction ID <span class="required">*</span> &nbsp;</label>
                                         <span id="transaction_id_error" class="error-div">
@@ -444,7 +444,7 @@
                                 <!-- Amount field -->
                                 <div class="col-12 col-md-6 p-md-0" style="display: none;" id="amount_div">
                                     <div class="user-input-wrp ms-4 me-2 mt-4">
-                                        <input type="text" name="upi_cash" value="{{cash}}" id="amount" class="form-control"
+                                        <input type="text" name="upi_cash" value="{{payment.cash}}" id="amount" class="form-control"
                                             aria-label="amount" placeholder=" " autocomplete="off" autofocus>
                                         <label class="floating-label">&nbsp;Enter Amount <span class="required">*</span> &nbsp;</label>
                                         <span id="amount_error" class="error-div">
@@ -458,7 +458,7 @@
                                 <!-- EMI 1 amount field -->
                                 <div class="col-12 col-md-6 pe-md-0" style="display: none;" id="upi_cash_EMI_1_div">
                                     <div class="user-input-wrp ms-md-4 mt-md-4">
-                                        <input type="text" name="upi_cash_EMI_1" value="{{upi_cash_EMI_1}}" id="upi_cash_EMI_1" class="form-control"
+                                        <input type="text" name="upi_cash_EMI_1" value="{{payment.upi_cash_EMI_1}}" id="upi_cash_EMI_1" class="form-control"
                                             aria-label="upi_cash_EMI_2" placeholder=" " autocomplete="off" autofocus>
                                         <label class="floating-label">&nbsp;Enter EMI 1 Amount <span class="required">*</span> &nbsp;</label>
                                         <span id="upi_cash_EMI_1_error" class="error-div">
@@ -472,7 +472,7 @@
                                 <!-- EMI 2 amount field -->
                                 <div class="col-12 col-md-6 pe-md-0" style="display: none;" id="upi_cash_EMI_2_div">
                                     <div class="user-input-wrp ms-md-4 mt-md-4">
-                                        <input type="text" name="upi_cash_EMI_2" value="{{upi_cash_EMI_2}}" id="upi_cash_EMI_2" class="form-control"
+                                        <input type="text" name="upi_cash_EMI_2" value="{{payment.upi_cash_EMI_2}}" id="upi_cash_EMI_2" class="form-control"
                                             aria-label="upi_cash_EMI_2" placeholder=" " autocomplete="off" autofocus>
                                         <label class="floating-label">&nbsp;Enter EMI 2 Amount <span class="required">*</span> &nbsp;</label>
                                         <span id="upi_cash_EMI_2_error" class="error-div">
@@ -486,7 +486,7 @@
                                 <!-- EMI 3 amount field -->
                                 <div class="col-12 col-md-6 pe-md-0" style="display: none;" id="upi_cash_EMI_3_div">
                                     <div class="user-input-wrp ms-md-4 mt-md-4">
-                                        <input type="text" name="upi_cash_EMI_3" value="{{upi_cash_EMI_3}}" id="upi_cash_EMI_3" class="form-control"
+                                        <input type="text" name="upi_cash_EMI_3" value="{{payment.upi_cash_EMI_3}}" id="upi_cash_EMI_3" class="form-control"
                                             aria-label="upi_cash_EMI_3" placeholder=" " autocomplete="off" autofocus>
                                         <label class="floating-label">&nbsp;Enter EMI 3 Amount <span class="required">*</span> &nbsp;</label>
                                         <span id="upi_cash_EMI_3_error" class="error-div">
@@ -500,7 +500,7 @@
                                 <!-- EMI 4 amount field -->
                                 <div class="col-12 col-md-6 pe-md-0" style="display: none;" id="upi_cash_EMI_4_div">
                                     <div class="user-input-wrp ms-md-4 mt-md-4">
-                                        <input type="text" name="upi_cash_EMI_4" value="{{upi_cash_EMI_4}}" id="upi_cash_EMI_4" class="form-control"
+                                        <input type="text" name="upi_cash_EMI_4" value="{{payment.upi_cash_EMI_4}}" id="upi_cash_EMI_4" class="form-control"
                                             aria-label="upi_cash_EMI_4" placeholder=" " autocomplete="off" autofocus>
                                         <label class="floating-label">&nbsp;Enter EMI 4 Amount <span class="required">*</span> &nbsp;</label>
                                         <span id="upi_cash_EMI_4_error" class="error-div">
@@ -514,7 +514,7 @@
                                 <!-- EMI 5 amount field -->
                                 <div class="col-12 col-md-6 pe-md-0" style="display: none;" id="upi_cash_EMI_5_div">
                                     <div class="user-input-wrp ms-md-4 mt-md-4">
-                                        <input type="text" name="upi_cash_EMI_5" value="{{upi_cash_EMI_5}}" id="upi_cash_EMI_5" class="form-control"
+                                        <input type="text" name="upi_cash_EMI_5" value="{{payment.upi_cash_EMI_5}}" id="upi_cash_EMI_5" class="form-control"
                                             aria-label="upi_cash_EMI_5" placeholder=" " autocomplete="off" autofocus>
                                         <label class="floating-label">&nbsp;Enter EMI 5 Amount <span class="required">*</span> &nbsp;</label>
                                         <span id="upi_cash_EMI_5_error" class="error-div">
@@ -528,7 +528,7 @@
                                 <!-- EMI 6 amount field -->
                                 <div class="col-12 col-md-6 pe-md-0" style="display: none;" id="upi_cash_EMI_6_div">
                                     <div class="user-input-wrp ms-md-4 mt-md-4">
-                                        <input type="text" name="upi_cash_EMI_6" value="{{upi_cash_EMI_6}}" id="upi_cash_EMI_6" class="form-control"
+                                        <input type="text" name="upi_cash_EMI_6" value="{{payment.upi_cash_EMI_6}}" id="upi_cash_EMI_6" class="form-control"
                                             aria-label="upi_cash_EMI_6" placeholder=" " autocomplete="off" autofocus>
                                         <label class="floating-label">&nbsp;Enter EMI 6 Amount <span class="required">*</span> &nbsp;</label>
                                         <span id="upi_cash_EMI_6_error" class="error-div">
@@ -542,7 +542,7 @@
                                 <!-- Account / Bank Name -->
                                 <div class="col-12 col-md-6 pe-md-0" style="display: none;" id="bank_name_div">
                                     <div class="user-input-wrp ms-md-4 mt-md-4">
-                                        <input type="text" name="bank_name" value="{{bank_name}}" id="bank_name" class="form-control"
+                                        <input type="text" name="bank_name" value="{{payment.bank_name}}" id="bank_name" class="form-control"
                                             aria-label="bank_name" placeholder=" " autocomplete="off" autofocus>
                                         <label class="floating-label">&nbsp;Account / Bank Name <span class="required">*</span> &nbsp;</label>
                                         <span id="bank_name_error" class="error-div">
@@ -556,7 +556,7 @@
                                 <!-- App Name -->
                                 <div class="col-12 col-md-6 p-md-0" style="display: none;" id="app_name_div">
                                     <div class="user-input-wrp ms-4 me-2 mt-4">
-                                        <input type="text" name="app_name" value="{{app_name}}" id="app_name" class="form-control"
+                                        <input type="text" name="app_name" value="{{payment.app_name}}" id="app_name" class="form-control"
                                             aria-label="app_name" placeholder=" " autocomplete="off" autofocus>
                                         <label class="floating-label">&nbsp;Enter App Name <span class="required">*</span> &nbsp;</label>
                                         <span id="app_name_error" class="error-div">
@@ -572,7 +572,7 @@
                                 <!-- date field -->
                                 <div class="col-12 col-md-6 p-md-0" style="display: none;" id="bank_date_div">
                                     <div class="user-input-wrp ms-4 me-2 mt-4">
-                                        <input type="date" name="bank_date" id="bank_date" value="{{date}}" class="form-control"
+                                        <input type="date" name="bank_date" id="bank_date" value="{{payment.date}}" class="form-control"
                                             aria-label="bank_date" placeholder=" " autocomplete="off" autofocus>
                                         <label class="floating-label">&nbsp;Bank Payment Date <span class="required">*</span> &nbsp;</label>
                                         <span id="bank_date_error" class="error-div">
@@ -586,7 +586,7 @@
                                 <!-- Account Number field -->
                                 <div class="col-12 col-md-6 pe-md-0" style="display: none;" id="account_no_div">
                                     <div class="user-input-wrp ms-md-4 mt-md-4">
-                                        <input type="text" name="account_no" value="{{account_no}}" id="account_no" class="form-control"
+                                        <input type="text" name="account_no" value="{{payment.account_no}}" id="account_no" class="form-control"
                                             aria-label="account_no" placeholder=" " autocomplete="off" autofocus>
                                         <label class="floating-label">&nbsp;Account Number <span class="required">*</span> &nbsp;</label>
                                         <span id="account_no_error" class="error-div">
@@ -600,7 +600,7 @@
                                 <!-- IFSC Code field -->
                                 <div class="col-12 col-md-6 p-md-0" style="display: none;" id="ifsc_code_div">
                                     <div class="user-input-wrp ms-4 me-2 mt-4">
-                                        <input type="text" name="ifsc_code" value="{{ifsc_code}}" id="ifsc_code" class="form-control"
+                                        <input type="text" name="ifsc_code" value="{{payment.ifsc_code}}" id="ifsc_code" class="form-control"
                                             aria-label="ifsc_code" placeholder=" " autocomplete="off" autofocus>
                                         <label class="floating-label">&nbsp;IFSC Code <span class="required">*</span> &nbsp;</label>
                                         <span id="ifsc_code_error" class="error-div">
@@ -614,7 +614,7 @@
                                 <!-- Branch Name field -->
                                 <div class="col-12 col-md-6 pe-md-0" style="display: none;" id="branch_name_div">
                                     <div class="user-input-wrp ms-md-4 mt-md-4">
-                                        <input type="text" name="branch_name" value="{{branch_name}}" id="branch_name" class="form-control"
+                                        <input type="text" name="branch_name" value="{{payment.branch_name}}" id="branch_name" class="form-control"
                                             aria-label="branch_name" placeholder=" " autocomplete="off" autofocus>
                                         <label class="floating-label">&nbsp;Branch Name <span class="required">*</span> &nbsp;</label>
                                         <span id="branch_name_error" class="error-div">
@@ -628,7 +628,7 @@
                                 <!-- Account Holder Name field -->
                                 <div class="col-12 col-md-6 p-md-0" style="display: none;" id="account_holder_name_div">
                                     <div class="user-input-wrp ms-4 me-2 mt-4">
-                                        <input type="text" name="account_holder_name" value="{{account_holder_name}}" id="account_holder_name" class="form-control"
+                                        <input type="text" name="account_holder_name" value="{{payment.account_holder_name}}" id="account_holder_name" class="form-control"
                                             aria-label="account_holder_name" placeholder=" " autocomplete="off" autofocus>
                                         <label class="floating-label">&nbsp;Account Holder Name <span class="required">*</span> &nbsp;</label>
                                         <span id="account_holder_name_error" class="error-div">
@@ -642,7 +642,7 @@
                                 <!-- Amount field -->
                                 <div class="col-12 col-md-6 pe-md-0" style="display: none;" id="bank_amount_div">
                                     <div class="user-input-wrp ms-md-4 mt-md-4">
-                                        <input type="text" name="bank_cash" value="{{cash}}" id="bank_amount" class="form-control"
+                                        <input type="text" name="bank_cash" value="{{payment.cash}}" id="bank_amount" class="form-control"
                                             aria-label="amount" placeholder=" " autocomplete="off" autofocus>
                                         <label class="floating-label">&nbsp;Enter Amount <span class="required">*</span> &nbsp;</label>
                                         <span id="bank_amount_error" class="error-div">
@@ -656,7 +656,7 @@
                                 <!-- EMI 1 amount field -->
                                 <div class="col-12 col-md-6 pe-md-0" style="display: none;" id="bank_cash_EMI_1_div">
                                     <div class="user-input-wrp ms-md-4 mt-md-4">
-                                        <input type="text" name="bank_cash_EMI_1" value="{{bank_cash_EMI_1}}" id="bank_cash_EMI_1" class="form-control"
+                                        <input type="text" name="bank_cash_EMI_1" value="{{payment.bank_cash_EMI_1}}" id="bank_cash_EMI_1" class="form-control"
                                             aria-label="bank_cash_EMI_1" placeholder=" " autocomplete="off" autofocus>
                                         <label class="floating-label">&nbsp;Enter EMI 1 Amount <span class="required">*</span> &nbsp;</label>
                                         <span id="bank_cash_EMI_1_error" class="error-div">
@@ -670,7 +670,7 @@
                                 <!-- EMI 2 amount field -->
                                 <div class="col-12 col-md-6 pe-md-0" style="display: none;" id="bank_cash_EMI_2_div">
                                     <div class="user-input-wrp ms-md-4 mt-md-4">
-                                        <input type="text" name="bank_cash_EMI_2" value="{{bank_cash_EMI_2}}" id="bank_cash_EMI_2" class="form-control"
+                                        <input type="text" name="bank_cash_EMI_2" value="{{payment.bank_cash_EMI_2}}" id="bank_cash_EMI_2" class="form-control"
                                             aria-label="bank_cash_EMI_2" placeholder=" " autocomplete="off" autofocus>
                                         <label class="floating-label">&nbsp;Enter EMI 2 Amount <span class="required">*</span> &nbsp;</label>
                                         <span id="bank_cash_EMI_2_error" class="error-div">
@@ -684,7 +684,7 @@
                                 <!-- EMI 3 amount field -->
                                 <div class="col-12 col-md-6 pe-md-0" style="display: none;" id="bank_cash_EMI_3_div">
                                     <div class="user-input-wrp ms-md-4 mt-md-4">
-                                        <input type="text" name="bank_cash_EMI_3" value="{{bank_cash_EMI_3}}" id="bank_cash_EMI_3" class="form-control"
+                                        <input type="text" name="bank_cash_EMI_3" value="{{payment.bank_cash_EMI_3}}" id="bank_cash_EMI_3" class="form-control"
                                             aria-label="bank_cash_EMI_3" placeholder=" " autocomplete="off" autofocus>
                                         <label class="floating-label">&nbsp;Enter EMI 3 Amount <span class="required">*</span> &nbsp;</label>
                                         <span id="bank_cash_EMI_3_error" class="error-div">
@@ -698,7 +698,7 @@
                                 <!-- EMI 4 amount field -->
                                 <div class="col-12 col-md-6 pe-md-0" style="display: none;" id="bank_cash_EMI_4_div">
                                     <div class="user-input-wrp ms-md-4 mt-md-4">
-                                        <input type="text" name="bank_cash_EMI_4" value="{{bank_cash_EMI_4}}" id="bank_cash_EMI_4" class="form-control"
+                                        <input type="text" name="bank_cash_EMI_4" value="{{payment.bank_cash_EMI_4}}" id="bank_cash_EMI_4" class="form-control"
                                             aria-label="bank_cash_EMI_4" placeholder=" " autocomplete="off" autofocus>
                                         <label class="floating-label">&nbsp;Enter EMI 4 Amount <span class="required">*</span> &nbsp;</label>
                                         <span id="bank_cash_EMI_4_error" class="error-div">
@@ -712,7 +712,7 @@
                                 <!-- EMI 5 amount field -->
                                 <div class="col-12 col-md-6 pe-md-0" style="display: none;" id="bank_cash_EMI_5_div">
                                     <div class="user-input-wrp ms-md-4 mt-md-4">
-                                        <input type="text" name="bank_cash_EMI_5" value="{{bank_cash_EMI_5}}" id="bank_cash_EMI_5" class="form-control"
+                                        <input type="text" name="bank_cash_EMI_5" value="{{payment.bank_cash_EMI_5}}" id="bank_cash_EMI_5" class="form-control"
                                             aria-label="bank_cash_EMI_5" placeholder=" " autocomplete="off" autofocus>
                                         <label class="floating-label">&nbsp;Enter EMI 5 Amount <span class="required">*</span> &nbsp;</label>
                                         <span id="bank_cash_EMI_5_error" class="error-div">
@@ -726,7 +726,7 @@
                                 <!-- EMI 6 amount field -->
                                 <div class="col-12 col-md-6 pe-md-0" style="display: none;" id="bank_cash_EMI_6_div">
                                     <div class="user-input-wrp ms-md-4 mt-md-4">
-                                        <input type="text" name="bank_cash_EMI_6" value="{{bank_cash_EMI_6}}" id="bank_cash_EMI_6" class="form-control"
+                                        <input type="text" name="bank_cash_EMI_6" value="{{payment.bank_cash_EMI_6}}" id="bank_cash_EMI_6" class="form-control"
                                             aria-label="bank_cash_EMI_6" placeholder=" " autocomplete="off" autofocus>
                                         <label class="floating-label">&nbsp;Enter EMI 6 Amount <span class="required">*</span> &nbsp;</label>
                                         <span id="bank_cash_EMI_6_error" class="error-div">
@@ -1083,6 +1083,8 @@ document.addEventListener('DOMContentLoaded', function() {
         let branch_name = document.getElementById('branch_name').value.trim();
         let account_holder_name = document.getElementById('account_holder_name').value.trim();
         let bank_amount = document.getElementById('bank_amount').value.trim();
+        
+        console.log("Course Name : ", course_name)
 
         // Additional field validations
         if (validateFields(registration_no, "registration_no_error")) hasError = true;
@@ -1157,10 +1159,10 @@ document.addEventListener('DOMContentLoaded', function() {
             if (validateFields(bank_amount, "bank_amount_error")) hasError = true;
 
             // Validate each upi cash EMI field
-            // for (let i = 1; i <= 6; i++) {
-            //     let upi_cash_EMI = document.getElementById(`upi_cash_EMI_${i}`).value.trim();
-            //     if (validateFields(upi_cash_EMI, `upi_cash_EMI_${i}_error`)) hasError = true;
-            // }
+            for (let i = 1; i <= 6; i++) {
+                let upi_cash_EMI = document.getElementById(`upi_cash_EMI_${i}`).value.trim();
+                if (validateFields(upi_cash_EMI, `upi_cash_EMI_${i}_error`)) hasError = true;
+            }
         }
 
         console.log("Has Error:", hasError);
