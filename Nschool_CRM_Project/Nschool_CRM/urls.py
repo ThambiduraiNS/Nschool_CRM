@@ -82,6 +82,14 @@ urlpatterns = [
     path('delete_all_payment/', delete_all_payment_view, name='delete_all_payment'),
     path('get-enrollment-details/', get_enrollment_details, name='get_enrollment_details'),
     
+    
+    path('new-payment/', new_payment_info_view, name='new_payment_info'),
+    path('installment-payment/', installment_view, name='installment_payment'),
+    path('single-payment/', single_payment_view, name='single_payment'),
+    path('installment-payment/<int:id>/', installment_update_view, name='installment_payment'),
+    path('single-payment/<int:id>/', single_payment_view, name='single_payment'),
+    path('manage-payments/', manage_payment_info_view, name='manage_payments'),
+    
     # file formate for enrollment
     path('export_payment_csv/', export_payment_csv, name='export_payment_csv'),
     path('export_payment_excel/', export_payment_excel, name='export_payment_excel'),
@@ -140,9 +148,27 @@ urlpatterns = [
     path('api/update_enrollment/<int:pk>/', EnrollmentUpdateView.as_view(), name='enrollment_update'),
     path('api/delete_enrollment/<int:pk>/', EnrollmentDeleteView.as_view(), name='enrollment_delete'),
     
-    # API for Enrollment module
+    # API for Payment module
     path('api/payment/', PaymentListCreateView.as_view(), name='payment_list_create'),
     path('api/payment/<int:pk>/', PaymentDetailView.as_view(), name='payment_detail'),
     path('api/update_payment/<int:pk>/', PaymentUpdateView.as_view(), name='payment_update'),
     path('api/delete_payment/<int:pk>/', PaymentDeleteView.as_view(), name='payment_delete'),
+    
+    # API for PaymentInfo module
+    path('api/payment_info/', PaymentInfoListCreateView.as_view(), name='payment_info_list_create'),
+    path('api/payment_info/<int:pk>/', PaymentInfoDetailView.as_view(), name='payment_info_detail'),
+    path('api/update_payment_info/<int:pk>/', PaymentInfoUpdateView.as_view(), name='payment_info_update'),
+    path('api/delete_payment_info/<int:pk>/', PaymentInfoDeleteView.as_view(), name='payment_info_delete'),
+    
+    # API for Installment module
+    path('api/installment/', InstallmentListCreateView.as_view(), name='installment_list_create'),
+    path('api/installment/<int:pk>/', InstallmentDetailView.as_view(), name='installment_detail'),
+    path('api/update_installment/<int:pk>/', InstallmentUpdateView.as_view(), name='installment_update'),
+    path('api/delete_installment/<int:pk>/', InstallmentDeleteView.as_view(), name='installment_delete'),
+    
+    # API for SinglePayment module
+    path('api/single_payment/', SinglePaymentListCreateView.as_view(), name='single_payment_list_create'),
+    path('api/single_payment/<int:pk>/', SinglePaymentDetailView.as_view(), name='single_payment_detail'),
+    path('api/update_single_payment/<int:pk>/', SinglePaymentUpdateView.as_view(), name='single_payment_update'),
+    path('api/delete_single_payment/<int:pk>/', SinglePaymentDeleteView.as_view(), name='single_payment_delete'),
 ]

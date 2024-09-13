@@ -99,22 +99,6 @@
                                         </span>
                                     </div>
                                 </div>
-                                <!-- <div class="col-12 col-md-6 p-md-0">
-                                    <div class="user-input-wrp ms-4 me-2 mt-4">
-                                        <select class="form-select select" id="course_name" name="course_name" onchange="handleCourseNameChange()">
-                                            <option value="" selected>Select Your Course</option>
-                                            {% for course in courses %}
-                                            <option value="{{ course.id }}" {% if course_name == course.id %}selected{% endif %}>{{ course.course_name|title }}</option>
-                                            {% endfor %}
-                                        </select>
-                                        <label for="course_name" class="floating-label float">&nbsp;Course Name <span class="required">*</span> &nbsp;</label>
-                                        <span id="course_name_error" class="error-div error-right">
-                                            {% if errors.course_name %}
-                                                {{errors.course_name}}
-                                            {% endif %}
-                                        </span>
-                                    </div>
-                                </div> -->
 
                                 <!-- Duration -->
                                 <div class="col-12 col-md-6 pe-md-0" id="duration_div">
@@ -134,7 +118,7 @@
                                 <div class="col-12 col-md-6 p-md-0" id="duration_div">
                                     <div class="user-input-wrp ms-4 me-2 mt-4">
                                         <input type="text" name="total_fees" value="{{total_fees}}" id="total_fees" class="form-control"
-                                            aria-label="Duration" placeholder=" " autocomplete="off" autofocus>
+                                            aria-label="total_fees" placeholder=" " autocomplete="off" autofocus>
                                         <label class="floating-label">&nbsp;Total Fees <span class="required">*</span> &nbsp;</label>
                                         <span id="total_fees_error" class="error-div">
                                             {% if errors.duration %}
@@ -163,7 +147,7 @@
                                     <div class="user-input-wrp ms-4 me-2 mt-4">
                                         <select name="fees_type" id="fees_type" class="form-select select" onchange="handleFeesTypeChange()">
                                             <option value="" selected>Select Any One</option>
-                                            <option value="single payment">Single Payment</option>
+                                            <option value="Regular">Single Payment</option>
                                             <option value="installment">Installment</option>
                                         </select>
                                         <label class="floating-label">&nbsp; Fees Type <span class="required">*</span> &nbsp;</label>
@@ -1055,120 +1039,120 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    document.getElementById('payment_form').addEventListener('submit', function(event) {
-        event.preventDefault();
-        let hasError = false;
+    // document.getElementById('payment_form').addEventListener('submit', function(event) {
+    //     event.preventDefault();
+    //     let hasError = false;
 
-        let registration_no = document.getElementById("registration_no").value.trim();
-        let student_name = document.getElementById("student_name").value.trim();
-        let course_name = document.getElementById('course_name').value.trim();
-        let duration = document.getElementById('duration').value.trim();
-        let total_fees = document.getElementById('total_fees').value.trim();
-        let joining_date = document.getElementById("joining_date").value.trim();
-        let fees_type = document.getElementById('fees_type').value.trim();
-        let payment_mode = document.getElementById('payment_mode').value.trim();
-        let installment = document.getElementById('installment').value.trim();
+    //     let registration_no = document.getElementById("registration_no").value.trim();
+    //     let student_name = document.getElementById("student_name").value.trim();
+    //     let course_name = document.getElementById('course_name').value.trim();
+    //     let duration = document.getElementById('duration').value.trim();
+    //     let total_fees = document.getElementById('total_fees').value.trim();
+    //     let joining_date = document.getElementById("joining_date").value.trim();
+    //     let fees_type = document.getElementById('fees_type').value.trim();
+    //     let payment_mode = document.getElementById('payment_mode').value.trim();
+    //     let installment = document.getElementById('installment').value.trim();
         
-        let cash = document.getElementById('cash').value.trim();
+    //     let cash = document.getElementById('cash').value.trim();
         
-        let upi_date = document.getElementById('upi_date').value.trim();
-        let transaction_id = document.getElementById('transaction_id').value.trim();
-        let bank_name = document.getElementById('bank_name').value.trim();
-        let app_name = document.getElementById('app_name').value.trim();
-        let amount = document.getElementById('amount').value.trim();
+    //     let upi_date = document.getElementById('upi_date').value.trim();
+    //     let transaction_id = document.getElementById('transaction_id').value.trim();
+    //     let bank_name = document.getElementById('bank_name').value.trim();
+    //     let app_name = document.getElementById('app_name').value.trim();
+    //     let amount = document.getElementById('amount').value.trim();
         
-        let bank_date = document.getElementById('bank_date').value.trim();
-        let account_no = document.getElementById('account_no').value.trim();
-        let ifsc_code = document.getElementById('ifsc_code').value.trim();
-        let branch_name = document.getElementById('branch_name').value.trim();
-        let account_holder_name = document.getElementById('account_holder_name').value.trim();
-        let bank_amount = document.getElementById('bank_amount').value.trim();
+    //     let bank_date = document.getElementById('bank_date').value.trim();
+    //     let account_no = document.getElementById('account_no').value.trim();
+    //     let ifsc_code = document.getElementById('ifsc_code').value.trim();
+    //     let branch_name = document.getElementById('branch_name').value.trim();
+    //     let account_holder_name = document.getElementById('account_holder_name').value.trim();
+    //     let bank_amount = document.getElementById('bank_amount').value.trim();
 
-        // Additional field validations
-        if (validateFields(registration_no, "registration_no_error")) hasError = true;
-        if (validateFields(student_name, "student_name_error")) hasError = true;
-        if (validateFields(course_name, "course_name_error")) hasError = true;
-        if (validateFields(duration, "duration_error")) hasError = true;
-        if (validateFields(total_fees, "total_fees_error")) hasError = true;
-        if (validateFields(joining_date, "joining_date_error")) hasError = true;
-        if (validateFields(fees_type, "fees_type_error")) hasError = true;
-        if (validateFields(payment_mode, "payment_mode_error")) hasError = true;
+    //     // Additional field validations
+    //     if (validateFields(registration_no, "registration_no_error")) hasError = true;
+    //     if (validateFields(student_name, "student_name_error")) hasError = true;
+    //     if (validateFields(course_name, "course_name_error")) hasError = true;
+    //     if (validateFields(duration, "duration_error")) hasError = true;
+    //     if (validateFields(total_fees, "total_fees_error")) hasError = true;
+    //     if (validateFields(joining_date, "joining_date_error")) hasError = true;
+    //     if (validateFields(fees_type, "fees_type_error")) hasError = true;
+    //     if (validateFields(payment_mode, "payment_mode_error")) hasError = true;
         
-        if (fees_type === 'installment') {
-            if (validateFields(installment, "installment_error")) hasError = true;
-        }
+    //     if (fees_type === 'installment') {
+    //         if (validateFields(installment, "installment_error")) hasError = true;
+    //     }
 
-        // if(payment_mode === "cash") {
-        //     console.log("cash")
-        //     if (validateFields(cash, "cash_error")) hasError = true;
+    //     // if(payment_mode === "cash") {
+    //     //     console.log("cash")
+    //     //     if (validateFields(cash, "cash_error")) hasError = true;
 
-        //     // Validate each cash EMI field
-        //     for (let i = 1; i <= 6; i++) {
-        //         let cash_EMI = document.getElementById(`cash_EMI_${i}`).value.trim();
-        //         if (validateFields(cash_EMI, `cash_EMI_${i}_error`)) hasError = true;
-        //     }
-        // }
+    //     //     // Validate each cash EMI field
+    //     //     for (let i = 1; i <= 6; i++) {
+    //     //         let cash_EMI = document.getElementById(`cash_EMI_${i}`).value.trim();
+    //     //         if (validateFields(cash_EMI, `cash_EMI_${i}_error`)) hasError = true;
+    //     //     }
+    //     // }
         
-        // for (let i = 1; i <= 6; i++) {
-        //     let installment = `EMI-${i}`; // Replace this with your actual logic for getting the installment
+    //     // for (let i = 1; i <= 6; i++) {
+    //     //     let installment = `EMI-${i}`; // Replace this with your actual logic for getting the installment
 
-        //     if (installment === `EMI-${i}`) {
-        //         console.log("EMI");
+    //     //     if (installment === `EMI-${i}`) {
+    //     //         console.log("EMI");
                 
-        //         // Get the value of the input field
-        //         let inputValue = document.getElementById(`date_EMI_${i}`).value.trim();
+    //     //         // Get the value of the input field
+    //     //         let inputValue = document.getElementById(`date_EMI_${i}`).value.trim();
                 
-        //         // Validate the field and handle errors
-        //         if (validateFields(inputValue, `date_EMI_${i}_error`)) {
-        //             hasError = true;
-        //         }
-        //     }
-        // }
+    //     //         // Validate the field and handle errors
+    //     //         if (validateFields(inputValue, `date_EMI_${i}_error`)) {
+    //     //             hasError = true;
+    //     //         }
+    //     //     }
+    //     // }
 
-        if(payment_mode === 'upi') {
-            console.log("upi")
-            if (fees_type === 'single payment'){
-                if (validateFields(upi_date, "upi_date_error")) hasError = true;
-                if (validateFields(transaction_id, "transaction_id_error")) hasError = true;
-                if (validateFields(amount, "amount_error")) hasError = true;
-                if (validateFields(bank_name, "bank_name_error")) hasError = true;
-                if (validateFields(app_name, "app_name_error")) hasError = true;
-            }
-            if (fees_type === 'installment'){
-                // Validate each upi cash EMI field
-                if (validateFields(transaction_id, "transaction_id_error")) hasError = true;
-                if (validateFields(bank_name, "bank_name_error")) hasError = true;
-                if (validateFields(app_name, "app_name_error")) hasError = true;
-                // for (let i = 1; i <= 6; i++) {
-                //     let upi_cash_EMI = document.getElementById(`upi_cash_EMI_${i}`).value.trim();
-                //     if (validateFields(upi_cash_EMI, `upi_cash_EMI_${i}_error`)) hasError = true;
-                // }
-            }
+    //     if(payment_mode === 'upi') {
+    //         console.log("upi")
+    //         if (fees_type === 'single payment'){
+    //             if (validateFields(upi_date, "upi_date_error")) hasError = true;
+    //             if (validateFields(transaction_id, "transaction_id_error")) hasError = true;
+    //             if (validateFields(amount, "amount_error")) hasError = true;
+    //             if (validateFields(bank_name, "bank_name_error")) hasError = true;
+    //             if (validateFields(app_name, "app_name_error")) hasError = true;
+    //         }
+    //         if (fees_type === 'installment'){
+    //             // Validate each upi cash EMI field
+    //             if (validateFields(transaction_id, "transaction_id_error")) hasError = true;
+    //             if (validateFields(bank_name, "bank_name_error")) hasError = true;
+    //             if (validateFields(app_name, "app_name_error")) hasError = true;
+    //             // for (let i = 1; i <= 6; i++) {
+    //             //     let upi_cash_EMI = document.getElementById(`upi_cash_EMI_${i}`).value.trim();
+    //             //     if (validateFields(upi_cash_EMI, `upi_cash_EMI_${i}_error`)) hasError = true;
+    //             // }
+    //         }
             
-        }
+    //     }
         
-        if(payment_mode === 'bank transfer') {
-            console.log("bank transfer")
-            if (validateFields(bank_date, "bank_date_error")) hasError = true;
-            if (validateFields(account_no, "account_no_error")) hasError = true;
-            if (validateFields(ifsc_code, "ifsc_code_error")) hasError = true;
-            if (validateFields(branch_name, "branch_name_error")) hasError = true;
-            if (validateFields(account_holder_name, "account_holder_name_error")) hasError = true;
-            if (validateFields(bank_amount, "bank_amount_error")) hasError = true;
+    //     if(payment_mode === 'bank transfer') {
+    //         console.log("bank transfer")
+    //         if (validateFields(bank_date, "bank_date_error")) hasError = true;
+    //         if (validateFields(account_no, "account_no_error")) hasError = true;
+    //         if (validateFields(ifsc_code, "ifsc_code_error")) hasError = true;
+    //         if (validateFields(branch_name, "branch_name_error")) hasError = true;
+    //         if (validateFields(account_holder_name, "account_holder_name_error")) hasError = true;
+    //         if (validateFields(bank_amount, "bank_amount_error")) hasError = true;
 
-            // Validate each upi cash EMI field
-            // for (let i = 1; i <= 6; i++) {
-            //     let upi_cash_EMI = document.getElementById(`upi_cash_EMI_${i}`).value.trim();
-            //     if (validateFields(upi_cash_EMI, `upi_cash_EMI_${i}_error`)) hasError = true;
-            // }
-        }
+    //         // Validate each upi cash EMI field
+    //         // for (let i = 1; i <= 6; i++) {
+    //         //     let upi_cash_EMI = document.getElementById(`upi_cash_EMI_${i}`).value.trim();
+    //         //     if (validateFields(upi_cash_EMI, `upi_cash_EMI_${i}_error`)) hasError = true;
+    //         // }
+    //     }
 
-        console.log("Has Error:", hasError);
+    //     console.log("Has Error:", hasError);
 
-        if (!hasError) {
-            document.getElementById("payment_form").submit();
-        }
-    });
+    //     if (!hasError) {
+    //         document.getElementById("payment_form").submit();
+    //     }
+    // });
 
     function validateFields(inputValue, errorElementId) {
         const errorElement = document.getElementById(errorElementId);

@@ -62,3 +62,22 @@ class PaymentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Payment
         fields = '__all__'
+
+class InstallmentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Installment
+        fields = '__all__'
+
+class SinglePaymentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SinglePayment
+        fields = '__all__'
+        
+class PaymentInfoSerializer(serializers.ModelSerializer):
+    single_payment = SinglePaymentSerializer(read_only=True)
+    installments = InstallmentSerializer(many=True, read_only=True)
+    
+    class Meta:
+        model = PaymentInfo
+        fields = '__all__'
+

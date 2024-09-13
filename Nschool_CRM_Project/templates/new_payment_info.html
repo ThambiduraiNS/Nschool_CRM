@@ -1,0 +1,393 @@
+{% extends 'base.html' %}
+
+{% load static %}
+{% load bootstrap_icons %}
+
+
+{% block title %}Payment Module{% endblock %}
+
+{% block css %}
+<link rel="stylesheet" href="{% static '/css/new_user.css' %}">
+<link rel="stylesheet" href="{% static '/css/header.css' %}">
+<link rel="stylesheet" href="{% static '/css/new_enquiry.css' %}">
+<link rel="stylesheet" href="{% static '/css/new_enrollment.css' %}">
+{% endblock %}
+
+{% block header %}
+{% include 'header.html' %}
+{% endblock %}
+
+{% block content %}
+<!-- <div class="container-fluid"> -->
+<div class="row m-0 p-0">
+    {% include 'side_navbar.html' %}
+
+    <div class="col-12 col-lg-10 background-div">
+
+        <div class="row m-0 p-0">
+            <div class="col border bg-white rounded mt-4 ms-xll-4 mb-2 px-xll-4">
+                <nav style="--bs-breadcrumb-divider: '|';" aria-label="breadcrumb">
+                    <ol class="breadcrumb pt-3 mb-3 ps-lg-3">
+                        <li class="breadcrumb-item"><a class="user-a" href="#">Payment</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">New Payment</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+
+        <div class="row m-0 p-0">
+            <div class="col border bg-white rounded mt-2 ms-xll-4 mb-2 px-xll-4">
+                <form id="payment_form" class="pe-lg-2" action="" method="post">
+                    <!-- Student details -->
+                    <div class="tab-content" id="myTabContent">
+                        <div class="row m-0 p-0">
+                            {% csrf_token %}
+
+                            <div class="col-12 mt-4 ms-md-2 position-relative">
+                                <h5 class="fw-bold st-details">Payment</h5>
+                                <p class="user-para">Use the below form to update your profile</p>
+                                <span class="message" id="message">
+                                    {% for message in messages %}
+                                    <div>
+                                        {{ message }}
+                                    </div>
+                                {% endfor %}
+                                </span>
+                            </div>
+
+                            <!-- date field -->
+                            <div class="row d-flex justify-content-between pe-0">
+
+                                <!-- Registration Number Field -->
+                                <div class="col-12 col-md-6 p-md-0">
+                                    <div class="user-input-wrp ms-4 me-2 mt-4">
+                                        <input type="text" name="registration_no" id="registration_no" value="{{registration_no}}" class="form-control"
+                                            aria-label="registration_no" placeholder=" " autocomplete="off" autofocus>
+                                        <label class="floating-label">&nbsp;Registration No <span class="required">*</span> &nbsp;</label>
+                                        <span id="registration_no_error" class="error-div">
+                                            {% if errors.registration_no %}
+                                                {{errors.registration_no}}
+                                            {% endif %}
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <!-- Joining Date Field -->
+                                <div class="col-12 col-md-6 pe-md-0">
+                                    <div class="user-input-wrp ms-4 mt-md-4">
+                                        <input type="date" name="joining_date" id="joining_date" value="{{registration_date}}" class="form-control"
+                                            aria-label="joining_date" placeholder=" " autocomplete="off" autofocus>
+                                        <label class="floating-label">&nbsp;Joining Date <span class="required">*</span> &nbsp;</label>
+                                        <span id="joining_date_error" class="error-div">
+                                            {% if errors.joining_date %}
+                                                {{errors.joining_date}}
+                                            {% endif %}
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <!-- student name field -->
+                                <div class="col-12 col-md-6 p-md-0">
+                                    <div class="user-input-wrp ms-4 me-2 mt-4">
+                                        <input type="text" name="student_name" id="student_name" value="{{name}}" class="form-control"
+                                            aria-label="student_name" placeholder=" " autocomplete="off" autofocus>
+                                        <label class="floating-label">&nbsp;Student Name <span class="required">*</span> &nbsp;</label>
+                                        <span id="student_name_error" class="error-div">
+                                            {% if errors.student_name %}
+                                                {{errors.student_name}}
+                                            {% endif %}
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <!-- Course Name field -->
+                                <div class="col-12 col-md-6 pe-md-0">
+                                    <div class="user-input-wrp ms-4 mt-md-4">
+                                        <input type="text" name="course_name" id="course_name" value="{{course_name}}" class="form-control"
+                                            aria-label="course_name" placeholder=" " autocomplete="off" autofocus>
+                                        <label for="course_name" class="floating-label float">&nbsp;Course Name <span class="required">*</span> &nbsp;</label>
+                                        <span id="course_name_error" class="error-div error-right">
+                                            <!-- {% if errors.course_name %}
+                                                {{errors.course_name}}
+                                            {% endif %} -->
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <!-- Duration -->
+                                <div class="col-12 col-md-6 p-md-0" id="duration_div">
+                                    <div class="user-input-wrp ms-4 me-2 mt-4">
+                                        <input type="text" name="duration" value="{{duration}}" id="duration" class="form-control"
+                                            aria-label="Duration" placeholder=" " autocomplete="off" autofocus>
+                                        <label class="floating-label">&nbsp;Duration <span class="required">*</span> &nbsp;</label>
+                                        <span id="duration_error" class="error-div">
+                                            {% if errors.duration %}
+                                                    {{errors.duration}}
+                                            {% endif %}
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <!-- Fees Type Field -->
+                                <div class="col-12 col-md-6 pe-md-0">
+                                    <div class="user-input-wrp ms-4 mt-md-4">
+                                        <select name="fees_type" id="fees_type" class="form-select select">
+                                            <option value="" selected>Select Any One</option>
+                                            <option value="Regular">Single Payment</option>
+                                            <option value="Installment">Installment</option>
+                                        </select>
+                                        <label class="floating-label">&nbsp; Fees Type <span class="required">*</span> &nbsp;</label>
+                                        <span id="fees_type_error" class="error-div">
+                                            {% if errors.fees_type %}
+                                                    {{errors.fees_type}}
+                                            {% endif %}
+                                        </span>
+                                    </div>
+                                </div>
+                                
+                                <!-- total fees -->
+                                <div class="col-12 col-md-6 p-md-0" id="duration_div">
+                                    <div class="user-input-wrp ms-4 me-2 mt-4">
+                                        <input type="text" name="total_fees" value="{{total_fees}}" id="total_fees" class="form-control"
+                                            aria-label="total_fees" placeholder=" " autocomplete="off" autofocus>
+                                        <label class="floating-label">&nbsp;Total Fees <span class="required">*</span> &nbsp;</label>
+                                        <span id="total_fees_error" class="error-div">
+                                            {% if errors.duration %}
+                                                    {{errors.duration}}
+                                            {% endif %}
+                                        </span>
+                                    </div>
+                                </div>
+
+                            </div>
+                            <div class="row">
+                                <div class="row d-flex justify-content-between">
+                                    <div class="col-6 d-flex justify-content-md-end p-0 pe-4 pe-lg-4">
+                                    </div>
+                                    <div class="col-6 d-flex justify-content-lg-end ps-lg-4 p-0 ps-4 gap-5">
+                                        <input type="reset" value="Cancel" class="btn login-btn">
+                                        <input type="submit" value="submit" class="btn login-btn">
+                                    </div>
+                                </div>
+                            </div>
+                        
+                            <span>
+                                {% if error_messages %}
+                                <div class="errors-common">
+                                    <ul class="ul-errors">
+                                        {% for field, message in error_messages.items %}
+                                            {% if message %}
+                                                <li>{{ message }}</li>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                                {% endif %}
+                            </span>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- </div> -->
+
+{% endblock %}
+
+
+{% block scripts %}
+<script>
+
+document.addEventListener('DOMContentLoaded', function() {
+    const registrationNoField = document.getElementById('registration_no');
+    
+    registrationNoField.addEventListener('change', function() {
+        const registration_no = this.value;
+        if (registration_no) {
+            fetch(`/get-enrollment-details/?registration_no=${encodeURIComponent(registration_no)}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.error) {
+                        alert(data.error);
+                        clearFields();
+                    } else {
+                        populateFields(data);
+                    }
+                })
+                .catch(error => {
+                    // alert('Error fetching enquiry details.');
+                    console.error('There was a problem with the fetch operation:', error);
+                    window.location.reload()
+                });
+        }
+    });
+    
+    function populateFields(data) {
+        document.getElementById('student_name').value = data.student_name || '';
+        document.getElementById('course_name').value = data.course_name || '';
+        document.getElementById('duration').value = data.duration || '';
+        document.getElementById('joining_date').value = data.joining_date || '';
+        document.getElementById('total_fees').value = data.total_fees || '';
+        document.getElementById('fees_type').value = data.fees_type || '';
+    }
+    
+    function clearFields() {
+        document.getElementById('student_name').value = '';
+        document.getElementById('course_name').value = '';
+        document.getElementById('duration').value = '';
+        document.getElementById('joining_date').value = '';
+        document.getElementById('total_fees').value = '';
+        document.getElementById('fees_type').value = '';
+    }
+});
+
+    // dropdown functionality
+    function toggleDropdown(element) {
+        // Close all dropdowns
+        const allDropdowns = document.querySelectorAll('.dropdown-menu');
+        allDropdowns.forEach(dropdown => {
+            if (dropdown !== element.nextElementSibling) {
+                dropdown.classList.remove('show');
+            }
+        });
+
+        // Close all arrows
+        const allArrows = document.querySelectorAll('.right_arrow');
+        allArrows.forEach(arrow => {
+            if (arrow !== element.querySelector('.right_arrow')) {
+                arrow.classList.remove('arrow_user');
+            }
+        });
+
+        // Toggle the clicked dropdown and arrow
+        const dropdownMenu = element.nextElementSibling;
+        dropdownMenu.classList.toggle('show');
+        const rightArrow = element.querySelector('.right_arrow');
+        rightArrow.classList.toggle('arrow_user');
+    }
+
+    document.getElementById('toggle-sidenav').addEventListener('click', function () {
+        const sidenav = document.getElementById('sidenav');
+        sidenav.classList.toggle('collapsed');
+    });
+    
+
+    function showMessage() {
+        const alertBox = document.getElementById('message');
+        alertBox.style.display = 'block';
+
+        setTimeout(() => {
+            alertBox.style.display = 'none';
+        }, 5000);
+    }
+
+    document.addEventListener('DOMContentLoaded', () => showMessage());
+
+    function handleFeesTypeChange() {
+
+        // Check if the "Yes" radio button is selected
+        let fees_type = document.getElementById('fees_type');
+        let fees_type_value = fees_type.value;
+        let installment_div = document.getElementById('installment_div');
+
+        console.log("Fees Type : ", fees_type_value);
+
+        clearErrors(); // Clear previous error messages
+
+        // Show or hide fields based on the selection
+        let displayStyle = fees_type_value === "installment" ? 'block' : 'none';
+
+        installment_div.style.display = displayStyle;
+    }
+    
+    
+
+    document.getElementById("payment_form").addEventListener("submit", function(event) {
+        // Prevent form submission initially
+        event.preventDefault();
+
+        // Clear any existing error messages
+        clearErrors();
+
+        // Get form field values
+        let registrationNo = document.getElementById("registration_no").value.trim();
+        let studentName = document.getElementById("student_name").value.trim();
+        let courseName = document.getElementById("course_name").value.trim();
+        let duration = document.getElementById("duration").value.trim();
+        let totalFees = document.getElementById("total_fees").value.trim();
+        let joiningDate = document.getElementById("joining_date").value.trim();
+        let feesType = document.getElementById("fees_type").value;
+
+        let isValid = true;
+
+        // Validate Registration Number
+        if (!registrationNo) {
+            showError("registration_no_error", "Registration No is required");
+            isValid = false;
+        }
+
+        // Validate Student Name
+        if (!studentName) {
+            showError("student_name_error", "Student Name is required");
+            isValid = false;
+        }
+
+        // Validate Course Name
+        if (!courseName) {
+            showError("course_name_error", "Course Name is required");
+            isValid = false;
+        }
+
+        // Validate Duration
+        if (!duration) {
+            showError("duration_error", "Duration is required");
+            isValid = false;
+        }
+
+        // Validate Total Fees
+        if (!totalFees) {
+            showError("total_fees_error", "Total Fees is required");
+            isValid = false;
+        }
+
+        // Validate Joining Date
+        if (!joiningDate) {
+            showError("joining_date_error", "Joining Date is required");
+            isValid = false;
+        }
+
+        // Validate Fees Type
+        if (!feesType) {
+            showError("fees_type_error", "Fees Type is required");
+            isValid = false;
+        }
+
+        // If all validations pass, submit the form
+        if (isValid) {
+            document.getElementById("payment_form").submit();
+        }
+    });
+
+    // Function to show error messages
+    function showError(elementId, message) {
+        let errorElement = document.getElementById(elementId);
+        errorElement.innerText = message;
+        errorElement.classList.add("visible");
+    }
+
+    // Function to clear all error messages
+    function clearErrors() {
+        let errorElements = document.getElementsByClassName("error-div");
+        for (let i = 0; i < errorElements.length; i++) {
+            errorElements[i].innerText = "";
+            errorElements[i].classList.remove("visible");
+        }
+    }
+</script>
+{% endblock %}

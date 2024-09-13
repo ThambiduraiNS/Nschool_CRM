@@ -28,15 +28,26 @@ def custom_timesince(value):
 @register.filter
 def typeof(value):
     return type(value).__name__
-
-@register.filter
-def sub(value, arg):
-    """Subtract the arg from the value, handling possible type conversions."""
-    try:
-        return int(float(value)) - int(float(arg))
-    except (ValueError, TypeError):
-        return 0  # Or handle in a way that suits your application
     
 @register.filter
 def range_filter(value):
     return range(1, value + 1)
+
+@register.filter
+def get_item(queryset, index):
+    try:
+        return queryset[int(index) - 1]  # Adjust index based on zero-based indexing
+    except (IndexError, ValueError):
+        return None
+    
+@register.filter
+def to(value, end):
+    return range(value, end+1)
+
+@register.filter
+def sub(value, arg):
+    try:
+        return value - arg
+    except (TypeError, ValueError):
+        return value
+

@@ -707,7 +707,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const courseName = data.course_name.trim().toLowerCase();
             
             if (optionText === courseName) {
-                courseDropdown.selectedIndex = courseDropdown.options[i.value];
+                courseDropdown.selectedIndex = i;
                 console.log("ID : ", courseDropdown.selectedIndex)
                 courseFound = true;
                 break;

@@ -286,3 +286,105 @@ class Payment(models.Model):
 
     def __str__(self):
         return f"{self.student_name} - {self.course_name}"
+    
+    
+
+class PaymentInfo(models.Model):
+    # Fees type choices
+    REGULAR = 'Regular'
+    INSTALLMENT = 'Installment'
+    
+    FEES_TYPE_CHOICES = [
+        (REGULAR, 'Single Payment'),
+        (INSTALLMENT, 'Installment'),
+    ]
+
+    registration_no = models.CharField(max_length=20, unique=True)
+    joining_date = models.DateField()
+    student_name = models.CharField(max_length=255)
+    course_name = models.CharField(max_length=255)
+    duration = models.CharField(max_length=50)
+    total_fees = models.DecimalField(max_digits=10, decimal_places=2)
+    fees_type = models.CharField(max_length=20, choices=FEES_TYPE_CHOICES)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    modified_at = models.DateTimeField(auto_now=True)
+    created_by = models.IntegerField(null=True, blank=True)
+    modified_by = models.IntegerField(null=True)
+    is_active = models.BooleanField(default=True)
+    is_deleted = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"{self.student_name}"
+
+# Add Payment Mode Choices
+class SinglePayment(models.Model):
+    CASH = 'Cash'
+    UPI = 'UPI'
+    BANK_TRANSFER = 'Bank Transfer'
+
+    PAYMENT_MODE_CHOICES = [
+        (CASH, 'Cash'),
+        (UPI, 'UPI'),
+        (BANK_TRANSFER, 'Bank Transfer'),
+    ]
+
+    payment_info = models.OneToOneField(PaymentInfo, on_delete=models.CASCADE, related_name='single_payment')
+    date = models.DateField()
+    payment_mode = models.CharField(max_length=50, choices=PAYMENT_MODE_CHOICES)
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+
+    # UPI specific fields
+    upi_transaction_id = models.CharField(max_length=100, blank=True, null=True)
+    upi_bank_name = models.CharField(max_length=100, blank=True, null=True)
+    upi_app_name = models.CharField(max_length=100, blank=True, null=True)
+
+    # Bank Transfer specific fields
+    bank_account_no = models.CharField(max_length=100, blank=True, null=True)
+    bank_ifsc_code = models.CharField(max_length=50, blank=True, null=True)
+    bank_branch_name = models.CharField(max_length=100, blank=True, null=True)
+    bank_account_holder_name = models.CharField(max_length=100, blank=True, null=True)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    modified_at = models.DateTimeField(auto_now=True)
+    created_by = models.IntegerField(null=True, blank=True)
+    modified_by = models.IntegerField(null=True)
+    is_active = models.BooleanField(default=True)
+    is_deleted = models.BooleanField(default=False)
+    
+
+class Installment(models.Model):
+    CASH = 'Cash'
+    UPI = 'UPI'
+    BANK_TRANSFER = 'Bank Transfer'
+
+    PAYMENT_MODE_CHOICES = [
+        (CASH, 'Cash'),
+        (UPI, 'UPI'),
+        (BANK_TRANSFER, 'Bank Transfer'),
+    ]
+
+    payment_info = models.ForeignKey(PaymentInfo, on_delete=models.CASCADE, related_name='installments')
+    date = models.DateField()
+    payment_mode = models.CharField(max_length=50, choices=PAYMENT_MODE_CHOICES)
+    emi = models.CharField(max_length=50)
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    
+    # UPI specific fields
+    upi_transaction_id = models.CharField(max_length=100, blank=True, null=True)
+    upi_bank_name = models.CharField(max_length=100, blank=True, null=True)
+    upi_app_name = models.CharField(max_length=100, blank=True, null=True)
+
+    # Bank Transfer specific fields
+    bank_account_no = models.CharField(max_length=100, blank=True, null=True)
+    bank_ifsc_code = models.CharField(max_length=50, blank=True, null=True)
+    bank_branch_name = models.CharField(max_length=100, blank=True, null=True)
+    bank_account_holder_name = models.CharField(max_length=100, blank=True, null=True)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    modified_at = models.DateTimeField(auto_now=True)
+    created_by = models.IntegerField(null=True, blank=True)
+    modified_by = models.IntegerField(null=True)
+    is_active = models.BooleanField(default=True)
+    is_deleted = models.BooleanField(default=False)
+    

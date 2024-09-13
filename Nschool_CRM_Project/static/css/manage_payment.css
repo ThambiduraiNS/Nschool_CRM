@@ -1,0 +1,14 @@
+.balance-td {
+    color: red;
+    font-size: 14px;
+    text-align: right;
+}
+
+.error-msg {
+    color: red;
+}
+
+.total_pending_amount {
+    color: red;
+    font-size: 14px;
+}
