@@ -6,8 +6,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>user List</title>
     <style>
-        /* body {
+        body {
             font-family: Arial, sans-serif;
+            background: #fff;
+            color: #111;
+            margin: 10px;
         }
         table {
             width: 100%;
@@ -15,235 +18,53 @@
             margin: 20px 0;
         }
         th, td {
-            padding: 10px 20px 0px 5px; 
+            padding: 5px;
             border: 1px solid #ddd;
             text-align: left;
-            vertical-align: top;
-            overflow-x: scroll;
         }
-
         th {
-            background-color: #f4f4f4;
-            font-weight: bold;
-        }
-        thead th {
-            position: sticky;
-            top: 0;
-            z-index: 1;
-        }
-        tr:nth-child(even) {
-            background-color: #f9f9f9; 
-        }
-        tr:hover {
-            background-color: #f1f1f1;
-        }
-
-        .status{
-            min-width: 350PX;
-            height: 72px;
-        } */
-
-        /* ::-webkit-scrollbar{width:2px;height:2px;}
-        ::-webkit-scrollbar-button{width:2px;height:2px;}
-
-        div{
-        box-sizing:border-box;
-        }
-
-        body {
-        background: #111;
-        }
-
-        .horizontal-scroll-wrapper{
-        position:absolute;
-        display:block;
-        top:0;
-        left:0;
-        width:80px;
-        max-height:500px;
-        margin:0;
-        background:#abc;
-        overflow-y:auto;
-        overflow-x:hidden;
-        transform:rotate(-90deg) translateY(-80px);
-        transform-origin:right top;
-        }
-        .horizontal-scroll-wrapper > div{
-        display:block;
-        padding:5px;
-        background:#cab;
-        transform:rotate(90deg);
-        transform-origin: right top;
-        }
-
-        .squares{
-        padding:60px 0 0 0;
-        }
-
-        .squares > div{
-        width:60px;
-        height:60px;
-        margin:10px;
-        }
-
-        .rectangles{
-        top:100px;
-        padding:100px 0 0 0;
-        }
-        .rectangles > div{
-        width:140px;
-        height:60px;
-        margin:50px 10px;
-        padding:5px;
-        background:#cab;
-        transform:rotate(90deg) translateY(80px);
-        transform-origin: right top;
-        } */
-
-
-        .status {
-            width: 150px;
-            height: 100px;
-        }
-
-        .table-responsive {
-            overflow-x: auto;
-        }
-
-        .tabel-div {
-            border: 1px solid black;
-        }
-
-        .search-input {
-            margin-top: 20px;
-            border-radius: 20px;
-            width: 516px;
-            height: 40px;
-            background-color: #fff5fa !important;
-            border: 1px solid #c72571;
-        }
-
-        .search-input::placeholder {
-            font-size: 14px;
-        }
-
-        .submit-btn {
-            position: absolute;
-            width: 18%;
-            font-size: 16px;
-            border: 1px solid #842029 !important;
-            border-radius: 50px !important;
-            background-color: #b31d5d;
+            background-color: #333;
             color: #fff;
-            padding: 6px;
-            top: 21px;
-            right: 0px;
         }
-
-        .start_date {
-            position: absolute;
-            top: 27px;
-            left: 165px;
-            background: transparent;
-            border: none;
-            width: 116px;
-            color: #999;
-            padding: 0px 0px 0px 6px;
-            border-left: 2px solid #888;
+        tbody tr:nth-child(even) {
+            background-color: #2a2a2a;
         }
-
-        .end_date {
-            position: absolute;
-            top: 27px;
-            right: 106px;
-            background: transparent;
-            border: none;
-            width: 116px;
-            color: #999;
-            padding: 0px 0px 0px 6px;
-            border-left: 2px solid #888;
+        tbody tr:hover {
+            background-color: #444;
         }
-
-        .start_date:focus-visible, .end_date:focus-visible {
-            outline: none;
-        }
-
-        .tdata.status .status-display {
-            /* max-width: 350px; */
-            white-space: normal;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            cursor: pointer;
-            width: 300px;
-            height: 76px;
-        }
-
-        .status-div {
-            width: 100%;
-        }
-
-        .tabel_body_div {
-            width: 80rem;
-            overflow: scroll;
-        }
-
         .table-container {
-            overflow-x: scroll;
-            scrollbar-width: thin;
+            overflow-x: auto;
+            max-width: 100%;
         }
-
-        .table-container table {
-            width: 100%;
-            min-width: 600px;
-            border-collapse: collapse;
-        }
-
-        .table-container th, .table-container td {
-            white-space: nowrap;
-        }
-
         .thead {
             text-align: left;
-        }
-
-        .name {
-            width: 100px;
-        }
-
-        .tdata {
-            padding: 5px 10px 5px 5px;
-        }
-
-        .thead {
-            padding: 5px;
         }
     </style>
 </head>
 <body>
-    <h1>Enrollment List</h1>
-    <div  class="table-container">
-        <table class="tabel-div">
-            <thead class="tabel_body_div">
-                <tr class="trow">
-                    <th class="thead">Registratio No</th>
+    <h1>Payment List</h1>
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th class="thead">Registration No</th>
                     <th class="thead">Joining Date</th>
-                    <th class="thead name">Student Name</th>
+                    <th class="thead">Student Name</th>
                     <th class="thead">Course Name</th>
                     <th class="thead">Course Duration</th>
                     <th class="thead">Total Fees</th>
                     <th class="thead">Balance</th>
                 </tr>
             </thead>
-            <tbody class="tabel_body_div">
+            <tbody>
                 {% for payment in payment_list %}
-                    <tr class="trow">
-                        <td class="tdata">{{ payment.registration_no }}</td>
-                        <td class="tdata">{{ payment.joining_date|date:"Y-m-d" }}</td>
-                        <td class="tdata">{{ payment.student_name }}</td>
-                        <td class="tdata">{{ payment.course_name }}</td>
-                        <td class="tdata">{{ payment.duration }}</td>
-                        <td class="tdata">{{ payment.total_fees }}</td>
-                        <td class="tdata">{{ payment.balance }}</td>
+                    <tr>
+                        <td>{{ payment.registration_no }}</td>
+                        <td>{{ payment.joining_date|date:"Y-m-d" }}</td>
+                        <td>{{ payment.student_name }}</td>
+                        <td>{{ payment.course_name }}</td>
+                        <td>{{ payment.duration }}</td>
+                        <td>{{ payment.total_fees }}</td>
                     </tr>
                 {% endfor %}
             </tbody>

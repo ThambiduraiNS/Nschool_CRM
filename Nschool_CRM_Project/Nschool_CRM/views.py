@@ -47,7 +47,7 @@ from io import BytesIO
 import re
 from . import renderers
 
-from .utils import encrypt_password, decrypt_password
+from .utils import encrypt_password, decrypt_password, calculate_payment_totals
 from django.views.generic import TemplateView, ListView
 from django.db.models import Q
 
@@ -3413,7 +3413,7 @@ def delete_all_payment_view(request):
             print("User ID : ", user_ids)
             
             if user_ids:
-                Payment.objects.filter(id__in=user_ids).delete()
+                PaymentInfo.objects.filter(id__in=user_ids).delete()
                 messages.success(request, 'Successfully Deleted')
                 return JsonResponse({'success': True})
             else:
@@ -3430,29 +3430,51 @@ def export_payment_csv(request):
 
         # Create the HttpResponse object with the appropriate CSV header
         response = HttpResponse(content_type='text/csv')
-        response['Content-Disposition'] = 'attachment; filename="enrollment_list_csv.csv"'
+        response['Content-Disposition'] = 'attachment; filename="payment_list_csv.csv"'
 
         writer = csv.writer(response)
 
         # Write the header row with capitalized first letters
-        
         writer.writerow([
-            'Registratio No', 'Joining Date', 'Student Name', 'Course Name', 'Course Duration', 
-            'Total Fees', 'Balance Amount',
+            'Registration No', 'Joining Date', 'Student Name', 'Course Name', 'Course Duration', 
+            'Fees Type', 'Total Fees', 'Single Payment Date', 'Single Payment Mode', 'Single Payment Amount',
+            'Installment 1', 'Installment 1 Date', 'Installment 2', 'Installment 2 Date', 
+            'Installment 3', 'Installment 3 Date', 'Installment 4', 'Installment 4 Date',
+            'Installment 5', 'Installment 5 Date', 'Installment 6', 'Installment 6 Date', 
+            'Balance Amount'
         ])
 
-        # Fetch selected enquiries based on IDs
-        selected_payment = Payment.objects.filter(id__in=ids)
+        # Fetch selected payments based on IDs
+        selected_payments = PaymentInfo.objects.filter(id__in=ids)
 
-        for payment in selected_payment:
+        for payment in selected_payments:
+            # Fetch single payment if exists
+            single_payment = SinglePayment.objects.filter(payment_info=payment).first()
+
+            # Fetch installments if they exist
+            installments = Installment.objects.filter(payment_info=payment)
+
+            # Prepare installment data
+            emi_data = [''] * 12  # 6 EMIs and their corresponding dates
+
+            for i, installment in enumerate(installments[:6]):  # Limit to 6 installments
+                emi_data[i * 2] = installment.amount
+                emi_data[i * 2 + 1] = installment.date
+
+            # Write data row
             writer.writerow([
                 payment.registration_no,
                 payment.joining_date,
                 payment.student_name,
                 payment.course_name,
                 payment.duration,
+                payment.get_fees_type_display(),  # Get readable label of fees type
                 payment.total_fees,
-                payment.balance,
+                single_payment.date if single_payment else '',
+                single_payment.get_payment_mode_display() if single_payment else '',
+                single_payment.amount if single_payment else '',
+                *emi_data,  # Add EMI and date for up to 6 installments
+                ''  # Balance Amount (modify if required)
             ])
 
         return response
@@ -3466,10 +3488,10 @@ def export_payment_excel(request):
     if request.method == 'POST':
         ids = request.POST.get('ids', '').split(',')  # Get the ids from AJAX request
 
-        # Fetch selected courses based on IDs
-        selected_payment = Payment.objects.filter(id__in=ids)
+        # Fetch selected payments based on IDs
+        selected_payments = PaymentInfo.objects.filter(id__in=ids)
         
-        if not selected_payment:
+        if not selected_payments:
             return JsonResponse({'error': 'No Payment available.'}, status=404)
 
         # Create an Excel workbook
@@ -3477,24 +3499,46 @@ def export_payment_excel(request):
         ws = wb.active
 
         # Define header row with font style and alignment
-        # Define header row with capitalized first letters
         headers = [
-            'Registratio No', 'Joining Date', 'Student Name', 'Course Name', 'Course Duration', 
-            'Total Fees', 'Balance Amount',
+            'Registration No', 'Joining Date', 'Student Name', 'Course Name', 'Course Duration', 
+            'Fees Type', 'Total Fees', 'Single Payment Date', 'Single Payment Mode', 'Single Payment Amount',
+            'EMI 1', 'EMI 1 Date', 'EMI 2', 'EMI 2 Date', 
+            'EMI 3', 'EMI 3 Date', 'EMI 4', 'EMI 4 Date',
+            'EMI 5', 'EMI 5 Date', 'EMI 6', 'EMI 6 Date', 
+            'Balance Amount'
         ]
         
         # Append the header row to the sheet
         ws.append(headers)
 
-        for payment in selected_payment:
+        for payment in selected_payments:
+            # Fetch single payment if exists
+            single_payment = SinglePayment.objects.filter(payment_info=payment).first()
+
+            # Fetch installments if they exist
+            installments = Installment.objects.filter(payment_info=payment)
+
+            # Prepare installment data
+            emi_data = [''] * 12  # 6 EMIs and their corresponding dates
+
+            for i, installment in enumerate(installments[:6]):  # Limit to 6 installments
+                emi_data[i * 2] = installment.amount
+                emi_data[i * 2 + 1] = installment.date
+
+            # Write data row
             ws.append([
                 payment.registration_no,
                 payment.joining_date,
                 payment.student_name,
                 payment.course_name,
                 payment.duration,
+                payment.get_fees_type_display(),  # Get readable label of fees type
                 payment.total_fees,
-                payment.balance,
+                single_payment.date if single_payment else '',
+                single_payment.get_payment_mode_display() if single_payment else '',
+                single_payment.amount if single_payment else '',
+                *emi_data,  # Add EMI and date for up to 6 installments
+                ''  # Balance Amount (modify if required)
             ])
 
         # Create an in-memory file-like object to save the workbook
@@ -3504,7 +3548,7 @@ def export_payment_excel(request):
 
         # Create the HTTP response with Excel content type and attachment header
         response = HttpResponse(output, content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
-        response['Content-Disposition'] = 'attachment; filename="generated_excel.xlsx"'
+        response['Content-Disposition'] = 'attachment; filename="payment_list.xlsx"'
         
         return response
 
@@ -3516,21 +3560,37 @@ def export_payment_excel(request):
 def export_payment_pdf(request):
     if request.method == 'POST':
         ids = request.POST.get('ids', '').split(',')
-        selected_payment = Payment.objects.filter(id__in=ids)
+        selected_payments = PaymentInfo.objects.filter(id__in=ids)
         
-        if not selected_payment:
+        if not selected_payments:
             return JsonResponse({'error': 'No Payment available.'}, status=404)
         
         attribute_list = []
-        for payment in selected_payment:    
+        for payment in selected_payments:
+            # Fetch single payment if exists
+            single_payment = SinglePayment.objects.filter(payment_info=payment).first()
+
+            # Fetch installments if they exist
+            installments = Installment.objects.filter(payment_info=payment)
+
+            # Prepare installment data
+            emi_data = [{'amount': '', 'date': ''} for _ in range(6)]  # 6 EMIs
+
+            for i, installment in enumerate(installments[:6]):  # Limit to 6 installments
+                emi_data[i] = {'amount': installment.amount, 'date': installment.date}
+
             attribute_list.append({
                 'registration_no': payment.registration_no,
                 'joining_date': payment.joining_date,
-                'student_name':payment.student_name,
+                'student_name': payment.student_name,
                 'course_name': payment.course_name,
                 'duration': payment.duration,
                 'total_fees': payment.total_fees,
-                'balance': payment.balance,
+                'fees_type': payment.get_fees_type_display(),  # Get readable label of fees type
+                'single_payment_date': single_payment.date if single_payment else '',
+                'single_payment_mode': single_payment.get_payment_mode_display() if single_payment else '',
+                'single_payment_amount': single_payment.amount if single_payment else '',
+                'emi_data': emi_data,
             })        
         content = {'payment_list': attribute_list}
         return renderers.render_to_pdf('payment_data_list.html', content)
@@ -3539,7 +3599,7 @@ def export_payment_pdf(request):
     return HttpResponse(status=400)  # Bad request if not POST or AJAX
 
 class SearchPaymentResultsView(ListView):
-    model = Payment
+    model = PaymentInfo
     template_name = 'search_payment_result.html'
 
     def get_queryset(self):
@@ -3547,8 +3607,8 @@ class SearchPaymentResultsView(ListView):
         end_date = self.request.GET.get("end_date", "")
         query = self.request.GET.get("q", "")
 
-        # Start with all enrollments
-        object_list = Enrollment.objects.all()
+        # Start with all payment info
+        object_list = PaymentInfo.objects.all()
 
         # Apply text search if query is provided
         if query:
@@ -3556,11 +3616,28 @@ class SearchPaymentResultsView(ListView):
                 Q(registration_no__icontains=query) |
                 Q(joining_date__icontains=query) |
                 Q(student_name__icontains=query) |
-                Q(course_name__course_name__icontains=query) |
+                Q(course_name__icontains=query) |
                 Q(duration__icontains=query) |
                 Q(total_fees__icontains=query) |
-                Q(balance__icontains=query)
-            )
+                Q(fees_type__icontains=query) |
+                Q(single_payment__payment_mode__icontains=query) |
+                Q(single_payment__upi_transaction_id__icontains=query) |
+                Q(single_payment__upi_bank_name__icontains=query) |
+                Q(single_payment__upi_app_name__icontains=query) |
+                Q(single_payment__bank_account_no__icontains=query) |
+                Q(single_payment__bank_ifsc_code__icontains=query) |
+                Q(single_payment__bank_branch_name__icontains=query) |
+                Q(single_payment__bank_account_holder_name__icontains=query) |
+                Q(installments__payment_mode__icontains=query) |
+                Q(installments__emi__icontains=query) |
+                Q(installments__upi_transaction_id__icontains=query) |
+                Q(installments__upi_bank_name__icontains=query) |
+                Q(installments__upi_app_name__icontains=query) |
+                Q(installments__bank_account_no__icontains=query) |
+                Q(installments__bank_ifsc_code__icontains=query) |
+                Q(installments__bank_branch_name__icontains=query) |
+                Q(installments__bank_account_holder_name__icontains=query)
+            ).distinct()
             
         # Apply date range filter if dates are provided
         if start_date and end_date:
@@ -3572,51 +3649,10 @@ class SearchPaymentResultsView(ListView):
             except ValueError:
                 messages.add_message(self.request, messages.ERROR, "Invalid date format. Please use YYYY-MM-DD.")
         
-        # Optimize the query by selecting related course_name objects
-        object_list = object_list.select_related('course_name')
+        # Optimize the query by selecting related objects
+        object_list = object_list.select_related('single_payment').prefetch_related('installments')
 
         return object_list
-    
-    
-# def new_payment_info_view(request):
-#     if request.method == 'POST':
-#         registration_no = request.POST.get('registration_no')
-#         student_name = request.POST.get('student_name')
-#         course_name = request.POST.get('course_name')
-#         duration = request.POST.get('duration')
-#         total_fees = request.POST.get('total_fees')
-#         fees_type = request.POST.get('fees_type')
-#         joining_date = request.POST.get('joining_date')
-
-#         # Validate and process the form data
-#         if not (registration_no and student_name and course_name and duration and total_fees and fees_type and joining_date):
-#             messages.error(request, "All fields are required.")
-#             return render(request, 'new_payment_info.html')
-
-#         try:
-#             total_fees = float(total_fees)  # Ensure total_fees is a float
-#         except ValueError:
-#             messages.error(request, "Total fees must be a valid number.")
-#             return render(request, 'new_payment_info.html')
-
-#         # Save to database
-#         try:
-#             PaymentInfo.objects.create(
-#                 registration_no=registration_no,
-#                 student_name=student_name,
-#                 course_name=course_name,
-#                 duration=duration,
-#                 total_fees=total_fees,
-#                 fees_type=fees_type,
-#                 joining_date=joining_date
-#             )
-#             messages.success(request, "Payment information saved successfully.")
-#             return redirect('success_url')  # Replace with your actual success URL
-#         except Exception as e:
-#             messages.error(request, f"An error occurred: {e}")
-#             return render(request, 'new_payment_info.html')
-
-#     return render(request, 'new_payment_info.html')
 
 def new_payment_info_view(request):
     if request.method == 'POST':
@@ -3717,87 +3753,6 @@ def get_next_emi(payment_info):
         return None  # All EMIs are completed
     
     return f"{emi_prefix}{next_emi_number}"
-
-
-
-# def installment_view(request):
-    
-#     payment_info_id = PaymentInfo.objects.all()
-    
-#     payment_id = payment_info_id.get('id')
-    
-#     print(payment_info_id.get('id'))
-    
-#     if request.method == 'POST':
-        
-#         payment_data = {
-#             'payment_info' : payment_id,
-#             'date' : request.POST.get('date'),
-#             'payment_mode' : request.POST.get('payment_mode'),
-#             'emi' : request.POST.get('emi'),
-#             'amount' : request.POST.get('amount'),
-#         }
-        
-#         print("Payment Data : ", payment_data)
-        
-
-#         # Validate and process the form data
-#         if not (payment_data.get('payment_info') and payment_data.get('date') and payment_data.get('payment_mode') and payment_data.get('emi') and payment_data.get('amount')):
-#             messages.error(request, "All fields are required.")
-#             return render(request, 'installment_info.html')
-
-#         # try:
-#         #     payment_info = PaymentInfo.objects.get(id=payment_data.payment_info_id)
-#         #     amount = float(amount)
-#         # except PaymentInfo.DoesNotExist:
-#         #     messages.error(request, "Payment info not found.")
-#         #     return render(request, 'installment_info.html')
-#         # except ValueError:
-#         #     messages.error(request, "Amount must be a valid number.")
-#         #     return render(request, 'installment_info.html')
-
-#         try:
-#             token = Token.objects.get(user=request.user)
-#         except Token.DoesNotExist:
-#             context = {
-#                 'error': 'Authentication Token not Found',
-#                 **payment_data,
-#             }
-#             return render(request, 'installment_info.html', context)
-
-#         api_url = 'http://127.0.0.1:8000/api/installment/'
-        
-#         headers = {
-#             'Authorization': f'Token {token.key}',
-#             'Content-Type': 'application/json',
-#         }
-
-#         try:
-#             response = requests.post(api_url, json=payment_data, headers=headers)
-#             response_data = response.json()
-            
-#             print("Response Data : ",response_data)
-
-#         except requests.exceptions.RequestException:
-#             context = {
-#                 'error': 'An Error Occurred While Creating an Enrollment',
-#                 **payment_data,
-#             }
-#             return render(request, 'installment_info.html', context)
-
-#         if response.status_code in [200, 201]:
-#             messages.success(request, 'Created Successfully')
-#             return redirect('manage_payments')  # Redirect to a success page or another view
-#         else:
-#             error_message = response_data.get('error', 'An Error Occurred During Creation.')
-#             errors = response_data
-#             context = {
-#                 'error': error_message,
-#                 'errors': errors,
-#                 **payment_data,
-#             }
-#         return render(request, 'installment_info.html', context)
-#     return render(request, 'installment_info.html')
 
 def installment_view(request):
     if request.method == 'POST':
@@ -3912,10 +3867,10 @@ def installment_update_view(request, id):
         # Include additional fields based on the payment mode
         if payment_mode == 'Bank Transfer':
             payment_data.update({
-                'account_no': request.POST.get('account_no'),
-                'ifsc_code': request.POST.get('ifsc_code'),
-                'branch_name': request.POST.get('branch_name'),
-                'account_holder_name': request.POST.get('account_holder_name'),
+                'bank_account_no': request.POST.get('bank_account_no'),
+                'bank_ifsc_code': request.POST.get('bank_ifsc_code'),
+                'bank_branch_name': request.POST.get('bank_branch_name'),
+                'bank_account_holder_name': request.POST.get('bank_account_holder_name'),
             })
         elif payment_mode == 'UPI':
             payment_data['upi_transaction_id'] = request.POST.get('upi_transaction_id')
@@ -3936,7 +3891,7 @@ def installment_update_view(request, id):
 
         # Check which payment mode is selected and validate the corresponding fields
         if payment_mode == 'Bank Transfer':
-            required_fields = ['account_no', 'ifsc_code', 'branch_name', 'account_holder_name']
+            required_fields = ['bank_account_no', 'bank_ifsc_code', 'bank_branch_name', 'bank_account_holder_name']
             for field in required_fields:
                 if not payment_data.get(field):
                     messages.error(request, f"{field.replace('_', ' ').title()} must be provided for Bank Transfer.")
@@ -3991,6 +3946,15 @@ def installment_update_view(request, id):
         # Handle GET request
         print("Welcome !")
         payment_info = get_object_or_404(PaymentInfo, id=id)
+        
+        installments = Installment.objects.filter(payment_info=id) 
+        
+        # Debugging: print the installment data
+        for installment in installments:
+            print("Date:", installment.date)
+            print("EMI:", installment.emi)
+            print("UPI Transaction ID:", installment.upi_transaction_id)
+            print("Amount:", installment.amount)
 
         # Get the next EMI using the get_next_emi function
         next_emi = get_next_emi(payment_info)
@@ -3999,11 +3963,17 @@ def installment_update_view(request, id):
         if next_emi:
             context = {
                 'next_emi': next_emi,
+                'payment_info': payment_info,
+                'installments': installments 
+            }
+        elif installments.exists():
+            context = {
+                'installments': installments,
                 'payment_info': payment_info
             }
         else:
             messages.error(request, 'All EMIs are completed.')
-            return redirect('manage_payments')
+            return redirect('installment_payment')
 
         return render(request, 'installment_info.html', context)
 
@@ -4108,33 +4078,90 @@ def manage_payment_info_view(request):
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
+    # total_pending_amount = 0
+    # # Calculate the remaining balance for each payment
+    # for payment in payments:
+    #     total_fees = payment.total_fees
+
+    #     if payment.fees_type == 'Installment':
+    #         total_paid = sum(emi.amount for emi in payment.installments.all())
+    #         payment.remaining_balance = total_fees - total_paid
+    #     elif payment.fees_type == 'Regular' and payment.single_payment:
+    #         total_paid = payment.single_payment.amount
+    #         payment.remaining_balance = total_fees - total_paid
+    #     else:
+    #         total_paid = 0
+    #         payment.remaining_balance = total_fees
+
+    #     # Add remaining balance to total pending amount if greater than zero
+    #     if payment.remaining_balance > 0:
+    #         total_pending_amount += payment.remaining_balance
+        
+    #     # Debugging
+    #     print(f"Payment ID: {payment.id}, Total Fees: {total_fees}, Total Paid: {total_paid}, Remaining Balance: {payment.remaining_balance}")
+    
     total_pending_amount = 0
+    total_fees = 0
+    total_emi_1 = 0
+    total_emi_2 = 0
+    total_emi_3 = 0
+    total_emi_4 = 0
+    total_emi_5 = 0
+    total_emi_6 = 0
+    total_single_payment = 0  # Variable to store the total for single payments
+
     # Calculate the remaining balance for each payment
     for payment in payments:
-        total_fees = payment.total_fees
+        total_fees += payment.total_fees
 
         if payment.fees_type == 'Installment':
             total_paid = sum(emi.amount for emi in payment.installments.all())
-            payment.remaining_balance = total_fees - total_paid
+            
+            # Distribute the EMIs across the corresponding variables
+            installments = list(payment.installments.all())
+            
+            # Ensure EMIs are correctly assigned based on their number
+            if len(installments) > 0:
+                total_emi_1 += installments[0].amount
+            if len(installments) > 1:
+                total_emi_2 += installments[1].amount
+            if len(installments) > 2:
+                total_emi_3 += installments[2].amount
+            if len(installments) > 3:
+                total_emi_4 += installments[3].amount
+            if len(installments) > 4:
+                total_emi_5 += installments[4].amount
+            if len(installments) > 5:
+                total_emi_6 += installments[5].amount
+
+            payment.remaining_balance = payment.total_fees - total_paid
+
         elif payment.fees_type == 'Regular' and payment.single_payment:
             total_paid = payment.single_payment.amount
-            payment.remaining_balance = total_fees - total_paid
+            total_single_payment += total_paid  # Add to the total single payment
+            payment.remaining_balance = payment.total_fees - total_paid
         else:
             total_paid = 0
-            payment.remaining_balance = total_fees
+            payment.remaining_balance = payment.total_fees
 
         # Add remaining balance to total pending amount if greater than zero
         if payment.remaining_balance > 0:
             total_pending_amount += payment.remaining_balance
-        
-        # Debugging
-        print(f"Payment ID: {payment.id}, Total Fees: {total_fees}, Total Paid: {total_paid}, Remaining Balance: {payment.remaining_balance}")
+
 
     context = {
         'page_obj': page_obj,
         'per_page': per_page,
         'payments': payments,
         'total_pending_amount': total_pending_amount,
+        'total_fees': total_fees,
+        'total_emi_1': total_emi_1,
+        'total_emi_2': total_emi_2,
+        'total_emi_3': total_emi_3,
+        'total_emi_4': total_emi_4,
+        'total_emi_5': total_emi_5,
+        'total_emi_6': total_emi_6,
+        'total_single_payment': total_single_payment,
     }
     
     return render(request, 'manage_payment_info.html', context)

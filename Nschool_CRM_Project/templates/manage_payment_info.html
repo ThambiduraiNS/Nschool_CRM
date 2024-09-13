@@ -59,7 +59,7 @@
 
                 <div class="row m-0 p-0">
 
-                    <div class="col-3 mt-4 p-0">
+                    <div class="col-4 mt-4 p-0">
                         <h5 class="fw-bold">Manage Payment</h5>
                     </div>
 
@@ -75,7 +75,7 @@
                         </form>
                     </div>
 
-                    <div class="col-2 d-flex mt-2 mb-1 p-2 ps-4 ms-5 text-center gap-1">
+                    <div class="col-2 d-flex mt-2 mb-1 p-2 text-center gap-1">
                         <div class="col border-div">
                             <a href="javascript:void(0);" id="export-csv-link">
                                 {% bs_icon 'filetype-csv' %}
@@ -206,7 +206,7 @@
                                             <td class="tdata">{{ payment.duration }}</td>
                                             <td class="tdata">{{ payment.fees_type }}</td>
                                             
-                                            <td class="tdata">{{ payment.total_fees }}</td>
+                                            <td class="tdata text-right">{{ payment.total_fees }}</td>
                         
                                             <!-- Single Payment -->
                                             <td class="tdata">
@@ -216,7 +216,7 @@
                                                     N/A
                                                 {% endif %}
                                             </td>
-                                            <td class="tdata">
+                                            <td class="tdata text-right">
                                                 {% if payment.single_payment %}
                                                     {{ payment.single_payment.amount }}
                                                 {% else %}
@@ -228,20 +228,20 @@
                                             {% with emi_list=payment.installments.all %}
                                             {% for emi in emi_list %}
                                                 <td class="tdata">{{ emi.date|date:'Y-m-d' }}</td>
-                                                <td class="tdata">{{ emi.amount }}</td>
+                                                <td class="tdata text-right">{{ emi.amount }}</td>
                                             {% endfor %}
                         
                                             <!-- For missing EMIs, display N/A -->
                                             {% for i in 1|to:6 %}
                                                 {% if forloop.counter > emi_list.count %}
                                                     <td class="tdata">N/A</td>
-                                                    <td class="tdata">N/A</td>
+                                                    <td class="tdata  text-right">N/A</td>
                                                 {% endif %}
                                             {% endfor %}
                                             {% endwith %}
                         
                                             <!-- Display the remaining balance -->
-                                            <td class="tdata balance-td">
+                                            <td class="tdata balance-td text-right">
                                                 {% if payment.fees_type == 'Installment' %}
                                                     {{ payment.remaining_balance|floatformat:2 }}
                                                 {% elif payment.fees_type == 'Regular' and payment.single_payment %}
@@ -281,9 +281,52 @@
                                     {% endfor %}
                                     <!-- Row for Total Pending Amount -->
                                     <tr>
-                                        <td colspan="22"></td> <!-- Empty cells before the total pending amount cell -->
+                                        <!-- Total Fees Amount -->
+                                        <td colspan="7"></td>
                                         <td class="tdata">
-                                            <p class="total_pending_amount mb-0 py-2">Total Pending Amount = {{ total_pending_amount }}</p>
+                                            <p class="total_pending_amount mb-0 py-2">Total Amount = {{ total_fees }}</p>
+                                        </td>
+                                        
+                                        <!-- Total Single payment Amount -->
+                                        <td colspan="1"></td>
+                                        <td class="tdata">
+                                            <p class="total_pending_amount mb-0 py-2">Total Amount = {{ total_single_payment }}</p>
+                                        </td>
+                                        
+                                        <!-- Total EMI-1 Amount -->
+                                        <td colspan="1"></td>
+                                        <td class="tdata">
+                                            <p class="total_pending_amount mb-0 py-2">Total Amount = {{ total_emi_1 }}</p>
+                                        </td>
+                                        
+                                        <!-- Total EMI-2 Amount -->
+                                        <td colspan="1"></td>
+                                        <td class="tdata">
+                                            <p class="total_pending_amount mb-0 py-2">Total Amount = {{ total_emi_2 }}</p>
+                                        </td>
+                                        <!-- Total EMI-3 Amount -->
+                                        <td colspan="1"></td>
+                                        <td class="tdata">
+                                            <p class="total_pending_amount mb-0 py-2">Total Amount = {{ total_emi_3 }}</p>
+                                        </td>
+                                        <!-- Total EMI-4 Amount -->
+                                        <td colspan="1"></td>
+                                        <td class="tdata">
+                                            <p class="total_pending_amount mb-0 py-2">Total Amount = {{ total_emi_4 }}</p>
+                                        </td>
+                                        <!-- Total EMI-5 Amount -->
+                                        <td colspan="1"></td>
+                                        <td class="tdata">
+                                            <p class="total_pending_amount mb-0 py-2">Total Amount = {{ total_emi_5 }}</p>
+                                        </td>
+                                        <!-- Total EMI-6 Amount -->
+                                        <td colspan="1"></td>
+                                        <td class="tdata">
+                                            <p class="total_pending_amount mb-0 py-2">Total Amount = {{ total_emi_6 }}</p>
+                                        </td>
+
+                                        <td class="tdata">
+                                            <p class="total_pending_amount mb-0 py-2">Total Amount = {{ total_pending_amount }}</p>
                                         </td>
                                     </tr>
                                 </tbody>

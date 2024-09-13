@@ -166,7 +166,7 @@
                                 <!-- Bank Transfer Fields -->
                                 <div class="col-12 col-md-6 pe-md-0" id="account_no_div" style="display: none;">
                                     <div class="user-input-wrp ms-md-4 mt-md-4">
-                                        <input type="text" name="account_no" id="account_no" class="form-control" aria-label="account_no" placeholder=" " autocomplete="off">
+                                        <input type="text" name="bank_account_no" id="account_no" class="form-control" aria-label="account_no" placeholder=" " autocomplete="off">
                                         <label class="floating-label">Account Number <span class="required">*</span></label>
                                         <span id="account_no_error" class="error-div"></span>
                                     </div>
@@ -174,7 +174,7 @@
 
                                 <div class="col-12 col-md-6 pe-md-0" id="ifsc_code_div" style="display: none;">
                                     <div class="user-input-wrp ms-md-4 mt-md-4">
-                                        <input type="text" name="ifsc_code" id="ifsc_code" class="form-control" aria-label="ifsc_code" placeholder=" " autocomplete="off">
+                                        <input type="text" name="bank_ifsc_code" id="ifsc_code" class="form-control" aria-label="ifsc_code" placeholder=" " autocomplete="off">
                                         <label class="floating-label">IFSC Code <span class="required">*</span></label>
                                         <span id="ifsc_code_error" class="error-div"></span>
                                     </div>
@@ -182,7 +182,7 @@
 
                                 <div class="col-12 col-md-6 pe-md-0" id="branch_name_div" style="display: none;">
                                     <div class="user-input-wrp ms-md-4 mt-md-4">
-                                        <input type="text" name="branch_name" id="branch_name" class="form-control" aria-label="branch_name" placeholder=" " autocomplete="off">
+                                        <input type="text" name="bank_branch_name" id="branch_name" class="form-control" aria-label="branch_name" placeholder=" " autocomplete="off">
                                         <label class="floating-label">Branch Name <span class="required">*</span></label>
                                         <span id="branch_name_error" class="error-div"></span>
                                     </div>
@@ -190,7 +190,7 @@
 
                                 <div class="col-12 col-md-6 pe-md-0" id="account_holder_name_div" style="display: none;">
                                     <div class="user-input-wrp ms-md-4 mt-md-4">
-                                        <input type="text" name="account_holder_name" id="account_holder_name" class="form-control" aria-label="account_holder_name" placeholder=" " autocomplete="off">
+                                        <input type="text" name="bank_account_holder_name" id="account_holder_name" class="form-control" aria-label="account_holder_name" placeholder=" " autocomplete="off">
                                         <label class="floating-label">Account Holder Name <span class="required">*</span></label>
                                         <span id="account_holder_name_error" class="error-div"></span>
                                     </div>
@@ -226,6 +226,53 @@
                     </div>
                 </form>
             </div>
+
+
+            <!-- display the data's -->
+            <div class="row m-0 p-0">
+                <div class="col border bg-white rounded mt-2 ms-xll-4 mb-2 px-xll-4">
+
+                    <h5 class="my-4">Online Payment Details</h5>
+                    <div class="table-responsive" style="overflow-x: auto;">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Date</th>
+                                    <th scope="col">EMI</th>
+                                    <th scope="col">Payment Mode</th>
+                                    <th scope="col">UPI Transaction ID</th>
+                                    <th scope="col">Account NO</th>
+                                    <th scope="col">IFSC Code</th>
+                                    <th scope="col">Branch Name</th>
+                                    <th scope="col">Name</th>
+                                    <th scope="col">Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for installment in installments %}
+                                    <tr>
+                                        <td>{{ installment.date|date:'Y-m-d' }}</td>
+                                        <td>{{ installment.emi }}</td>
+                                        <td>{{ installment.payment_mode }}</td>
+                                        <td>{{ installment.upi_transaction_id }}</td>
+                                        <td>{{ installment.bank_account_no }}</td>
+                                        <td>{{ installment.bank_ifsc_code }}</td>
+                                        <td>{{ installment.bank_branch_name }}</td>
+                                        <td>{{ installment.bank_account_holder_name }}</td>
+                                        <td>{{ installment.amount }}</td>
+                                    </tr>
+                                {% empty %}
+                                    <tr>
+                                        <td colspan="4" class="text-center">No installments available</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+
         </div>
     </div>
 </div>

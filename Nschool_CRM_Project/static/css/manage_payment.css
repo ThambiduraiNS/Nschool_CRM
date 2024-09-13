@@ -1,6 +1,10 @@
-.balance-td {
+.balance-td, .total_pending_amount {
     color: red;
     font-size: 14px;
+    /* text-align: right; */
+}
+
+.text-right {
     text-align: right;
 }
 
@@ -8,7 +12,13 @@
     color: red;
 }
 
-.total_pending_amount {
-    color: red;
-    font-size: 14px;
+.table-responsive {
+    display: block;
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch; /* For smooth scrolling on touch devices */
+}
+
+.table {
+    min-width: 1000px; /* Set a minimum width to ensure the table requires scrolling */
 }

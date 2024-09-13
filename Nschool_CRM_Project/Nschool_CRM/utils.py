@@ -83,3 +83,62 @@ def decrypt_password(encrypted_password):
 
 encrypted_password = b'gAAAAABmsgFh-fP_Ia6kOk6Vy7PZu8qF7ujnbd55Wn6dKnG0ZMfMwpMOOxvIgiS4jX2t_yzJoN9QbazItaPzC-oQn52jFm5wqQ=='
 # print(decrypt_password(encrypted_password))
+
+# calculate total balance
+def calculate_payment_totals(payments):
+    total_pending_amount = 0
+    total_fees = 0
+    total_emi_1 = 0
+    total_emi_2 = 0
+    total_emi_3 = 0
+    total_emi_4 = 0
+    total_emi_5 = 0
+    total_emi_6 = 0
+    total_single_payment = 0
+
+    for payment in payments:
+        total_fees += payment.total_fees
+
+        if payment.fees_type == 'Installment':
+            total_paid = sum(emi.amount for emi in payment.installments.all())
+            
+            # Distribute the EMIs across the corresponding variables
+            installments = list(payment.installments.all())
+            
+            if len(installments) > 0:
+                total_emi_1 += installments[0].amount
+            if len(installments) > 1:
+                total_emi_2 += installments[1].amount
+            if len(installments) > 2:
+                total_emi_3 += installments[2].amount
+            if len(installments) > 3:
+                total_emi_4 += installments[3].amount
+            if len(installments) > 4:
+                total_emi_5 += installments[4].amount
+            if len(installments) > 5:
+                total_emi_6 += installments[5].amount
+
+            payment.remaining_balance = payment.total_fees - total_paid
+
+        elif payment.fees_type == 'Regular' and payment.single_payment:
+            total_paid = payment.single_payment.amount
+            total_single_payment += total_paid
+            payment.remaining_balance = payment.total_fees - total_paid
+        else:
+            total_paid = 0
+            payment.remaining_balance = payment.total_fees
+
+        if payment.remaining_balance > 0:
+            total_pending_amount += payment.remaining_balance
+
+    return {
+        'total_pending_amount': total_pending_amount,
+        'total_fees': total_fees,
+        'total_emi_1': total_emi_1,
+        'total_emi_2': total_emi_2,
+        'total_emi_3': total_emi_3,
+        'total_emi_4': total_emi_4,
+        'total_emi_5': total_emi_5,
+        'total_emi_6': total_emi_6,
+        'total_single_payment': total_single_payment,
+    }
