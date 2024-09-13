@@ -86,6 +86,7 @@ urlpatterns = [
     path('new-payment/', new_payment_info_view, name='new_payment_info'),
     path('installment-payment/', installment_view, name='installment_payment'),
     path('single-payment/', single_payment_view, name='single_payment'),
+    path('single-payment/<int:id>/', single_payment_update_view, name='single_payment'),
     path('installment-payment/<int:id>/', installment_update_view, name='installment_payment'),
     path('single-payment/<int:id>/', single_payment_view, name='single_payment'),
     path('manage-payments/', manage_payment_info_view, name='manage_payments'),

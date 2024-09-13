@@ -11,6 +11,7 @@
 <link rel="stylesheet" href="{% static '/css/header.css' %}">
 <link rel="stylesheet" href="{% static '/css/new_enquiry.css' %}">
 <link rel="stylesheet" href="{% static '/css/new_enrollment.css' %}">
+<link rel="stylesheet" href="{% static '/css/manage_payment.css' %}">
 {% endblock %}
 
 {% block header %}
@@ -44,7 +45,7 @@
                             {% csrf_token %}
 
                             <div class="col-12 mt-4 ms-md-2 position-relative">
-                                <h5 class="fw-bold st-details">Payment</h5>
+                                <h5 class="fw-bold st-details">Single Payment</h5>
                                 <p class="user-para">Use the below form to update your profile</p>
                                 <span class="message" id="message">
                                     {% for message in messages %}
@@ -59,9 +60,9 @@
                             <div class="row d-flex justify-content-between pe-0">
 
                                 <!-- PaymentInfo field -->
-                                <div class="col-12 col-md-6 pe-md-0" style="display: none;">
+                                <div class="col-12 col-md-6 pe-md-0">
                                     <div class="user-input-wrp ms-md-4 mt-md-4">
-                                        <input type="text" name="payment_info" value="{{payment_info}}" id="payment_info" class="form-control"
+                                        <input type="text" name="payment_info" value="{{payment_info.id}}" id="payment_info" class="form-control"
                                             aria-label="payment_info" placeholder=" " autocomplete="off" autofocus>
                                         <label class="floating-label">&nbsp;Payment Info ID <span class="required">*</span> &nbsp;</label>
                                         <span id="payment_info_error" class="error-div">
@@ -93,8 +94,8 @@
                                 <!-- Payment date -->
                                 <div class="col-12 col-md-6 pe-md-0">
                                     <div class="user-input-wrp ms-md-4 mt-md-4">
-                                        <input type="date" name="date" id="date" value="{{date}}" class="form-control"
-                                            aria-label="date" placeholder=" " autocomplete="off" autofocus>
+                                        <input type="date" name="date" id="date-picker" value="{{date}}" class="form-control"
+                                            aria-label="date" placeholder=" " autocomplete="off" autofocus onclick="setDatePickerLimits()">
                                         <label class="floating-label">&nbsp;Payment Date <span class="required">*</span> &nbsp;</label>
                                         <span id="date_error" class="error-div">
                                             {% if errors.date %}
@@ -107,7 +108,7 @@
                                 <!-- amount field -->
                                 <div class="col-12 col-md-6 pe-md-0">
                                     <div class="user-input-wrp ms-md-4 mt-md-4">
-                                        <input type="text" name="amount" value="{{amount}}" id="amount" class="form-control"
+                                        <input type="text" name="amount" value="{{payment_info.total_fees}}" id="amount" class="form-control"
                                             aria-label="amount" placeholder=" " autocomplete="off" autofocus>
                                         <label class="floating-label">&nbsp;Enter Amount <span class="required">*</span> &nbsp;</label>
                                         <span id="amount_error" class="error-div">
@@ -121,7 +122,7 @@
                                 <!-- UPI Fields -->
                                 <div class="col-12 col-md-6 pe-md-0" id="transaction_id_div" style="display: none;">
                                     <div class="user-input-wrp ms-md-4 mt-md-4">
-                                        <input type="text" name="transaction_id" id="transaction_id" class="form-control" aria-label="transaction_id" placeholder=" " autocomplete="off">
+                                        <input type="text" name="upi_transaction_id" id="transaction_id" class="form-control" aria-label="transaction_id" placeholder=" " autocomplete="off">
                                         <label class="floating-label">Enter UPI Transaction ID <span class="required">*</span></label>
                                         <span id="transaction_id_error" class="error-div"></span>
                                     </div>
@@ -129,7 +130,7 @@
 
                                 <div class="col-12 col-md-6 pe-md-0" id="bank_name_div" style="display: none;">
                                     <div class="user-input-wrp ms-md-4 mt-md-4">
-                                        <input type="text" name="bank_name" id="bank_name" class="form-control" aria-label="bank_name" placeholder=" " autocomplete="off">
+                                        <input type="text" name="upi_bank_name" id="bank_name" class="form-control" aria-label="bank_name" placeholder=" " autocomplete="off">
                                         <label class="floating-label">Account / Bank Name <span class="required">*</span></label>
                                         <span id="bank_name_error" class="error-div"></span>
                                     </div>
@@ -137,7 +138,7 @@
 
                                 <div class="col-12 col-md-6 pe-md-0" id="app_name_div" style="display: none;">
                                     <div class="user-input-wrp ms-md-4 mt-md-4">
-                                        <input type="text" name="app_name" id="app_name" class="form-control" aria-label="app_name" placeholder=" " autocomplete="off">
+                                        <input type="text" name="upi_app_name" id="app_name" class="form-control" aria-label="app_name" placeholder=" " autocomplete="off">
                                         <label class="floating-label">Enter App Name <span class="required">*</span></label>
                                         <span id="app_name_error" class="error-div"></span>
                                     </div>
@@ -146,7 +147,7 @@
                                 <!-- Bank Transfer Fields -->
                                 <div class="col-12 col-md-6 pe-md-0" id="account_no_div" style="display: none;">
                                     <div class="user-input-wrp ms-md-4 mt-md-4">
-                                        <input type="text" name="account_no" id="account_no" class="form-control" aria-label="account_no" placeholder=" " autocomplete="off">
+                                        <input type="text" name="bank_account_no" id="account_no" class="form-control" aria-label="account_no" placeholder=" " autocomplete="off">
                                         <label class="floating-label">Account Number <span class="required">*</span></label>
                                         <span id="account_no_error" class="error-div"></span>
                                     </div>
@@ -154,7 +155,7 @@
 
                                 <div class="col-12 col-md-6 pe-md-0" id="ifsc_code_div" style="display: none;">
                                     <div class="user-input-wrp ms-md-4 mt-md-4">
-                                        <input type="text" name="ifsc_code" id="ifsc_code" class="form-control" aria-label="ifsc_code" placeholder=" " autocomplete="off">
+                                        <input type="text" name="bank_ifsc_code" id="ifsc_code" class="form-control" aria-label="ifsc_code" placeholder=" " autocomplete="off">
                                         <label class="floating-label">IFSC Code <span class="required">*</span></label>
                                         <span id="ifsc_code_error" class="error-div"></span>
                                     </div>
@@ -162,7 +163,7 @@
 
                                 <div class="col-12 col-md-6 pe-md-0" id="branch_name_div" style="display: none;">
                                     <div class="user-input-wrp ms-md-4 mt-md-4">
-                                        <input type="text" name="branch_name" id="branch_name" class="form-control" aria-label="branch_name" placeholder=" " autocomplete="off">
+                                        <input type="text" name="bank_branch_name" id="branch_name" class="form-control" aria-label="branch_name" placeholder=" " autocomplete="off">
                                         <label class="floating-label">Branch Name <span class="required">*</span></label>
                                         <span id="branch_name_error" class="error-div"></span>
                                     </div>
@@ -170,7 +171,7 @@
 
                                 <div class="col-12 col-md-6 pe-md-0" id="account_holder_name_div" style="display: none;">
                                     <div class="user-input-wrp ms-md-4 mt-md-4">
-                                        <input type="text" name="account_holder_name" id="account_holder_name" class="form-control" aria-label="account_holder_name" placeholder=" " autocomplete="off">
+                                        <input type="text" name="bank_account_holder_name" id="account_holder_name" class="form-control" aria-label="account_holder_name" placeholder=" " autocomplete="off">
                                         <label class="floating-label">Account Holder Name <span class="required">*</span></label>
                                         <span id="account_holder_name_error" class="error-div"></span>
                                     </div>
@@ -205,6 +206,51 @@
                     </div>
                 </form>
             </div>
+
+            <!-- display the data's -->
+            <div class="row m-0 p-0">
+                <div class="col border bg-white rounded mt-2 ms-xll-4 mb-2 px-xll-4">
+
+                    <h5 class="my-4">Online Payment Details</h5>
+                    <div class="table-responsive" style="overflow-x: auto;">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th scope="col" class="thead">Date</th>
+                                    <th scope="col" class="thead">Payment Mode</th>
+                                    <th scope="col" class="thead">UPI ID</th>
+                                    <th scope="col" class="thead">App Name</th>
+                                    <th scope="col" class="thead">Account NO</th>
+                                    <th scope="col" class="thead">IFSC Code</th>
+                                    <th scope="col" class="thead">Branch Name</th>
+                                    <th scope="col" class="thead">Name</th>
+                                    <th scope="col" class="thead">Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for payment in payments %}
+                                    <tr>
+                                        <td class="tdata">{{ payment.date|date:'Y-m-d' }}</td>
+                                        <td class="tdata">{{ payment.payment_mode }}</td>
+                                        <td class="tdata">{{ payment.upi_transaction_id }}</td>
+                                        <td class="tdata">{{ payment.upi_app_name }}</td>
+                                        <td class="tdata">{{ payment.bank_account_no }}</td>
+                                        <td class="tdata">{{ payment.bank_ifsc_code }}</td>
+                                        <td class="tdata">{{ payment.bank_branch_name }}</td>
+                                        <td class="tdata">{{ payment.bank_account_holder_name }}</td>
+                                        <td class="tdata">{{ payment.amount }}</td>
+                                    </tr>
+                                {% empty %}
+                                    <tr>
+                                        <td colspan="4" class="text-center">No Payments available</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </div>
 </div>
@@ -215,6 +261,22 @@
 
 {% block scripts %}
 <script>
+
+function setDatePickerLimits() {
+    const datePicker = document.getElementById('date-picker');
+    console.log(datePicker)
+    const today = new Date();
+    const tenDaysBeforeToday = new Date(today);
+    tenDaysBeforeToday.setDate(today.getDate() - 10);
+
+    // Format dates as YYYY-MM-DD
+    const todayString = today.toISOString().split('T')[0];
+    const tenDaysBeforeString = tenDaysBeforeToday.toISOString().split('T')[0];
+
+    // Set min and max attributes
+    datePicker.setAttribute('min', tenDaysBeforeString);
+    datePicker.setAttribute('max', todayString);
+}
 
 document.addEventListener('DOMContentLoaded', function() {
     const registrationNoField = document.getElementById('registration_no');

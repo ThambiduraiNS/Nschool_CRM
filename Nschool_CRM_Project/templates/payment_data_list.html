@@ -6,67 +6,47 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>user List</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: #fff;
-            color: #111;
-            margin: 10px;
-        }
         table {
             width: 100%;
             border-collapse: collapse;
-            margin: 20px 0;
+        }
+        table, th, td {
+            border: 1px solid black;
         }
         th, td {
-            padding: 5px;
-            border: 1px solid #ddd;
-            text-align: left;
-        }
-        th {
-            background-color: #333;
-            color: #fff;
-        }
-        tbody tr:nth-child(even) {
-            background-color: #2a2a2a;
-        }
-        tbody tr:hover {
-            background-color: #444;
-        }
-        .table-container {
-            overflow-x: auto;
-            max-width: 100%;
-        }
-        .thead {
+            padding: 8px;
             text-align: left;
         }
     </style>
 </head>
 <body>
     <h1>Payment List</h1>
-    <div class="table-container">
-        <table>
-            <thead>
-                <tr>
-                    <th class="thead">Registration No</th>
-                    <th class="thead">Joining Date</th>
-                    <th class="thead">Student Name</th>
-                    <th class="thead">Course Name</th>
-                    <th class="thead">Course Duration</th>
-                    <th class="thead">Total Fees</th>
-                    <th class="thead">Balance</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for payment in payment_list %}
-                    <tr>
-                        <td>{{ payment.registration_no }}</td>
-                        <td>{{ payment.joining_date|date:"Y-m-d" }}</td>
-                        <td>{{ payment.student_name }}</td>
-                        <td>{{ payment.course_name }}</td>
-                        <td>{{ payment.duration }}</td>
-                        <td>{{ payment.total_fees }}</td>
-                    </tr>
-                {% endfor %}
+    <table>
+        <thead>
+            <tr>
+                <th>Registration No</th>
+                <th>Joining Date</th>
+                <th>Student Name</th>
+                <th>Course Name</th>
+                <th>Course Duration</th>
+                <th>Fees Type</th>
+                <th>Total Fees</th>
+                <th>Balance Amount</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for payment in payment_list %}
+            <tr>
+                <td>{{ payment.registration_no }}</td>
+                <td>{{ payment.joining_date|date:'Y-m-d' }}</td>
+                <td>{{ payment.student_name }}</td>
+                <td>{{ payment.course_name }}</td>
+                <td>{{ payment.duration }}</td>
+                <td>{{ payment.fees_type }}</td>
+                <td>{{ payment.total_fees }}</td>
+                <td>{{ payment.balance }}</td>
+            </tr>
+            {% endfor %}
             </tbody>
         </table>
     </div>

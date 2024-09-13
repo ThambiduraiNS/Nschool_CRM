@@ -22,3 +22,11 @@
 .table {
     min-width: 1000px; /* Set a minimum width to ensure the table requires scrolling */
 }
+
+.thead {
+    font-size: 14px;
+}
+
+.tdata {
+    font-size: 13px;
+}

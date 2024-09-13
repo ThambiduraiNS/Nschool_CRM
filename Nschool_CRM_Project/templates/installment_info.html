@@ -63,7 +63,7 @@
                             <div class="row d-flex justify-content-between pe-0">
 
                                 <!-- PaymentInfo field -->
-                                <div class="col-12 col-md-6 pe-md-0">
+                                <div class="col-12 col-md-6 pe-md-0" style="display: none;">
                                     <div class="user-input-wrp ms-md-4 mt-md-4">
                                         <input type="text" name="payment_info" value="{{ payment_info.id }}" id="payment_info" class="form-control"
                                             aria-label="payment_info" placeholder=" " autocomplete="off" autofocus>
@@ -111,7 +111,7 @@
                                 </div>
                                 
                                 <!-- EMI date -->
-                                <div class="col-12 col-md-3 pe-md-0">
+                                <div class="col-12 col-md-6 pe-md-0">
                                     <div class="user-input-wrp ms-md-4 mt-md-4">
                                         <input type="date" name="date" id="date-picker" value="{{ date }}" class="form-control"
                                             aria-label="date" placeholder=" " autocomplete="off" autofocus onclick="setDatePickerLimits()">
@@ -125,7 +125,7 @@
                                 </div>
 
                                 <!-- amount field -->
-                                <div class="col-12 col-md-3 pe-md-0">
+                                <div class="col-12 col-md-6 pe-md-0">
                                     <div class="user-input-wrp ms-md-4 mt-md-4">
                                         <input type="text" name="amount" value="{{amount}}" id="amount" class="form-control"
                                             aria-label="amount" placeholder=" " autocomplete="off" autofocus>
@@ -149,7 +149,7 @@
 
                                 <div class="col-12 col-md-6 pe-md-0" id="bank_name_div" style="display: none;">
                                     <div class="user-input-wrp ms-md-4 mt-md-4">
-                                        <input type="text" name="bank_name" id="bank_name" class="form-control" aria-label="bank_name" placeholder=" " autocomplete="off">
+                                        <input type="text" name="upi_bank_name" id="bank_name" class="form-control" aria-label="bank_name" placeholder=" " autocomplete="off">
                                         <label class="floating-label">Account / Bank Name <span class="required">*</span></label>
                                         <span id="bank_name_error" class="error-div"></span>
                                     </div>
@@ -157,7 +157,7 @@
 
                                 <div class="col-12 col-md-6 pe-md-0" id="app_name_div" style="display: none;">
                                     <div class="user-input-wrp ms-md-4 mt-md-4">
-                                        <input type="text" name="app_name" id="app_name" class="form-control" aria-label="app_name" placeholder=" " autocomplete="off">
+                                        <input type="text" name="upi_app_name" id="app_name" class="form-control" aria-label="app_name" placeholder=" " autocomplete="off">
                                         <label class="floating-label">Enter App Name <span class="required">*</span></label>
                                         <span id="app_name_error" class="error-div"></span>
                                     </div>
@@ -237,29 +237,31 @@
                         <table class="table table-bordered">
                             <thead>
                                 <tr>
-                                    <th scope="col">Date</th>
-                                    <th scope="col">EMI</th>
-                                    <th scope="col">Payment Mode</th>
-                                    <th scope="col">UPI Transaction ID</th>
-                                    <th scope="col">Account NO</th>
-                                    <th scope="col">IFSC Code</th>
-                                    <th scope="col">Branch Name</th>
-                                    <th scope="col">Name</th>
-                                    <th scope="col">Amount</th>
+                                    <th scope="col" class="thead">Date</th>
+                                    <th scope="col" class="thead">EMI</th>
+                                    <th scope="col" class="thead">Payment Mode</th>
+                                    <th scope="col" class="thead">UPI ID</th>
+                                    <th scope="col" class="thead">App Name</th>
+                                    <th scope="col" class="thead">Account NO</th>
+                                    <th scope="col" class="thead">IFSC Code</th>
+                                    <th scope="col" class="thead">Branch Name</th>
+                                    <th scope="col" class="thead">Name</th>
+                                    <th scope="col" class="thead">Amount</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {% for installment in installments %}
                                     <tr>
-                                        <td>{{ installment.date|date:'Y-m-d' }}</td>
-                                        <td>{{ installment.emi }}</td>
-                                        <td>{{ installment.payment_mode }}</td>
-                                        <td>{{ installment.upi_transaction_id }}</td>
-                                        <td>{{ installment.bank_account_no }}</td>
-                                        <td>{{ installment.bank_ifsc_code }}</td>
-                                        <td>{{ installment.bank_branch_name }}</td>
-                                        <td>{{ installment.bank_account_holder_name }}</td>
-                                        <td>{{ installment.amount }}</td>
+                                        <td class="tdata">{{ installment.date|date:'Y-m-d' }}</td>
+                                        <td class="tdata">{{ installment.emi }}</td>
+                                        <td class="tdata">{{ installment.payment_mode }}</td>
+                                        <td class="tdata">{{ installment.upi_transaction_id }}</td>
+                                        <td class="tdata">{{ installment.upi_app_name }}</td>
+                                        <td class="tdata">{{ installment.bank_account_no }}</td>
+                                        <td class="tdata">{{ installment.bank_ifsc_code }}</td>
+                                        <td class="tdata">{{ installment.bank_branch_name }}</td>
+                                        <td class="tdata">{{ installment.bank_account_holder_name }}</td>
+                                        <td class="tdata">{{ installment.amount }}</td>
                                     </tr>
                                 {% empty %}
                                     <tr>

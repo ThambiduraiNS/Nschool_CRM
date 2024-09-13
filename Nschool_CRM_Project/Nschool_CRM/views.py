@@ -3422,11 +3422,17 @@ def delete_all_payment_view(request):
             return JsonResponse({'success': False, 'error': 'Invalid JSON'})
     return JsonResponse({'success': False, 'error': 'Invalid request method'})
 
-# csv file formate for attributes
+
 @csrf_exempt
 def export_payment_csv(request):
     if request.method == 'POST':
         ids = request.POST.get('ids', '').split(',')  # Get the ids from AJAX request
+
+        # Fetch selected payments based on IDs
+        selected_payments = PaymentInfo.objects.filter(id__in=ids)
+        
+        if not selected_payments:
+            return JsonResponse({'error': 'No Payment available.'}, status=404)
 
         # Create the HttpResponse object with the appropriate CSV header
         response = HttpResponse(content_type='text/csv')
@@ -3438,14 +3444,11 @@ def export_payment_csv(request):
         writer.writerow([
             'Registration No', 'Joining Date', 'Student Name', 'Course Name', 'Course Duration', 
             'Fees Type', 'Total Fees', 'Single Payment Date', 'Single Payment Mode', 'Single Payment Amount',
-            'Installment 1', 'Installment 1 Date', 'Installment 2', 'Installment 2 Date', 
-            'Installment 3', 'Installment 3 Date', 'Installment 4', 'Installment 4 Date',
-            'Installment 5', 'Installment 5 Date', 'Installment 6', 'Installment 6 Date', 
+            'EMI 1', 'EMI 1 Date', 'EMI 2', 'EMI 2 Date', 
+            'EMI 3', 'EMI 3 Date', 'EMI 4', 'EMI 4 Date',
+            'EMI 5', 'EMI 5 Date', 'EMI 6', 'EMI 6 Date', 
             'Balance Amount'
         ])
-
-        # Fetch selected payments based on IDs
-        selected_payments = PaymentInfo.objects.filter(id__in=ids)
 
         for payment in selected_payments:
             # Fetch single payment if exists
@@ -3461,6 +3464,9 @@ def export_payment_csv(request):
                 emi_data[i * 2] = installment.amount
                 emi_data[i * 2 + 1] = installment.date
 
+            # Calculate total payments and balance
+            totals = calculate_payment_totals([payment])  # Pass as list
+
             # Write data row
             writer.writerow([
                 payment.registration_no,
@@ -3474,7 +3480,7 @@ def export_payment_csv(request):
                 single_payment.get_payment_mode_display() if single_payment else '',
                 single_payment.amount if single_payment else '',
                 *emi_data,  # Add EMI and date for up to 6 installments
-                ''  # Balance Amount (modify if required)
+                totals['total_pending_amount']  # Balance amount
             ])
 
         return response
@@ -3482,7 +3488,6 @@ def export_payment_csv(request):
     # Handle GET request or non-AJAX POST request here if needed
     return HttpResponse(status=400)  # Bad request if not POST or AJAX
 
-# Excel file format for course
 @csrf_exempt
 def export_payment_excel(request):
     if request.method == 'POST':
@@ -3525,6 +3530,9 @@ def export_payment_excel(request):
                 emi_data[i * 2] = installment.amount
                 emi_data[i * 2 + 1] = installment.date
 
+            # Calculate total payments and balance
+            totals = calculate_payment_totals([payment])  # Pass as list
+
             # Write data row
             ws.append([
                 payment.registration_no,
@@ -3538,7 +3546,7 @@ def export_payment_excel(request):
                 single_payment.get_payment_mode_display() if single_payment else '',
                 single_payment.amount if single_payment else '',
                 *emi_data,  # Add EMI and date for up to 6 installments
-                ''  # Balance Amount (modify if required)
+                totals['total_pending_amount']  # Balance amount
             ])
 
         # Create an in-memory file-like object to save the workbook
@@ -3555,59 +3563,69 @@ def export_payment_excel(request):
     # Handle GET request or non-AJAX POST request here if needed
     return HttpResponse(status=400)  # Bad request if not POST or AJAX
 
+
 @csrf_protect
 @require_POST
 def export_payment_pdf(request):
-    if request.method == 'POST':
-        ids = request.POST.get('ids', '').split(',')
-        selected_payments = PaymentInfo.objects.filter(id__in=ids)
-        
-        if not selected_payments:
-            return JsonResponse({'error': 'No Payment available.'}, status=404)
-        
-        attribute_list = []
-        for payment in selected_payments:
-            # Fetch single payment if exists
-            single_payment = SinglePayment.objects.filter(payment_info=payment).first()
-
-            # Fetch installments if they exist
-            installments = Installment.objects.filter(payment_info=payment)
-
-            # Prepare installment data
-            emi_data = [{'amount': '', 'date': ''} for _ in range(6)]  # 6 EMIs
-
-            for i, installment in enumerate(installments[:6]):  # Limit to 6 installments
-                emi_data[i] = {'amount': installment.amount, 'date': installment.date}
-
-            attribute_list.append({
-                'registration_no': payment.registration_no,
-                'joining_date': payment.joining_date,
-                'student_name': payment.student_name,
-                'course_name': payment.course_name,
-                'duration': payment.duration,
-                'total_fees': payment.total_fees,
-                'fees_type': payment.get_fees_type_display(),  # Get readable label of fees type
-                'single_payment_date': single_payment.date if single_payment else '',
-                'single_payment_mode': single_payment.get_payment_mode_display() if single_payment else '',
-                'single_payment_amount': single_payment.amount if single_payment else '',
-                'emi_data': emi_data,
-            })        
-        content = {'payment_list': attribute_list}
-        return renderers.render_to_pdf('payment_data_list.html', content)
+    ids = request.POST.get('ids', '').split(',')
+    selected_payments = PaymentInfo.objects.filter(id__in=ids)
     
-    # Handle GET request or non-AJAX POST request here if needed
-    return HttpResponse(status=400)  # Bad request if not POST or AJAX
+    if not selected_payments:
+        return JsonResponse({'error': 'No Payment available.'}, status=404)
+    
+    attribute_list = []
+    for payment in selected_payments:
+        # Fetch single payment if exists
+        single_payment = SinglePayment.objects.filter(payment_info=payment).first()
+
+        # Fetch installments if they exist
+        installments = Installment.objects.filter(payment_info=payment)
+
+        # Prepare installment data
+        emi_data = [{'amount': '', 'date': ''} for _ in range(6)]  # 6 EMIs
+
+        for i, installment in enumerate(installments[:6]):  # Limit to 6 installments
+            emi_data[i] = {'amount': installment.amount, 'date': installment.date}
+
+        # Calculate total payments and balance
+        totals = calculate_payment_totals([payment])  # Pass as list
+
+        # Append payment details to attribute_list
+        attribute_list.append({
+            'registration_no': payment.registration_no,
+            'joining_date': payment.joining_date,
+            'student_name': payment.student_name,
+            'course_name': payment.course_name,
+            'duration': payment.duration,
+            'total_fees': payment.total_fees,
+            'fees_type': payment.get_fees_type_display(),  # Get readable label of fees type
+            'single_payment_date': single_payment.date if single_payment else '',
+            'single_payment_mode': single_payment.get_payment_mode_display() if single_payment else '',
+            'single_payment_amount': single_payment.amount if single_payment else '',
+            'emi_data': emi_data,
+            'total_payment': totals['total_single_payment'],  # Total payment made so far
+            'balance': totals['total_pending_amount']  # Balance amount
+        })
+    
+    logger.debug("Attribute List: %s", attribute_list)  # Log the attribute list
+
+    content = {'payment_list': attribute_list}
+    return renderers.render_to_pdf('payment_data_list.html', content)
+
 
 class SearchPaymentResultsView(ListView):
     model = PaymentInfo
     template_name = 'search_payment_result.html'
+    context_object_name = 'payments'
+    paginate_by = 10  # Number of items per page
 
     def get_queryset(self):
+        # Get filter parameters from the request
         start_date = self.request.GET.get("start_date", "")
         end_date = self.request.GET.get("end_date", "")
         query = self.request.GET.get("q", "")
 
-        # Start with all payment info
+        # Start with all payment info objects
         object_list = PaymentInfo.objects.all()
 
         # Apply text search if query is provided
@@ -3638,21 +3656,34 @@ class SearchPaymentResultsView(ListView):
                 Q(installments__bank_branch_name__icontains=query) |
                 Q(installments__bank_account_holder_name__icontains=query)
             ).distinct()
-            
-        # Apply date range filter if dates are provided
+
+        # Apply date range filter if valid dates are provided
         if start_date and end_date:
             try:
                 start_date = datetime.strptime(start_date, '%Y-%m-%d').date()
                 end_date = datetime.strptime(end_date, '%Y-%m-%d').date()
                 object_list = object_list.filter(joining_date__range=(start_date, end_date))
-                
             except ValueError:
+                # Add an error message for invalid date format
                 messages.add_message(self.request, messages.ERROR, "Invalid date format. Please use YYYY-MM-DD.")
         
-        # Optimize the query by selecting related objects
+        # Optimize query by selecting related objects
         object_list = object_list.select_related('single_payment').prefetch_related('installments')
 
         return object_list
+
+    def get_context_data(self, **kwargs):
+        # Get the existing context data
+        context = super().get_context_data(**kwargs)
+
+        # Get the queryset and calculate totals
+        payments = context['payments']
+        totals = calculate_payment_totals(payments)
+
+        # Add the calculated totals to the context
+        context.update(totals)
+
+        return context
 
 def new_payment_info_view(request):
     if request.method == 'POST':
@@ -3769,6 +3800,8 @@ def installment_view(request):
             messages.error(request, "All EMIs are completed.")
             return redirect('installment_info')
 
+        # Collect payment data from the POST request
+        payment_mode = request.POST.get('payment_mode')
         payment_data = {
             'payment_info': payment_info.id,
             'date': request.POST.get('date'),
@@ -3776,6 +3809,17 @@ def installment_view(request):
             'emi': next_emi,
             'amount': request.POST.get('amount'),
         }
+        # Include additional fields based on the payment mode
+        if payment_mode == 'Bank Transfer':
+            payment_data.update({
+                'bank_account_no': request.POST.get('bank_account_no'),
+                'bank_ifsc_code': request.POST.get('bank_ifsc_code'),
+                'bank_branch_name': request.POST.get('bank_branch_name'),
+                'bank_account_holder_name': request.POST.get('bank_account_holder_name'),
+            })
+        elif payment_mode == 'UPI':
+            payment_data['upi_transaction_id'] = request.POST.get('upi_transaction_id')
+            payment_data['upi_app_name'] = request.POST.get('upi_app_name')
 
         # Validate form data
         if not all(payment_data.values()):
@@ -3874,6 +3918,7 @@ def installment_update_view(request, id):
             })
         elif payment_mode == 'UPI':
             payment_data['upi_transaction_id'] = request.POST.get('upi_transaction_id')
+            payment_data['upi_app_name'] = request.POST.get('upi_app_name')
 
         print("Payment Data:", payment_data)
 
@@ -3979,36 +4024,38 @@ def installment_update_view(request, id):
 
 def single_payment_view(request):
     if request.method == 'POST':
+        payment_mode = request.POST.get('payment_mode')
         payment_data = {    
-            'payment_info' : request.POST.get('payment_info'),
-            'date' : request.POST.get('date'),
-            'payment_mode' : request.POST.get('payment_mode'),
-            'amount' : request.POST.get('amount'),
+            'payment_info': request.POST.get('payment_info'),
+            'date': request.POST.get('date'),
+            'payment_mode': payment_mode,
+            'amount': request.POST.get('amount'),
         }
 
-        # Validate and process the form data
-        if not (payment_data.get('payment_info') and payment_data.get('date') and payment_data.get('payment_mode') and payment_data.get('amount')):
+        # Handle conditional fields based on payment_mode
+        if payment_mode == 'UPI':
+            payment_data.update({
+                'upi_transaction_id': request.POST.get('upi_transaction_id'),
+                'upi_app_name': request.POST.get('upi_app_name'),
+            })
+        elif payment_mode == 'Bank Transfer':
+            payment_data.update({
+                'bank_account_no': request.POST.get('bank_account_no'),
+                'bank_ifsc_code': request.POST.get('bank_ifsc_code'),
+                'bank_branch_name': request.POST.get('bank_branch_name'),
+                'bank_account_holder_name': request.POST.get('bank_account_holder_name'),
+            })
+
+        # Validate required fields based on payment_mode
+        if not all(payment_data.values()):
             messages.error(request, "All fields are required.")
-            return render(request, 'single_payment.html')
-
-        # try:
-        #     payment_info = PaymentInfo.objects.get(id=payment_data.payment_info_id)
-        #     amount = float(amount)
-        # except PaymentInfo.DoesNotExist:
-        #     messages.error(request, "Payment info not found.")
-        #     return render(request, 'single_payment.html')
-        # except ValueError:
-        #     messages.error(request, "Amount must be a valid number.")
-        #     return render(request, 'single_payment.html')
-
+            return render(request, 'single_payment.html', {'payment_data': payment_data})
+        
+        # Authentication token (if needed) and API call logic
         try:
             token = Token.objects.get(user=request.user)
         except Token.DoesNotExist:
-            context = {
-                'error': 'Authentication Token not Found',
-                **payment_data,
-            }
-            return render(request, 'single_payment.html', context)
+            return render(request, 'single_payment.html', {'error': 'Authentication Token not Found', 'payment_data': payment_data})
 
         api_url = 'http://127.0.0.1:8000/api/single_payment/'
         
@@ -4042,7 +4089,71 @@ def single_payment_view(request):
                 **payment_data,
             }
         return render(request, 'single_payment.html', context)
-    return render(request, 'single_payment.html')
+    # For GET requests or initial form rendering
+    payment_info = PaymentInfo.objects.last()
+    context = {
+        'payment_info': payment_info
+    }
+    return render(request, 'single_payment.html', context)
+
+
+def single_payment_update_view(request, id):
+    if request.method == 'POST':
+        payment_mode = request.POST.get('payment_mode')
+        payment_data = {    
+            'payment_info': request.POST.get('payment_info'),
+            'date': request.POST.get('date'),
+            'payment_mode': payment_mode,
+            'amount': request.POST.get('amount'),
+        }
+
+        # Handle conditional fields based on payment_mode
+        if payment_mode == 'UPI':
+            payment_data.update({
+                'upi_transaction_id': request.POST.get('upi_transaction_id'),
+                'upi_app_name': request.POST.get('upi_app_name'),
+            })
+        elif payment_mode == 'Bank Transfer':
+            payment_data.update({
+                'bank_account_no': request.POST.get('bank_account_no'),
+                'bank_ifsc_code': request.POST.get('bank_ifsc_code'),
+                'bank_branch_name': request.POST.get('bank_branch_name'),
+                'bank_account_holder_name': request.POST.get('bank_account_holder_name'),
+            })
+
+        # Validate required fields based on payment_mode
+        if not all(payment_data.values()):
+            messages.error(request, "All fields are required.")
+            return render(request, 'single_payment.html', {'payment_data': payment_data})
+        
+        # Authentication token (if needed) and API call logic
+        try:
+            token = Token.objects.get(user=request.user)
+        except Token.DoesNotExist:
+            return render(request, 'single_payment.html', {'error': 'Authentication Token not Found', 'payment_data': payment_data})
+
+        api_url = 'http://127.0.0.1:8000/api/single_payment/'
+        headers = {
+            'Authorization': f'Token {token.key}',
+            'Content-Type': 'application/json',
+        }
+
+        try:
+            response = requests.post(api_url, json=payment_data, headers=headers)
+            response_data = response.json()
+        except requests.exceptions.RequestException:
+            return render(request, 'single_payment.html', {'error': 'An Error Occurred While Processing Payment', 'payment_data': payment_data})
+
+        if response.status_code in [200, 201]:
+            messages.success(request, 'Payment Processed Successfully')
+            return redirect('manage_payments')
+        else:
+            return render(request, 'single_payment.html', {'error': response_data.get('error', 'An error occurred.'), 'payment_data': payment_data})
+
+    # Fetch payments to display in table
+    payments = SinglePayment.objects.filter(is_active=True, is_deleted=False)
+    return render(request, 'single_payment.html', {'payments': payments})
+
 
 
 def manage_payment_info_view(request):
@@ -4078,90 +4189,14 @@ def manage_payment_info_view(request):
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
-    # total_pending_amount = 0
-    # # Calculate the remaining balance for each payment
-    # for payment in payments:
-    #     total_fees = payment.total_fees
-
-    #     if payment.fees_type == 'Installment':
-    #         total_paid = sum(emi.amount for emi in payment.installments.all())
-    #         payment.remaining_balance = total_fees - total_paid
-    #     elif payment.fees_type == 'Regular' and payment.single_payment:
-    #         total_paid = payment.single_payment.amount
-    #         payment.remaining_balance = total_fees - total_paid
-    #     else:
-    #         total_paid = 0
-    #         payment.remaining_balance = total_fees
-
-    #     # Add remaining balance to total pending amount if greater than zero
-    #     if payment.remaining_balance > 0:
-    #         total_pending_amount += payment.remaining_balance
-        
-    #     # Debugging
-    #     print(f"Payment ID: {payment.id}, Total Fees: {total_fees}, Total Paid: {total_paid}, Remaining Balance: {payment.remaining_balance}")
+    # Calculate totals
+    totals = calculate_payment_totals(payments)
     
-    total_pending_amount = 0
-    total_fees = 0
-    total_emi_1 = 0
-    total_emi_2 = 0
-    total_emi_3 = 0
-    total_emi_4 = 0
-    total_emi_5 = 0
-    total_emi_6 = 0
-    total_single_payment = 0  # Variable to store the total for single payments
-
-    # Calculate the remaining balance for each payment
-    for payment in payments:
-        total_fees += payment.total_fees
-
-        if payment.fees_type == 'Installment':
-            total_paid = sum(emi.amount for emi in payment.installments.all())
-            
-            # Distribute the EMIs across the corresponding variables
-            installments = list(payment.installments.all())
-            
-            # Ensure EMIs are correctly assigned based on their number
-            if len(installments) > 0:
-                total_emi_1 += installments[0].amount
-            if len(installments) > 1:
-                total_emi_2 += installments[1].amount
-            if len(installments) > 2:
-                total_emi_3 += installments[2].amount
-            if len(installments) > 3:
-                total_emi_4 += installments[3].amount
-            if len(installments) > 4:
-                total_emi_5 += installments[4].amount
-            if len(installments) > 5:
-                total_emi_6 += installments[5].amount
-
-            payment.remaining_balance = payment.total_fees - total_paid
-
-        elif payment.fees_type == 'Regular' and payment.single_payment:
-            total_paid = payment.single_payment.amount
-            total_single_payment += total_paid  # Add to the total single payment
-            payment.remaining_balance = payment.total_fees - total_paid
-        else:
-            total_paid = 0
-            payment.remaining_balance = payment.total_fees
-
-        # Add remaining balance to total pending amount if greater than zero
-        if payment.remaining_balance > 0:
-            total_pending_amount += payment.remaining_balance
-
-
     context = {
         'page_obj': page_obj,
         'per_page': per_page,
         'payments': payments,
-        'total_pending_amount': total_pending_amount,
-        'total_fees': total_fees,
-        'total_emi_1': total_emi_1,
-        'total_emi_2': total_emi_2,
-        'total_emi_3': total_emi_3,
-        'total_emi_4': total_emi_4,
-        'total_emi_5': total_emi_5,
-        'total_emi_6': total_emi_6,
-        'total_single_payment': total_single_payment,
+        **totals,
     }
     
     return render(request, 'manage_payment_info.html', context)
