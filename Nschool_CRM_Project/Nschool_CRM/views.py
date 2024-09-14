@@ -3812,10 +3812,7 @@ def installment_view(request):
         # Include additional fields based on the payment mode
         if payment_mode == 'Bank Transfer':
             payment_data.update({
-                'bank_account_no': request.POST.get('bank_account_no'),
-                'bank_ifsc_code': request.POST.get('bank_ifsc_code'),
-                'bank_branch_name': request.POST.get('bank_branch_name'),
-                'bank_account_holder_name': request.POST.get('bank_account_holder_name'),
+                'refference_no': request.POST.get('refference_no'),
             })
         elif payment_mode == 'UPI':
             payment_data['upi_transaction_id'] = request.POST.get('upi_transaction_id')
@@ -3911,10 +3908,7 @@ def installment_update_view(request, id):
         # Include additional fields based on the payment mode
         if payment_mode == 'Bank Transfer':
             payment_data.update({
-                'bank_account_no': request.POST.get('bank_account_no'),
-                'bank_ifsc_code': request.POST.get('bank_ifsc_code'),
-                'bank_branch_name': request.POST.get('bank_branch_name'),
-                'bank_account_holder_name': request.POST.get('bank_account_holder_name'),
+                'refference_no': request.POST.get('refference_no'),
             })
         elif payment_mode == 'UPI':
             payment_data['upi_transaction_id'] = request.POST.get('upi_transaction_id')
@@ -3936,7 +3930,7 @@ def installment_update_view(request, id):
 
         # Check which payment mode is selected and validate the corresponding fields
         if payment_mode == 'Bank Transfer':
-            required_fields = ['bank_account_no', 'bank_ifsc_code', 'bank_branch_name', 'bank_account_holder_name']
+            required_fields = ['refference_no']
             for field in required_fields:
                 if not payment_data.get(field):
                     messages.error(request, f"{field.replace('_', ' ').title()} must be provided for Bank Transfer.")
@@ -4040,10 +4034,7 @@ def single_payment_view(request):
             })
         elif payment_mode == 'Bank Transfer':
             payment_data.update({
-                'bank_account_no': request.POST.get('bank_account_no'),
-                'bank_ifsc_code': request.POST.get('bank_ifsc_code'),
-                'bank_branch_name': request.POST.get('bank_branch_name'),
-                'bank_account_holder_name': request.POST.get('bank_account_holder_name'),
+                'refference_no': request.POST.get('refference_no'),
             })
 
         # Validate required fields based on payment_mode
@@ -4115,10 +4106,7 @@ def single_payment_update_view(request, id):
             })
         elif payment_mode == 'Bank Transfer':
             payment_data.update({
-                'bank_account_no': request.POST.get('bank_account_no'),
-                'bank_ifsc_code': request.POST.get('bank_ifsc_code'),
-                'bank_branch_name': request.POST.get('bank_branch_name'),
-                'bank_account_holder_name': request.POST.get('bank_account_holder_name'),
+                'refference_no': request.POST.get('refference_no'),
             })
 
         # Validate required fields based on payment_mode
@@ -4157,7 +4145,7 @@ def single_payment_update_view(request, id):
 
 
 def manage_payment_info_view(request):
-    payments = PaymentInfo.objects.prefetch_related('single_payment', 'installments').all()
+    payments = PaymentInfo.objects.prefetch_related('single_payment', 'installments').order_by('-id').all()
 
     try:
         token = Token.objects.get(user=request.user)

@@ -147,14 +147,6 @@
                                     </div>
                                 </div>
 
-                                <div class="col-12 col-md-6 pe-md-0" id="bank_name_div" style="display: none;">
-                                    <div class="user-input-wrp ms-md-4 mt-md-4">
-                                        <input type="text" name="upi_bank_name" id="bank_name" class="form-control" aria-label="bank_name" placeholder=" " autocomplete="off">
-                                        <label class="floating-label">Account / Bank Name <span class="required">*</span></label>
-                                        <span id="bank_name_error" class="error-div"></span>
-                                    </div>
-                                </div>
-
                                 <div class="col-12 col-md-6 pe-md-0" id="app_name_div" style="display: none;">
                                     <div class="user-input-wrp ms-md-4 mt-md-4">
                                         <input type="text" name="upi_app_name" id="app_name" class="form-control" aria-label="app_name" placeholder=" " autocomplete="off">
@@ -164,35 +156,11 @@
                                 </div>
 
                                 <!-- Bank Transfer Fields -->
-                                <div class="col-12 col-md-6 pe-md-0" id="account_no_div" style="display: none;">
+                                <div class="col-12 col-md-6 pe-md-0" id="refference_no_div" style="display: none;">
                                     <div class="user-input-wrp ms-md-4 mt-md-4">
-                                        <input type="text" name="bank_account_no" id="account_no" class="form-control" aria-label="account_no" placeholder=" " autocomplete="off">
-                                        <label class="floating-label">Account Number <span class="required">*</span></label>
-                                        <span id="account_no_error" class="error-div"></span>
-                                    </div>
-                                </div>
-
-                                <div class="col-12 col-md-6 pe-md-0" id="ifsc_code_div" style="display: none;">
-                                    <div class="user-input-wrp ms-md-4 mt-md-4">
-                                        <input type="text" name="bank_ifsc_code" id="ifsc_code" class="form-control" aria-label="ifsc_code" placeholder=" " autocomplete="off">
-                                        <label class="floating-label">IFSC Code <span class="required">*</span></label>
-                                        <span id="ifsc_code_error" class="error-div"></span>
-                                    </div>
-                                </div>
-
-                                <div class="col-12 col-md-6 pe-md-0" id="branch_name_div" style="display: none;">
-                                    <div class="user-input-wrp ms-md-4 mt-md-4">
-                                        <input type="text" name="bank_branch_name" id="branch_name" class="form-control" aria-label="branch_name" placeholder=" " autocomplete="off">
-                                        <label class="floating-label">Branch Name <span class="required">*</span></label>
-                                        <span id="branch_name_error" class="error-div"></span>
-                                    </div>
-                                </div>
-
-                                <div class="col-12 col-md-6 pe-md-0" id="account_holder_name_div" style="display: none;">
-                                    <div class="user-input-wrp ms-md-4 mt-md-4">
-                                        <input type="text" name="bank_account_holder_name" id="account_holder_name" class="form-control" aria-label="account_holder_name" placeholder=" " autocomplete="off">
-                                        <label class="floating-label">Account Holder Name <span class="required">*</span></label>
-                                        <span id="account_holder_name_error" class="error-div"></span>
+                                        <input type="text" name="refference_no" id="refference_no" class="form-control" aria-label="account_no" placeholder=" " autocomplete="off">
+                                        <label class="floating-label">Refference Number <span class="required">*</span></label>
+                                        <span id="refference_no_error" class="error-div"></span>
                                     </div>
                                 </div>
 
@@ -240,12 +208,9 @@
                                     <th scope="col" class="thead">Date</th>
                                     <th scope="col" class="thead">EMI</th>
                                     <th scope="col" class="thead">Payment Mode</th>
-                                    <th scope="col" class="thead">UPI ID</th>
+                                    <th scope="col" class="thead">UPI Transaction ID</th>
                                     <th scope="col" class="thead">App Name</th>
-                                    <th scope="col" class="thead">Account NO</th>
-                                    <th scope="col" class="thead">IFSC Code</th>
-                                    <th scope="col" class="thead">Branch Name</th>
-                                    <th scope="col" class="thead">Name</th>
+                                    <th scope="col" class="thead">Bank Refference NO</th>
                                     <th scope="col" class="thead">Amount</th>
                                 </tr>
                             </thead>
@@ -257,10 +222,7 @@
                                         <td class="tdata">{{ installment.payment_mode }}</td>
                                         <td class="tdata">{{ installment.upi_transaction_id }}</td>
                                         <td class="tdata">{{ installment.upi_app_name }}</td>
-                                        <td class="tdata">{{ installment.bank_account_no }}</td>
-                                        <td class="tdata">{{ installment.bank_ifsc_code }}</td>
-                                        <td class="tdata">{{ installment.bank_branch_name }}</td>
-                                        <td class="tdata">{{ installment.bank_account_holder_name }}</td>
+                                        <td class="tdata">{{ installment.refference_no }}</td>
                                         <td class="tdata">{{ installment.amount }}</td>
                                     </tr>
                                 {% empty %}
@@ -395,34 +357,10 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         if (paymentMode === 'Bank Transfer') {
-            const bankName = document.getElementById('bank_name').value.trim();
-            const accountNo = document.getElementById('account_no').value.trim();
-            const ifscCode = document.getElementById('ifsc_code').value.trim();
-            const branchName = document.getElementById('branch_name').value.trim();
-            const accountHolderName = document.getElementById('account_holder_name').value.trim();
-
-            if (!bankName) {
-                document.getElementById('bank_name_error').textContent = 'Bank Name is required.';
-                isValid = false;
-            }
-
-            if (!accountNo) {
-                document.getElementById('account_no_error').textContent = 'Account Number is required.';
-                isValid = false;
-            }
-
-            if (!ifscCode) {
-                document.getElementById('ifsc_code_error').textContent = 'IFSC Code is required.';
-                isValid = false;
-            }
-
-            if (!branchName) {
-                document.getElementById('branch_name_error').textContent = 'Branch Name is required.';
-                isValid = false;
-            }
-
-            if (!accountHolderName) {
-                document.getElementById('account_holder_name_error').textContent = 'Account Holder Name is required.';
+            const RefferenceNo = document.getElementById('refference_no').value.trim();
+            
+            if (!RefferenceNo) {
+                document.getElementById('refference_no_error').textContent = 'Refference Number is required.';
                 isValid = false;
             }
         }
@@ -436,11 +374,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Show/hide fields based on payment mode
         document.getElementById('transaction_id_div').style.display = paymentMode === 'UPI' ? 'block' : 'none';
         document.getElementById('app_name_div').style.display = paymentMode === 'UPI' ? 'block' : 'none';
-        document.getElementById('bank_name_div').style.display = paymentMode === 'Bank Transfer' ? 'block' : 'none';
-        document.getElementById('account_no_div').style.display = paymentMode === 'Bank Transfer' ? 'block' : 'none';
-        document.getElementById('ifsc_code_div').style.display = paymentMode === 'Bank Transfer' ? 'block' : 'none';
-        document.getElementById('branch_name_div').style.display = paymentMode === 'Bank Transfer' ? 'block' : 'none';
-        document.getElementById('account_holder_name_div').style.display = paymentMode === 'Bank Transfer' ? 'block' : 'none';
+        document.getElementById('refference_no_div').style.display = paymentMode === 'Bank Transfer' ? 'block' : 'none';
     }
 
     form.addEventListener('submit', function(event) {

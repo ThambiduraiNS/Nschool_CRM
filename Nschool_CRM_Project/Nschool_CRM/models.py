@@ -336,14 +336,10 @@ class SinglePayment(models.Model):
 
     # UPI specific fields
     upi_transaction_id = models.CharField(max_length=100, blank=True, null=True)
-    upi_bank_name = models.CharField(max_length=100, blank=True, null=True)
     upi_app_name = models.CharField(max_length=100, blank=True, null=True)
 
     # Bank Transfer specific fields
-    bank_account_no = models.CharField(max_length=100, blank=True, null=True)
-    bank_ifsc_code = models.CharField(max_length=50, blank=True, null=True)
-    bank_branch_name = models.CharField(max_length=100, blank=True, null=True)
-    bank_account_holder_name = models.CharField(max_length=100, blank=True, null=True)
+    refference_no = models.CharField(max_length=100, blank=True, null=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
     modified_at = models.DateTimeField(auto_now=True)
@@ -372,14 +368,10 @@ class Installment(models.Model):
     
     # UPI specific fields
     upi_transaction_id = models.CharField(max_length=100, blank=True, null=True)
-    upi_bank_name = models.CharField(max_length=100, blank=True, null=True)
     upi_app_name = models.CharField(max_length=100, blank=True, null=True)
 
     # Bank Transfer specific fields
-    bank_account_no = models.CharField(max_length=100, blank=True, null=True)
-    bank_ifsc_code = models.CharField(max_length=50, blank=True, null=True)
-    bank_branch_name = models.CharField(max_length=100, blank=True, null=True)
-    bank_account_holder_name = models.CharField(max_length=100, blank=True, null=True)
+    refference_no = models.CharField(max_length=100, blank=True, null=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
     modified_at = models.DateTimeField(auto_now=True)
