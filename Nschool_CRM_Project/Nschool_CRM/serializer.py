@@ -58,11 +58,6 @@ class EnrollmentSerializer(serializers.ModelSerializer):
         model = Enrollment
         fields = '__all__'
 
-class InstallmentSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Installment
-        fields = '__all__'
-
 class SinglePaymentSerializer(serializers.ModelSerializer):
     class Meta:
         model = SinglePayment

@@ -233,26 +233,119 @@
                                             {% endif %}
                                         </td>
                                         
-                                        <!-- EMIs -->
-                                        {% for emi in emi_data %}
-                                            {% if emi.payment_ids|length > 0 %}
-                                                {% with first_id=emi.payment_ids|first %}
-                                                
-                                                    {% if first_id == payment.id %}
-                                            
-                                                        <td style="display: none;">{{ emi.dates|join:', ' }}</td>
-                                                        <td class="tdata">
-                                                            {% for date in emi.dates %}
-                                                                {{ date}}<br>
-                                                            {% endfor %}
-                                                        </td>
-                                                        <td class="tdata">{{ emi.total_amount }}</td>
-                                                    
-                                                    {% endif %}
-                                                {% endwith %}
-                                            
+                                        <td class="tdata">
+                                            {% if payment.emi_1_payments %}
+                                                {% for emi in payment.emi_1_payments %}
+                                                    {{ emi.date }}{% if not forloop.last %} {% endif %}<br>
+                                                {% endfor %}
+                                            {% else %}
+                                                N/A
                                             {% endif %}
-                                        {% endfor %}
+                                        </td>
+                                        <td class="tdata">
+                                            {% if payment.emi_1_payments %}
+                                                {% for emi in payment.emi_1_payments %}
+                                                    {{emi.amount}} <br>
+                                                {% endfor %}
+                                            {% else %}
+                                                N/A
+                                            {% endif %}
+                                        </td>
+                        
+                                        <td class="tdata">
+                                            {% if payment.emi_2_payments %}
+                                                {% for emi in payment.emi_2_payments %}
+                                                    {{ emi.date }}{% if not forloop.last %} {% endif %} <br>
+                                                {% endfor %}
+                                            {% else %}
+                                                N/A
+                                            {% endif %}
+                                        </td>
+                                        <td class="tdata">
+                                            {% if payment.emi_2_payments %}
+                                                {% for emi in payment.emi_2_payments %}
+                                                    {{emi.amount}} <br>
+                                                {% endfor %}
+                                            {% else %}
+                                                N/A
+                                            {% endif %}
+                                        </td>
+                        
+                                        <td class="tdata">
+                                            {% if payment.emi_3_payments %}
+                                                {% for emi in payment.emi_3_payments %}
+                                                    {{ emi.date }}{% if not forloop.last %} {% endif %} <br>
+                                                {% endfor %}
+                                            {% else %}
+                                                N/A
+                                            {% endif %}
+                                        </td>
+                                        <td class="tdata">
+                                            {% if payment.emi_3_payments %}
+                                                {% for emi in payment.emi_3_payments %}
+                                                    {{emi.amount}} <br>
+                                                {% endfor %}
+                                            {% else %}
+                                                N/A
+                                            {% endif %}
+                                        </td>
+                        
+                                        <td class="tdata">
+                                            {% if payment.emi_4_payments %}
+                                                {% for emi in payment.emi_4_payments %}
+                                                    {{ emi.date }}{% if not forloop.last %} {% endif %} <br>
+                                                {% endfor %}
+                                            {% else %}
+                                                N/A
+                                            {% endif %}
+                                        </td>
+                                        <td class="tdata">
+                                            {% if payment.emi_4_payments %}
+                                                {% for emi in payment.emi_4_payments %}
+                                                    {{emi.amount}} <br>
+                                                {% endfor %}
+                                            {% else %}
+                                                N/A
+                                            {% endif %}
+                                        </td>
+                        
+                                        <td class="tdata">
+                                            {% if payment.emi_5_payments %}
+                                                {% for emi in payment.emi_5_payments %}
+                                                    {{ emi.date }}{% if not forloop.last %} {% endif %} <br>
+                                                {% endfor %}
+                                            {% else %}
+                                                N/A
+                                            {% endif %}
+                                        </td>
+                                        <td class="tdata">
+                                            {% if payment.emi_5_payments %}
+                                                {% for emi in payment.emi_5_payments %}
+                                                    {{emi.amount}} <br>
+                                                {% endfor %}
+                                            {% else %}
+                                                N/A
+                                            {% endif %}
+                                        </td>
+                        
+                                        <td class="tdata">
+                                            {% if payment.emi_6_payments %}
+                                                {% for emi in payment.emi_6_payments %}
+                                                    {{ emi.date }}{% if not forloop.last %} {% endif %} <br>
+                                                {% endfor %}
+                                            {% else %}
+                                                N/A
+                                            {% endif %}
+                                        </td>
+                                        <td class="tdata">
+                                            {% if payment.emi_6_payments %}
+                                                {% for emi in payment.emi_6_payments %}
+                                                    {{emi.amount}} <br>
+                                                {% endfor %}
+                                            {% else %}
+                                                N/A
+                                            {% endif %}
+                                        </td>
 
                                         <!-- Balance Amount -->
                                         <td class="tdata balance-td">

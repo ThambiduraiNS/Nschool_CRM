@@ -698,7 +698,7 @@ class EnrollmentDeleteView(generics.DestroyAPIView):
 # payment info API
 
 class PaymentInfoListCreateView(generics.ListCreateAPIView):
-    queryset = PaymentInfo.objects.prefetch_related('single_payment', 'installments').all().order_by('-id')
+    queryset = PaymentInfo.objects.prefetch_related('single_payment', 'emi_1_payments').all().order_by('-id')
     serializer_class = PaymentInfoSerializer
     permission_classes = [IsAuthenticated]
 
@@ -727,43 +727,6 @@ class PaymentInfoUpdateView(generics.RetrieveUpdateAPIView):
 class PaymentInfoDeleteView(generics.DestroyAPIView):
     queryset = PaymentInfo.objects.all()
     serializer_class = PaymentInfoSerializer
-    permission_classes = [IsAuthenticated]
-
-    def destroy(self, request, *args, **kwargs):
-        instance = self.get_object()
-        instance.delete()
-        return Response({'Message': 'Successfully deleted'})
-    
-# Installment API
-
-class InstallmentListCreateView(generics.ListCreateAPIView):
-    queryset = Installment.objects.all().order_by('-id')
-    serializer_class = InstallmentSerializer
-    permission_classes = [IsAuthenticated]
-    
-    def list(self, request, *args, **kwargs):
-        queryset = self.get_queryset()
-        if not queryset.exists():
-            return Response({'Message': 'No Payment Records found'}, status=status.HTTP_404_NOT_FOUND)
-        
-        serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
-class InstallmentDetailView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Installment.objects.all()
-    serializer_class = InstallmentSerializer
-    permission_classes = [IsAuthenticated]
-    lookup_field = 'pk'
-
-class InstallmentUpdateView(generics.RetrieveUpdateAPIView):
-    queryset = Installment.objects.all()
-    serializer_class = InstallmentSerializer
-    permission_classes = [IsAuthenticated]
-    partial = True
-    
-class InstallmentDeleteView(generics.DestroyAPIView):
-    queryset = Installment.objects.all()
-    serializer_class = InstallmentSerializer
     permission_classes = [IsAuthenticated]
 
     def destroy(self, request, *args, **kwargs):
@@ -2862,51 +2825,6 @@ def validate_date(date_str):
             raise ValidationError("Date has wrong format. Use YYYY-MM-DD.")
     return None
 
-def manage_payment_view(request):
-    
-    try:
-        token = Token.objects.get(user=request.user)  # Assuming you only have one token and it's safe to get the first one
-    except Token.DoesNotExist:
-        context = {
-            'error': 'Authentication token not found'
-        }
-        return render(request, 'manage_payment.html', context)
-    
-    api_url = 'http://127.0.0.1:8000/api/payment/'
-    
-    headers = {
-        'Authorization': f'Token {token.key}',
-        'Content-Type': 'application/json'
-    }
-
-    try:
-        response = requests.get(api_url, headers=headers)
-        response.raise_for_status()  # Raise an HTTPError for bad responses
-        response_data = response.json()
-        
-    except requests.exceptions.RequestException as err:
-        # Catch any request-related exceptions
-        context = {
-            'error': f'Request error occurred: {err}',
-            'response_data': response.json() if response else {}
-        }
-        return render(request, 'manage_payment.html', context)
-
-    # Get the per_page value from the request, default to 10 if not provided
-    per_page = request.GET.get('per_page', '10')
-
-    # Apply pagination
-    paginator = Paginator(response_data, per_page)  # Use response_data for pagination
-    
-    page_number = request.GET.get('page')
-    page_obj = paginator.get_page(page_number)
-
-    context = {
-        'page_obj': page_obj,
-        'per_page': per_page,
-    }
-    return render(request, 'manage_payment.html', context)
-
 def delete_payment_view(request, id):
     user_id = PaymentInfo.objects.get(id=id)
     
@@ -2997,7 +2915,7 @@ def export_payment_csv(request):
             single_payment = SinglePayment.objects.filter(payment_info=payment).first()
 
             # Fetch installments if they exist
-            installments = Installment.objects.filter(payment_info=payment)
+            installments = BaseEMI.objects.filter(payment_info=payment)
 
             # Prepare installment data
             emi_data = [''] * 12  # 6 EMIs and their corresponding dates
@@ -3063,7 +2981,7 @@ def export_payment_excel(request):
             single_payment = SinglePayment.objects.filter(payment_info=payment).first()
 
             # Fetch installments if they exist
-            installments = Installment.objects.filter(payment_info=payment)
+            installments = BaseEMI.objects.filter(payment_info=payment)
 
             # Prepare installment data
             emi_data = [''] * 12  # 6 EMIs and their corresponding dates
@@ -3121,7 +3039,7 @@ def export_payment_pdf(request):
         single_payment = SinglePayment.objects.filter(payment_info=payment).first()
 
         # Fetch installments if they exist
-        installments = Installment.objects.filter(payment_info=payment)
+        installments = BaseEMI.objects.filter(payment_info=payment)
 
         # Prepare installment data
         emi_data = [{'amount': '', 'date': ''} for _ in range(6)]  # 6 EMIs
@@ -3436,53 +3354,6 @@ def single_payment_update_view(request, id):
     payments = SinglePayment.objects.filter(is_active=True, is_deleted=False)
     return render(request, 'single_payment.html', {'payments': payments})
 
-
-
-def manage_payment_info_view(request):
-    payments = PaymentInfo.objects.prefetch_related('single_payment', 'installments').order_by('-id').all()
-
-    try:
-        token = Token.objects.get(user=request.user)
-    except Token.DoesNotExist:
-        context = {
-            'error': 'Authentication token not found'
-        }
-        return render(request, 'manage_payment.html', context)
-    
-    api_url = 'http://127.0.0.1:8000/api/payment_info/'
-    headers = {
-        'Authorization': f'Token {token.key}',
-        'Content-Type': 'application/json'
-    }
-
-    try:
-        response = requests.get(api_url, headers=headers)
-        response.raise_for_status()
-        response_data = response.json()
-    except requests.exceptions.RequestException as err:
-        context = {
-            'error': f'Request error occurred: {err}',
-            'response_data': response.json() if response else {}
-        }
-        return render(request, 'manage_payment.html', context)
-
-    per_page = request.GET.get('per_page', '10')
-    paginator = Paginator(response_data, per_page)
-    page_number = request.GET.get('page')
-    page_obj = paginator.get_page(page_number)
-
-    # Calculate totals
-    totals = calculate_payment_totals(payments)
-    
-    context = {
-        'page_obj': page_obj,
-        'per_page': per_page,
-        'payments': payments,
-        **totals,
-    }
-    
-    return render(request, 'manage_payment_info.html', context)
-
 from .config import EMI_MODELS  # Import the dictionary mapping
 
 def new_installment_view(request):
@@ -3648,6 +3519,7 @@ def new_manage_payment_info_view(request):
         response = requests.get(api_url, headers=headers)
         response.raise_for_status()
         response_data = response.json()
+        
     except requests.exceptions.RequestException as err:
         context = {
             'error': f'Request error occurred: {err}',

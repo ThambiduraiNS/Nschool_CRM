@@ -291,39 +291,6 @@ class SinglePayment(models.Model):
     modified_by = models.IntegerField(null=True)
     is_active = models.BooleanField(default=True)
     is_deleted = models.BooleanField(default=False)
-    
-
-class Installment(models.Model):
-    CASH = 'Cash'
-    UPI = 'UPI'
-    BANK_TRANSFER = 'Bank Transfer'
-
-    PAYMENT_MODE_CHOICES = [
-        (CASH, 'Cash'),
-        (UPI, 'UPI'),
-        (BANK_TRANSFER, 'Bank Transfer'),
-    ]
-
-    payment_info = models.ForeignKey(PaymentInfo, on_delete=models.CASCADE, related_name='installments')
-    date = models.DateField()
-    payment_mode = models.CharField(max_length=50, choices=PAYMENT_MODE_CHOICES)
-    emi = models.CharField(max_length=50)
-    amount = models.DecimalField(max_digits=10, decimal_places=2)
-    
-    # UPI specific fields
-    upi_transaction_id = models.CharField(max_length=100, blank=True, null=True)
-    upi_app_name = models.CharField(max_length=100, blank=True, null=True)
-
-    # Bank Transfer specific fields
-    refference_no = models.CharField(max_length=100, blank=True, null=True)
-
-    created_at = models.DateTimeField(auto_now_add=True)
-    modified_at = models.DateTimeField(auto_now=True)
-    created_by = models.IntegerField(null=True, blank=True)
-    modified_by = models.IntegerField(null=True)
-    is_active = models.BooleanField(default=True)
-    is_deleted = models.BooleanField(default=False)
-    
 
 class BaseEMI(models.Model):
     CASH = 'Cash'
@@ -386,68 +353,14 @@ class BaseEMI(models.Model):
             is_deleted=False
         ).exclude(id=self.id).aggregate(total_amount=Sum('amount'))['total_amount'] or Decimal('0.0')
 
-        # print(f"Previous payment sum: {previous_payments_sum}")
-        
-        # Total amount paid including the current payment
         total_paid_with_current = Decimal(previous_payments_sum) + Decimal(self.amount)
 
-        # print(f"Total Paid With Current: {total_paid_with_current}")
-        
-        # Check if the total payment exceeds the total EMI amount
-        # if total_paid_with_current > total_emi_amount:
-        #     # Calculate the excess amount
-        #     excess_amount = total_paid_with_current - Decimal(total_emi_amount)
-            
-        #     # Adjust the current amount to avoid exceeding the total EMI amount
-        #     self.amount = max(Decimal('0.0'), Decimal(self.amount) - excess_amount)
-
-        #     # Update excess amount in PaymentInfo
-        #     current_excess = Decimal(self.payment_info.excess_amount or '0.0')
-        #     self.payment_info.excess_amount = str(excess_amount + current_excess)
-
-        #     # Print current state for debugging
-        #     print(f"Current Excess: {current_excess}, Excess Amount: {excess_amount}")
-            
-        #     # Store the excess amount in the next EMI payment
-        #     next_emi = self.__class__.objects.filter(
-        #         payment_info=self.payment_info,
-        #         emi__gt=self.emi,  # Find the next EMI
-        #         is_active=True,
-        #         is_deleted=False
-        #     ).first()
-
-        #     if next_emi:
-        #         next_excess = Decimal(next_emi.payment_info.excess_amount or '0.0')
-        #         next_emi.payment_info.excess_amount = str(excess_amount + next_excess)
-        #         next_emi.payment_info.save()
-        #         print(f"Updated Next EMI Excess Amount: {next_emi.payment_info.excess_amount}")
-
-        # else:
-        #     # If there's no excess, we can reset the excess amount
-        #     self.payment_info.excess_amount = str(Decimal('0.0'))
-
-        # # Calculate the balance
-        # balance = self.payment_info.total_fees
-        # # print(f"Before balance: {balance}")
-
-        # balance = balance - total_paid_with_current
-        # # print(f"Updated Balance: {balance}")
-        
-        # # Update the balance in PaymentInfo
-        # self.payment_info.balance = balance
-
-        # Determine payment status
         self.status = self.PAID if total_paid_with_current >= total_emi_amount else self.PENDING
         
-        # Save the updated PaymentInfo
         self.payment_info.save()
 
         # Call the original save method to ensure the object is saved
         super().save(*args, **kwargs)
-
-
-
-
 
 # Subclasses inheriting from BaseEMI
 class EMI_1(BaseEMI):
