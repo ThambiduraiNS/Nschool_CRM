@@ -152,8 +152,39 @@
                                             aria-label="total_fees" placeholder=" " autocomplete="off" autofocus>
                                         <label class="floating-label">&nbsp;Total Fees <span class="required">*</span> &nbsp;</label>
                                         <span id="total_fees_error" class="error-div">
-                                            {% if errors.duration %}
-                                                    {{errors.duration}}
+                                            {% if errors.total_fees %}
+                                                    {{errors.total_fees}}
+                                            {% endif %}
+                                        </span>
+                                    </div>
+                                </div>
+                                
+                                <!-- EMI AMount -->
+                                <div class="col-12 col-md-6 pe-md-0" id="duration_div">
+                                    <div class="user-input-wrp ms-4 me-2 mt-4">
+                                        <input type="text" name="installment_amount" value="{{installment_amount}}" id="installment_amount" class="form-control"
+                                            aria-label="installment_amount" placeholder=" " autocomplete="off" autofocus>
+                                        <label class="floating-label">&nbsp;Installment Amount <span class="required">*</span> &nbsp;</label>
+                                        <span id="installment_amount_error" class="error-div">
+                                            {% if errors.installment_amount %}
+                                                    {{errors.installment_amount}}
+                                            {% endif %}
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <!-- Fees Type Field -->
+                                <div class="col-12 col-md-6 p-md-0">
+                                    <div class="user-input-wrp ms-4 me-2 mt-4">
+                                        <select name="montly_payment_type" id="montly_payment_type" class="form-select select">
+                                            <option value="" selected>Select Any One</option>
+                                            <option value="partial payment">partial payment</option>
+                                            <option value="Full payment">Full payment</option>
+                                        </select>
+                                        <label class="floating-label">&nbsp; Monthly Payment Type <span class="required">*</span> &nbsp;</label>
+                                        <span id="montly_payment_type_error" class="error-div">
+                                            {% if errors.montly_payment_type %}
+                                                    {{errors.montly_payment_type}}
                                             {% endif %}
                                         </span>
                                     </div>
@@ -231,16 +262,28 @@ document.addEventListener('DOMContentLoaded', function() {
     function populateFields(data) {
         document.getElementById('student_name').value = data.student_name || '';
         document.getElementById('course_name').value = data.course_name || '';
-        document.getElementById('duration').value = data.duration || '';
+
+        console.log(data.course_name)
+
+        if(data.course_name === "inplant training"){
+            document.getElementById('duration').value = data.inplant_no_of_days || '';
+        } else if(data.course_name === "internship training") {
+            document.getElementById('duration').value = data.internship_no_of_days || '';
+        }else {
+            document.getElementById('duration').value = data.duration || '';
+        }
         document.getElementById('joining_date').value = data.joining_date || '';
         document.getElementById('total_fees').value = data.total_fees || '';
-        document.getElementById('fees_type').value = data.fees_type || '';
+        document.getElementById('installment_amount').value = data.installment_amount || '';
+        document.getElementById('fees_type').value = data.payment_type || '';
     }
     
     function clearFields() {
         document.getElementById('student_name').value = '';
         document.getElementById('course_name').value = '';
         document.getElementById('duration').value = '';
+        document.getElementById('inplant_no_of_days').value = '';
+        document.getElementById('internship_no_of_days').value = '';
         document.getElementById('joining_date').value = '';
         document.getElementById('total_fees').value = '';
         document.getElementById('fees_type').value = '';

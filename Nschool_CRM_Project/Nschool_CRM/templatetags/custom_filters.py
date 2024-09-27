@@ -51,3 +51,30 @@ def sub(value, arg):
     except (TypeError, ValueError):
         return value
 
+@register.filter
+def get_item(dictionary, key):
+    return dictionary.get(key)
+
+@register.filter(name='dict_key')
+def dict_key(dictionary, key):
+    return dictionary.get(key)
+
+@register.filter
+def total_amount(emi_data):
+    """Sums total_amount from a list of dictionaries."""
+    return float(sum(emi['total_amount'] for emi in emi_data))
+
+
+@register.filter
+def subtract(value, amount):
+    """Subtracts amount from value."""
+    return float(value) - float(amount)
+
+@register.filter
+def range_filter(value):
+    return range(value)
+
+@register.filter
+def order_by(queryset, args):
+    args = [x.strip() for x in args.split(',')]
+    return queryset.sort(*args)

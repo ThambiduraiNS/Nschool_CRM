@@ -29,7 +29,7 @@
                 <nav style="--bs-breadcrumb-divider: '|';" aria-label="breadcrumb">
                     <ol class="breadcrumb pt-3 mb-3 ps-lg-3">
                         <li class="breadcrumb-item"><a class="user-a" href="#">Enrollment</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">Update Enrollment</li>
+                        <li class="breadcrumb-item active" aria-current="page">New Enrollment</li>
                     </ol>
                 </nav>
             </div>
@@ -82,7 +82,7 @@
                                         <div class="user-input-wrp ms-4">
                                             <input type="text" name="enquiry_no" id="enquiry_no" value="{{enrollment.enquiry_no.enquiry_no}}" class="form-control"
                                                 aria-label="enquiry_no" placeholder=" " autocomplete="off" autofocus>
-                                            <label class="floating-label">&nbsp;Enquiry No&nbsp;</label>
+                                            <label class="floating-label">&nbsp;Enquiry No <span class="required">*</span> &nbsp;</label>
                                             <span id="enquiry_no_error" class="error-div">
                                                 {% if errors.enquiry_no %}
                                                     {{errors.enquiry_no}}
@@ -173,11 +173,11 @@
                                     <div class="user-input-wrp ms-md-5 pe-md-2">
                                         <select name="gender" id="gender" class="form-select select">
                                             <option value="" selected>Gender</option>
-                                            <option value="Male" {% if enrollment.gender == "Male" %} selected {%endif%}>Male</option>
-                                            <option value="Female" {% if enrollment.gender == "Female" %} selected {%endif%}>Female</option>
-                                            <option value="Others" {% if enrollment.gender == "Others" %} selected {%endif%}>Other</option>
+                                            <option value="Male" {% if enrollment.gender == "Male" %} selected {% endif %}>Male</option>
+                                            <option value="Female" {% if enrollment.gender == "Female" %} selected {% endif %}>Female</option>
+                                            <option value="Others" {% if enrollment.gender == "Others" %} selected {% endif %}>Other</option>
                                         </select>
-                                        <!-- <label class="floating-label">&nbsp;Gender <span class="required">*</span> &nbsp;</label> -->
+                                        <label class="floating-label">&nbsp;Gender <span class="required">*</span> &nbsp;</label>
                                         <span id="gender_error" class="error-div">
                                             {% if errors.gender %}
                                                     {{errors.gender}}
@@ -340,7 +340,7 @@
                                     <!-- Place field -->
                                     <div class="col-12 col-md-6">
                                         <div class="user-input-wrp ms-md-3 me-md-2 mt-md-4">
-                                            <input type="text" name="place" id="place" value="{{place}}" class="form-control"
+                                            <input type="text" name="place" id="place" value="{{enrollment.place}}" class="form-control"
                                                 aria-label="place" placeholder=" " autocomplete="off" autofocus>
                                             <label class="floating-label">&nbsp;Place&nbsp;</label>
                                             <span id="place_error" class="error-div">
@@ -371,7 +371,7 @@
                                     <p class="experience_p">Work Experience</p>
                                     <input id="yes" type="radio" name="s" onclick="handleWorkExperienceChange()"><label for="yes">&nbsp;Yes</label>
                                     <input id="no" type="radio" name="s" onclick="handleWorkExperienceChange()"><label for="no">&nbsp;No</label>
-                                    <span id="work_experience_error" class="error-div">
+                                    <span id="experience_error" class="error-div">
                                         {% if errors.work_experience %}
                                             {{errors.work_experience}}
                                         {% endif %}
@@ -421,34 +421,6 @@
                                         </div>
                                     </div>
 
-                                    <!-- From Date field -->
-                                    <!-- <div class="col-12 col-md-6"  style="display: none;" id="from_date_div">
-                                        <div class="user-input-wrp ms-md-3 me-md-2 mt-md-4">
-                                            <input type="date" name="from_date" id="from_date" value="{{from_date}}" class="form-control" placeholder=" "
-                                                autocomplete="off" autofocus>
-                                            <label class="floating-label">&nbsp;From Date&nbsp;</label>
-                                            <span id="from_date_error" class="error-div error-right">
-                                                {% if errors.from_date %}
-                                                    {{errors.from_date}}
-                                                {% endif %}
-                                            </span>
-                                        </div>
-                                    </div> -->
-
-                                    <!-- To Date field -->
-                                    <!-- <div class="col-12 col-md-6 pe-md-0" style="display: none;" id="to_date_div">
-                                        <div class="user-input-wrp ms-md-3 me-md-2 mt-md-4">
-                                            <input type="date" name="to_date" id="to_date" value="{{to_date}}" class="form-control" placeholder=" "
-                                                autocomplete="off" autofocus>
-                                            <label class="floating-label">&nbsp;To Date&nbsp;</label>
-                                            <span id="to_date_error" class="error-div error-right">
-                                                {% if errors.to_date %}
-                                                    {{errors.to_date}}
-                                                {% endif %}
-                                            </span>
-                                        </div>
-                                    </div> -->
-
                                     <!-- Nature of Work field -->
                                     <div class="col-12 col-md-6 pe-md-0"  style="display: none;" id="nature_of_work_div">
                                         <div class="user-input-wrp ms-md-3 me-md-2 mt-md-4">
@@ -480,10 +452,10 @@
                                     <!-- Course Name field -->
                                     <div class="col-12 col-md-6 pe-md-0">
                                         <div class="user-input-wrp ms-md-3 me-md-2 mt-md-4">
-                                            <select class="form-select select" id="course_name" name="course_name" onchange="handleCourseNameChange()">
+                                            <select class="form-select select" id="course_name" name="course_name" onclick="handleCourseNameChange()">
                                                 <option value="" selected>Select Your Course</option>
                                                 {% for course in courses %}
-                                                    <option value="{{ course.id }}" {% if course.id == enrollment.course_name_id %}selected{% endif %}>{{ course.course_name|title }}</option>
+                                                <option value="{{ course.id }}" {% if course_name == course.id %}selected{% endif %}>{{ course.course_name|title }}</option>
                                                 {% endfor %}
                                             </select>
                                             <label for="course_name" class="floating-label float">&nbsp;Course Name <span class="required">*</span> &nbsp;</label>
@@ -512,7 +484,7 @@
                                     <!-- Inplant Technology field -->
                                     <div class="col-12 col-md-6 pe-md-0" style="display: none;" id="technology_div">
                                         <div class="user-input-wrp ms-md-3 me-md-2 mt-md-4">
-                                            <input type="text" name="technology" id="technology" value="{{enrollment.inplant_technology}}" class="form-control" placeholder=" "
+                                            <input type="text" name="inplant_technology" id="technology" value="{{enrollment.inplant_technology}}" class="form-control" placeholder=" "
                                                 autocomplete="off">
                                             <label class="floating-label">&nbsp;Technology <span class="required">*</span> &nbsp;</label>
                                             <span id="technology_error" class="error-div error-right">
@@ -566,12 +538,10 @@
                                         </div>
                                     </div>
                                 
-                                
-                                
                                     <!-- No.of Days field -->
                                     <div class="col-12 col-md-6 pe-md-0"  style="display: none;" id="internship_no_of_days_div">
                                         <div class="user-input-wrp ms-md-3 me-md-2 mt-md-4">
-                                            <input type="number" name="internship_no_of_days" id="internship_no_of_days" value="{{enrollment.inplant_no_of_days}}" class="form-control" placeholder=" "
+                                            <input type="number" name="internship_no_of_days" id="internship_no_of_days" value="{{enrollment.internship_no_of_days}}" class="form-control" placeholder=" "
                                                 autocomplete="off" autofocus>
                                             <label class="floating-label">&nbsp;No.of Days <span class="required">*</span> &nbsp;</label>
                                             <span id="internship_no_of_days_error" class="error-div error-right">
@@ -585,7 +555,7 @@
                                     <!-- No.of Students -->
                                     <div class="col-12 col-md-6 pe-md-0" style="display: none;" id="internship_no_of_students_div">
                                         <div class="user-input-wrp ms-md-3 me-md-2 mt-md-4">
-                                            <input type="number" name="internship_no_of_students" id="internship_no_of_students" value="{{enrollment.inplant_no_of_students}}" class="form-control" placeholder=" "
+                                            <input type="number" name="internship_no_of_students" id="internship_no_of_students" value="{{enrollment.internship_no_of_students}}" class="form-control" placeholder=" "
                                                 autocomplete="off" autofocus>
                                             <label class="floating-label">&nbsp;No.of Students <span class="required">*</span> &nbsp;</label>
                                             <span id="internship_no_of_students_error" class="error-div error-right">
@@ -599,12 +569,13 @@
                                     <!-- Payment Type -->
                                     <div class="col-12 col-md-6 pe-md-0">
                                         <div class="user-input-wrp ms-md-3 me-md-2 mt-md-4">
-                                            <select class="form-select select" name="payment_type" id="payment_type">
+                                            <select class="form-select select" name="payment_type" id="payment_type" onchange="handlePaymentTypeChange()">
                                                 <option value="" selected>Select Your Payment Type</option>
-                                                <option class="option" value="Single Payment" {% if enrollment.payment_type == "Single Payment" %}selected{% endif %}>Single Payment</option>
-                                                <option class="option" value="EMI" {% if enrollment.payment_type == "EMI" %}selected{% endif %}>EMI</option>
+                                                <option class="option" value="Single Payment" {% if enrollment.payment_type == "Single Payment" %} selected {% endif %}>Single Payment</option>
+                                                <option class="option" value="Installment" {% if enrollment.payment_type == "Installment" %} selected {% endif %} >Installment</option>
                                             </select>
-                                            <span id="internship_no_of_students_error" class="error-div error-right">
+                                            <label class="floating-label">&nbsp;Select Your Payment Type <span class="required">*</span> &nbsp;</label>
+                                            <span id="payment_type_error" class="error-div error-right">
                                                 {% if errors.payment_type %}
                                                     {{errors.payment_type}}
                                                 {% endif %}
@@ -621,6 +592,20 @@
                                             <span id="total_fees_amount_error" class="error-div error-right">
                                                 {% if errors.total_fees_amount %}
                                                         {{errors.total_fees_amount}}
+                                                {% endif %}
+                                            </span>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Installment Amount field -->
+                                    <div class="col-12 col-md-6 pe-md-0" id="installment_div" style="display: none;">
+                                        <div class="user-input-wrp ms-md-3 me-md-2 mt-md-4">
+                                            <input type="text" name="installment_amount" value="{{enrollment.installment_amount}}" id="installment_amount" maxlength="10" class="form-control" placeholder=" "
+                                                autocomplete="off" autofocus onclick="handlePaymentTypeChange()">
+                                            <label class="floating-label">&nbsp;Installment Amount <span class="required">*</span> &nbsp;</label>
+                                            <span id="installment_amount_error" class="error-div error-right">
+                                                {% if errors.installment_amount %}
+                                                    {{errors.installment_amount}}
                                                 {% endif %}
                                             </span>
                                         </div>
@@ -667,7 +652,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     return response.json();
                 })
                 .then(data => {
+                    console.log("Fetched data:", data);
                     if (data.error) {
+                        console.error("Error returned by API:", data.error);
                         alert(data.error);
                         clearFields();
                     } else {
@@ -677,57 +664,65 @@ document.addEventListener('DOMContentLoaded', function() {
                 .catch(error => {
                     // alert('Error fetching enquiry details.');
                     console.error('There was a problem with the fetch operation:', error);
-                    window.location.reload()
+                    // window.location.reload()
                 });
         }
     });
     
     function populateFields(data) {
-        document.getElementById('name').value = data.name || '';
-        document.getElementById('phonenumber').value = data.contact_no || '';
-        document.getElementById('date_of_birth').value = data.date_of_birth || '';
-        document.getElementById('email_id').value = data.email_id || '';
-        document.getElementById('father_name').value = data.fathers_name || '';
-        document.getElementById('fathers_contact_no').value = data.fathers_contact_no || '';
-        document.getElementById('degree').value = data.degree || '';
-        document.getElementById('grade_percentage').value = data.grade_percentage || '';
-        document.getElementById('institution').value = data.college || '';
-        document.getElementById('year_of_passed_out').value = data.year_of_graduation || '';
-        
+        console.log('Populating fields with data:', data); // Debugging line
+        const setValueIfExists = (fieldId, value) => {
+            const field = document.getElementById(fieldId);
+            if (field) {
+                field.value = value || '';
+            } else {
+                console.warn(`Field with id "${fieldId}" not found.`);
+            }
+        };
+
+        setValueIfExists('name', data.name);
+        setValueIfExists('phonenumber', data.contact_no);
+        setValueIfExists('date_of_birth', data.date_of_birth);
+        setValueIfExists('email_id', data.email_id);
+        setValueIfExists('father_name', data.fathers_name);
+        setValueIfExists('fathers_contact_no', data.fathers_contact_no);
+        setValueIfExists('degree', data.degree);
+        setValueIfExists('grade_percentage', data.grade_percentage);
+        setValueIfExists('institution', data.college);
+        setValueIfExists('year_of_passed_out', data.year_of_graduation);
+        // Handle Inplant and Internship fields
+
+        setValueIfExists('inplant_technology', data.inplant_technology);
+        setValueIfExists('inplant_no_of_days', data.inplant_no_of_days !== null ? data.inplant_no_of_days : ''); // Handle null
+        setValueIfExists('inplant_no_of_students', data.inplant_no_of_students !== null ? data.inplant_no_of_students : ''); // Handle null
+        setValueIfExists('internship_technology', data.internship_technology);
+        setValueIfExists('internship_no_of_days', data.internship_no_of_days !== null ? data.internship_no_of_days : ''); // Handle null
+        setValueIfExists('internship_no_of_students', data.internship_no_of_students !== null ? data.internship_no_of_students : ''); // Handle null
+
         // Match course_name with the dropdown option
         const courseDropdown = document.getElementById('course_name');
-        console.log("Course Dropdown:", courseDropdown);
-        
-        let courseFound = false;
-        
-        for (let i = 0; i < courseDropdown.options.length; i++) {
-            const optionText = courseDropdown.options[i].textContent.trim().toLowerCase();
-            const courseName = data.course_name.trim().toLowerCase();
-            
-            if (optionText === courseName) {
-                courseDropdown.selectedIndex = i;
-                courseFound = true;
-                break;
+        if (courseDropdown) {
+            let courseFound = false;
+            const selectedCourseName = data.course_name.trim().toLowerCase();
+            console.log("Course to match:", selectedCourseName); // Debugging line
+
+            for (let i = 0; i < courseDropdown.options.length; i++) {
+                const optionText = courseDropdown.options[i].textContent.trim().toLowerCase();
+
+                if (optionText === selectedCourseName) {
+                    courseDropdown.selectedIndex = i;
+                    courseFound = true;
+                    console.log("Matched course at index:", i);
+                    break;
+                }
             }
-        }
-        
-        if (!courseFound) {
-            console.warn("Course name not found in the dropdown:", data.course_name);
+
+            if (!courseFound) {
+                console.warn("Course name not found in the dropdown:", selectedCourseName);
+            }
         } else {
-            console.log("Selected course:", courseDropdown.options[courseDropdown.selectedIndex].text.toLowerCase());
+            console.warn('Course dropdown field with id "course_name" not found.');
         }
-    }
-    
-    function clearFields() {
-        document.getElementById('name').value = '';
-        document.getElementById('phonenumber').value = '';
-        document.getElementById('date_of_birth').value = '';
-        document.getElementById('email_id').value = '';
-        document.getElementById('father_name').value = '';
-        document.getElementById('fathers_contact_no').value = '';
-        document.getElementById('degree').value = '';
-        document.getElementById('grade_percentage').value = '';
-        document.getElementById('course_name').value = '';
     }
 });
 
@@ -788,71 +783,79 @@ document.addEventListener('DOMContentLoaded', function() {
 
     
     function handleCourseNameChange() {
+        console.log("Function called");
+
         const courseNameElement = document.getElementById('course_name');
         const courseName = courseNameElement.options[courseNameElement.selectedIndex].text.trim().toLowerCase();
+        console.log("Selected Course Name:", courseName);
 
-        const technologyDiv = document.getElementById('technology_div');
-        const daysDiv = document.getElementById('no_of_days_div');
-        const studentsDiv = document.getElementById('no_of_students_div');
-        const internshipDiv = document.getElementById('internship_technology_div');
-        const internshipDaysDiv = document.getElementById('internship_no_of_days_div');
-        const internshipStudentsDiv = document.getElementById('internship_no_of_students_div');
-        const duration_div = document.getElementById('duration_div');
+        const elements = {
+            technologyDiv: document.getElementById('technology_div'),
+            daysDiv: document.getElementById('no_of_days_div'),
+            studentsDiv: document.getElementById('no_of_students_div'),
+            internshipDiv: document.getElementById('internship_technology_div'),
+            internshipDaysDiv: document.getElementById('internship_no_of_days_div'),
+            internshipStudentsDiv: document.getElementById('internship_no_of_students_div'),
+            durationDiv: document.getElementById('duration_div'), // This is the course duration div
 
-        const technologyInput = document.getElementById('technology');
-        const daysInput = document.getElementById('inplant_no_of_days');
-        const studentsInput = document.getElementById('inplant_no_of_students');
-        const internshipInput = document.getElementById('internship_technology');
-        const internshipDaysInput = document.getElementById('internship_no_of_days');
-        const internshipStudentsInput = document.getElementById('internship_no_of_students');
+            technologyInput: document.getElementById('technology'),
+            daysInput: document.getElementById('inplant_no_of_days'),
+            studentsInput: document.getElementById('inplant_no_of_students'),
+            internshipInput: document.getElementById('internship_technology'),
+            internshipDaysInput: document.getElementById('internship_no_of_days'),
+            internshipStudentsInput: document.getElementById('internship_no_of_students')
+        };
 
-        // Hide all fields initially and remove required attributes
-        technologyDiv.style.display = 'none';
-        technologyInput.removeAttribute('required');
+        // Hide all fields and remove required attributes for both sets
+        Object.values(elements).forEach(el => {
+            if (el.tagName === 'DIV') {
+                el.style.display = 'none'; // Hide the divs
+            } else if (el.tagName === 'INPUT') {
+                el.value = ''; // Optionally clear the values of the input fields
+            }
+        });
 
-        daysDiv.style.display = 'none';
-        daysInput.removeAttribute('required');
-
-        studentsDiv.style.display = 'none';
-        studentsInput.removeAttribute('required');
-
-        internshipDiv.style.display = 'none';
-        internshipInput.removeAttribute('required');
-
-        internshipDaysDiv.style.display = 'none';
-        internshipDaysInput.removeAttribute('required');
-
-        internshipStudentsDiv.style.display = 'none';
-        internshipStudentsInput.removeAttribute('required');
-        
-        duration_div.style.display = 'block';
-        
-        // Show relevant fields and add required attributes
+        // Show relevant fields based on the selected course
         if (courseName === 'inplant training') {
-            technologyDiv.style.display = 'block';
-            technologyInput.setAttribute('required', 'required');
-
-            daysDiv.style.display = 'block';
-            daysInput.setAttribute('required', 'required');
-
-            studentsDiv.style.display = 'block';
-            studentsInput.setAttribute('required', 'required');
-
-            duration_div.style.display = 'none';
+            elements.technologyDiv.style.display = 'block';
+            elements.daysDiv.style.display = 'block';
+            elements.studentsDiv.style.display = 'block';
 
         } else if (courseName === 'internship training') {
-            internshipDiv.style.display = 'block';
-            internshipInput.setAttribute('required', 'required');
+            elements.internshipDiv.style.display = 'block';
+            elements.internshipDaysDiv.style.display = 'block';
+            elements.internshipStudentsDiv.style.display = 'block';
 
-            internshipDaysDiv.style.display = 'block';
-            internshipDaysInput.setAttribute('required', 'required');
-
-            internshipStudentsDiv.style.display = 'block';
-            internshipStudentsInput.setAttribute('required', 'required');
-
-            duration_div.style.display = 'none';
+        } else {
+            // If no course is selected or it's another course, show the duration field
+            elements.durationDiv.style.display = 'block';
         }
     }
+
+
+    function handlePaymentTypeChange() {
+        console.log("Function called");
+
+        const paymentTypeElement = document.getElementById('payment_type');
+        const paymentType = paymentTypeElement.value.trim().toLowerCase();
+        console.log("Selected Payment Type:", paymentType);
+
+        const installmentDiv = document.getElementById('installment_div');
+        const installmentAmountInput = document.getElementById('installment_amount');
+
+        if (paymentType === 'installment') {
+            // Show installment amount field and make it required
+            installmentDiv.style.display = 'block';
+            installmentAmountInput.setAttribute('required', 'required');
+        } else {
+            // Hide installment amount field and remove required attribute
+            installmentDiv.style.display = 'none';
+            installmentAmountInput.removeAttribute('required');
+            installmentAmountInput.value = ''; // Optionally clear the value
+        }
+    }
+
+
 
     // Ensure the function runs on DOMContentLoaded
     document.addEventListener('DOMContentLoaded', () => handleCourseNameChange());
@@ -861,8 +864,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Get the elements for the work experience fields
         let designation_div = document.getElementById('designation_div');
         let company_name_div = document.getElementById('company_name_div');
-        // let from_date_div = document.getElementById('from_date_div');
-        // let to_date_div = document.getElementById('to_date_div');
+        
         let work_experience_div = document.getElementById('work_experience_div');
         let nature_of_work_div = document.getElementById('nature_of_work_div');
 
@@ -877,90 +879,145 @@ document.addEventListener('DOMContentLoaded', function() {
         let displayStyle = workExperienceYes ? 'block' : 'none';
         designation_div.style.display = displayStyle;
         company_name_div.style.display = displayStyle;
-        // from_date_div.style.display = displayStyle;
-        // to_date_div.style.display = displayStyle;
         work_experience_div.style.display = displayStyle;
         nature_of_work_div.style.display = displayStyle;
     }
 
-    document.getElementById('enrollment_form').addEventListener('submit', function(event) {
-        event.preventDefault();
-        let hasError = false;
+    // document.getElementById('enrollment_form').addEventListener('submit', function(event) {
+    //     event.preventDefault();
+    //     let hasError = false;
 
-        let enquiry_no = document.getElementById("enquiry_no").value.trim();
-        let registration_no = document.getElementById("registration_no").value.trim();
-        let registration_date = document.getElementById("registration_date").value.trim();
-        let name = document.getElementById("name").value.trim();
-        let contactField = document.getElementById('phonenumber').value.trim();
-        let emailField = document.getElementById('email_id').value.trim();
-        let fathers_contact_no = document.getElementById('fathers_contact_no').value.trim();
-        let gender = document.getElementById('gender').value.trim();
-        let degree = document.getElementById('degree').value.trim();
-        let institution = document.getElementById('institution').value.trim();
-        let subject = document.getElementById('subject').value.trim();
-        let grade_percentage = document.getElementById('grade_percentage').value.trim();
-        let year_of_passed_out = document.getElementById('year_of_passed_out').value.trim();
-        let duration = document.getElementById('duration').value.trim();
-        let course_name = document.getElementById('course_name').value.trim();
-        let total_fees_amount = document.getElementById('total_fees_amount').value.trim();
+    //     // Field error IDs
+    //     const fieldErrorIds = {
+    //         enquiry_no: "enquiry_no_error",
+    //         registration_no: "registration_no_error",
+    //         registration_date: "registration_date_error",
+    //         name: "name_error",
+    //         phonenumber: "phonenumber_error",
+    //         email_id: "email_error",
+    //         fathers_contact_no: "father_contact_no_error",
+    //         gender: "gender_error",
+    //         degree: "degree_error",
+    //         institution: "institution_error",
+    //         subject: "subject_error",
+    //         grade_percentage: "grade_percentage_error",
+    //         year_of_passed_out: "year_of_passed_out_error",
+    //         duration: "duration_error",
+    //         course_name: "course_name_error",
+    //         payment_type: "payment_type_error",
+    //         total_fees_amount: "total_fees_amount_error",
+    //         designation: "designation_error",
+    //         company_name: "company_name_error",
+    //         work_experience: "work_experience_error",
+    //         nature_of_work: "nature_of_work_error",
+    //         technology: "technology_error",
+    //         inplant_no_of_days: "inplant_no_of_days_error",
+    //         inplant_no_of_students: "inplant_no_of_students_error",
+    //         internship_technology: "internship_technology_error",
+    //         internship_no_of_days: "internship_no_of_days_error",
+    //         internship_no_of_students: "internship_no_of_students_error"
+    //     };
 
-        // Field validations
-        if (validateFields(enquiry_no, "enquiry_no_error")) hasError = true;
-        if (validateFields(registration_no, "registration_no_error")) hasError = true;
-        if (validateFields(registration_date, "registration_date_error")) hasError = true;
-        if (validateFields(name, "name_error")) hasError = true;
+    //     const getFieldValue = (id) => document.getElementById(id)?.value.trim() || '';
+    //     const getFieldElement = (id) => document.getElementById(id);
+    //     const getFieldError = (id) => document.getElementById(fieldErrorIds[id]);
 
-        // Contact number validation
-        if (contactField === "") {
-            document.getElementById('phonenumber_error').innerText = "This Field is required.";
-            hasError = true;
-        } else if (contactField.length != 10 || isNaN(contactField)) {
-            document.getElementById('phonenumber_error').innerText = "Please enter a valid 10-digit contact number.";
-            hasError = true;
-        } else {
-            document.getElementById('phonenumber_error').innerText = "";
-        }
+    //     function validateField(value, errorElement) {
+    //         if (value === "") {
+    //             errorElement.innerText = "This field is required.";
+    //             console.log(`Validation error on field: ${errorElement.id}. Error: This field is required.`);
+    //             return true;
+    //         } else {
+    //             errorElement.innerText = "";
+    //             return false;
+    //         }
+    //     }
 
-        // Email validation
-        let emailPattern = /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/;
-        if (emailField === "") {
-            document.getElementById('email_error').innerText = "This field is required.";
-            hasError = true;
-        } else if (!emailPattern.test(emailField)) {
-            document.getElementById('email_error').innerText = "Please enter a valid email address.";
-            hasError = true;
-        } else {
-            document.getElementById('email_error').innerText = "";  // Clear any previous error messages
-        }
+    //     function validateContactNumber(value, errorElement) {
+    //         if (value === "") {
+    //             errorElement.innerText = "This field is required.";
+    //             console.log(`Validation error on field: ${errorElement.id}. Error: This field is required.`);
+    //             return true;
+    //         } else if (value.length != 10 || isNaN(value)) {
+    //             errorElement.innerText = "Please enter a valid 10-digit contact number.";
+    //             console.log(`Validation error on field: ${errorElement.id}. Error: Please enter a valid 10-digit contact number.`);
+    //             return true;
+    //         } else {
+    //             errorElement.innerText = "";
+    //             return false;
+    //         }
+    //     }
 
-        // Father's contact number validation
-        if (fathers_contact_no === "") {
-            document.getElementById('father_contact_no_error').innerText = "This Field is required.";
-            hasError = true;
-        } else if (fathers_contact_no.length != 10 || isNaN(fathers_contact_no)) {
-            document.getElementById('father_contact_no_error').innerText = "Please enter a valid 10-digit contact number.";
-            hasError = true;
-        } else {
-            document.getElementById('father_contact_no_error').innerText = "";
-        }
+    //     function validateEmail(value, errorElement) {
+    //         let emailPattern = /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/;
+    //         if (value === "") {
+    //             errorElement.innerText = "This field is required.";
+    //             console.log(`Validation error on field: ${errorElement.id}. Error: This field is required.`);
+    //             return true;
+    //         } else if (!emailPattern.test(value)) {
+    //             errorElement.innerText = "Please enter a valid email address.";
+    //             console.log(`Validation error on field: ${errorElement.id}. Error: Please enter a valid email address.`);
+    //             return true;
+    //         } else {
+    //             errorElement.innerText = "";
+    //             return false;
+    //         }
+    //     }
 
-        // Additional field validations
-        if (validateFields(gender, "gender_error")) hasError = true;
-        if (validateFields(degree, "degree_error")) hasError = true;
-        if (validateFields(institution, "institution_error")) hasError = true;
-        if (validateFields(subject, "subject_error")) hasError = true;
-        if (validateFields(grade_percentage, "grade_percentage_error")) hasError = true;
-        if (validateFields(year_of_passed_out, "year_of_passed_out_error")) hasError = true;
-        if (validateFields(duration, "duration_error")) hasError = true;
-        if (validateFields(course_name, "course_name_error")) hasError = true;
-        if (validateFields(total_fees_amount, "total_fees_amount_error")) hasError = true;
+    //     // Perform validations
+    //     for (const [key, errorId] of Object.entries(fieldErrorIds)) {
+    //         const fieldValue = getFieldValue(key);
+    //         const errorElement = getFieldError(key);
+            
+    //         if (!errorElement) {
+    //             console.error(`Error element not found for field: ${key}`);
+    //             continue;
+    //         }
+            
+    //         if (key === 'phonenumber') {
+    //             hasError = validateContactNumber(fieldValue, errorElement) || hasError;
+    //         } else if (key === 'email_id') {
+    //             hasError = validateEmail(fieldValue, errorElement) || hasError;
+    //         } else {
+    //             hasError = validateField(fieldValue, errorElement) || hasError;
+    //         }
+    //     }
 
-        console.log("Has Error:", hasError);
+    //     // Conditional validations based on the selected course name
+    //     const courseNameElement = getFieldElement('course_name');
+    //     const courseName = courseNameElement.options[courseNameElement.selectedIndex]?.text.trim().toLowerCase() || '';
 
-        if (!hasError) {
-            document.getElementById("enrollment_form").submit();
-        }
-    });
+    //     if (courseName === 'inplant training') {
+    //         ['technology', 'inplant_no_of_days', 'inplant_no_of_students'].forEach(field => {
+    //             const fieldValue = getFieldValue(field);
+    //             const errorElement = getFieldError(field);
+    //             if (!errorElement) {
+    //                 console.error(`Error element not found for field: ${field}`);
+    //                 return;
+    //             }
+    //             hasError = validateField(fieldValue, errorElement) || hasError;
+    //         });
+    //     } else if (courseName === 'internship training') {
+    //         ['internship_technology', 'internship_no_of_days', 'internship_no_of_students'].forEach(field => {
+    //             const fieldValue = getFieldValue(field);
+    //             const errorElement = getFieldError(field);
+    //             if (!errorElement) {
+    //                 console.error(`Error element not found for field: ${field}`);
+    //                 return;
+    //             }
+    //             hasError = validateField(fieldValue, errorElement) || hasError;
+    //         });
+    //     }
+
+    //     console.log("Has Error:", hasError);
+
+    //     if (!hasError) {
+    //         document.getElementById("enrollment_form").submit();
+    //     }
+    // });
+
+
+
 
     function validateFields(inputValue, errorElementId) {
         const errorElement = document.getElementById(errorElementId);

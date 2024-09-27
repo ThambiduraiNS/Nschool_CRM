@@ -1,4 +1,6 @@
+from decimal import Decimal
 import os
+from django.db.models import Sum
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.core.validators import MinLengthValidator
@@ -112,6 +114,7 @@ class Enquiry(models.Model):
     inplant_no_of_students = models.CharField(null=True, blank=True)
     internship_technology = models.CharField(max_length=100, null=True, blank=True)
     internship_no_of_days = models.CharField(null=True, blank=True)
+    internship_no_of_students = models.CharField(null=True, blank=True)
     next_follow_up_date = models.DateField()
 
     # Educational Details
@@ -203,9 +206,10 @@ class Enrollment(models.Model):
     internship_technology = models.CharField(max_length=100, null=True, blank=True)
     internship_no_of_days = models.CharField(null=True, blank=True)
     internship_no_of_students = models.CharField(null=True, blank=True)
-    duration = models.CharField(max_length=50)
+    duration = models.CharField(max_length=50, null=True, blank=True)
     payment_type = models.CharField()
     total_fees_amount = models.DecimalField(max_digits=10, decimal_places=2)
+    installment_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
 
     created_at = models.DateTimeField(auto_now_add=True)
     modified_at = models.DateTimeField(auto_now=True)
@@ -217,78 +221,6 @@ class Enrollment(models.Model):
     def __str__(self):
         return f"{self.name} - {self.course_name}"
 
-class Payment(models.Model):
-    
-    registration_no = models.CharField(max_length=20, unique=True)
-    student_name = models.CharField(max_length=255)
-    course_name = models.CharField()
-    duration = models.CharField(max_length=50)
-    total_fees = models.DecimalField(max_digits=10, decimal_places=2)
-    joining_date = models.DateField()
-    fees_type = models.CharField()
-    payment_mode = models.CharField()
-    
-    installment = models.CharField(null=True, blank=True)
-    date_EMI_1 = models.DateField(null=True, blank=True)
-    date_EMI_2 = models.DateField(null=True, blank=True)
-    date_EMI_3 = models.DateField(null=True, blank=True)
-    date_EMI_4 = models.DateField(null=True, blank=True)
-    date_EMI_5 = models.DateField(null=True, blank=True)
-    date_EMI_6 = models.DateField(null=True, blank=True)
-    
-    date = models.DateField(null=True, blank=True)
-    cash = models.CharField(null=True, blank=True)
-    
-    cash_EMI_1 = models.CharField(null=True, blank=True)
-    cash_EMI_2 = models.CharField(null=True, blank=True)
-    cash_EMI_3 = models.CharField(null=True, blank=True)
-    cash_EMI_4 = models.CharField(null=True, blank=True)
-    cash_EMI_5 = models.CharField(null=True, blank=True)
-    cash_EMI_6 = models.CharField(null=True, blank=True)
-    
-    upi_date = models.DateField(null=True, blank=True)
-    transaction_id = models.CharField(null=True, blank=True)
-    upi_cash = models.CharField(null=True, blank=True)
-    
-    upi_cash_EMI_1 = models.CharField(null=True, blank=True)
-    upi_cash_EMI_2 = models.CharField(null=True, blank=True)
-    upi_cash_EMI_3 = models.CharField(null=True, blank=True)
-    upi_cash_EMI_4 = models.CharField(null=True, blank=True)
-    upi_cash_EMI_5 = models.CharField(null=True, blank=True)
-    upi_cash_EMI_6 = models.CharField(null=True, blank=True)
-    
-    
-    bank_name = models.CharField(null=True, blank=True)
-    app_name = models.CharField(null=True, blank=True)
-    
-    bank_date = models.DateField(null=True, blank=True)
-    account_no = models.CharField(null=True, blank=True)
-    ifsc_code = models.CharField(null=True, blank=True)
-    branch_name = models.CharField(null=True, blank=True)
-    account_holder_name = models.CharField(null=True, blank=True)
-    bank_cash = models.CharField(null=True, blank=True)
-    
-    bank_cash_EMI_1 = models.CharField(null=True, blank=True)
-    bank_cash_EMI_2 = models.CharField(null=True, blank=True)
-    bank_cash_EMI_3 = models.CharField(null=True, blank=True)
-    bank_cash_EMI_4 = models.CharField(null=True, blank=True)
-    bank_cash_EMI_5 = models.CharField(null=True, blank=True)
-    bank_cash_EMI_6 = models.CharField(null=True, blank=True)
-    
-    balance = models.CharField(null=True, blank=True)
-
-    created_at = models.DateTimeField(auto_now_add=True)
-    modified_at = models.DateTimeField(auto_now=True)
-    created_by = models.IntegerField(null=True, blank=True)
-    modified_by = models.IntegerField(null=True)
-    is_active = models.BooleanField(default=True)
-    is_deleted = models.BooleanField(default=False)
-
-    def __str__(self):
-        return f"{self.student_name} - {self.course_name}"
-    
-    
-
 class PaymentInfo(models.Model):
     # Fees type choices
     REGULAR = 'Regular'
@@ -298,15 +230,27 @@ class PaymentInfo(models.Model):
         (REGULAR, 'Single Payment'),
         (INSTALLMENT, 'Installment'),
     ]
+    
+    PARTIAL_PAYMENT = 'Partial Payment'
+    FULL_PAYMENT = 'Full Payment'
+    
+    MONTHLY_PAYMENT_CHOICES = [
+        (PARTIAL_PAYMENT, 'Partial Payment'),
+        (FULL_PAYMENT, 'Full Payment')
+    ]
 
     registration_no = models.CharField(max_length=20, unique=True)
     joining_date = models.DateField()
     student_name = models.CharField(max_length=255)
     course_name = models.CharField(max_length=255)
     duration = models.CharField(max_length=50)
-    total_fees = models.DecimalField(max_digits=10, decimal_places=2)
     fees_type = models.CharField(max_length=20, choices=FEES_TYPE_CHOICES)
-
+    total_fees = models.DecimalField(max_digits=10, decimal_places=2)
+    installment_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    excess_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0.0)
+    monthly_payment_type = models.CharField(max_length=20, choices=MONTHLY_PAYMENT_CHOICES, default='Full Payment')
+    balance = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    
     created_at = models.DateTimeField(auto_now_add=True)
     modified_at = models.DateTimeField(auto_now=True)
     created_by = models.IntegerField(null=True, blank=True)
@@ -380,3 +324,146 @@ class Installment(models.Model):
     is_active = models.BooleanField(default=True)
     is_deleted = models.BooleanField(default=False)
     
+
+class BaseEMI(models.Model):
+    CASH = 'Cash'
+    UPI = 'UPI'
+    BANK_TRANSFER = 'Bank Transfer'
+
+    PAYMENT_MODE_CHOICES = [
+        (CASH, 'Cash'),
+        (UPI, 'UPI'),
+        (BANK_TRANSFER, 'Bank Transfer'),
+    ]
+    
+    PENDING = 'Pending'
+    PAID = 'Paid'
+    
+    PAYMENT_MODE_STATUS = [
+        (PENDING, 'Pending'),
+        (PAID, 'Paid')
+    ]
+
+    payment_info = models.ForeignKey('PaymentInfo', on_delete=models.CASCADE, related_name='%(class)s_payments')
+    registration_no = models.CharField(max_length=20)
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    date = models.DateField(null=True, blank=True)
+    payment_mode = models.CharField(max_length=50, choices=PAYMENT_MODE_CHOICES)
+    emi = models.CharField(max_length=50)
+    status = models.CharField(max_length=20, choices=PAYMENT_MODE_STATUS, default=PENDING)
+    
+    # UPI specific fields
+    upi_transaction_id = models.CharField(max_length=100, blank=True, null=True)
+    upi_app_name = models.CharField(max_length=100, blank=True, null=True)
+
+    # Bank Transfer specific fields
+    refference_no = models.CharField(max_length=100, blank=True, null=True)
+    
+    created_at = models.DateTimeField(auto_now_add=True)
+    modified_at = models.DateTimeField(auto_now=True)
+    created_by = models.IntegerField(null=True, blank=True)
+    modified_by = models.IntegerField(null=True)
+    is_active = models.BooleanField(default=True)
+    is_deleted = models.BooleanField(default=False)
+
+    class Meta:
+        abstract = True  # This makes the model abstract
+        
+    def __str__(self):
+        return f"{self.__class__.__name__}"
+    
+    def save(self, *args, **kwargs):
+        # Access the total EMI amount from the related PaymentInfo object
+        total_emi_amount = self.payment_info.installment_amount
+        
+        # print(f"Total EMI Amount: {total_emi_amount}")
+
+        # Calculate the sum of all previous active and non-deleted EMI payments
+        previous_payments_sum = self.__class__.objects.filter(
+            payment_info=self.payment_info,
+            emi__startswith='EMI_',  # Match all EMI installments
+            is_active=True,
+            is_deleted=False
+        ).exclude(id=self.id).aggregate(total_amount=Sum('amount'))['total_amount'] or Decimal('0.0')
+
+        # print(f"Previous payment sum: {previous_payments_sum}")
+        
+        # Total amount paid including the current payment
+        total_paid_with_current = Decimal(previous_payments_sum) + Decimal(self.amount)
+
+        # print(f"Total Paid With Current: {total_paid_with_current}")
+        
+        # Check if the total payment exceeds the total EMI amount
+        # if total_paid_with_current > total_emi_amount:
+        #     # Calculate the excess amount
+        #     excess_amount = total_paid_with_current - Decimal(total_emi_amount)
+            
+        #     # Adjust the current amount to avoid exceeding the total EMI amount
+        #     self.amount = max(Decimal('0.0'), Decimal(self.amount) - excess_amount)
+
+        #     # Update excess amount in PaymentInfo
+        #     current_excess = Decimal(self.payment_info.excess_amount or '0.0')
+        #     self.payment_info.excess_amount = str(excess_amount + current_excess)
+
+        #     # Print current state for debugging
+        #     print(f"Current Excess: {current_excess}, Excess Amount: {excess_amount}")
+            
+        #     # Store the excess amount in the next EMI payment
+        #     next_emi = self.__class__.objects.filter(
+        #         payment_info=self.payment_info,
+        #         emi__gt=self.emi,  # Find the next EMI
+        #         is_active=True,
+        #         is_deleted=False
+        #     ).first()
+
+        #     if next_emi:
+        #         next_excess = Decimal(next_emi.payment_info.excess_amount or '0.0')
+        #         next_emi.payment_info.excess_amount = str(excess_amount + next_excess)
+        #         next_emi.payment_info.save()
+        #         print(f"Updated Next EMI Excess Amount: {next_emi.payment_info.excess_amount}")
+
+        # else:
+        #     # If there's no excess, we can reset the excess amount
+        #     self.payment_info.excess_amount = str(Decimal('0.0'))
+
+        # # Calculate the balance
+        # balance = self.payment_info.total_fees
+        # # print(f"Before balance: {balance}")
+
+        # balance = balance - total_paid_with_current
+        # # print(f"Updated Balance: {balance}")
+        
+        # # Update the balance in PaymentInfo
+        # self.payment_info.balance = balance
+
+        # Determine payment status
+        self.status = self.PAID if total_paid_with_current >= total_emi_amount else self.PENDING
+        
+        # Save the updated PaymentInfo
+        self.payment_info.save()
+
+        # Call the original save method to ensure the object is saved
+        super().save(*args, **kwargs)
+
+
+
+
+
+# Subclasses inheriting from BaseEMI
+class EMI_1(BaseEMI):
+    pass
+
+class EMI_2(BaseEMI):
+    pass
+
+class EMI_3(BaseEMI):
+    pass
+
+class EMI_4(BaseEMI):
+    pass
+
+class EMI_5(BaseEMI):
+    pass
+
+class EMI_6(BaseEMI):
+    pass

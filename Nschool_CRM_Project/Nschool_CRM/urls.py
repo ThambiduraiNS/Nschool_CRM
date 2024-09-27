@@ -75,21 +75,20 @@ urlpatterns = [
     path('get-enquiry-details/', get_enquiry_details, name='get_enquiry_details'),
     
     # payment module
-    path('payment/', new_payment_view, name='payment'),
     path('manage_payment/', manage_payment_view, name='manage_payment'),
     path('delete_payment/<int:id>/', delete_payment_view, name='delete_payment'),
-    path('update_payment/<int:id>/', update_payment_view, name='update_payment'),
     path('delete_all_payment/', delete_all_payment_view, name='delete_all_payment'),
     path('get-enrollment-details/', get_enrollment_details, name='get_enrollment_details'),
     
     
     path('new-payment/', new_payment_info_view, name='new_payment_info'),
-    path('installment-payment/', installment_view, name='installment_payment'),
+    path('new_installment_payment/', new_installment_view, name='new_installment_info'),
+    path('new_installment_payment/<int:id>/', new_installment_update_view, name='new_installment_update_info'),
     path('single-payment/', single_payment_view, name='single_payment'),
     path('single-payment/<int:id>/', single_payment_update_view, name='single_payment'),
-    path('installment-payment/<int:id>/', installment_update_view, name='installment_payment'),
     path('single-payment/<int:id>/', single_payment_view, name='single_payment'),
     path('manage-payments/', manage_payment_info_view, name='manage_payments'),
+    path('new_manage_payments/', new_manage_payment_info_view, name='new_manage_payments'),
     
     # file formate for enrollment
     path('export_payment_csv/', export_payment_csv, name='export_payment_csv'),
@@ -149,12 +148,6 @@ urlpatterns = [
     path('api/update_enrollment/<int:pk>/', EnrollmentUpdateView.as_view(), name='enrollment_update'),
     path('api/delete_enrollment/<int:pk>/', EnrollmentDeleteView.as_view(), name='enrollment_delete'),
     
-    # API for Payment module
-    path('api/payment/', PaymentListCreateView.as_view(), name='payment_list_create'),
-    path('api/payment/<int:pk>/', PaymentDetailView.as_view(), name='payment_detail'),
-    path('api/update_payment/<int:pk>/', PaymentUpdateView.as_view(), name='payment_update'),
-    path('api/delete_payment/<int:pk>/', PaymentDeleteView.as_view(), name='payment_delete'),
-    
     # API for PaymentInfo module
     path('api/payment_info/', PaymentInfoListCreateView.as_view(), name='payment_info_list_create'),
     path('api/payment_info/<int:pk>/', PaymentInfoDetailView.as_view(), name='payment_info_detail'),
@@ -172,4 +165,22 @@ urlpatterns = [
     path('api/single_payment/<int:pk>/', SinglePaymentDetailView.as_view(), name='single_payment_detail'),
     path('api/update_single_payment/<int:pk>/', SinglePaymentUpdateView.as_view(), name='single_payment_update'),
     path('api/delete_single_payment/<int:pk>/', SinglePaymentDeleteView.as_view(), name='single_payment_delete'),
+    
+    path('api/EMI_1/', EMI_1ListCreateView.as_view(), name='emi_1_list_create'),
+    path('api/EMI_1/<int:pk>/', EMI_1DetailView.as_view(), name='emi_1_detail'),
+
+    path('api/EMI_2/', EMI_2ListCreateView.as_view(), name='emi_2_list_create'),
+    path('api/EMI_2/<int:pk>/', EMI_2DetailView.as_view(), name='emi_2_detail'),
+
+    path('api/EMI_3/', EMI_3ListCreateView.as_view(), name='emi_3_list_create'),
+    path('api/EMI_3/<int:pk>/', EMI_3DetailView.as_view(), name='emi_3_detail'),
+
+    path('api/EMI_4/', EMI_4ListCreateView.as_view(), name='emi_4_list_create'),
+    path('api/EMI_4/<int:pk>/', EMI_4DetailView.as_view(), name='emi_4_detail'),
+
+    path('api/EMI_5/', EMI_5ListCreateView.as_view(), name='emi_5_list_create'),
+    path('api/EMI_5/<int:pk>/', EMI_5DetailView.as_view(), name='emi_5_detail'),
+
+    path('api/EMI_6/', EMI_6ListCreateView.as_view(), name='emi_6_list_create'),
+    path('api/EMI_6/<int:pk>/', EMI_6DetailView.as_view(), name='emi_6_detail'),
 ]

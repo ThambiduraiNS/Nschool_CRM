@@ -1,0 +1,408 @@
+{% extends 'base.html' %}
+
+{% load static %}
+{% load bootstrap_icons %}
+
+
+{% block title %}Payment Module{% endblock %}
+
+{% block css %}
+<link rel="stylesheet" href="{% static '/css/new_user.css' %}">
+<link rel="stylesheet" href="{% static '/css/header.css' %}">
+<link rel="stylesheet" href="{% static '/css/new_enquiry.css' %}">
+<link rel="stylesheet" href="{% static '/css/new_enrollment.css' %}">
+<link rel="stylesheet" href="{% static '/css/manage_payment.css' %}">
+{% endblock %}
+
+{% block header %}
+{% include 'header.html' %}
+{% endblock %}
+
+{% block content %}
+<!-- <div class="container-fluid"> -->
+<div class="row m-0 p-0">
+    {% include 'side_navbar.html' %}
+
+    <div class="col-12 col-lg-10 background-div">
+
+        <div class="row m-0 p-0">
+            <div class="col border bg-white rounded mt-4 ms-xll-4 mb-2 px-xll-4">
+                <nav style="--bs-breadcrumb-divider: '|';" aria-label="breadcrumb">
+                    <ol class="breadcrumb pt-3 mb-3 ps-lg-3">
+                        <li class="breadcrumb-item"><a class="user-a" href="#">Installment</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">New Installment</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+
+        <div class="row m-0 p-0">
+            <div class="col border bg-white rounded mt-2 ms-xll-4 mb-2 px-xll-4">
+                <form id="payment_form" class="pe-lg-2" action="" method="post">
+                    <!-- Student details -->
+                    <div class="tab-content" id="myTabContent">
+                        <div class="row m-0 p-0">
+                            {% csrf_token %}
+
+                            <div class="col-12 mt-4 ms-md-2 position-relative">
+                                <h5 class="fw-bold st-details">Installment</h5>
+                                <p class="user-para">Use the below form to update your profile</p>
+                                <span class="message" id="message">
+                                    {% for message in messages %}
+                                    <div>
+                                        {{ message }}
+                                    </div>
+                                    {% endfor %}
+                                </span>
+                                <span class="error-msg d-flex justify-content-end me-2">
+                                    {{error}}
+                                </span>
+                            </div>
+
+                            <!-- date field -->
+                            <div class="row d-flex justify-content-between pe-0">
+
+                                <!-- Registration Number Field -->
+                                <div class="col-12 col-md-6 p-md-0">
+                                    <div class="user-input-wrp ms-4 me-2 mt-4">
+                                        <input type="text" name="registration_no" id="registration_no" value="{{payment_info.registration_no}}" class="form-control"
+                                            aria-label="registration_no" placeholder=" " autocomplete="off" autofocus>
+                                        <label class="floating-label">&nbsp;Registration No <span class="required">*</span> &nbsp;</label>
+                                        <span id="registration_no_error" class="error-div">
+                                            {% if errors.registration_no %}
+                                                {{errors.registration_no}}
+                                            {% endif %}
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <!-- PaymentInfo field -->
+                                <div class="col-12 col-md-6 pe-md-0" style="display: none;">
+                                    <div class="user-input-wrp ms-md-4 mt-md-4">
+                                        <input type="text" name="payment_info" value="{{ payment_info.id }}" id="payment_info" class="form-control"
+                                            aria-label="payment_info" placeholder=" " autocomplete="off" autofocus>
+                                        <label class="floating-label">&nbsp;Payment Info ID <span class="required">*</span> &nbsp;</label>
+                                        <span id="payment_info_error" class="error-div">
+                                            {% if errors.payment_info %}
+                                                {{errors.payment_info}}
+                                            {% endif %}
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <!-- Payment Mode Field -->
+                                <div class="col-12 col-md-6 pe-md-0">
+                                    <div class="user-input-wrp ms-md-4 mt-md-4">
+                                        <select name="payment_mode" id="payment_mode" class="form-select select">
+                                            <option value="" selected>Select Any One</option>
+                                            <option value="Cash" {% if payment_info.payment_mode == 'Cash' %} selected {%endif%}>Cash</option>
+                                            <option value="UPI" {% if payment_info.payment_mode == 'UPI' %} selected {%endif%}>UPI</option>
+                                            <option value="Bank Transfer" {% if payment_info.payment_mode == 'Bank Transfer' %} selected {%endif%}>Bank Transfer</option>
+                                        </select>
+                                        <label class="floating-label">&nbsp;Payment Mode <span class="required">*</span> &nbsp;</label>
+                                        <span id="payment_mode_error" class="error-div">
+                                            {% if errors.payment_mode %}
+                                                    {{errors.payment_mode}}
+                                            {% endif %}
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <div class="col-12 col-md-6 p-md-0">
+                                    <div class="user-input-wrp ms-4 me-2 mt-4">
+                                        <select name="emi" id="emi" class="form-select select">
+                                            {% if next_emi %}
+                                                <option value="{{ next_emi }}" selected>{{ next_emi }}</option>
+                                            {% endif %}
+                                        </select>
+                                        <label class="floating-label">&nbsp; Enter EMI <span class="required">*</span> &nbsp;</label>
+                                        <span id="emi_error" class="error-div">
+                                            {% if errors.emi %}
+                                                {{ errors.emi }}
+                                            {% endif %}
+                                        </span>
+                                    </div>
+                                </div>
+                                
+                                <!-- EMI date -->
+                                <div class="col-12 col-md-6 pe-md-0">
+                                    <div class="user-input-wrp ms-md-4 mt-md-4">
+                                        <input type="date" name="date" id="date-picker" value="{{ date }}" class="form-control"
+                                            aria-label="date" placeholder=" " autocomplete="off" autofocus onclick="setDatePickerLimits()">
+                                        <label class="floating-label">&nbsp;EMI Date <span class="required">*</span> &nbsp;</label>
+                                        <span id="date_error" class="error-div">
+                                            {% if errors.date %}
+                                                {{ errors.date }}
+                                            {% endif %}
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <!-- amount field -->
+                                <div class="col-12 col-md-6 p-md-0">
+                                    <div class="user-input-wrp ms-4 me-2 mt-4">
+                                        <input type="text" name="amount" value="{{amount}}" id="amount" class="form-control"
+                                            aria-label="amount" placeholder=" " autocomplete="off" autofocus>
+                                        <label class="floating-label">&nbsp;Enter Amount <span class="required">*</span> &nbsp;</label>
+                                        <span id="amount_error" class="error-div">
+                                            {% if errors.amount %}
+                                                    {{errors.amount}}
+                                            {% endif %}
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <!-- UPI Fields -->
+                                <div class="col-12 col-md-6 pe-md-0" id="transaction_id_div" style="display: none;">
+                                    <div class="user-input-wrp ms-md-4 mt-md-4">
+                                        <input type="text" name="upi_transaction_id" id="transaction_id" class="form-control" aria-label="transaction_id" placeholder=" " autocomplete="off">
+                                        <label class="floating-label">Enter UPI Transaction ID <span class="required">*</span></label>
+                                        <span id="transaction_id_error" class="error-div"></span>
+                                    </div>
+                                </div>
+
+                                <div class="col-12 col-md-6 pe-md-0" id="app_name_div" style="display: none;">
+                                    <div class="user-input-wrp ms-md-4 mt-md-4">
+                                        <input type="text" name="upi_app_name" id="app_name" class="form-control" aria-label="app_name" placeholder=" " autocomplete="off">
+                                        <label class="floating-label">Enter App Name <span class="required">*</span></label>
+                                        <span id="app_name_error" class="error-div"></span>
+                                    </div>
+                                </div>
+
+                                <!-- Bank Transfer Fields -->
+                                <div class="col-12 col-md-6 pe-md-0" id="refference_no_div" style="display: none;">
+                                    <div class="user-input-wrp ms-md-4 mt-md-4">
+                                        <input type="text" name="refference_no" id="refference_no" class="form-control" aria-label="account_no" placeholder=" " autocomplete="off">
+                                        <label class="floating-label">Refference Number <span class="required">*</span></label>
+                                        <span id="refference_no_error" class="error-div"></span>
+                                    </div>
+                                </div>
+
+                            </div>
+                        
+                            <div class="row">
+                                <div class="row d-flex justify-content-between">
+                                    <div class="col-6 d-flex justify-content-md-end p-0 pe-4 pe-lg-4">
+                                    </div>
+                                    <div class="col-6 d-flex justify-content-lg-end ps-lg-4 p-0 ps-4 gap-5">
+                                        <input type="reset" value="Cancel" class="btn login-btn">
+                                        <input type="submit" value="submit" class="btn login-btn">
+                                    </div>
+                                </div>
+                            </div>
+                        
+                            <span>
+                                {% if error_messages %}
+                                <div class="errors-common">
+                                    <ul class="ul-errors">
+                                        {% for field, message in error_messages.items %}
+                                            {% if message %}
+                                                <li>{{ message }}</li>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                                {% endif %}
+                            </span>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+
+            <!-- display the data's -->
+            <div class="row m-0 p-0">
+                <div class="col border bg-white rounded mt-2 ms-xll-4 mb-2 px-xll-4">
+
+                    <h5 class="my-4">Online Payment Details</h5>
+                    <div class="table-responsive" style="overflow-x: auto;">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th scope="col" class="thead">Date</th>
+                                    <th scope="col" class="thead">EMI</th>
+                                    <th scope="col" class="thead">Payment Mode</th>
+                                    <th scope="col" class="thead">UPI Transaction ID</th>
+                                    <th scope="col" class="thead">App Name</th>
+                                    <th scope="col" class="thead">Bank Refference NO</th>
+                                    <th scope="col" class="thead">Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for installment in installments %}
+                                    <tr>
+                                        <td class="tdata">{{ installment.date|date:'Y-m-d' }}</td>
+                                        <td class="tdata">{{ installment.emi }}</td>
+                                        <td class="tdata">{{ installment.payment_mode }}</td>
+                                        <td class="tdata">{{ installment.upi_transaction_id }}</td>
+                                        <td class="tdata">{{ installment.upi_app_name }}</td>
+                                        <td class="tdata">{{ installment.refference_no }}</td>
+                                        <td class="tdata">{{ installment.amount }}</td>
+                                    </tr>
+                                {% empty %}
+                                    <tr>
+                                        <td colspan="4" class="text-center">No installments available</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+</div>
+<!-- </div> -->
+
+{% endblock %}
+
+
+{% block scripts %}
+<script>
+
+function setDatePickerLimits() {
+    const datePicker = document.getElementById('date-picker');
+    console.log(datePicker)
+    const today = new Date();
+    const tenDaysBeforeToday = new Date(today);
+    tenDaysBeforeToday.setDate(today.getDate() - 10);
+
+    // Format dates as YYYY-MM-DD
+    const todayString = today.toISOString().split('T')[0];
+    const tenDaysBeforeString = tenDaysBeforeToday.toISOString().split('T')[0];
+
+    // Set min and max attributes
+    datePicker.setAttribute('min', tenDaysBeforeString);
+    datePicker.setAttribute('max', todayString);
+}
+
+// document.addEventListener('DOMContentLoaded', setDatePickerLimits);
+// dropdown functionality
+function toggleDropdown(element) {
+    // Close all dropdowns
+    const allDropdowns = document.querySelectorAll('.dropdown-menu');
+    allDropdowns.forEach(dropdown => {
+        if (dropdown !== element.nextElementSibling) {
+            dropdown.classList.remove('show');
+        }
+    });
+
+    // Close all arrows
+    const allArrows = document.querySelectorAll('.right_arrow');
+    allArrows.forEach(arrow => {
+        if (arrow !== element.querySelector('.right_arrow')) {
+            arrow.classList.remove('arrow_user');
+        }
+    });
+
+    // Toggle the clicked dropdown and arrow
+    const dropdownMenu = element.nextElementSibling;
+    dropdownMenu.classList.toggle('show');
+    const rightArrow = element.querySelector('.right_arrow');
+    rightArrow.classList.toggle('arrow_user');
+}
+
+document.getElementById('toggle-sidenav').addEventListener('click', function () {
+    const sidenav = document.getElementById('sidenav');
+    sidenav.classList.toggle('collapsed');
+});
+
+
+function showMessage() {
+    const alertBox = document.getElementById('message');
+    alertBox.style.display = 'block';
+
+    setTimeout(() => { 
+        alertBox.style.display = 'none';
+    }, 5000);
+}
+
+document.addEventListener('DOMContentLoaded', () => showMessage());
+
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('payment_form');
+
+    function validateForm() {
+        let isValid = true;
+
+        // Reset previous error messages
+        document.querySelectorAll('.error-div').forEach(el => el.textContent = '');
+
+        const paymentInfo = document.getElementById('payment_info').value.trim();
+        const paymentMode = document.getElementById('payment_mode').value;
+        const date = document.getElementById('date-picker').value;
+        const amount = document.getElementById('amount').value.trim();
+
+        if (!paymentInfo) {
+            document.getElementById('payment_info_error').textContent = 'Payment Info ID is required.';
+            isValid = false;
+        }
+
+        if (!paymentMode) {
+            document.getElementById('payment_mode_error').textContent = 'Payment Mode is required.';
+            isValid = false;
+        }
+
+        if (!date) {
+            document.getElementById('date_error').textContent = 'EMI Date is required.';
+            isValid = false;
+        }
+
+        if (!amount) {
+            document.getElementById('amount_error').textContent = 'Amount is required.';
+            isValid = false;
+        }
+
+        if (paymentMode === 'UPI') {
+            const transactionId = document.getElementById('transaction_id').value.trim();
+            const appName = document.getElementById('app_name').value.trim();
+            
+            if (!transactionId) {
+                document.getElementById('transaction_id_error').textContent = 'UPI Transaction ID is required.';
+                isValid = false;
+            }
+
+            if (!appName) {
+                document.getElementById('app_name_error').textContent = 'App Name is required.';
+                isValid = false;
+            }
+        }
+
+        if (paymentMode === 'Bank Transfer') {
+            const RefferenceNo = document.getElementById('refference_no').value.trim();
+            
+            if (!RefferenceNo) {
+                document.getElementById('refference_no_error').textContent = 'Refference Number is required.';
+                isValid = false;
+            }
+        }
+
+        return isValid;
+    }
+
+    function handlePaymentModeChange() {
+        const paymentMode = document.getElementById('payment_mode').value;
+        
+        // Show/hide fields based on payment mode
+        document.getElementById('transaction_id_div').style.display = paymentMode === 'UPI' ? 'block' : 'none';
+        document.getElementById('app_name_div').style.display = paymentMode === 'UPI' ? 'block' : 'none';
+        document.getElementById('refference_no_div').style.display = paymentMode === 'Bank Transfer' ? 'block' : 'none';
+    }
+
+    form.addEventListener('submit', function(event) {
+        if (!validateForm()) {
+            event.preventDefault(); // Prevent form submission if validation fails
+        }
+    });
+
+    document.getElementById('payment_mode').addEventListener('change', handlePaymentModeChange);
+
+    // Initialize visibility on page load
+    handlePaymentModeChange();
+});
+
+
+</script>
+{% endblock %}

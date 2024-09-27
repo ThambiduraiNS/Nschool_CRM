@@ -184,7 +184,20 @@
                                             {% endfor %}
                                         </td>
                                         
-                                        <td class="tdata">{{ user.duration }}</td>
+                                        <td class="tdata">
+                                            {% for item in course_name %}
+                                                {% if item.id == user.course_name %}
+                                                    {% if item.course_name == 'internship training' %}
+                                                        {{user.internship_no_of_days}}
+                                                    {% elif item.course_name == 'inplant training' %}
+                                                        {{user.inplant_no_of_days}}
+                                                    {% else %}
+                                                        {{ user.duration }}
+                                                    {% endif %}
+                                                {% endif %}
+                                            {% endfor %}
+                                            
+                                        </td>
                                         <td class="tdata">{{ user.total_fees_amount }}</td>
                                         
                                         <!-- <td class="tdata status" title="{{ user.notes }}">

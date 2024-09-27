@@ -58,11 +58,6 @@ class EnrollmentSerializer(serializers.ModelSerializer):
         model = Enrollment
         fields = '__all__'
 
-class PaymentSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Payment
-        fields = '__all__'
-
 class InstallmentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Installment
@@ -73,11 +68,46 @@ class SinglePaymentSerializer(serializers.ModelSerializer):
         model = SinglePayment
         fields = '__all__'
         
+class BaseEMISerializer(serializers.ModelSerializer):
+    class Meta:
+        model = EMI_1  # You can use any EMI model since all are the same structure
+        fields = '__all__'
+
+class EMI_1_Serializer(BaseEMISerializer):
+    class Meta(BaseEMISerializer.Meta):
+        model = EMI_1
+
+class EMI_2_Serializer(BaseEMISerializer):
+    class Meta(BaseEMISerializer.Meta):
+        model = EMI_2
+
+class EMI_3_Serializer(BaseEMISerializer):
+    class Meta(BaseEMISerializer.Meta):
+        model = EMI_3
+
+class EMI_4_Serializer(BaseEMISerializer):
+    class Meta(BaseEMISerializer.Meta):
+        model = EMI_4
+
+class EMI_5_Serializer(BaseEMISerializer):
+    class Meta(BaseEMISerializer.Meta):
+        model = EMI_5
+
+class EMI_6_Serializer(BaseEMISerializer):
+    class Meta(BaseEMISerializer.Meta):
+        model = EMI_6
+        
+
 class PaymentInfoSerializer(serializers.ModelSerializer):
     single_payment = SinglePaymentSerializer(read_only=True)
-    installments = InstallmentSerializer(many=True, read_only=True)
+    # installments = InstallmentSerializer(many=True, read_only=True)
+    emi_1_payments = EMI_1_Serializer(many=True, read_only=True)  # Assuming it's a related field
+    emi_2_payments = EMI_2_Serializer(many=True, read_only=True)
+    emi_3_payments = EMI_3_Serializer(many=True, read_only=True)
+    emi_4_payments = EMI_4_Serializer(many=True, read_only=True)
+    emi_5_payments = EMI_5_Serializer(many=True, read_only=True)
+    emi_6_payments = EMI_6_Serializer(many=True, read_only=True)
     
     class Meta:
         model = PaymentInfo
         fields = '__all__'
-

@@ -1,4 +1,5 @@
 
+from decimal import Decimal
 from io import BytesIO
 import json, requests
 from django.core.files.uploadedfile import InMemoryUploadedFile
@@ -29,6 +30,7 @@ from rest_framework.response import Response
 from rest_framework import status
 
 from .serializer import *
+from django.forms.models import model_to_dict
 
 import csv
 from django.http import HttpResponse
@@ -47,13 +49,17 @@ from io import BytesIO
 import re
 from . import renderers
 
-from .utils import encrypt_password, decrypt_password, calculate_payment_totals
+from .utils import calculate_payment_totals, encrypt_password, decrypt_password
 from django.views.generic import TemplateView, ListView
 from django.db.models import Q
 
 from django.contrib import messages
 
 from django.core.exceptions import ValidationError
+
+from django.conf import settings
+
+EMI_MODELS = getattr(settings, 'EMI_MODELS', {})
 
 @csrf_protect
 def admin_login(request):
@@ -682,43 +688,6 @@ class EnrollmentUpdateView(generics.RetrieveUpdateAPIView):
 class EnrollmentDeleteView(generics.DestroyAPIView):
     queryset = Enrollment.objects.all()
     serializer_class = EnrollmentSerializer
-    permission_classes = [IsAuthenticated]
-
-    def destroy(self, request, *args, **kwargs):
-        instance = self.get_object()
-        instance.delete()
-        return Response({'Message': 'Successfully deleted'})
-
-# Enrollment Api
-
-class PaymentListCreateView(generics.ListCreateAPIView):
-    queryset = Payment.objects.all().order_by('-id')
-    serializer_class = PaymentSerializer
-    permission_classes = [IsAuthenticated]
-    
-    def list(self, request, *args, **kwargs):
-        queryset = self.get_queryset()
-        if not queryset.exists():
-            return Response({'Message': 'No Payment Records found'}, status=status.HTTP_404_NOT_FOUND)
-        
-        serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
-class PaymentDetailView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Payment.objects.all()
-    serializer_class = PaymentSerializer
-    permission_classes = [IsAuthenticated]
-    lookup_field = 'pk'
-
-class PaymentUpdateView(generics.RetrieveUpdateAPIView):
-    queryset = Payment.objects.all()
-    serializer_class = PaymentSerializer
-    permission_classes = [IsAuthenticated]
-    partial = True    
-    
-class PaymentDeleteView(generics.DestroyAPIView):
-    queryset = Payment.objects.all()
-    serializer_class = PaymentSerializer
     permission_classes = [IsAuthenticated]
 
     def destroy(self, request, *args, **kwargs):
@@ -1362,150 +1331,6 @@ class SearchCourseResultsView(ListView):
         )
         
         return object_list
-
-# def enquiry_view(request):
-    
-#     # Extract data from the form
-#     # last_enquiry_no = Enquiry.objects.latest('enquiry_date').enquiry_no
-    
-#     # Get the last enquiry_no
-#     try:
-#         last_enquiry_no = Enquiry.objects.latest('id').enquiry_no
-#     except Enquiry.DoesNotExist:
-#         last_enquiry_no = "EWT-0000" 
-
-#     print(last_enquiry_no)
-#     # Extract the numeric part and increment it
-#     numeric_part = int(last_enquiry_no.split('-')[1])
-#     incremented_numeric_part = numeric_part + 1
-
-#     print(incremented_numeric_part)
-
-#     # Format the incremented value with leading zeros
-#     new_enquiry_no = f"EWT-{incremented_numeric_part:04d}"
-    
-#     print(new_enquiry_no)
-    
-#     if request.method == 'POST':
-#         enquiry_data = {
-#             'enquiry_date': request.POST.get('enquiry_date', '').strip(),
-#             'enquiry_no': request.POST.get('enquiry_number', '').strip(),
-#             'enquiry_no': new_enquiry_no,
-#             'name': request.POST.get('student_name', '').strip(),
-#             'contact_no': request.POST.get('contact', '').strip(),
-#             'email_id': request.POST.get('email', '').strip(),
-#             'date_of_birth': request.POST.get('dob', '').strip(),
-#             'fathers_name': request.POST.get('father_name', '').strip(),
-#             'fathers_contact_no': request.POST.get('father_contact', '').strip(),
-#             'fathers_occupation': request.POST.get('fathers_occupation', '').strip(),
-#             'address': request.POST.get('address', '').strip(),
-#             'status': request.POST.get('status', '').strip(),
-#             'course_name': request.POST.get('course_name', '').strip(),
-#             'inplant_technology': request.POST.get('technology', '').strip(),
-#             'inplant_no_of_days': request.POST.get('inplant_no_of_days', '').strip(),
-#             'inplant_no_of_students': request.POST.get('inplant_no_of_students', '').strip(),
-#             'internship_technology': request.POST.get('technology', '').strip(),
-#             'internship_no_of_days': request.POST.get('internship_no_of_days', '').strip(),
-#             'next_follow_up_date': request.POST.get('next_follow_up_date', '').strip(),
-#             'degree': request.POST.get('degree', '').strip(),
-#             'college': request.POST.get('college', '').strip(),
-#             'grade_persentage': request.POST.get('grade_persentage', '').strip(),
-#             'year_of_graduation': request.POST.get('year_of_graduation', '').strip(),
-#             'mode_of_enquiry': request.POST.get('mode_of_enquiry', '').strip(),
-#             'reference_name': request.POST.get('reference_name', '').strip(),
-#             'reference_contact_no': request.POST.get('reference_contact', '').strip(),
-#             'other_enquiry_details': request.POST.get('other_enquiry_details', '').strip(),
-#         }
-        
-#         print(enquiry_data['enquiry_no'])
-        
-#         # Get the token
-#         try:
-#             token = Token.objects.get(user=request.user)
-#         except Token.DoesNotExist:
-#             context = {
-#                 'error': 'Authentication token not found'
-#             }
-#             return render(request, 'new_enquiry.html', context)
-        
-#         api_url = 'http://127.0.0.1:8000/api/enquiry/'  # Adjust the URL as needed
-#         headers = {
-#             'Authorization': f'Token {token.key}',
-#             'Content-Type': 'application/json'
-#         }
-
-#         try:
-#             response = requests.post(api_url, json=enquiry_data, headers=headers)
-#             response_data = response.json()
-            
-#             print(response_data.get('name'))
-            
-#         except requests.exceptions.HTTPError as http_err:
-#             # Handle specific HTTP errors
-#             context = {
-#                 'error': f'HTTP error occurred: {http_err}',
-#                 'response_data': response.json()
-#             }
-#             return render(request, 'new_enquiry.html', context)
-#         except requests.exceptions.RequestException as req_err:
-#             # Handle general request exceptions
-#             print(f'Error during API create Enquiry: {req_err}')
-#             context = {
-#                 'error': 'An error occurred while creating the enquiry.'
-#             }
-#             return render(request, 'new_enquiry.html', context)        
-        
-#         if response.status_code == 201:
-#             messages.success(request, 'New Enquiry Created Successfully')
-#             return redirect('enquiry')
-#         else:
-#             # Fetch available courses and mode of enquiry choices for the form
-#             courses = Course.objects.all()
-#             mode_of_enquiry_choices = Enquiry_Mode.objects.all()
-#             context = {
-#                 'error': response_data.get('error', 'An error occurred during enquiry creation.'),
-#                 'enquiry_date': response_data.get('enquiry_date', ''),
-#                 'enquiry_no': response_data.get('enquiry_no', ''),
-#                 'name': response_data.get('name', ''),
-#                 'contact_no': response_data.get('contact_no', ''),
-#                 'email_id': response_data.get('email_id', ''),
-#                 'date_of_birth': response_data.get('date_of_birth', ''),
-#                 'fathers_name': response_data.get('fathers_name', ''),
-#                 'fathers_contact_no': response_data.get('fathers_contact_no', ''),
-#                 'fathers_occupation': response_data.get('fathers_occupation', ''),
-#                 'address': response_data.get('address', ''),
-#                 'status': response_data.get('status', ''),
-#                 'course_name': response_data.get('course_name', ''),
-#                 'inplant_technology': response_data.get('inplant_technology', ''),
-#                 'inplant_no_of_days': response_data.get('inplant_no_of_days', ''),
-#                 'inplant_no_of_students': response_data.get('inplant_no_of_students', ''),
-#                 'internship_technology': response_data.get('internship_technology', ''),
-#                 'internship_no_of_days': response_data.get('internship_no_of_days', ''),
-#                 'next_follow_up_date': response_data.get('next_follow_up_date', ''),
-#                 'degree': response_data.get('degree', ''),
-#                 'college': response_data.get('college', ''),
-#                 'grade_percentage': response_data.get('grade_percentage', ''),
-#                 'year_of_graduation': response_data.get('year_of_graduation', ''),
-#                 'mode_of_enquiry': response_data.get('mode_of_enquiry', ''),
-#                 'reference_name': response_data.get('reference_name', ''),
-#                 'reference_contact_no': response_data.get('reference_contact_no', ''),
-#                 'other_enquiry_details': response_data.get('other_enquiry_details', ''),
-#                 'courses': courses,
-#                 'mode_of_enquiry_choices': mode_of_enquiry_choices,
-#             }
-#             return render(request, 'new_enquiry.html', context)
-        
-#     # Fetch available courses and mode of enquiry choices for the form
-#     courses = Course.objects.all()
-#     mode_of_enquiry_choices = Enquiry_Mode.objects.all()
-
-#     context = {
-#         'courses': courses,
-#         'mode_of_enquiry_choices': mode_of_enquiry_choices,
-#         'enquiry_no': new_enquiry_no
-#     }
-    
-#     return render(request, 'new_enquiry.html', context)
 
 def generate_new_enquiry_no():
     try:
@@ -2323,6 +2148,7 @@ def export_enquiry_pdf(request):
                 'inplant_no_of_students': enquiry.inplant_no_of_students if enquiry.inplant_no_of_students is not None else '',
                 'internship_technology': enquiry.internship_technology,
                 'internship_no_of_days': enquiry.internship_no_of_days if enquiry.internship_no_of_days is not None else '',
+                'internship_no_of_students': enquiry.internship_no_of_students if enquiry.internship_no_of_students is not None else '',
                 'next_follow_up_date': enquiry.next_follow_up_date.strftime('%Y-%m-%d') if enquiry.next_follow_up_date else '',
                 'degree': enquiry.degree,
                 'college': enquiry.college,
@@ -2489,6 +2315,12 @@ def get_enquiry_details(request):
             'year_of_graduation': enquiry.year_of_graduation,
             'college': enquiry.college,
             'course_name': enquiry.course_name.course_name,  # Assuming course_name is a ForeignKey
+            'inplant_technology': enquiry.inplant_technology,
+            'inplant_no_of_days': enquiry.inplant_no_of_days,
+            'inplant_no_of_students': enquiry.inplant_no_of_students,
+            'internship_technology': enquiry.internship_technology,
+            'internship_no_of_days': enquiry.internship_no_of_days,
+            'internship_no_of_students': enquiry.internship_no_of_students,
         }
         
         print("Data : ", data)
@@ -2499,7 +2331,6 @@ def get_enquiry_details(request):
         return JsonResponse({'error': 'Enquiry not found'}, status=404)
 
 def new_enrollment_view(request):
-    
     new_registration_no = generate_new_registration_no()
     
     print("Registration Number : ", new_registration_no)
@@ -2509,8 +2340,8 @@ def new_enrollment_view(request):
         inplant_no_of_students = int(request.POST.get('inplant_no_of_students', 0)) if request.POST.get('inplant_no_of_students') else None
         internship_no_of_students = int(request.POST.get('internship_no_of_students', 0)) if request.POST.get('internship_no_of_students') else None
         internship_no_of_days = int(request.POST.get('internship_no_of_days', 0)) if request.POST.get('internship_no_of_days') else None
-    except ValueError:
-        # Handle invalid integer or float conversion
+    except ValueError as e:
+        print("ValueError during conversion:", e)
         inplant_no_of_days = None
         inplant_no_of_students = None
         internship_no_of_students = None
@@ -2533,11 +2364,22 @@ def new_enrollment_view(request):
 
         print("Grade Percentage : ", grade_percentage)
         
+        # Format the registration_date
+        try:
+            registration_date_str = request.POST.get('registration_date')
+            if registration_date_str:
+                registration_date = datetime.strptime(registration_date_str, '%Y-%m-%d').strftime('%Y-%m-%d')
+            else:
+                registration_date = None
+        except ValueError:
+            registration_date = None
+            print("ValueError: Invalid date format for registration_date")
+
         # Auto-populate fields based on the related Enquiry object
         enrollment_data = {
             'enquiry_no': enquiry.enquiry_no,
             'registration_no': new_registration_no,
-            'registration_date': request.POST.get('registration_date'),
+            'registration_date': registration_date,
             'name': enquiry.name,
             'phonenumber': enquiry.contact_no,
             'date_of_birth': enquiry.date_of_birth.strftime('%Y-%m-%d') if enquiry.date_of_birth else '',
@@ -2548,8 +2390,7 @@ def new_enrollment_view(request):
             'degree': enquiry.degree,
             'institution': request.POST.get('institution'),
             'subject': request.POST.get('subject'),
-            # 'grade_percentage': enquiry.grade_percentage,
-            'grade_percentage' : grade_percentage,
+            'grade_percentage': grade_percentage,
             'year_of_passed_out': enquiry.year_of_graduation,
             'designation': request.POST.get('designation'),
             'company_name': request.POST.get('company_name'),
@@ -2565,11 +2406,10 @@ def new_enrollment_view(request):
             'duration': request.POST.get('duration'),
             'payment_type': request.POST.get('payment_type'),
             'total_fees_amount': request.POST.get('total_fees_amount'),
+            'installment_amount': request.POST.get('installment_amount'),
         }
-        
-        print("Course Name : ", enquiry.course_name.id)
-        
-        print("Enrollment Data : ", enrollment_data)
+
+        print("Enrollment Data Being Sent:", json.dumps(enrollment_data, indent=4))  # Log the data
 
         try:
             token = Token.objects.get(user=request.user)
@@ -2590,27 +2430,28 @@ def new_enrollment_view(request):
         try:
             response = requests.post(api_url, json=enrollment_data, headers=headers)
             response_data = response.json()
-            
-            print("Response Data : ",response_data)
 
-        except requests.exceptions.RequestException:
+            print("API Response:", response_data)  # Log the response
+
+            if response.status_code in [200, 201]:
+                messages.success(request, 'Created Successfully')
+                return redirect('enrollment')  # Redirect to a success page or another view
+            else:
+                error_message = response_data.get('error', 'An Error Occurred During Creation.')
+                errors = response_data
+                courses = Course.objects.all()
+                context = {
+                    'error': error_message,
+                    'errors': errors,
+                    'courses': courses,
+                    **enrollment_data,
+                }
+                return render(request, 'new_enrollment.html', context)
+
+        except requests.exceptions.RequestException as e:
+            print("RequestException occurred:", e)
             context = {
                 'error': 'An Error Occurred While Creating an Enrollment',
-                **enrollment_data,
-            }
-            return render(request, 'new_enrollment.html', context)
-
-        if response.status_code in [200, 201]:
-            messages.success(request, 'Created Successfully')
-            return redirect('enrollment')  # Redirect to a success page or another view
-        else:
-            error_message = response_data.get('error', 'An Error Occurred During Creation.')
-            errors = response_data
-            courses = Course.objects.all()
-            context = {
-                'error': error_message,
-                'errors': errors,
-                'courses': courses,
                 **enrollment_data,
             }
             return render(request, 'new_enrollment.html', context)
@@ -2717,7 +2558,7 @@ def update_enrollment_view(request, id):
             'company_name': request.POST.get('company_name', enrollment.company_name),
             'work_experience': request.POST.get('work_experience', enrollment.work_experience),
             'course_name': request.POST.get('course_name', enrollment.course_name),
-            'inplant_technology': request.POST.get('technology', enrollment.inplant_technology),
+            'inplant_technology': request.POST.get('inplant_technology', enrollment.inplant_technology),
             'inplant_no_of_days': request.POST.get('inplant_no_of_days', enrollment.inplant_no_of_days),
             'inplant_no_of_students': request.POST.get('inplant_no_of_students', enrollment.inplant_no_of_students),
             'internship_technology': request.POST.get('internship_technology', enrollment.internship_technology),
@@ -2726,7 +2567,10 @@ def update_enrollment_view(request, id):
             'duration': request.POST.get('duration', enrollment.duration),
             'payment_type': request.POST.get('payment_type', enrollment.payment_type),
             'total_fees_amount': request.POST.get('total_fees_amount', enrollment.total_fees_amount),
+            'installment_amount': request.POST.get('installment_amount', enrollment.installment_amount),
         }
+        
+        print("Enrollment Data : ", enrollment_data)
         
         try:
             response = requests.patch(api_url, data=enrollment_data, headers=headers)
@@ -2992,8 +2836,12 @@ def get_enrollment_details(request):
             'student_name': enrollment.name,
             'course_name': enrollment.course_name.course_name,
             'duration': enrollment.duration,
+            'inplant_no_of_days': enrollment.inplant_no_of_days,
+            'internship_no_of_days': enrollment.internship_no_of_days,
             'joining_date': enrollment.registration_date.strftime('%Y-%m-%d') if enrollment.registration_date else '',
             'total_fees': enrollment.total_fees_amount,
+            'installment_amount': enrollment.installment_amount,
+            'payment_type': enrollment.payment_type,
         }
         
         print("Data : ", data)
@@ -3013,205 +2861,6 @@ def validate_date(date_str):
         except ValueError:
             raise ValidationError("Date has wrong format. Use YYYY-MM-DD.")
     return None
-
-def calculate_balance(request):
-    def safe_int(value, default=0):
-        try:
-            return int(value)
-        except (TypeError, ValueError):
-            return default
-
-    # Extract and convert fields
-    cash = safe_int(request.POST.get('cash'))
-    cash_EMI_1 = safe_int(request.POST.get('cash_EMI_1'))
-    cash_EMI_2 = safe_int(request.POST.get('cash_EMI_2'))
-    cash_EMI_3 = safe_int(request.POST.get('cash_EMI_3'))
-    cash_EMI_4 = safe_int(request.POST.get('cash_EMI_4'))
-    cash_EMI_5 = safe_int(request.POST.get('cash_EMI_5'))
-    cash_EMI_6 = safe_int(request.POST.get('cash_EMI_6'))
-
-    upi_cash = safe_int(request.POST.get('upi_cash'))
-    upi_cash_EMI_1 = safe_int(request.POST.get('upi_cash_EMI_1'))
-    upi_cash_EMI_2 = safe_int(request.POST.get('upi_cash_EMI_2'))
-    upi_cash_EMI_3 = safe_int(request.POST.get('upi_cash_EMI_3'))
-    upi_cash_EMI_4 = safe_int(request.POST.get('upi_cash_EMI_4'))
-    upi_cash_EMI_5 = safe_int(request.POST.get('upi_cash_EMI_5'))
-    upi_cash_EMI_6 = safe_int(request.POST.get('upi_cash_EMI_6'))
-
-    bank_cash = safe_int(request.POST.get('bank_cash'))
-    bank_cash_EMI_1 = safe_int(request.POST.get('bank_cash_EMI_1'))
-    bank_cash_EMI_2 = safe_int(request.POST.get('bank_cash_EMI_2'))
-    bank_cash_EMI_3 = safe_int(request.POST.get('bank_cash_EMI_3'))
-    bank_cash_EMI_4 = safe_int(request.POST.get('bank_cash_EMI_4'))
-    bank_cash_EMI_5 = safe_int(request.POST.get('bank_cash_EMI_5'))
-    bank_cash_EMI_6 = safe_int(request.POST.get('bank_cash_EMI_6'))
-
-    total_fees = safe_int(request.POST.get('total_fees'))
-    
-    print("Total Fees : ", total_fees)
-
-    # Calculate total payments
-    total_cash_payment = (cash + cash_EMI_1 + cash_EMI_2 + cash_EMI_3 +
-                          cash_EMI_4 + cash_EMI_5 + cash_EMI_6)
-
-    total_upi_payment = (upi_cash + upi_cash_EMI_1 + upi_cash_EMI_2 +
-                         upi_cash_EMI_3 + upi_cash_EMI_4 + upi_cash_EMI_5 +
-                         upi_cash_EMI_6)
-
-    total_bank_payment = (bank_cash + bank_cash_EMI_1 + bank_cash_EMI_2 +
-                          bank_cash_EMI_3 + bank_cash_EMI_4 + bank_cash_EMI_5 +
-                          bank_cash_EMI_6)
-
-    total_payment = total_cash_payment + total_upi_payment + total_bank_payment
-
-    # Calculate balance
-    balance = total_fees - total_payment
-
-    return balance
-
-
-def new_payment_view(request):
-    if request.method == 'POST':
-        registration_no = request.POST.get('registration_no')
-        
-        # Fetch the related Enquiry object
-        try:
-            enrollment = Enrollment.objects.get(registration_no=registration_no)
-        except Enrollment.DoesNotExist:
-            context = {
-                'error': 'Enrollment with the provided Registration Number does not exist.',
-            }
-            return render(request, 'new_payment.html', context)
-        
-        # Auto-populate fields based on the related Enquiry object
-        
-        date_str = request.POST.get('date')
-        upi_date_str = request.POST.get('upi_date')
-        bank_date_str = request.POST.get('bank_date')
-        
-        # Initialize a dictionary to store EMI dates
-        emi_dates = {}
-
-        # Loop through all EMI fields (date_EMI_1 to date_EMI_6)
-        for i in range(1, 7):
-            date_emi = request.POST.get(f'date_EMI_{i}')
-            emi_dates[f'date_EMI_{i}'] = validate_date(date_emi) if date_emi and date_emi != "None" else None
-
-        # Accessing the validated EMI dates
-        date_EMI_1 = emi_dates.get('date_EMI_1')
-        date_EMI_2 = emi_dates.get('date_EMI_2')
-        date_EMI_3 = emi_dates.get('date_EMI_3')
-        date_EMI_4 = emi_dates.get('date_EMI_4')
-        date_EMI_5 = emi_dates.get('date_EMI_5')
-        date_EMI_6 = emi_dates.get('date_EMI_6')
-        
-        date = validate_date(date_str) if date_str and date_str != "None" else None
-        upi_date = validate_date(upi_date_str) if upi_date_str and upi_date_str != "None" else None
-        bank_date = validate_date(bank_date_str) if bank_date_str and bank_date_str != "None" else None
-        
-        
-        balance = calculate_balance(request)
-        
-        payment_data = {
-            'registration_no': request.POST.get('registration_no'),
-            'student_name': enrollment.name,
-            'course_name': enrollment.course_name.course_name,
-            'duration': enrollment.duration,
-            'total_fees': request.POST.get('total_fees'),
-            'joining_date': enrollment.registration_date.strftime('%Y-%m-%d'),
-            'fees_type': request.POST.get('fees_type'),
-            'payment_mode': request.POST.get('payment_mode'),
-            
-            'installment': request.POST.get('installment'),
-            'date_EMI_1': date_EMI_1.strftime('%Y-%m-%d') if date_EMI_1 else None,
-            'date_EMI_2': date_EMI_2.strftime('%Y-%m-%d') if date_EMI_2 else None,
-            'date_EMI_3': date_EMI_3.strftime('%Y-%m-%d') if date_EMI_3 else None,
-            'date_EMI_4': date_EMI_4.strftime('%Y-%m-%d') if date_EMI_4 else None,
-            'date_EMI_5': date_EMI_5.strftime('%Y-%m-%d') if date_EMI_5 else None,
-            'date_EMI_6': date_EMI_6.strftime('%Y-%m-%d') if date_EMI_6 else None,
-            
-            'cash' : request.POST.get('cash'),
-            'cash_EMI_1' : request.POST.get('cash_EMI_1'),
-            'cash_EMI_2' : request.POST.get('cash_EMI_2'),
-            'cash_EMI_3' : request.POST.get('cash_EMI_3'),
-            'cash_EMI_4' : request.POST.get('cash_EMI_4'),
-            'cash_EMI_5' : request.POST.get('cash_EMI_5'),
-            'cash_EMI_6' : request.POST.get('cash_EMI_6'),
-            'date': date.strftime('%Y-%m-%d') if date else None,
-            
-            'upi_date' :  upi_date.strftime('%Y-%m-%d') if upi_date else None,
-            'transaction_id': request.POST.get('transaction_id'),
-            'upi_cash' : request.POST.get('upi_cash'),
-            'upi_cash_EMI_1' : request.POST.get('upi_cash_EMI_1'),
-            'upi_cash_EMI_2' : request.POST.get('upi_cash_EMI_2'),
-            'upi_cash_EMI_3' : request.POST.get('upi_cash_EMI_3'),
-            'upi_cash_EMI_4' : request.POST.get('upi_cash_EMI_4'),
-            'upi_cash_EMI_5' : request.POST.get('upi_cash_EMI_5'),
-            'upi_cash_EMI_6' : request.POST.get('upi_cash_EMI_6'),
-            
-            'bank_name': request.POST.get('bank_name'),
-            'app_name': request.POST.get('app_name'),
-            
-            'bank_date' : bank_date.strftime('%Y-%m-%d') if bank_date else None,
-            'account_no': request.POST.get('account_no'),
-            'ifsc_code': request.POST.get('ifsc_code'),
-            'branch_name': request.POST.get('branch_name'),
-            'account_holder_name': request.POST.get('account_holder_name'),
-            'bank_cash' : request.POST.get('bank_cash'),
-            'bank_cash_EMI_1' : request.POST.get('bank_cash_EMI_1'),
-            'bank_cash_EMI_2' : request.POST.get('bank_cash_EMI_2'),
-            'bank_cash_EMI_3' : request.POST.get('bank_cash_EMI_3'),
-            'bank_cash_EMI_4' : request.POST.get('bank_cash_EMI_4'),
-            'bank_cash_EMI_5' : request.POST.get('bank_cash_EMI_5'),
-            'bank_cash_EMI_6' : request.POST.get('bank_cash_EMI_6'),
-            'balance' : balance
-        }
-        
-        print("Payment Data : ", payment_data)
-
-        try:
-            token = Token.objects.get(user=request.user)
-        except Token.DoesNotExist:
-            context = {
-                'error': 'Authentication Token not Found',
-                **payment_data,
-            }
-            return render(request, 'new_payment.html', context)
-
-        api_url = 'http://127.0.0.1:8000/api/payment/'
-        
-        headers = {
-            'Authorization': f'Token {token.key}',
-            'Content-Type': 'application/json',
-        }
-
-        try:
-            response = requests.post(api_url, json=payment_data, headers=headers)
-            response_data = response.json()
-            
-            print("Response Data : ",response_data)
-
-        except requests.exceptions.RequestException:
-            context = {
-                'error': 'An Error Occurred While Creating an Enrollment',
-                **payment_data,
-            }
-            return render(request, 'new_payment.html', context)
-
-        if response.status_code in [200, 201]:
-            messages.success(request, 'Created Successfully')
-            return redirect('payment')  # Redirect to a success page or another view
-        else:
-            error_message = response_data.get('error', 'An Error Occurred During Creation.')
-            errors = response_data
-            context = {
-                'error': error_message,
-                'errors': errors,
-                **payment_data,
-            }
-            return render(request, 'new_payment.html', context)
-    return render(request, 'new_payment.html')
-
 
 def manage_payment_view(request):
     
@@ -3285,7 +2934,7 @@ def delete_payment_view(request, id):
         
         if response.status_code == 200:
             messages.success(request, 'Successfully Deleted')
-            return redirect('manage_payments')
+            return redirect('new_manage_payments')
 
     except requests.exceptions.RequestException as err:
         context = {
@@ -3293,113 +2942,6 @@ def delete_payment_view(request, id):
             'response_data': response.json() if response else {}
         }
         return render(request, 'manage_payment_info.html', context)
-    
-
-def update_payment_view(request, id):
-    try:
-        payment = Payment.objects.get(id=id)
-    except Payment.DoesNotExist:
-        return render(request, 'manage_payment.html', {'error': 'Payment not found'})
-
-    if request.method == 'POST':
-        try:
-            token = Token.objects.get(user=request.user)
-        except Token.DoesNotExist:
-            return render(request, 'manage_payment.html', {'error': 'Authentication token not found'})
-
-        api_url = f'http://127.0.0.1:8000/api/update_payment/{payment.pk}/'
-        headers = {
-            'Authorization': f'Token {token.key}',
-        }
-        
-        balance = calculate_balance(request)
-        
-        payment_data = {
-            'registration_no': request.POST.get('registration_no', payment.registration_no),
-            'student_name': request.POST.get('student_name', payment.student_name),
-            'course_name': request.POST.get('course_name', payment.course_name),
-            'duration': request.POST.get('duration', payment.duration),
-            'total_fees': request.POST.get('total_fees', payment.total_fees),
-            'joining_date': request.POST.get('joining_date', payment.joining_date),
-            'fees_type': request.POST.get('fees_type', payment.fees_type),
-            'payment_mode': request.POST.get('payment_mode', payment.payment_mode),
-            'installment': request.POST.get('installment', payment.installment),
-            'date_EMI_1': request.POST.get('date_EMI_1', payment.date_EMI_1),
-            'date_EMI_2': request.POST.get('date_EMI_2', payment.date_EMI_2),
-            'date_EMI_3': request.POST.get('date_EMI_3', payment.date_EMI_3),
-            'date_EMI_4': request.POST.get('date_EMI_4', payment.date_EMI_4),
-            'date_EMI_5': request.POST.get('date_EMI_5', payment.date_EMI_5),
-            'date_EMI_6': request.POST.get('date_EMI_6', payment.date_EMI_6),
-            
-            'cash': request.POST.get('cash', payment.cash),
-            'cash_EMI_1': request.POST.get('cash_EMI_1', payment.cash_EMI_1),
-            'cash_EMI_2': request.POST.get('cash_EMI_2', payment.cash_EMI_2),
-            'cash_EMI_3': request.POST.get('cash_EMI_3', payment.cash_EMI_3),
-            'cash_EMI_4': request.POST.get('cash_EMI_4', payment.cash_EMI_4),
-            'cash_EMI_5': request.POST.get('cash_EMI_5', payment.cash_EMI_5),
-            'cash_EMI_6': request.POST.get('cash_EMI_6', payment.cash_EMI_6),
-            'date': request.POST.get('date', payment.date),
-            
-            'upi_date': request.POST.get('upi_date', payment.upi_date),
-            'transaction_id': request.POST.get('transaction_id', payment.transaction_id),
-            'upi_cash': request.POST.get('upi_cash', payment.upi_cash),
-            'upi_cash_EMI_1': request.POST.get('upi_cash_EMI_1', payment.upi_cash_EMI_1),
-            'upi_cash_EMI_2': request.POST.get('upi_cash_EMI_2', payment.upi_cash_EMI_2),
-            'upi_cash_EMI_3': request.POST.get('upi_cash_EMI_3', payment.upi_cash_EMI_3),
-            'upi_cash_EMI_4': request.POST.get('upi_cash_EMI_4', payment.upi_cash_EMI_4),
-            'upi_cash_EMI_5': request.POST.get('upi_cash_EMI_5', payment.upi_cash_EMI_5),
-            'upi_cash_EMI_6': request.POST.get('upi_cash_EMI_6', payment.upi_cash_EMI_6),
-            'bank_name': request.POST.get('bank_name', payment.bank_name),
-            'app_name': request.POST.get('app_name', payment.app_name),
-            
-            'bank_date': request.POST.get('bank_date', payment.bank_date),
-            'account_no': request.POST.get('account_no', payment.account_no),
-            'ifsc_code': request.POST.get('ifsc_code', payment.ifsc_code),
-            'branch_name': request.POST.get('branch_name', payment.branch_name),
-            'account_holder_name': request.POST.get('account_holder_name', payment.account_holder_name),
-            'bank_cash': request.POST.get('bank_cash', payment.bank_cash),
-            'bank_cash_EMI_1': request.POST.get('bank_cash_EMI_1', payment.bank_cash_EMI_1),
-            'bank_cash_EMI_2': request.POST.get('bank_cash_EMI_2', payment.bank_cash_EMI_2),
-            'bank_cash_EMI_3': request.POST.get('bank_cash_EMI_3', payment.bank_cash_EMI_3),
-            'bank_cash_EMI_4': request.POST.get('bank_cash_EMI_4', payment.bank_cash_EMI_4),
-            'bank_cash_EMI_5': request.POST.get('bank_cash_EMI_5', payment.bank_cash_EMI_5),
-            'bank_cash_EMI_6': request.POST.get('bank_cash_EMI_6', payment.bank_cash_EMI_6),
-            'balance':balance
-        }
-        
-        print("Payment Data : ", payment_data)
-
-        try:
-            response = requests.patch(api_url, data=payment_data, headers=headers)
-            response.raise_for_status()
-            response_data = response.json()
-
-            if response.status_code in [200, 204]:
-                return redirect('manage_payment')
-
-            return render(request, 'update_payment.html', {
-                'error': response_data.get('error', 'An error occurred during the update.'),
-                'payment': payment,
-                'payment_data': payment_data,
-            })
-        except requests.exceptions.RequestException as err:
-            return render(request, 'manage_payment.html', {
-                'error': f'Request error occurred: {err}',
-                'response_data': response.json() if response.content else {}
-            })
-            
-    context = {
-        "payment": payment,
-        'payment_data': {
-            'date_EMI_1': payment.date_EMI_1,
-            'date_EMI_2': payment.date_EMI_2,
-            'date_EMI_3': payment.date_EMI_3,
-            'date_EMI_4': payment.date_EMI_4,
-            'date_EMI_5': payment.date_EMI_5,
-            'date_EMI_6': payment.date_EMI_6,
-        },
-    }
-    return render(request, 'update_payment.html', context)
 
 def delete_all_payment_view(request):
     if request.method == 'POST':
@@ -3703,13 +3245,17 @@ def new_payment_info_view(request):
         
         payment_data = {
             'registration_no' : request.POST.get('registration_no'),
+            'joining_date': enrollment.registration_date.strftime('%Y-%m-%d'),
             'student_name': enrollment.name,
             'course_name': enrollment.course_name.course_name,
-            'duration': enrollment.duration,
-            'total_fees': request.POST.get('total_fees'),
-            'joining_date': enrollment.registration_date.strftime('%Y-%m-%d'),
+            'duration': request.POST.get('duration'),
             'fees_type': request.POST.get('fees_type'),
+            'total_fees': float(enrollment.total_fees_amount),  # Convert Decimal to float
+            'installment_amount': float(enrollment.installment_amount),  # Convert Decimal to float
+            'montly_payment_type': request.POST.get('montly_payment_type'),
         }
+        
+        print("Payment Data : ", payment_data)
         
 
         # Validate and process the form data
@@ -3751,7 +3297,7 @@ def new_payment_info_view(request):
             if payment_data.get('fees_type') == 'Regular':
                 return redirect('single_payment')  # Redirect to a success page or another view
             else:
-                return redirect('installment_payment')
+                return redirect('new_installment_info')
         else:
             error_message = response_data.get('error', 'An Error Occurred During Creation.')
             errors = response_data
@@ -3763,258 +3309,6 @@ def new_payment_info_view(request):
         return render(request, 'new_payment_info.html', context)
 
     return render(request, 'new_payment_info.html')
-
-def get_next_emi(payment_info):
-    installments = payment_info.installments.all()  # Correctly access related objects
-
-    if not installments:
-        return 'EMI-1'  # If no installments are present, start with the first EMI
-
-    # Example logic for handling sorted installments
-    sorted_installments = sorted(installments, key=lambda x: x.created_at, reverse=True)
-
-    last_emi = sorted_installments[0].emi
-    total_emi = 6  # Total EMI count
-    emi_prefix = "EMI-"
-    
-    last_emi_number = int(last_emi.split('-')[1])
-    next_emi_number = last_emi_number + 1
-    
-    if next_emi_number > total_emi:
-        return None  # All EMIs are completed
-    
-    return f"{emi_prefix}{next_emi_number}"
-
-def installment_view(request):
-    if request.method == 'POST':
-        # Fetch the latest PaymentInfo record
-        payment_info = PaymentInfo.objects.last()
-
-        if payment_info is None:
-            messages.error(request, "No Payment Info records found.")
-            return redirect('installment_info')
-        
-        next_emi = get_next_emi(payment_info)
-        
-        if not next_emi:
-            messages.error(request, "All EMIs are completed.")
-            return redirect('installment_info')
-
-        # Collect payment data from the POST request
-        payment_mode = request.POST.get('payment_mode')
-        payment_data = {
-            'payment_info': payment_info.id,
-            'date': request.POST.get('date'),
-            'payment_mode': request.POST.get('payment_mode'),
-            'emi': next_emi,
-            'amount': request.POST.get('amount'),
-        }
-        # Include additional fields based on the payment mode
-        if payment_mode == 'Bank Transfer':
-            payment_data.update({
-                'refference_no': request.POST.get('refference_no'),
-            })
-        elif payment_mode == 'UPI':
-            payment_data['upi_transaction_id'] = request.POST.get('upi_transaction_id')
-            payment_data['upi_app_name'] = request.POST.get('upi_app_name')
-
-        # Validate form data
-        if not all(payment_data.values()):
-            messages.error(request, "All fields are required.")
-            return redirect('installment_info')
-        
-        try:
-            payment_data['amount'] = float(payment_data['amount'])
-        except ValueError:
-            messages.error(request, "Amount must be a valid number.")
-            return redirect('installment_info')
-
-        # Check if the token exists
-        try:
-            token = Token.objects.get(user=request.user)
-        except Token.DoesNotExist:
-            messages.error(request, "Authentication token not found.")
-            return redirect('installment_info')
-
-        api_url = 'http://127.0.0.1:8000/api/installment/'
-        headers = {
-            'Authorization': f'Token {token.key}',
-            'Content-Type': 'application/json',
-        }
-
-        # API request to create the installment
-        try:
-            response = requests.post(api_url, json=payment_data, headers=headers)
-            response.raise_for_status()  # Raise an exception for HTTP error responses
-            response_data = response.json()
-        except requests.exceptions.RequestException as e:
-            messages.error(request, f"An error occurred while processing the request: {e}")
-            return redirect('installment_info')
-
-        # Handle the API response
-        if response.status_code in [200, 201]:
-            messages.success(request, 'Installment created successfully.')
-            return redirect('manage_payments')
-        else:
-            error_message = response_data.get('error', 'An error occurred during installment creation.')
-            messages.error(request, error_message)
-            return redirect('installment_info')
-    
-    # For GET requests or initial form rendering
-    payment_info = PaymentInfo.objects.last()
-    # payment_info = get_object_or_404(PaymentInfo, id=id)
-
-    # Get the next EMI using the get_next_emi function
-    next_emi = get_next_emi(payment_info)
-    print("Next EMI : ", next_emi)
-    
-    if next_emi:
-        context = {
-            'next_emi': next_emi,
-            'payment_info': payment_info
-        }
-    else:
-        context = {'error': 'All EMIs are completed.'}
-    return render(request, 'installment_info.html', context)
-
-
-def installment_update_view(request, id):
-    if request.method == 'POST':
-        # Fetch the payment info from the database
-        payment_info = get_object_or_404(PaymentInfo, id=id)
-        
-        # Get the next EMI using the get_next_emi function
-        next_emi = get_next_emi(payment_info)
-        
-        if not next_emi:
-            messages.error(request, "All EMIs are completed.")
-            return render(request, 'installment_info.html')
-
-        # Update the EMI status
-        emi_field_name = f"emi_{next_emi.split('-')[1]}_completed"  # Convert EMI string like "EMI-1" to "emi_1_completed"
-        setattr(payment_info, emi_field_name, True)
-        payment_info.save()
-
-        # Collect payment data from the POST request
-        payment_mode = request.POST.get('payment_mode')
-        payment_data = {
-            'payment_info': id,
-            'date': request.POST.get('date'),
-            'payment_mode': payment_mode,
-            'emi': next_emi,  # Set the next EMI value
-            'amount': request.POST.get('amount'),
-        }
-
-        # Include additional fields based on the payment mode
-        if payment_mode == 'Bank Transfer':
-            payment_data.update({
-                'refference_no': request.POST.get('refference_no'),
-            })
-        elif payment_mode == 'UPI':
-            payment_data['upi_transaction_id'] = request.POST.get('upi_transaction_id')
-            payment_data['upi_app_name'] = request.POST.get('upi_app_name')
-
-        print("Payment Data:", payment_data)
-
-        # Validate form data
-        if not all(payment_data.values()):
-            messages.error(request, "All fields are required.")
-            return render(request, 'installment_info.html', payment_data)
-
-        # Validate the amount
-        try:
-            payment_data['amount'] = float(payment_data['amount'])
-        except ValueError:
-            messages.error(request, "Amount must be a valid number.")
-            return render(request, 'installment_info.html', payment_data)
-
-        # Check which payment mode is selected and validate the corresponding fields
-        if payment_mode == 'Bank Transfer':
-            required_fields = ['refference_no']
-            for field in required_fields:
-                if not payment_data.get(field):
-                    messages.error(request, f"{field.replace('_', ' ').title()} must be provided for Bank Transfer.")
-                    return render(request, 'installment_info.html', payment_data)
-        elif payment_mode == 'UPI':
-            if not payment_data.get('upi_transaction_id'):
-                messages.error(request, "UPI ID must be provided for UPI payments.")
-                return render(request, 'installment_info.html', payment_data)
-
-        # Check if the token exists
-        try:
-            token = Token.objects.get(user=request.user)
-        except Token.DoesNotExist:
-            context = {
-                'error': 'Authentication token not found.',
-                **payment_data,
-            }
-            return render(request, 'installment_info.html', context)
-
-        api_url = 'http://127.0.0.1:8000/api/installment/'
-        headers = {
-            'Authorization': f'Token {token.key}',
-            'Content-Type': 'application/json',
-        }
-
-        # API request to create the installment
-        try:
-            response = requests.post(api_url, json=payment_data, headers=headers)
-            response_data = response.json()
-            print("Response Data:", response_data)
-        except requests.exceptions.RequestException:
-            context = {
-                'error': 'An error occurred while processing the request.',
-                **payment_data,
-            }
-            return render(request, 'installment_info.html', context)
-
-        # Handle the API response
-        if response.status_code in [200, 201]:
-            messages.success(request, 'Created successfully.')
-            return redirect('manage_payments')  # Redirect to the manage payments view
-        else:
-            error_message = response_data.get('error', 'An error occurred during installment creation.')
-            context = {
-                'error': error_message,
-                'errors': response_data,
-                **payment_data,
-            }
-            return render(request, 'installment_info.html', context)
-
-    else:
-        # Handle GET request
-        print("Welcome !")
-        payment_info = get_object_or_404(PaymentInfo, id=id)
-        
-        installments = Installment.objects.filter(payment_info=id) 
-        
-        # Debugging: print the installment data
-        for installment in installments:
-            print("Date:", installment.date)
-            print("EMI:", installment.emi)
-            print("UPI Transaction ID:", installment.upi_transaction_id)
-            print("Amount:", installment.amount)
-
-        # Get the next EMI using the get_next_emi function
-        next_emi = get_next_emi(payment_info)
-        print("Next EMI : ", next_emi)
-        
-        if next_emi:
-            context = {
-                'next_emi': next_emi,
-                'payment_info': payment_info,
-                'installments': installments 
-            }
-        elif installments.exists():
-            context = {
-                'installments': installments,
-                'payment_info': payment_info
-            }
-        else:
-            messages.error(request, 'All EMIs are completed.')
-            return redirect('installment_payment')
-
-        return render(request, 'installment_info.html', context)
 
 def single_payment_view(request):
     if request.method == 'POST':
@@ -4188,3 +3482,554 @@ def manage_payment_info_view(request):
     }
     
     return render(request, 'manage_payment_info.html', context)
+
+from .config import EMI_MODELS  # Import the dictionary mapping
+
+def new_installment_view(request):
+    print("New Installment!!!!")
+    
+    payment_info = PaymentInfo.objects.last()
+    if not payment_info:
+        messages.error(request, "Payment information not found.")
+        return redirect('new_installment_info')
+
+    # Calculate the total paid amount by summing all EMI amounts
+    total_paid_amount = sum(emi.amount for emi in EMI_MODELS['EMI_1'].objects.filter(payment_info=payment_info))
+    total_remaining_fees = payment_info.total_fees - total_paid_amount
+    print(f"Total Remaining Fees: {total_remaining_fees}")
+
+    if request.method == 'POST':
+        try:
+            next_emi = get_next_emi(payment_info, 'EMI_1')
+            print(f"EMI : {next_emi}")
+        except ValueError as e:
+            messages.error(request, str(e))
+            return redirect('new_installment_info')
+
+        if not next_emi:
+            messages.error(request, "All EMIs are completed.")
+            return redirect('new_installment_info')
+
+        payment_mode = request.POST.get('payment_mode')
+        payment_amount = Decimal(request.POST.get('amount', 0))
+        
+        # Condition 1: Ensure payment amount is not greater than remaining fees
+        if payment_amount <= 0:
+            messages.error(request, "Invalid payment amount.")
+            return redirect('new_installment_info')
+        if payment_amount > total_remaining_fees:
+            messages.error(request, f"Entered amount exceeds the remaining total fees of {total_remaining_fees}.")
+            return redirect('new_installment_info')
+
+        remaining_amount = payment_amount
+        print(f"Remaining Amount : {remaining_amount}")
+
+        registration_no = request.POST.get('registration_no')
+        date = request.POST.get('date')
+        print(f"Registration No: {registration_no}, Date: {date}")
+
+        # Process EMI_1 explicitly
+        emi_model = EMI_MODELS.get('EMI_1')
+        if emi_model:
+            next_emi_amount = payment_info.installment_amount
+            print(f"Processing full payment for EMI_1, Installment : {next_emi_amount}")
+            
+            status = "Pending" if remaining_amount < next_emi_amount else "Paid"
+            print(f"Status : {status}")
+            
+            paid_emi_instance = emi_model(
+                payment_info=payment_info,
+                registration_no=registration_no,
+                date=date,
+                payment_mode=payment_mode,
+                emi='EMI_1',
+                amount=min(next_emi_amount, remaining_amount),
+                status=status
+            )
+            
+            # Set additional fields based on payment mode
+            if payment_mode == 'Bank Transfer':
+                paid_emi_instance.refference_no = request.POST.get('refference_no')
+            elif payment_mode == 'UPI':
+                paid_emi_instance.upi_transaction_id = request.POST.get('upi_transaction_id')
+                paid_emi_instance.upi_app_name = request.POST.get('upi_app_name')
+
+            paid_emi_instance.save()  # Save after setting all fields
+            remaining_amount -= next_emi_amount
+            print(f"Processed Full Payment for EMI_1: Status: {paid_emi_instance.status}, Remaining Amount: {remaining_amount}")
+
+        # Process subsequent EMIs
+        while remaining_amount > 0:
+            next_emi = get_next_emi(payment_info, 'EMI_1')  # Get the next EMI for processing
+            if not next_emi:
+                break  # No more EMIs to process
+
+            emi_model = EMI_MODELS.get(next_emi.emi)
+            if not emi_model:
+                messages.error(request, f"EMI model not found for {next_emi.emi}.")
+                return redirect('new_installment_info')
+
+            next_emi_amount = payment_info.installment_amount
+            print(f"Next EMI Amount : {next_emi_amount}, Remaining Amount : {remaining_amount}")
+
+            if remaining_amount >= next_emi_amount:
+                # Full payment for the current EMI
+                print(f"Processing full payment for {next_emi.emi}")
+                paid_emi_instance = emi_model(
+                    payment_info=payment_info,
+                    registration_no=registration_no,
+                    date=date,
+                    payment_mode=payment_mode,
+                    emi=next_emi.emi,
+                    amount=next_emi_amount,
+                    status="Paid"
+                )
+                
+                # Set additional fields based on payment mode
+                if payment_mode == 'Bank Transfer':
+                    paid_emi_instance.refference_no = request.POST.get('refference_no')
+                elif payment_mode == 'UPI':
+                    paid_emi_instance.upi_transaction_id = request.POST.get('upi_transaction_id')
+                    paid_emi_instance.upi_app_name = request.POST.get('upi_app_name')
+
+                paid_emi_instance.save()
+                remaining_amount -= next_emi_amount
+                print(f"Processed Full Payment for {next_emi.emi}: Status: {paid_emi_instance.status}, Remaining Amount: {remaining_amount}")
+
+            else:
+                # Partial payment for the current EMI
+                print(f"Processing partial payment for {next_emi.emi}")
+                partial_payment_instance = emi_model(
+                    payment_info=payment_info,
+                    registration_no=registration_no,
+                    date=date,
+                    payment_mode=payment_mode,
+                    emi=next_emi.emi,
+                    amount=remaining_amount,
+                    status="Pending"
+                )
+                
+                # Set additional fields based on payment mode
+                if payment_mode == 'Bank Transfer':
+                    partial_payment_instance.refference_no = request.POST.get('refference_no')
+                elif payment_mode == 'UPI':
+                    partial_payment_instance.upi_transaction_id = request.POST.get('upi_transaction_id')
+                    partial_payment_instance.upi_app_name = request.POST.get('upi_app_name')
+
+                partial_payment_instance.save()
+                next_emi.amount -= remaining_amount
+                remaining_amount = 0  # All remaining amount is paid
+                print(f"Processed Partial Payment for {next_emi.emi}: Status: {partial_payment_instance.status}")
+
+        messages.success(request, 'Installment created successfully.')
+        return redirect('new_manage_payments')
+
+    else:
+        context = {
+            'next_emi': "EMI_1",
+            'payment_info': payment_info,
+        }
+        return render(request, 'new_installment_info.html', context)
+
+def new_manage_payment_info_view(request):
+    try:
+        token = Token.objects.get(user=request.user)
+    except Token.DoesNotExist:
+        context = {'error': 'Authentication token not found'}
+        return render(request, 'manage_payment_info.html', context)
+
+    api_url = 'http://127.0.0.1:8000/api/payment_info/'
+    headers = {
+        'Authorization': f'Token {token.key}',
+        'Content-Type': 'application/json'
+    }
+
+    try:
+        response = requests.get(api_url, headers=headers)
+        response.raise_for_status()
+        response_data = response.json()
+    except requests.exceptions.RequestException as err:
+        context = {
+            'error': f'Request error occurred: {err}',
+            'response_data': []
+        }
+        return render(request, 'manage_payment_info.html', context)
+
+    per_page = request.GET.get('per_page', '10')
+    paginator = Paginator(response_data, per_page)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    emi_data = []  # List to store EMI details
+    payment_totals = {}  # Dictionary to hold total amounts for each payment_info_id
+
+    for payment in response_data:
+        for i in range(1, 7):
+            emi_key = f'emi_{i}_payments'
+            emi_payments = payment.get(emi_key, [])
+
+            if not isinstance(emi_payments, list):
+                # print(f"Expected a list for {emi_key}, but got: {emi_payments}")
+                continue
+
+            total_amount = 0  # Initialize total_amount for this emi_key
+            dates = []  # Initialize dates list for this emi_key
+            payment_info_ids = set()  # Use a set to avoid duplicates
+
+            for emi in emi_payments:
+                if isinstance(emi, dict):
+                    payment_info_id = emi.get('payment_info', None)
+
+                    if payment_info_id is not None:
+                        payment_info_ids.add(payment_info_id)  # Collect unique payment IDs
+                        total_amount += float(emi.get('amount', 0))
+                        if emi['date']:
+                            formatted_date = datetime.strptime(emi['date'], '%Y-%m-%d').strftime('%d-%m-%Y')
+                            dates.append(formatted_date)
+                        else:
+                            print("Date is None for EMI:", emi)
+            # Append to emi_data after processing all EMI payments for the current payment
+            emi_data.append({
+                'emi_key': emi_key,
+                'total_amount': total_amount,
+                'dates': dates,
+                'payment_ids': list(payment_info_ids),  # Convert set to list for context
+            })
+
+    # Initialize a dictionary to hold total amounts per payment_info_id
+    payment_totals = {}
+    # First pass to collect total amounts
+    for emi in emi_data:
+        total_amount = emi['total_amount']
+        for payment_id in emi['payment_ids']:
+            if payment_id not in payment_totals:
+                payment_totals[payment_id] = 0
+            payment_totals[payment_id] += total_amount  # Aggregate the total for this payment ID
+
+    # Now calculate the final amounts using the payment_totals
+    final_amounts = {}
+    for payment_id in payment_totals:
+        total_amount = payment_totals[payment_id]
+        # print(f"Total amount for payment_info_id {payment_id}: {total_amount}")
+
+        # Get total fees from PaymentInfo based on payment_id
+        try:
+            payment_info = PaymentInfo.objects.get(id=payment_id)
+            total_fees = Decimal(payment_info.total_fees)
+        except PaymentInfo.DoesNotExist:
+            total_fees = Decimal(0)
+            # print(f"No fees found for payment_info_id {payment_id}, setting total fees to 0")
+
+        # print(f"Total Fees for payment_info_id {payment_id}: {total_fees}")
+
+        # Calculate final amount as total_fees - total_amount
+        final_amount = total_fees - Decimal(total_amount)
+        final_amounts[payment_id] = final_amount
+        # print(f"Final Amount for payment_info_id {payment_id}: {final_amount}")
+    
+    context = {
+        'page_obj': page_obj,
+        'per_page': per_page,
+        'payment_data': response_data,
+        'emi_data': emi_data,  # Include emi_data in context
+        'final_amounts': final_amounts,  # Include final amounts in context
+        'emi_range': range(1, 7),
+    }
+
+    return render(request, 'manage_payment_info.html', context)
+
+def new_installment_update_view(request, id):
+    payment_info = get_object_or_404(PaymentInfo, id=id)
+    print(f"Payment Info: {payment_info}")  # Debug
+
+    total_fees = payment_info.total_fees
+    
+    # Calculate total paid amount by summing over all EMI models
+    total_paid_amount = 0
+    total_pending_amount = 0  # To track pending amount
+    
+    # Calculate total paid amount by summing over all EMI models
+    for emi_model in EMI_MODELS.values():
+        # Sum amounts for paid EMIs
+        total_paid_amount += sum(emi.amount for emi in emi_model.objects.filter(payment_info=payment_info, status='Paid'))
+
+        # Sum amounts for pending EMIs
+        total_pending_amount += sum(emi.amount for emi in emi_model.objects.filter(payment_info=payment_info, status='Pending'))
+
+    remaining_balance = total_fees - (total_paid_amount + total_pending_amount) # Calculate remaining balance
+
+    print(f"remaining balance : {remaining_balance} , Total Paid Amount : {total_paid_amount} , total_pending_amount : {total_pending_amount}")
+    
+    
+    if request.method == 'POST':
+        payment_amount = Decimal(request.POST.get('amount', 0))
+        registration_no = request.POST.get('registration_no')
+        date = request.POST.get('date')
+        payment_mode = request.POST.get('payment_mode')
+
+        # Validation for payment amount
+        if payment_amount <= 0:
+            messages.error(request, "Invalid payment amount.")
+            return redirect('new_installment_update_info', id=payment_info.id)
+
+        # Ensure payment amount does not exceed remaining balance
+        if payment_amount > remaining_balance:
+            messages.error(request, f"Payment amount exceeds the remaining balance. Remaining balance: {remaining_balance}")
+            return redirect('new_installment_update_info', id=payment_info.id)
+
+        if not date:
+            messages.error(request, "Date is required.")
+            return redirect('new_installment_update_info', id=payment_info.id)
+
+        try:
+            parsed_date = datetime.strptime(date, '%Y-%m-%d')
+        except ValueError:
+            messages.error(request, "Invalid date format.")
+            return redirect('new_installment_update_info', id=payment_info.id)
+
+        last_pending_emi = get_last_pending_emi(payment_info)
+        emi_type = None
+        remaining_amount = 0
+
+        if isinstance(last_pending_emi, str):
+            emi_type = last_pending_emi
+        elif hasattr(last_pending_emi, 'emi'):
+            emi_type = last_pending_emi.emi
+            remaining_amount = last_pending_emi.amount
+
+        if not emi_type:
+            messages.error(request, "No EMIs available for processing.")
+            return redirect('new_installment_update_info', id=payment_info.id)
+
+        while payment_amount > 0:
+            next_emi = get_next_emi(payment_info, emi_type)
+            
+            print(f"Next EMI : {next_emi}")
+            
+            if next_emi is None:
+                break
+
+            emi_model = EMI_MODELS.get(next_emi.emi)
+            
+            print(f"EMI Model : {emi_model}")
+            
+            if not emi_model:
+                messages.error(request, f"EMI model not found for {next_emi.emi}.")
+                return redirect('new_installment_update_info', id=payment_info.id)
+
+            next_emi_amount = next_emi.amount
+            print(f"Pending Amount : {next_emi_amount}")
+            
+            installment = payment_info.installment_amount
+            print(f"Installment : {installment}")
+            
+            remaining_amount = installment - next_emi_amount
+            print(f"Processing EMI: {next_emi.emi}, Amount: {next_emi_amount}, Remaining Payment Amount: {remaining_amount}")  # Debug
+            
+            if payment_amount >= next_emi_amount:
+                paid_emi_instance = emi_model(
+                    payment_info=payment_info,
+                    registration_no=registration_no,
+                    date=parsed_date,
+                    payment_mode=payment_mode,
+                    emi=next_emi.emi,
+                    amount= remaining_amount if get_last_emi_status(payment_info, next_emi.emi) == "Pending" else payment_info.installment_amount,
+                    status="Paid"
+                )
+                paid_emi_instance.save()
+                payment_amount -= paid_emi_instance.amount
+                print(f"Payment Amount After Saving : {payment_amount}, Payment paid Amount : {paid_emi_instance.amount}")
+                
+                # next_emi.amount = 0
+            else:
+                paid_emi_instance = emi_model(
+                    payment_info=payment_info,
+                    registration_no=registration_no,
+                    date=parsed_date,
+                    payment_mode=payment_mode,
+                    emi=next_emi.emi,
+                    amount=payment_amount,
+                    status="Pending"
+                )
+                paid_emi_instance.save()
+
+                # next_emi.amount -= payment_amount
+                payment_amount = 0
+
+        # Add additional fields based on payment mode
+        if payment_mode == 'Bank Transfer':
+            paid_emi_instance.refference_no = request.POST.get('refference_no')
+        elif payment_mode == 'UPI':
+            paid_emi_instance.upi_transaction_id = request.POST.get('upi_transaction_id')
+            paid_emi_instance.upi_app_name = request.POST.get('upi_app_name')
+
+        try:
+            paid_emi_instance.save()
+            print("Paid EMI instance saved successfully.")  # Debug
+        except Exception as e:
+            print(f"Error saving instance: {e}")  # Debug
+            messages.error(request, "Error saving the payment information.")
+            return redirect('new_installment_update_info', id=payment_info.id)
+
+        messages.success(request, 'Payment processed successfully.')
+        return redirect('new_manage_payments')
+
+    # For GET requests or initial form rendering
+    last_pending_emi = get_last_pending_emi(payment_info)
+
+    if isinstance(last_pending_emi, str):
+        emi_type = last_pending_emi
+    elif hasattr(last_pending_emi, 'emi'):
+        emi_type = last_pending_emi.emi
+    else:
+        messages.error(request, "No EMIs available for processing.")
+        return redirect('new_installment_update_info', id=payment_info.id)
+
+    context = {
+        'next_emi': emi_type,
+        'payment_info': payment_info,
+        'remaining_balance': remaining_balance  # Send remaining balance to template
+    }
+
+    return render(request, 'new_installment_info.html', context)
+
+
+def get_last_emi_status(payment_info, emi_value):
+    # Determine the correct EMI model based on emi_value
+    emi_model = EMI_MODELS.get(emi_value)
+
+    if not emi_model:
+        return None  # Return None if the model is not found
+
+    # Fetch the last EMI based on emi_value, ordered by date
+    last_emi = emi_model.objects.filter(payment_info=payment_info).order_by('-date').first()
+    return last_emi.status if last_emi else None
+
+
+
+def get_next_emi(payment_info, emi_type):
+    EMI_Model = EMI_MODELS.get(emi_type)
+    print(f"Retrieved EMI Model for {emi_type}: {EMI_Model}")
+    if not EMI_Model:
+        raise ValueError(f"Invalid EMI type: {emi_type}")
+
+    installments = EMI_Model.objects.filter(payment_info=payment_info)
+    print(f"Existing installments: {installments}")
+
+    if not installments:
+        # Create first EMI if none exists
+        next_emi = EMI_Model(emi=emi_type, amount=payment_info.installment_amount)
+        next_emi.payment_info = payment_info
+        # next_emi.save()
+        print(f"Created first EMI: {next_emi}")
+        return next_emi
+
+    last_installment = max(installments, key=lambda x: x.created_at)
+    print(f"Last installment: {last_installment}")
+
+    if last_installment.status == 'Pending':
+        return last_installment
+
+    next_emi_number = int(last_installment.emi.split('_')[1]) + 1
+    print(f"Next EMI number: {next_emi_number}")
+
+    if next_emi_number > 6:  # Assuming 6 installments
+        print("No more EMIs available.")
+        return None
+
+    next_emi = EMI_Model(emi=f"{last_installment.emi.split('_')[0]}_{next_emi_number}", amount=payment_info.installment_amount)
+    next_emi.payment_info = payment_info
+    # next_emi.save()
+    print(f"Created next EMI: {next_emi}")
+    return next_emi
+
+def get_last_pending_emi(payment_info):
+    all_installments = []
+
+    # Loop through all EMI types
+    for emi_type in ['EMI_1', 'EMI_2', 'EMI_3', 'EMI_4', 'EMI_5', 'EMI_6']:
+        EMI_Model = EMI_MODELS.get(emi_type)
+        if EMI_Model:
+            # Collect both pending and paid installments
+            installments = EMI_Model.objects.filter(payment_info=payment_info).order_by('-created_at')
+            print(f"Processing {emi_type}: Found {installments.count()} installments.")
+            
+            if installments.exists():
+                recent_installment = installments.first()
+                print(f"Most recent installment for {emi_type}: {recent_installment}")
+                all_installments.append(recent_installment)  # Get the most recent installment
+
+    # Determine the last EMI if available
+    if all_installments:
+        last_emi = max(all_installments, key=lambda x: x.created_at)  # Most recent by created_at
+        print(f"Last EMI (Pending or Paid): {last_emi}")
+        return last_emi
+
+    print("No EMIs found.")
+    return None
+
+class EMI_1ListCreateView(generics.ListCreateAPIView):
+    queryset = EMI_1.objects.all().order_by('-id')
+    serializer_class = EMI_1_Serializer
+    permission_classes = [IsAuthenticated]
+
+class EMI_1DetailView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = EMI_1.objects.all()
+    serializer_class = EMI_1_Serializer
+    permission_classes = [IsAuthenticated]
+    lookup_field = 'pk'
+
+class EMI_2ListCreateView(generics.ListCreateAPIView):
+    queryset = EMI_2.objects.all().order_by('-id')
+    serializer_class = EMI_2_Serializer
+    permission_classes = [IsAuthenticated]
+
+class EMI_2DetailView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = EMI_2.objects.all()
+    serializer_class = EMI_2_Serializer
+    permission_classes = [IsAuthenticated]
+    lookup_field = 'pk'
+
+class EMI_3ListCreateView(generics.ListCreateAPIView):
+    queryset = EMI_3.objects.all().order_by('-id')
+    serializer_class = EMI_3_Serializer
+    permission_classes = [IsAuthenticated]
+
+class EMI_3DetailView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = EMI_3.objects.all()
+    serializer_class = EMI_3_Serializer
+    permission_classes = [IsAuthenticated]
+    lookup_field = 'pk'
+
+class EMI_4ListCreateView(generics.ListCreateAPIView):
+    queryset = EMI_4.objects.all().order_by('-id')
+    serializer_class = EMI_4_Serializer
+    permission_classes = [IsAuthenticated]
+
+class EMI_4DetailView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = EMI_4.objects.all()
+    serializer_class = EMI_4_Serializer
+    permission_classes = [IsAuthenticated]
+    lookup_field = 'pk'
+
+class EMI_5ListCreateView(generics.ListCreateAPIView):
+    queryset = EMI_5.objects.all().order_by('-id')
+    serializer_class = EMI_5_Serializer
+    permission_classes = [IsAuthenticated]
+
+class EMI_5DetailView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = EMI_5.objects.all()
+    serializer_class = EMI_5_Serializer
+    permission_classes = [IsAuthenticated]
+    lookup_field = 'pk'
+
+class EMI_6ListCreateView(generics.ListCreateAPIView):
+    queryset = EMI_6.objects.all().order_by('-id')
+    serializer_class = EMI_6_Serializer
+    permission_classes = [IsAuthenticated]
+
+class EMI_6DetailView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = EMI_6.objects.all()
+    serializer_class = EMI_6_Serializer
+    permission_classes = [IsAuthenticated]
+    lookup_field = 'pk'
