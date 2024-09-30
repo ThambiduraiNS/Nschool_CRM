@@ -67,6 +67,7 @@ class NewUser(AbstractBaseUser, PermissionsMixin):
     
 class Course(models.Model):
     course_name = models.CharField(max_length=150, unique=True)
+    S_no = models.PositiveIntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
     modified_at = models.DateTimeField(auto_now=True)
     created_by = models.IntegerField(null=True, blank=True)

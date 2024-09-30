@@ -166,6 +166,15 @@ def user_module_insert_view(request):
         password = request.POST.get("password", "").strip()
         cpassword = request.POST.get("cpassword", "").strip()
         
+        # Extract permission fields
+        enquiry = "Enquiry" in request.POST
+        enrollment = "Enrollment" in request.POST
+        payment = "Payment" in request.POST
+        attendance = "Attendance" in request.POST
+        staff = "Staff" in request.POST
+        placement = "Placement" in request.POST
+        report = "Report" in request.POST
+        
         # Validate password
         if password != cpassword:
             context = {
@@ -187,6 +196,7 @@ def user_module_insert_view(request):
             'password': encrypted_password.decode(),
             'enquiry': "Enquiry" in request.POST,
             'enrollment': "Enrollment" in request.POST,
+            'payment': "Payment" in request.POST,
             'attendance': "Attendance" in request.POST,
             'staff': "Staff" in request.POST,
             'placement': "Placement" in request.POST,
@@ -199,6 +209,7 @@ def user_module_insert_view(request):
         except Token.DoesNotExist:
             context = {
                 'error': 'Authentication token not found'
+                **user_data,
             }
             return render(request, 'new_user.html', context)
         
@@ -211,10 +222,12 @@ def user_module_insert_view(request):
         try:
             response = requests.post(api_url, json=user_data, headers=headers)
             response_data = response.json()
+            print(f"Response Data : {response_data}")
         except requests.exceptions.HTTPError as http_err:
             # Handle specific HTTP errors
             context = {
                 'error': f'HTTP error occurred: {http_err}',
+                **user_data,
                 'response_data': response.json()
             }
             return render(request, 'new_user.html', context)
@@ -241,10 +254,20 @@ def user_module_insert_view(request):
             }
             context = {
                 'username': username,
-                'email': email,
-                'contact': contact,
+                'email': email if not error_messages.get('email') else '',  # Clear if there's an email error
+                'contact': contact if not error_messages.get('contact') else '',  # Clear if there's a contact error
                 'designation': designation,
+                'enquiry': enquiry,
+                'enrollment': enrollment,
+                'payment': payment, 
+                'attendance': attendance,
+                'staff': staff,
+                'placement': placement,
+                'report': report,
+                'password': password,
+                'cpassword': cpassword,
                 'error_messages': error_messages,
+                
             }
             return render(request, 'new_user.html', context)
         
@@ -394,6 +417,7 @@ def update_user_view(request, id):
             'designation': request.POST.get('designation', user.designation),
             'enquiry': 'Enquiry' in request.POST,
             'enrollment': 'Enrollment' in request.POST,
+            'payment': 'Payment' in request.POST,
             'attendance': 'Attendance' in request.POST,
             'staff': 'Staff' in request.POST,
             'placement': 'Placement' in request.POST,
@@ -500,6 +524,42 @@ class NewUserListCreateView(generics.ListCreateAPIView):
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+    def create(self, request, *args, **kwargs):
+        email = request.data.get('email')
+        contact = request.data.get('contact')
+        
+        errors = {}
+        
+        if NewUser.objects.filter(email=email).exists():
+            errors['email'] = 'This Email ID is Already Exist.'
+
+        if NewUser.objects.filter(contact=contact).exists():
+            errors['contact'] = 'This Contact Number is Already Exist.'
+            
+        # If there are any errors, return them
+        if errors:
+            return Response(errors, status=status.HTTP_400_BAD_REQUEST)
+
+        serializer = self.get_serializer(data=request.data)
+        try:
+            serializer.is_valid(raise_exception=True)
+        except serializers.ValidationError as e:
+            custom_errors = {}
+            for field, messages in e.detail.items():
+                if field == 'name':
+                    custom_errors[field] = 'Please provide a valid name.'
+                elif field == 'email':
+                    custom_errors[field] = 'Email is required and must be unique.'
+                elif field == 'contact':
+                    custom_errors[field] = 'Contact number must be valid and unique.'
+                else:
+                    custom_errors[field] = messages[0]  # Fallback for other fields
+
+            return Response(custom_errors, status=status.HTTP_400_BAD_REQUEST)
+        
+        self.perform_create(serializer)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    
 class NewUserDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = NewUser.objects.all()
     serializer_class = NewUserSerializer
@@ -526,7 +586,7 @@ class NewUserDeleteView(generics.DestroyAPIView):
 # New Course APi view
 
 class CourseListCreateView(generics.ListCreateAPIView):
-    queryset = Course.objects.all().order_by('-id')
+    queryset = Course.objects.all().order_by('-created_at')
     serializer_class = CourseSerializer
     permission_classes = [IsAuthenticated]
     
@@ -981,14 +1041,33 @@ class SearchResultsView(ListView):
 
 # course module
 
+def generate_new_course_no():
+    existing_courses = Course.objects.values_list('S_no', flat=True)
+    
+    if not existing_courses:
+        return 1  # Start with 1 if there are no existing courses
+
+    # Create a sorted list of existing S_no values
+    existing_s_no = sorted(existing_courses)
+
+    # Find the first available S_no
+    for i in range(1, len(existing_s_no) + 2):
+        if i not in existing_s_no:
+            return i  # Return the first missing number
+    
+    return existing_s_no[-1] + 1  # Otherwise, increment the highest
+
 def add_course_view(request):
     if request.method == 'POST':
+        s_no = generate_new_course_no()
         # Extract data from the form
         course_name = request.POST.get("course", "").strip()
         
         # Prepare data for the API request
+        
         user_data = {
-            'course_name': course_name.lower(),
+            'course_name': course_name,
+            'S_no' : s_no,
         }
 
         # Get the token
@@ -1029,7 +1108,7 @@ def add_course_view(request):
         
         if response.status_code == 201:
             context =  {
-                "message": "New Course Created Successfully"
+                "message": "Created Successfully"
             }
             return render(request, 'add_course.html', context)
         else:
@@ -1084,12 +1163,15 @@ def manage_course_view(request):
     }
     return render(request, 'manage_course.html', context)
 
+from django.db.models import F
+
 def delete_course_view(request, id):
-    user_id = Course.objects.get(id=id)
+    user_course = Course.objects.get(id=id)
+    s_no_to_delete = user_course.S_no  # Get the S_no of the course to delete
     
-    print(user_id.pk)
+    print(user_course.pk)
     
-    if not user_id:
+    if not user_course:
         context = {'error': 'User ID not provided'}
         print("user id not provided")
         return render(request, 'manage_course.html', context)
@@ -1102,7 +1184,7 @@ def delete_course_view(request, id):
         context = {'error': 'Authentication token not found'}
         return render(request, 'manage_course.html', context)
     
-    api_url = f'http://127.0.0.1:8000/api/course/{user_id.pk}/'
+    api_url = f'http://127.0.0.1:8000/api/course/{user_course.pk}/'
     headers = {
         'Authorization': f'Token {token.key}',
         'Content-Type': 'application/json'
@@ -1111,6 +1193,9 @@ def delete_course_view(request, id):
     try:
         response = requests.delete(api_url, headers=headers)
         response.raise_for_status()
+        
+        # Adjust S_no for all courses with higher S_no
+        Course.objects.filter(S_no__gt=s_no_to_delete).update(S_no=F('S_no') - 1)
 
     except requests.exceptions.RequestException as err:
         context = {
@@ -1189,7 +1274,7 @@ def update_course_view(request, id):
             return render(request, 'manage_course.html', context)
         
         if response.status_code in [200, 204]:  # 204 No Content is also a valid response for updates
-            print("Update successful")
+            messages.error(request, "Update Successfully.")
             return redirect('manage-course')
         else:
             context = {

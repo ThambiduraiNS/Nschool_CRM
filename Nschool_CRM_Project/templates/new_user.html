@@ -48,7 +48,7 @@
                         <div class="row d-flex justify-content-between pe-0">
                             <div class="col-12 col-md-6">
                                 <div class="user-input-wrp me-md-4">
-                                    <input type="text" name="username" id="username" class="form-control"
+                                    <input type="text" name="username" id="username" value="{{username}}" class="form-control"
                                         aria-label="Username" placeholder=" " autocomplete="off" autofocus>
                                     <label class="floating-label">&nbsp;Name&nbsp;</label>
                                     <span id="user_error" class="error-div">
@@ -60,13 +60,13 @@
                             </div>
                             <div class="col-12 col-md-6 pe-md-0">
                                 <div class="user-input-wrp ms-md-4">
-                                    <input type="email" name="email" id="email" class="form-control" placeholder=" "
+                                    <input type="text" name="email" id="email" value="{{email}}" class="form-control" placeholder=" "
                                         autocomplete="off" autofocus>
                                     <label class="floating-label">&nbsp;E-Mail-ID&nbsp;</label>
                                     <span id="email_error" class="error-div error-right">
-                                        <!-- {% if email %}
-                                        {{email}}
-                                        {% endif %} -->
+                                        {% if error_messages.email %}
+                                            {{error_messages.email}}
+                                        {% endif %}
                                     </span>
                                 </div>
                             </div>
@@ -74,19 +74,19 @@
                         <div class="row d-flex justify-content-between pe-0">
                             <div class="col-12 col-md-6">
                                 <div class="user-input-wrp me-md-4">
-                                    <input type="text" name="contact" id="contact" maxlength="10" class="form-control"
+                                    <input type="text" name="contact" id="contact" value="{{contact}}" maxlength="10" class="form-control"
                                         aria-label="contact_no" placeholder=" " autocomplete="off" autofocus>
                                     <label class="floating-label">&nbsp;Contact No&nbsp;</label>
                                     <span id="contact_error" class="error-div">
-                                        <!-- {% if contact %}
-                                        {{contact}}
-                                        {% endif %} -->
+                                        {% if error_messages.contact %}
+                                            {{error_messages.contact}}
+                                        {% endif %}
                                     </span>
                                 </div>
                             </div>
                             <div class="col-12 col-md-6 pe-md-0">
                                 <div class="user-input-wrp ms-md-4">
-                                    <input type="text" name="designation" id="designation" class="form-control"
+                                    <input type="text" name="designation" id="designation" value="{{designation}}" class="form-control"
                                         aria-label="designation" placeholder=" " autocomplete="off" autofocus>
                                     <label class="floating-label">&nbsp;Designation&nbsp;</label>
                                     <span id="designation_error" class="error-div error-right">
@@ -102,61 +102,69 @@
                             <span id="permission_error" class="error-div perm-error"></span>
                             
                             <div class="row gap-xl-5 ms-3 ms-md-2 mb-3 p-0">
-                                <div class="col d-flex justify-content-start justify-content-md-end p-0">
+                                <div class="col d-flex justify-content-start justify-content-md-center p-0">
                                     <div class="form-check form-check-inline">
                                         <input class="form-check-input" type="checkbox" name="Enquiry"
-                                            id="inlineCheckbox1" value="false" onclick="permission('inlineCheckbox1')">
+                                            id="inlineCheckbox1" value="false" onclick="permission('inlineCheckbox1')" {% if enquiry %}checked{% endif %}>
                                         <label class="form-check-label" for="inlineCheckbox1">&nbsp;Enquiry&nbsp;</label>
                                         <span id="text_inlineCheckbox1"></span>
                                     </div>
                                 </div>
-                                <div class="col d-flex justify-content-start justify-content-md-end p-0">
+                                <div class="col d-flex justify-content-start justify-content-md-center p-0">
                                     <div class="form-check form-check-inline">
                                         <input class="form-check-input" type="checkbox" name="Enrollment"
-                                            id="inlineCheckbox2" value="false" onclick="permission('inlineCheckbox2')">
+                                            id="inlineCheckbox2" value="false" onclick="permission('inlineCheckbox2')" {% if enrollment %}checked{% endif %}>
                                         <label class="form-check-label" for="inlineCheckbox2">&nbsp;Enrollment&nbsp;</label>
                                         <span id="text_inlineCheckbox2"></span>
                                     </div>
                                 </div>
-                                <div class="col d-flex justify-content-start justify-content-md-end p-0">
+                                <div class="col d-flex justify-content-start justify-content-md-center p-0">
                                     <div class="form-check form-check-inline">
-                                        <input class="form-check-input" type="checkbox" name="Attendance"
-                                            id="inlineCheckbox3" value="false" onclick="permission('inlineCheckbox3')">
-                                        <label class="form-check-label" for="inlineCheckbox3">&nbsp;Attendance&nbsp;</label>
+                                        <input class="form-check-input" type="checkbox" name="Payment"
+                                            id="inlineCheckbox3" value="false" onclick="permission('inlineCheckbox3')" {% if payment %}checked{% endif %}>
+                                        <label class="form-check-label" for="inlineCheckbox3">&nbsp;Payment&nbsp;</label>
                                         <span id="text_inlineCheckbox3"></span>
                                     </div>
                                 </div>
-                                <div class="col d-flex justify-content-start justify-content-md-end p-0">
+                                <div class="col d-flex justify-content-start justify-content-md-center p-0">
                                     <div class="form-check form-check-inline">
-                                        <input class="form-check-input" type="checkbox" name="Staff"
-                                            id="inlineCheckbox4" value="false" onclick="permission('inlineCheckbox4')">
-                                        <label class="form-check-label" for="inlineCheckbox4">&nbsp;Staff&nbsp;</label>
+                                        <input class="form-check-input" type="checkbox" name="Attendance"
+                                            id="inlineCheckbox4" value="false" onclick="permission('inlineCheckbox4')" {% if attendance %}checked{% endif %}>
+                                        <label class="form-check-label" for="inlineCheckbox4">&nbsp;Attendance&nbsp;</label>
                                         <span id="text_inlineCheckbox4"></span>
                                     </div>
                                 </div>
-                                <div class="col d-flex justify-content-start justify-content-md-end p-0">
+                                <div class="col d-flex justify-content-start justify-content-md-center p-0">
                                     <div class="form-check form-check-inline">
-                                        <input class="form-check-input" type="checkbox" name="Placement"
-                                            id="inlineCheckbox5" value="false" onclick="permission('inlineCheckbox5')">
-                                        <label class="form-check-label" for="inlineCheckbox5">&nbsp;Placement&nbsp;</label>
+                                        <input class="form-check-input" type="checkbox" name="Staff"
+                                            id="inlineCheckbox5" value="false" onclick="permission('inlineCheckbox5')" {% if staff %}checked{% endif %}>
+                                        <label class="form-check-label" for="inlineCheckbox5">&nbsp;Staff&nbsp;</label>
                                         <span id="text_inlineCheckbox5"></span>
                                     </div>
                                 </div>
-                                <div class="col d-flex justify-content-start justify-content-lg-start justify-content-md-end p-0">
+                                <div class="col d-flex justify-content-start justify-content-md-center p-0">
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="checkbox" name="Placement"
+                                            id="inlineCheckbox6" value="false" onclick="permission('inlineCheckbox6')" {% if placement %}checked{% endif %}>
+                                        <label class="form-check-label" for="inlineCheckbox6">&nbsp;Placement&nbsp;</label>
+                                        <span id="text_inlineCheckbox6"></span>
+                                    </div>
+                                </div>
+                                <div class="col d-flex justify-content-start justify-content-lg-start justify-content-md-center p-0">
                                     <div class="form-check form-check-inline">
                                         <input class="form-check-input" type="checkbox" name="Report"
-                                            id="inlineCheckbox6" value="false" onclick="permission('inlineCheckbox6')">
-                                        <label class="form-check-label" for="inlineCheckbox6">&nbsp;Report&nbsp;</label>
-                                        <span id="text_inlineCheckbox6"></span>
+                                            id="inlineCheckbox7" value="false" onclick="permission('inlineCheckbox7')" {% if report %}checked{% endif %}>
+                                        <label class="form-check-label" for="inlineCheckbox7">&nbsp;Report&nbsp;</label>
+                                        <span id="text_inlineCheckbox7"></span>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
                         <div class="row d-flex justify-content-between pe-0">
-                            <div class="col-12 col-md-6 pe-md-0">
+                            <div class="col-12 col-md-6">
                                 <div class="user-input-wrp me-md-4">
-                                    <input type="password" name="password" id="password" class="form-control"
+                                    <input type="password" name="password" id="password" value="{{password}}" class="form-control"
                                         aria-label="password" placeholder=" " autocomplete="off" autofocus>
                                     <label class="floating-label">&nbsp;Password&nbsp;</label>
                                     <svg id="togglePassword" xmlns="http://www.w3.org/2000/svg" width="16"
@@ -175,9 +183,9 @@
                                     </span>
                                 </div>
                             </div>
-                            <div class="col-12 col-md-6 pe-md-0 pe-md-0">
+                            <div class="col-12 col-md-6 pe-md-0">
                                 <div class="user-input-wrp ms-md-4">
-                                    <input type="password" name="cpassword" id="cpassword" class="form-control"
+                                    <input type="password" name="cpassword" id="cpassword" value="{{cpassword}}" class="form-control"
                                         aria-label="password" placeholder=" " autocomplete="off" autofocus>
                                     <label class="floating-label">&nbsp;Conform Password&nbsp;</label>
                                     <svg id="togglePassword1" xmlns="http://www.w3.org/2000/svg" width="16"
@@ -203,19 +211,6 @@
                             </div>
                         </div>
                     </form>
-                    <span>
-                        {% if error_messages %}
-                        <div class="errors-common">
-                            <ul class="ul-errors">
-                                {% for field, message in error_messages.items %}
-                                    {% if message %}
-                                        <li>{{ message }}</li>
-                                    {% endif %}
-                                {% endfor %}
-                            </ul>
-                        </div>
-                    {% endif %}
-                    </span>
                 </div>
             </div>
         </div>
@@ -371,13 +366,14 @@
 
         var enquiry = document.getElementById("inlineCheckbox1").checked;
         var enrollment = document.getElementById("inlineCheckbox2").checked;
-        var attendance = document.getElementById("inlineCheckbox3").checked;
-        var staff = document.getElementById("inlineCheckbox4").checked;
-        var placement = document.getElementById("inlineCheckbox5").checked;
-        var report = document.getElementById("inlineCheckbox6").checked;
+        var payment = document.getElementById("inlineCheckbox3").checked;
+        var attendance = document.getElementById("inlineCheckbox4").checked;
+        var staff = document.getElementById("inlineCheckbox5").checked;
+        var placement = document.getElementById("inlineCheckbox6").checked;
+        var report = document.getElementById("inlineCheckbox7").checked;
 
-        if (!enquiry && !enrollment && !attendance && !staff && !placement && !report) {
-            document.getElementById("permission_error").innerText = "At least one permission field is required";
+        if (!enquiry && !enrollment && !payment && !attendance && !staff && !placement && !report) {
+            document.getElementById("permission_error").innerText = "Choose any one field is required";
             hasError = true;
             
         } else {
@@ -385,9 +381,14 @@
             
         }
 
+        var regularExpression  = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
         // client side password Field validation
         if (password === "") {
             document.getElementById("pass_error").innerText = "Password Field is required";
+            hasError = true;
+        } else if (!regularExpression.test(password)){
+            console.log("Password Error!")
+            document.getElementById("pass_error").innerText = "Must One Uppercase, One Lowercase, One Number and One Special symbols";
             hasError = true;
         } else {
             document.getElementById("pass_error").innerText = "";

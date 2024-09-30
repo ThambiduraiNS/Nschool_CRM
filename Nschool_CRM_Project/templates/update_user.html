@@ -95,40 +95,46 @@
                                 <div class="row d-flex mt-3">
                                     <p class="permission-p">Department Permission</p> <span id="permission_error" class="error-div perm-error"></span>
                                     <div class="row gap-5 ms-2 mb-3 p-0">
-                                        <div class="col d-flex justify-content-end p-0">
+                                        <div class="col d-flex justify-content-center  p-0">
                                             <div class="form-check form-check-inline">
                                                 <input class="form-check-input" type="checkbox" name="Enquiry" id="inlineCheckbox1" {% if user.enquiry %}checked{% endif %}>
                                                 <label class="form-check-label" for="inlineCheckbox1">Enquiry</label>
                                             </div>  
                                         </div>
-                                        <div class="col d-flex justify-content-end p-0">
+                                        <div class="col d-flex justify-content-center  p-0">
                                             <div class="form-check form-check-inline">
                                                 <input class="form-check-input" type="checkbox" name="Enrollment" id="inlineCheckbox2" {% if user.enrollment %}checked{% endif %}>
                                                 <label class="form-check-label" for="inlineCheckbox2">Enrollment</label>
                                             </div>                                          
                                         </div>
-                                        <div class="col d-flex justify-content-end p-0">
+                                        <div class="col d-flex justify-content-center  p-0">
                                             <div class="form-check form-check-inline">
-                                                <input class="form-check-input" type="checkbox" name="Attendance" id="inlineCheckbox3" {% if user.attendance %}checked{% endif %}>
-                                                <label class="form-check-label" for="inlineCheckbox3">Attendance</label>
+                                                <input class="form-check-input" type="checkbox" name="Payment" id="inlineCheckbox3" {% if user.payment %}checked{% endif %}>
+                                                <label class="form-check-label" for="inlineCheckbox3">Payment</label>
                                             </div>                                          
                                         </div>
-                                        <div class="col d-flex justify-content-end  p-0">
+                                        <div class="col d-flex justify-content-center  p-0">
                                             <div class="form-check form-check-inline">
-                                                <input class="form-check-input" type="checkbox" name="Staff" id="inlineCheckbox4" {% if user.staff %}checked{% endif %}>
-                                                <label class="form-check-label" for="inlineCheckbox4">Staff</label>
+                                                <input class="form-check-input" type="checkbox" name="Attendance" id="inlineCheckbox4" {% if user.attendance %}checked{% endif %}>
+                                                <label class="form-check-label" for="inlineCheckbox4">Attendance</label>
                                             </div>                                          
                                         </div>
-                                        <div class="col d-flex justify-content-end  p-0">
+                                        <div class="col d-flex justify-content-center   p-0">
                                             <div class="form-check form-check-inline">
-                                                <input class="form-check-input" type="checkbox" name="Placement" id="inlineCheckbox5" {% if user.placement %}checked{% endif %}>
-                                                <label class="form-check-label" for="inlineCheckbox5">Placement</label>
+                                                <input class="form-check-input" type="checkbox" name="Staff" id="inlineCheckbox5" {% if user.staff %}checked{% endif %}>
+                                                <label class="form-check-label" for="inlineCheckbox5">Staff</label>
                                             </div>                                          
                                         </div>
-                                        <div class="col d-flex justify-content-end p-0">
+                                        <div class="col d-flex justify-content-center   p-0">
                                             <div class="form-check form-check-inline">
-                                                <input class="form-check-input" type="checkbox" name="Report" id="inlineCheckbox6" {% if user.report %}checked{% endif %}>
-                                                <label class="form-check-label" for="inlineCheckbox6">Report</label>
+                                                <input class="form-check-input" type="checkbox" name="Placement" id="inlineCheckbox6" {% if user.placement %}checked{% endif %}>
+                                                <label class="form-check-label" for="inlineCheckbox6">Placement</label>
+                                            </div>                                          
+                                        </div>
+                                        <div class="col d-flex justify-content-center  p-0">
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="checkbox" name="Report" id="inlineCheckbox7" {% if user.report %}checked{% endif %}>
+                                                <label class="form-check-label" for="inlineCheckbox7">Report</label>
                                             </div>                                          
                                         </div>
                                     </div>
@@ -253,13 +259,14 @@
         // client side designation Field validation
         var enquiry = document.getElementById("inlineCheckbox1").checked;
         var enrollment = document.getElementById("inlineCheckbox2").checked;
-        var attendance = document.getElementById("inlineCheckbox3").checked;
-        var staff = document.getElementById("inlineCheckbox4").checked;
-        var placement = document.getElementById("inlineCheckbox5").checked;
-        var report = document.getElementById("inlineCheckbox6").checked;
+        var payment = document.getElementById("inlineCheckbox3").checked;
+        var attendance = document.getElementById("inlineCheckbox4").checked;
+        var staff = document.getElementById("inlineCheckbox5").checked;
+        var placement = document.getElementById("inlineCheckbox6").checked;
+        var report = document.getElementById("inlineCheckbox7").checked;
 
-        if (!enquiry && !enrollment && !attendance && !staff && !placement && !report) {
-            document.getElementById("permission_error").innerText = "At least one permission field is required";
+        if (!enquiry && !enrollment && !payment && !attendance && !staff && !placement && !report) {
+            document.getElementById("permission_error").innerText = "Choose any one field is required";
             hasError = true;
             
         } else {

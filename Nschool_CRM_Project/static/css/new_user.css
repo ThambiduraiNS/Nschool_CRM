@@ -169,8 +169,8 @@ h5::before {
     font-size: 14px;
     color: #c72571;
     text-decoration: none;
-    text-align: center;
-    margin: 0px 0px 40px 0px;
+    top: 0;
+    right: 0;
 }
 
 .ul-errors {

@@ -9,3 +9,10 @@
 .thead {
     width: 73%;
 }
+
+.message {
+    position: absolute;
+    color: green;
+    right: 28px;
+    top: 106px;
+}

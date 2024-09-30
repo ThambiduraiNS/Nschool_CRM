@@ -3,6 +3,7 @@
 {% load static %}
 {% load bootstrap_icons %}
 
+{% load custom_filters %}
 
 {% block title %}User Module{% endblock %}
 
@@ -32,6 +33,13 @@
                         <li class="breadcrumb-item active" aria-current="page">Manage Course</li>
                     </ol>
                 </nav>
+                <span class="message" id="message">
+                    {% for message in messages %}
+                        
+                            {{ message }}
+                        
+                    {% endfor %}
+                </span>
             </div>
         </div>
 
@@ -151,7 +159,9 @@
                                     <input type="checkbox" class="form-check-input user-checkbox checked-row" name="user_ids"
                                         value="{{ user.id }}" id="user{{ user.id }}">
                                 </td>
-                                <td class="tdata">{{ user.id }}</td>
+                                
+                                <td class="tdata">{{user.S_no}}</td>
+
                                 <td class="tdata">{{ user.course_name }}</td>
                                 <td class="tdata">
                                     <div>
@@ -558,8 +568,16 @@
         });
     });
 
+    function showMessage() {
+        const alertBox = document.getElementById('message');
+        alertBox.style.display = 'block';
 
+        setTimeout(() => {
+            alertBox.style.display = 'none';
+        }, 10000);
+    }
 
+    document.addEventListener('DOMContentLoaded', () => showMessage());
 
 </script>
 {% endblock %}
