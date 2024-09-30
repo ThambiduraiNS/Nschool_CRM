@@ -6,16 +6,42 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>user List</title>
     <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .table-container {
+            overflow-x: auto;  /* Enable horizontal scrolling */
+            margin-bottom: 20px;  /* Space below the table */
+        }
         table {
             width: 100%;
             border-collapse: collapse;
-        }
-        table, th, td {
-            border: 1px solid black;
+            min-width: 800px;  /* Ensure a minimum width for the table */
         }
         th, td {
-            padding: 8px;
+            border: 1px solid #ddd;
+            padding: 5px;  /* Increased padding for better spacing */
             text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .emi-labels {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        ul {
+            padding-left: 5px;  /* Add padding for list alignment */
+            margin: 0;           /* Remove default margin */
+            list-style-type: none; /* Remove bullet points */
+        }
+        li {
+            margin-bottom: 5px;  /* Space between list items */
         }
     </style>
 </head>
@@ -28,27 +54,50 @@
                 <th>Joining Date</th>
                 <th>Student Name</th>
                 <th>Course Name</th>
-                <th>Course Duration</th>
-                <th>Fees Type</th>
+                <th>Duration</th>
                 <th>Total Fees</th>
-                <th>Balance Amount</th>
+                <th>Fees Type</th>
+                <th>Single Payment Date</th>
+                <th>Single Payment Amount</th>
+                <th>EMI Dates</th>
+                <th>EMI Amounts</th>
+                <th>Total Payment</th>
+                <th>Balance</th>
             </tr>
         </thead>
         <tbody>
             {% for payment in payment_list %}
             <tr>
                 <td>{{ payment.registration_no }}</td>
-                <td>{{ payment.joining_date|date:'Y-m-d' }}</td>
+                <td>{{ payment.joining_date|date:"d-m-Y" }}</td>
                 <td>{{ payment.student_name }}</td>
                 <td>{{ payment.course_name }}</td>
                 <td>{{ payment.duration }}</td>
-                <td>{{ payment.fees_type }}</td>
                 <td>{{ payment.total_fees }}</td>
+                <td>{{ payment.fees_type }}</td>
+                <td>{{ payment.single_payment_date }}</td>
+                <td>{{ payment.single_payment_amount }}</td>
+
+                <td>
+                    <ul>
+                        {% for date in payment.emi_dates %}
+                            <li>{{ date }}</li>
+                        {% endfor %}
+                    </ul>
+                </td>
+                <td>
+                    <ul>
+                        {% for amount in payment.emi_amounts %}
+                            <li>{{ amount }}</li>
+                        {% endfor %}
+                    </ul>
+                </td>
+
+                <td>{{ payment.total_payment }}</td>
                 <td>{{ payment.balance }}</td>
             </tr>
             {% endfor %}
-            </tbody>
-        </table>
-    </div>
+        </tbody>
+    </table>
 </body>
 </html>

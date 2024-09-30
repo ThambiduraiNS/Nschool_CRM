@@ -54,16 +54,16 @@
             {% endfor %}
         </span>
 
-        <div class="row m-0 p-0">
+        <div class="row m-0 pe-1">
             <div class="col border bg-white rounded mt-2 ms-1 mb-2">
 
                 <div class="row m-0 p-0">
 
-                    <div class="col-4 mt-4 p-0">
+                    <div class="col-3 mt-4 p-0">
                         <h5 class="fw-bold">Manage Payment</h5>
                     </div>
 
-                    <div class="col-6 d-flex pe-0">
+                    <div class="col-7 d-flex pe-0">
                         <form class="search-form" action="{% url 'search_payment' %}" method="get">
                             <input type="text" name="q" class="search-input" placeholder="Search" autocomplete="off">
                             <input type="date" name="start_date" class="start_date">
@@ -75,7 +75,7 @@
                         </form>
                     </div>
 
-                    <div class="col-2 d-flex mt-2 mb-1 p-2 text-center gap-1">
+                    <div class="col-2 d-flex mt-2 mb-1 p-2 px-0 text-center">
                         <div class="col border-div">
                             <a href="javascript:void(0);" id="export-csv-link">
                                 {% bs_icon 'filetype-csv' %}
@@ -99,7 +99,8 @@
                     <p class="user-para p-0">Use the below tabel to update your profile</p>
                 </div>
 
-                <!-- <div class="row">
+                <!-- Pagination controls -->
+                <div class="row">
                     <div class="col d-flex justify-content-end py-3 gap-2">
                         <form id="perPageForm" method="get" class="d-flex">
                             <select class="select-div me-2" name="per_page" id="perPageSelect" onchange="this.form.submit();">
@@ -152,7 +153,7 @@
 
                         </span>
                     </div>
-                </div> -->
+                </div>
 
                 <div class="row">
                     <div class="col my-2">
@@ -175,107 +176,213 @@
                                         
                                         <th class="thead">Date</th>
                                         <th class="thead">Single Payment</th>
-                                        <th class="thead">Date</th>
+                                        
+                                        <th class="thead">Paid Date</th>
                                         <th class="thead">EMI 1</th>
-                                        <th class="thead">Date</th>
+                                        
+                                        
+                                        <th class="thead">Paid Date</th>
                                         <th class="thead">EMI 2</th>
-                                        <th class="thead">Date</th>
+                                        
+                                        
+                                        <th class="thead">Paid Date</th>
                                         <th class="thead">EMI 3</th>
-                                        <th class="thead">Date</th>
+                                        
+                                        
+                                        <th class="thead">Paid Date</th>
                                         <th class="thead">EMI 4</th>
-                                        <th class="thead">Date</th>
+
+
+                                        <th class="thead">Paid Date</th>
                                         <th class="thead">EMI 5</th>
-                                        <th class="thead">Date</th>
+                                        
+                                        <th class="thead">Paid Date</th>
                                         <th class="thead">EMI 6</th>
+                                        
                                         <th class="thead">Balance Amount</th>
                                         <th class="action">Action</th>
                                     </tr>
                                     {% for payment in object_list %}
                                     <tr class="trow">
+                                        <td class="check1">
+                                            <input type="checkbox" class="form-check-input user-checkbox checked-row" name="user_ids"
+                                                value="{{ payment.id }}" id="user{{ payment.id }}">
+                                        </td>
                                         
-                                        <tr>
-                                            <td class="check1">
-                                                <input type="checkbox" class="form-check-input user-checkbox checked-row" name="user_ids"
-                                                    value="{{ payment.id }}" id="user{{ payment.id }}">
-                                            </td>
-                                            <td class="tdata">{{ payment.registration_no }}</td>
-                                            <td class="tdata">{{ payment.joining_date|date:'Y-m-d' }}</td>
-                                            <td class="tdata">{{ payment.student_name }}</td>
-                                            <td class="tdata">{{ payment.course_name }}</td>
-                                            <td class="tdata">{{ payment.duration }}</td>
-                                            <td class="tdata">{{ payment.fees_type }}</td>
-                                            
-                                            <td class="tdata text-right">{{ payment.total_fees }}</td>
+                                        <td class="tdata">{{ payment.registration_no }}</td>
+                                        <td class="tdata">{{ payment.joining_date }}</td>
+                                        <td class="tdata">{{ payment.student_name }}</td>
+                                        <td class="tdata">{{ payment.course_name }}</td>
+                                        <td class="tdata">{{ payment.duration }}</td>
+                                        <td class="tdata">{{ payment.fees_type }}</td>
+                                        <td class="tdata text-right">{{ payment.total_fees }}</td>
+                                        
+                                        <!-- Single Payment -->
+                                        <td class="tdata">
+                                            {% if payment.single_payment %}
+                                                {{ payment.single_payment.date }}
+                                            {% else %}
+                                                N/A
+                                            {% endif %}
+                                        </td>
+                                        <td class="tdata text-right">
+                                            {% if payment.single_payment %}
+                                                {{ payment.single_payment.amount }}
+                                            {% else %}
+                                                N/A
+                                            {% endif %}
+                                        </td>
+                                        
+                                        <td class="tdata">
+                                            {% if payment.emi_1_payments %}
+                                                {% for emi in payment.emi_1_payments %}
+                                                    {{ emi.date }}{% if not forloop.last %} {% endif %}<br>
+                                                {% endfor %}
+                                            {% else %}
+                                                N/A
+                                            {% endif %}
+                                        </td>
+                                        <td class="tdata">
+                                            {% if payment.emi_1_payments %}
+                                                {% for emi in payment.emi_1_payments %}
+                                                    {{emi.amount}} <br>
+                                                {% endfor %}
+                                            {% else %}
+                                                N/A
+                                            {% endif %}
+                                        </td>
                         
-                                            <!-- Single Payment -->
-                                            <td class="tdata">
-                                                {% if payment.single_payment %}
-                                                    {{ payment.single_payment.date|date:'Y-m-d' }}
-                                                {% else %}
-                                                    N/A
-                                                {% endif %}
-                                            </td>
-                                            <td class="tdata text-right">
-                                                {% if payment.single_payment %}
-                                                    {{ payment.single_payment.amount }}
-                                                {% else %}
-                                                    N/A
-                                                {% endif %}
-                                            </td>
+                                        <td class="tdata">
+                                            {% if payment.emi_2_payments %}
+                                                {% for emi in payment.emi_2_payments %}
+                                                    {{ emi.date }}{% if not forloop.last %} {% endif %} <br>
+                                                {% endfor %}
+                                            {% else %}
+                                                N/A
+                                            {% endif %}
+                                        </td>
+                                        <td class="tdata">
+                                            {% if payment.emi_2_payments %}
+                                                {% for emi in payment.emi_2_payments %}
+                                                    {{emi.amount}} <br>
+                                                {% endfor %}
+                                            {% else %}
+                                                N/A
+                                            {% endif %}
+                                        </td>
                         
-                                            <!-- EMI Payments -->
-                                            {% with emi_list=payment.installments.all %}
-                                            {% for emi in emi_list %}
-                                                <td class="tdata">{{ emi.date|date:'Y-m-d' }}</td>
-                                                <td class="tdata text-right">{{ emi.amount }}</td>
-                                            {% endfor %}
+                                        <td class="tdata">
+                                            {% if payment.emi_3_payments %}
+                                                {% for emi in payment.emi_3_payments %}
+                                                    {{ emi.date }}{% if not forloop.last %} {% endif %} <br>
+                                                {% endfor %}
+                                            {% else %}
+                                                N/A
+                                            {% endif %}
+                                        </td>
+                                        <td class="tdata">
+                                            {% if payment.emi_3_payments %}
+                                                {% for emi in payment.emi_3_payments %}
+                                                    {{emi.amount}} <br>
+                                                {% endfor %}
+                                            {% else %}
+                                                N/A
+                                            {% endif %}
+                                        </td>
                         
-                                            <!-- For missing EMIs, display N/A -->
-                                            {% for i in 1|to:6 %}
-                                                {% if forloop.counter > emi_list.count %}
-                                                    <td class="tdata">N/A</td>
-                                                    <td class="tdata  text-right">N/A</td>
-                                                {% endif %}
-                                            {% endfor %}
-                                            {% endwith %}
+                                        <td class="tdata">
+                                            {% if payment.emi_4_payments %}
+                                                {% for emi in payment.emi_4_payments %}
+                                                    {{ emi.date }}{% if not forloop.last %} {% endif %} <br>
+                                                {% endfor %}
+                                            {% else %}
+                                                N/A
+                                            {% endif %}
+                                        </td>
+                                        <td class="tdata">
+                                            {% if payment.emi_4_payments %}
+                                                {% for emi in payment.emi_4_payments %}
+                                                    {{emi.amount}} <br>
+                                                {% endfor %}
+                                            {% else %}
+                                                N/A
+                                            {% endif %}
+                                        </td>
                         
-                                            <!-- Display the remaining balance -->
-                                            <td class="tdata balance-td text-right">
-                                                {% if payment.fees_type == 'Installment' %}
-                                                    {{ payment.remaining_balance|floatformat:2 }}
-                                                {% elif payment.fees_type == 'Regular' and payment.single_payment %}
-                                                    {{ payment.remaining_balance|floatformat:2 }}
-                                                {% endif %}
-                                            </td>
+                                        <td class="tdata">
+                                            {% if payment.emi_5_payments %}
+                                                {% for emi in payment.emi_5_payments %}
+                                                    {{ emi.date }}{% if not forloop.last %} {% endif %} <br>
+                                                {% endfor %}
+                                            {% else %}
+                                                N/A
+                                            {% endif %}
+                                        </td>
+                                        <td class="tdata">
+                                            {% if payment.emi_5_payments %}
+                                                {% for emi in payment.emi_5_payments %}
+                                                    {{emi.amount}} <br>
+                                                {% endfor %}
+                                            {% else %}
+                                                N/A
+                                            {% endif %}
+                                        </td>
+                        
+                                        <td class="tdata">
+                                            {% if payment.emi_6_payments %}
+                                                {% for emi in payment.emi_6_payments %}
+                                                    {{ emi.date }}{% if not forloop.last %} {% endif %} <br>
+                                                {% endfor %}
+                                            {% else %}
+                                                N/A
+                                            {% endif %}
+                                        </td>
+                                        <td class="tdata">
+                                            {% if payment.emi_6_payments %}
+                                                {% for emi in payment.emi_6_payments %}
+                                                    {{emi.amount}} <br>
+                                                {% endfor %}
+                                            {% else %}
+                                                N/A
+                                            {% endif %}
+                                        </td>
 
-                                            <td class="tdata">
-                                                <div>
-                                                    {% if payment.fees_type == 'Installment' %}
-                                                    <a href="/installment-payment/{{payment.id}}">
-                                                        <span class="edit">
-                                                            <?xml version="1.0" ?><svg class="edit-icon action-div" id="Outlined" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg"><title/><g id="Fill"><path d="M29.12,6.05,26,2.88a3,3,0,0,0-4.24,0L6.29,18.29a3.06,3.06,0,0,0-.72,1.18L2.08,29.92l10.46-3.49a3.15,3.15,0,0,0,1.17-.72L29.12,10.29a3,3,0,0,0,0-4.24Zm-21,13.28,8.75-8.74,1.58,1.58L9.67,20.92ZM18.24,9.17l1.59-1.58,4.58,4.58-1.58,1.59ZM7.1,21.19l3.72,3.71L5.25,26.75Zm5.57,2.73-1.59-1.59,8.75-8.74,1.58,1.58Zm15-15-1.88,1.88L21.24,6.17l1.88-1.88A1,1,0,0,1,23.83,4a1,1,0,0,1,.71.29l3.17,3.18a1,1,0,0,1,.29.7A1,1,0,0,1,27.71,8.88Z"/></g></svg>
-                                                        </span>
-                                                    </a>
-                                                    {% else %}
-                                                    <a href="/single-payment/"></a>
-                                                        <span class="edit">
-                                                            <?xml version="1.0" ?><svg class="edit-icon action-div" id="Outlined" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg"><title/><g id="Fill"><path d="M29.12,6.05,26,2.88a3,3,0,0,0-4.24,0L6.29,18.29a3.06,3.06,0,0,0-.72,1.18L2.08,29.92l10.46-3.49a3.15,3.15,0,0,0,1.17-.72L29.12,10.29a3,3,0,0,0,0-4.24Zm-21,13.28,8.75-8.74,1.58,1.58L9.67,20.92ZM18.24,9.17l1.59-1.58,4.58,4.58-1.58,1.59ZM7.1,21.19l3.72,3.71L5.25,26.75Zm5.57,2.73-1.59-1.59,8.75-8.74,1.58,1.58Zm15-15-1.88,1.88L21.24,6.17l1.88-1.88A1,1,0,0,1,23.83,4a1,1,0,0,1,.71.29l3.17,3.18a1,1,0,0,1,.29.7A1,1,0,0,1,27.71,8.88Z"/></g></svg>
-                                                        </span>
-                                                    </a>
-                                                    {% endif %}
-                                                    <a href="/delete_payment/{{payment.id}}">
-                                                        <span class="delete">
-                                                            <?xml version="1.0" ?><!DOCTYPE svg  PUBLIC '-//W3C//DTD SVG 1.1//EN'  'http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd'><svg class="delete-icon action-div" height="512px" id="Layer_1" style="enable-background:new 0 0 512 512;" version="1.1" viewBox="0 0 512 512" width="512px" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g><path d="M400,113.3h-80v-20c0-16.2-13.1-29.3-29.3-29.3h-69.5C205.1,64,192,77.1,192,93.3v20h-80V128h21.1l23.6,290.7   c0,16.2,13.1,29.3,29.3,29.3h141c16.2,0,29.3-13.1,29.3-29.3L379.6,128H400V113.3z M206.6,93.3c0-8.1,6.6-14.7,14.6-14.7h69.5   c8.1,0,14.6,6.6,14.6,14.7v20h-98.7V93.3z M341.6,417.9l0,0.4v0.4c0,8.1-6.6,14.7-14.6,14.7H186c-8.1,0-14.6-6.6-14.6-14.7v-0.4   l0-0.4L147.7,128h217.2L341.6,417.9z"/><g><rect class="action-div" height="241" width="14" x="249" y="160"/><polygon class="action-div" points="320,160 305.4,160 294.7,401 309.3,401   "/><polygon class="action-div" points="206.5,160 192,160 202.7,401 217.3,401   "/></g></g></svg>
-                                                        </span>
-                                                    </a>
-                                                </div>
-                                            </td>
-                                            
-                                        </tr>
-                                        {% empty %}
-                                        <tr>
-                                            <td class="tdata" colspan="22">No payments available.</td>
-                                        </tr>
+                                        <!-- Balance Amount -->
+                                        <td class="tdata balance-td">
+                                            {% if final_amounts|get_item:payment.id %}
+                                                {{ final_amounts|get_item:payment.id|floatformat:2 }}
+                                            {% else %}
+                                                0.00
+                                            {% endif %}
+                                        </td>
+                                        
+                                        <!-- Action buttons -->
+                                        <td class="tdata">
+                                            <div>
+                                                {% if payment.fees_type == 'Installment' %}
+                                                <a href="/new_installment_payment/{{payment.id}}">
+                                                    <span class="edit">
+                                                        <?xml version="1.0" ?><svg class="edit-icon action-div" id="Outlined" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg"><title/><g id="Fill"><path d="M29.12,6.05,26,2.88a3,3,0,0,0-4.24,0L6.29,18.29a3.06,3.06,0,0,0-.72,1.18L2.08,29.92l10.46-3.49a3.15,3.15,0,0,0,1.17-.72L29.12,10.29a3,3,0,0,0,0-4.24Zm-21,13.28,8.75-8.74,1.58,1.58L9.67,20.92ZM18.24,9.17l1.59-1.58,4.58,4.58-1.58,1.59ZM7.1,21.19l3.72,3.71L5.25,26.75Zm5.57,2.73-1.59-1.59,8.75-8.74,1.58,1.58Zm15-15-1.88,1.88L21.24,6.17l1.88-1.88A1,1,0,0,1,23.83,4a1,1,0,0,1,.71.29l3.17,3.18a1,1,0,0,1,.29.7A1,1,0,0,1,27.71,8.88Z"/></g></svg>
+                                                    </span>
+                                                </a>
+                                                {% elif payment.fees_type == 'Regular' and payment.single_payment %}
+                                                <a href="/single-payment/{{payment.id}}">
+                                                    <span class="edit">
+                                                        <?xml version="1.0" ?><svg class="edit-icon action-div" id="Outlined" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg"><title/><g id="Fill"><path d="M29.12,6.05,26,2.88a3,3,0,0,0-4.24,0L6.29,18.29a3.06,3.06,0,0,0-.72,1.18L2.08,29.92l10.46-3.49a3.15,3.15,0,0,0,1.17-.72L29.12,10.29a3,3,0,0,0,0-4.24Zm-21,13.28,8.75-8.74,1.58,1.58L9.67,20.92ZM18.24,9.17l1.59-1.58,4.58,4.58-1.58,1.59ZM7.1,21.19l3.72,3.71L5.25,26.75Zm5.57,2.73-1.59-1.59,8.75-8.74,1.58,1.58Zm15-15-1.88,1.88L21.24,6.17l1.88-1.88A1,1,0,0,1,23.83,4a1,1,0,0,1,.71.29l3.17,3.18a1,1,0,0,1,.29.7A1,1,0,0,1,27.71,8.88Z"/></g></svg>
+                                                    </span>
+                                                </a>
+                                                {% endif %}
+                                                <a href="/delete_payment/{{payment.id}}">
+                                                    <span class="delete">
+                                                        <?xml version="1.0" ?><!DOCTYPE svg  PUBLIC '-//W3C//DTD SVG 1.1//EN'  'http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd'><svg class="delete-icon action-div" height="512px" id="Layer_1" style="enable-background:new 0 0 512 512;" version="1.1" viewBox="0 0 512 512" width="512px" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g><path d="M400,113.3h-80v-20c0-16.2-13.1-29.3-29.3-29.3h-69.5C205.1,64,192,77.1,192,93.3v20h-80V128h21.1l23.6,290.7   c0,16.2,13.1,29.3,29.3,29.3h141c16.2,0,29.3-13.1,29.3-29.3L379.6,128H400V113.3z M206.6,93.3c0-8.1,6.6-14.7,14.6-14.7h69.5   c8.1,0,14.6,6.6,14.6,14.7v20h-98.7V93.3z M341.6,417.9l0,0.4v0.4c0,8.1-6.6,14.7-14.6,14.7H186c-8.1,0-14.6-6.6-14.6-14.7v-0.4   l0-0.4L147.7,128h217.2L341.6,417.9z"/><g><rect class="action-div" height="241" width="14" x="249" y="160"/><polygon class="action-div" points="320,160 305.4,160 294.7,401 309.3,401   "/><polygon class="action-div" points="206.5,160 192,160 202.7,401 217.3,401   "/></g></g></svg>
+                                                    </span>
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr>
+                                        <td class="tdata" colspan="22">No payments available.</td>
                                     </tr>
                                     {% endfor %}
                                     <!-- Row for Total Pending Amount -->
@@ -283,53 +390,23 @@
                                         <!-- Total Fees Amount -->
                                         <td colspan="7"></td>
                                         <td class="tdata">
-                                            <p class="total_pending_amount mb-0 py-2">Total Amount = {{ total_fees }}</p>
+                                            <p class="total_pending_amount mb-0 py-2 text-right">{{ total_fees }}</p>
                                         </td>
                                         
                                         <!-- Total Single payment Amount -->
                                         <td colspan="1"></td>
                                         <td class="tdata">
-                                            <p class="total_pending_amount mb-0 py-2">Total Amount = {{ total_single_payment }}</p>
-                                        </td>
-                                        
-                                        <!-- Total EMI-1 Amount -->
-                                        <td colspan="1"></td>
-                                        <td class="tdata">
-                                            <p class="total_pending_amount mb-0 py-2">Total Amount = {{ total_emi_1 }}</p>
-                                        </td>
-                                        
-                                        <!-- Total EMI-2 Amount -->
-                                        <td colspan="1"></td>
-                                        <td class="tdata">
-                                            <p class="total_pending_amount mb-0 py-2">Total Amount = {{ total_emi_2 }}</p>
-                                        </td>
-                                        <!-- Total EMI-3 Amount -->
-                                        <td colspan="1"></td>
-                                        <td class="tdata">
-                                            <p class="total_pending_amount mb-0 py-2">Total Amount = {{ total_emi_3 }}</p>
-                                        </td>
-                                        <!-- Total EMI-4 Amount -->
-                                        <td colspan="1"></td>
-                                        <td class="tdata">
-                                            <p class="total_pending_amount mb-0 py-2">Total Amount = {{ total_emi_4 }}</p>
-                                        </td>
-                                        <!-- Total EMI-5 Amount -->
-                                        <td colspan="1"></td>
-                                        <td class="tdata">
-                                            <p class="total_pending_amount mb-0 py-2">Total Amount = {{ total_emi_5 }}</p>
-                                        </td>
-                                        <!-- Total EMI-6 Amount -->
-                                        <td colspan="1"></td>
-                                        <td class="tdata">
-                                            <p class="total_pending_amount mb-0 py-2">Total Amount = {{ total_emi_6 }}</p>
+                                            <p class="total_pending_amount mb-0 py-2 text-right">{{ total_single_payment }}</p>
                                         </td>
 
                                         <td class="tdata">
-                                            <p class="total_pending_amount mb-0 py-2">Total Amount = {{ total_pending_amount }}</p>
+                                            <p class="total_pending_amount mb-0 py-2 text-right">{{ total_pending_amount }}</p>
                                         </td>
                                     </tr>
                                 </tbody>
                             </table>
+
+                           
                         </div>
                         <!-- <button type="button" class="btn btn-danger" id="deleteSelected">Delete Selected Users</button> -->
                     </div>

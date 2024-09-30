@@ -54,16 +54,16 @@
             {% endfor %}
         </span>
 
-        <div class="row m-0 p-0">
+        <div class="row m-0 pe-1">
             <div class="col border bg-white rounded mt-2 ms-1 mb-2">
 
                 <div class="row m-0 p-0">
 
-                    <div class="col-4 mt-4 p-0">
+                    <div class="col-3 mt-4 p-0">
                         <h5 class="fw-bold">Manage Payment</h5>
                     </div>
 
-                    <div class="col-6 d-flex pe-0">
+                    <div class="col-7 d-flex pe-0">
                         <form class="search-form" action="{% url 'search_payment' %}" method="get">
                             <input type="text" name="q" class="search-input" placeholder="Search" autocomplete="off">
                             <input type="date" name="start_date" class="start_date">
@@ -75,7 +75,7 @@
                         </form>
                     </div>
 
-                    <div class="col-2 d-flex mt-2 mb-1 p-2 text-center gap-1">
+                    <div class="col-2 d-flex mt-2 mb-1 p-2 px-0 text-center">
                         <div class="col border-div">
                             <a href="javascript:void(0);" id="export-csv-link">
                                 {% bs_icon 'filetype-csv' %}
@@ -348,7 +348,7 @@
                                         </td>
 
                                         <!-- Balance Amount -->
-                                        <td class="tdata balance-td">
+                                        <td class="tdata balance-td text-right">
                                             {% if final_amounts|get_item:payment.id %}
                                                 {{ final_amounts|get_item:payment.id|floatformat:2 }}
                                             {% else %}
@@ -390,7 +390,9 @@
                                         <!-- Total Fees Amount -->
                                         <td colspan="7"></td>
                                         <td class="tdata">
-                                            <p class="total_pending_amount mb-0 py-2 text-right">{{ total_fees }}</p>
+                                            <p class="total_pending_amount mb-0 py-2 text-right">
+                                                {{ total_fees_sum }}
+                                            </p>
                                         </td>
                                         
                                         <!-- Total Single payment Amount -->
@@ -399,8 +401,42 @@
                                             <p class="total_pending_amount mb-0 py-2 text-right">{{ total_single_payment }}</p>
                                         </td>
 
+                                        <!-- Total EMI_1 amount -->
+                                        <td colspan="1"></td>
                                         <td class="tdata">
-                                            <p class="total_pending_amount mb-0 py-2 text-right">{{ total_pending_amount }}</p>
+                                            <p class="total_pending_amount mb-0 py-2 text-right">{{ total_emi_sums.emi_1 }}</p>
+                                        </td>
+                                        
+                                        <!-- Total EMI_2 amount -->
+                                        <td colspan="1"></td>
+                                        <td class="tdata">
+                                            <p class="total_pending_amount mb-0 py-2 text-right">{{ total_emi_sums.emi_2 }}</p>
+                                        </td>
+                                        <!-- Total EMI_3 amount -->
+                                        <td colspan="1"></td>
+                                        <td class="tdata">
+                                            <p class="total_pending_amount mb-0 py-2 text-right">{{ total_emi_sums.emi_3 }}</p>
+                                        </td>
+                                        <!-- Total EMI_4 amount -->
+                                        <td colspan="1"></td>
+                                        <td class="tdata">
+                                            <p class="total_pending_amount mb-0 py-2 text-right">{{ total_emi_sums.emi_4 }}</p>
+                                        </td>
+
+                                        <!-- Total EMI_5 amount -->
+                                        <td colspan="1"></td>
+                                        <td class="tdata">
+                                            <p class="total_pending_amount mb-0 py-2 text-right">{{ total_emi_sums.emi_5 }}</p>
+                                        </td>
+
+                                        <!-- Total EMI_6 amount -->
+                                        <td colspan="1"></td>
+                                        <td class="tdata">
+                                            <p class="total_pending_amount mb-0 py-2 text-right">{{ total_emi_sums.emi_6 }}</p>
+                                        </td>
+
+                                        <td class="tdata">
+                                            <p class="total_pending_amount mb-0 py-2 text-right">{{ total_final_amount_sum }}</p>
                                         </td>
                                     </tr>
                                 </tbody>

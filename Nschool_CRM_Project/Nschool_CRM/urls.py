@@ -78,8 +78,6 @@ urlpatterns = [
     path('delete_payment/<int:id>/', delete_payment_view, name='delete_payment'),
     path('delete_all_payment/', delete_all_payment_view, name='delete_all_payment'),
     path('get-enrollment-details/', get_enrollment_details, name='get_enrollment_details'),
-    
-    
     path('new-payment/', new_payment_info_view, name='new_payment_info'),
     path('new_installment_payment/', new_installment_view, name='new_installment_info'),
     path('new_installment_payment/<int:id>/', new_installment_update_view, name='new_installment_update_info'),

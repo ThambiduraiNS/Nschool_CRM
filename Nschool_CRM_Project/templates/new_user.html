@@ -333,11 +333,11 @@
             document.getElementById("user_error").innerText = "";
         }
 
-        // client side email Field validation
+        // Client-side email field validation
         if (email == "") {
-            document.getElementById("email_error").innerText = "Email Field is required";
+            document.getElementById("email_error").innerText = "Email field is required";
             hasError = true;
-        } else if(!/^[a-zA-Z0-9._%±]+@[a-zA-Z0-9.-]+.[a-zA-Z]{2,}$/.test(email)) {
+        } else if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email)) {
             document.getElementById("email_error").innerText = "Invalid email address.";
             hasError = true;
         } else {
@@ -431,7 +431,7 @@
 
         setTimeout(() => {
             alertBox.style.display = 'none';
-        }, 5000);
+        }, 10000);
     }
 
     document.addEventListener('DOMContentLoaded', () => showMessage());
