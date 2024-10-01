@@ -1,6 +1,6 @@
 from django import template
 from django.utils.timesince import timesince
-import datetime
+import datetime 
 
 register = template.Library()
 
@@ -78,3 +78,19 @@ def range_filter(value):
 def order_by(queryset, args):
     args = [x.strip() for x in args.split(',')]
     return queryset.sort(*args)
+
+@register.filter
+def format_date(value):
+    """Formats a date as dd-mm-yyyy. Converts string to date if necessary."""
+    if isinstance(value, str):
+        # Try to parse the string as a date
+        try:
+            # Adjust the format as necessary (assumes 'YYYY-mm-dd')
+            value = datetime.datetime.strptime(value, '%Y-%m-%d')
+        except ValueError:
+            return value  # Return the original string if parsing fails
+    
+    if isinstance(value, datetime.datetime):
+        return value.strftime('%d-%m-%Y')  # Format the date
+
+    return ''  # Return empty string if value is None or not a date

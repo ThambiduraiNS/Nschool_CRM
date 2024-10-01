@@ -2,7 +2,7 @@
 
 {% load static %}
 {% load bootstrap_icons %}
-
+{% load custom_filters %}
 
 {% block title %}User Module{% endblock %}
 
@@ -173,7 +173,7 @@
                                         </td>
                                         <td class="tdata">{{ user.enquiry_no }}</td>
                                         <td class="tdata">{{ user.name }}</td>
-                                        <td class="tdata">{{ user.enquiry_date }}</td>
+                                        <td class="tdata">{{ user.enquiry_date|format_date }}</td>
                                         <td class="tdata">{{ user.contact_no }}</td>
                                         
                                         <td class="tdata">
@@ -202,7 +202,7 @@
                                                 {% endif %}
                                             </div>
                                         </td>
-                                        <td class="tdata">{{ user.next_follow_up_date }}</td>
+                                        <td class="tdata">{{ user.next_follow_up_date|format_date }}</td>
                                         
                                         <td class="tdata status" title="{{ user.status }}">
                                             <div class="status-div">

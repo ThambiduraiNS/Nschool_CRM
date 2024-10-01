@@ -635,6 +635,34 @@ class EnquiryModeListCreateView(generics.ListCreateAPIView):
         
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+    
+    def create(self, request, *args, **kwargs):
+        print(request.data)  # Log incoming data for debugging
+        email_id = request.data.get('email_id')
+        contact_no = request.data.get('contact_no')
+        
+        errors = {}
+        
+        if NewUser.objects.filter(email_id=email_id).exists():
+            errors['email'] = 'This Email ID already exists.'
+
+        if NewUser.objects.filter(contact_no=contact_no).exists():
+            errors['contact'] = 'This Contact Number already exists.'
+        
+        # If there are any errors, return them
+        if errors:
+            return Response(errors, status=status.HTTP_400_BAD_REQUEST)
+
+        # Create and validate the serializer with the request data
+        serializer = self.get_serializer(data=request.data)
+        
+        # Call is_valid to trigger validation including your date validation
+        serializer.is_valid(raise_exception=True)
+
+        # If valid, perform the creation
+        self.perform_create(serializer)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
 
 class EnquiryModeDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Enquiry_Mode.objects.all()
@@ -1742,13 +1770,21 @@ def enquiry_view(request):
             internship_no_of_days = None
             year_of_graduation = None
 
+        # Convert date strings to the correct format (YYYY-MM-DD)
+        def format_date(date_str):
+            try:
+                # Expecting date in dd-mm-yyyy format
+                return datetime.strptime(date_str, '%d-%m-%Y').date().isoformat()
+            except ValueError:
+                return None  # or handle the error as needed
+        
         enquiry_data = {
-            'enquiry_date': request.POST.get('enquiry_date', '').strip(),
+            'enquiry_date': format_date(request.POST.get('enquiry_date', '').strip()),
             'enquiry_no': new_enquiry_no,
             'name': request.POST.get('student_name', '').strip(),
             'contact_no': request.POST.get('contact', '').strip(),
             'email_id': request.POST.get('email', '').strip(),
-            'date_of_birth': request.POST.get('dob', '').strip(),
+            'date_of_birth': format_date(request.POST.get('dob', '').strip()),
             'fathers_name': request.POST.get('father_name', '').strip(),
             'fathers_contact_no': request.POST.get('father_contact', '').strip(),
             'fathers_occupation': request.POST.get('fathers_occupation', '').strip(),
@@ -1761,7 +1797,7 @@ def enquiry_view(request):
             'internship_technology': request.POST.get('internship_technology', '').strip(),
             'internship_no_of_days': internship_no_of_days,
             'internship_no_of_students': internship_no_of_students,
-            'next_follow_up_date': request.POST.get('next_follow_up_date', '').strip(),
+            'next_follow_up_date': format_date(request.POST.get('next_follow_up_date', '').strip()),
             'degree': request.POST.get('degree', '').strip(),
             'college': request.POST.get('college', '').strip(),
             'grade_percentage': request.POST.get('grade_percentage', '').strip(),

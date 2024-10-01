@@ -43,6 +43,26 @@ class EnquiryModeSerializer(serializers.ModelSerializer):
         model = Enquiry_Mode
         fields = '__all__'
         
+    def validate_enquiry_date(self, value):
+        return self._validate_date(value)
+
+    def validate_date_of_birth(self, value):
+        return self._validate_date(value)
+
+    def validate_next_follow_up_date(self, value):
+        return self._validate_date(value)
+    
+    def _validate_date(self, value):
+        # Assuming 'your_date_field' is the name of your date field
+        print("Function Call !")
+        try:
+            # Convert dd-mm-yyyy to YYYY-MM-DD
+            parsed_date = datetime.strptime(value, '%d-%m-%Y')
+            print(f"Parsed Data : {parsed_date.date()}")
+            return parsed_date.date()
+        except ValueError:
+            raise serializers.ValidationError("Date has wrong format. Use one of these formats instead: DD-MM-YYYY.")
+    
 class EnquirySerializer(serializers.ModelSerializer):
     class Meta:
         model = Enquiry
