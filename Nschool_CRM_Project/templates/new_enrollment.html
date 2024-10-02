@@ -4,7 +4,7 @@
 {% load bootstrap_icons %}
 
 
-{% block title %}User Module{% endblock %}
+{% block title %}Enrollment Module{% endblock %}
 
 {% block css %}
 <link rel="stylesheet" href="{% static '/css/new_user.css' %}">
@@ -457,7 +457,7 @@
                                             <select class="form-select select" id="course_name" name="course_name" onclick="handleCourseNameChange()">
                                                 <option value="" selected>Select Your Course</option>
                                                 {% for course in courses %}
-                                                <option value="{{ course.id }}" {% if course_name == course.id %}selected{% endif %}>{{ course.course_name|title }}</option>
+                                                    <option value="{{ course.id }}" {% if course_name == course.id %}selected{% endif %}>{{ course.course_name }}</option>
                                                 {% endfor %}
                                             </select>
                                             <label for="course_name" class="floating-label float">&nbsp;Course Name <span class="required">*</span> &nbsp;</label>
@@ -1007,46 +1007,6 @@ document.addEventListener('DOMContentLoaded', function() {
         } else {
             document.getElementById('year_of_passed_out_error').innerText = "";
         }
-        
-        // Course Name Field Validation
-        const course_name = document.getElementById('course_name').value.trim();
-        if (course_name === "") {
-            document.getElementById('course_name_error').innerText = "Course Name Field is required.";
-            hasError = true;
-        } else {
-            document.getElementById('course_name_error').innerText = "";
-        }
-        
-        // Duration Field Validation
-        const duration = document.getElementById('duration').value.trim();
-        if (duration === "") {
-            document.getElementById('duration_error').innerText = "Duration Field is required.";
-            hasError = true;
-        } else {
-            document.getElementById('duration_error').innerText = "";
-        }
-        
-        // Payment Type Field Validation
-        const payment_type = document.getElementById('payment_type').value.trim();
-        if (duration === "") {
-            document.getElementById('payment_type_error').innerText = "Payment Type Field is required.";
-            hasError = true;
-        } else {
-            document.getElementById('payment_type_error').innerText = "";
-        }
-        
-        // Payment Type Field Validation
-        const installment_div = document.getElementById('installment_div');
-        const installment_amount = document.getElementById('installment_amount').value.trim();
-        if (installment_div.style.display === "block") {
-            if(installment_amount === ""){
-                document.getElementById('installment_amount_error').innerText = "Installment Amount Field is required.";
-                hasError = true;
-            } else {
-                document.getElementById('installment_amount_error').innerText = "";
-            }
-        }
-
 
         // Payment Type Field Validation
         const yes = document.getElementById('yes').checked;
@@ -1101,9 +1061,48 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
 
+        // Course Name Field Validation
+        const course_name = document.getElementById('course_name').value.trim();
+        if (course_name === "") {
+            document.getElementById('course_name_error').innerText = "Course Name Field is required.";
+            hasError = true;
+        } else {
+            document.getElementById('course_name_error').innerText = "";
+        }
+        
+        // Duration Field Validation
+        const duration = document.getElementById('duration').value.trim();
+        if (duration === "") {
+            document.getElementById('duration_error').innerText = "Duration Field is required.";
+            hasError = true;
+        } else {
+            document.getElementById('duration_error').innerText = "";
+        }
+        
+        // Payment Type Field Validation
+        const payment_type = document.getElementById('payment_type').value.trim();
+        if (payment_type === "") {
+            document.getElementById('payment_type_error').innerText = "Payment Type Field is required.";
+            hasError = true;
+        } else {
+            document.getElementById('payment_type_error').innerText = "";
+        }
+        
+        // Payment Type Field Validation
+        const installment_div = document.getElementById('installment_div');
+        const installment_amount = document.getElementById('installment_amount').value.trim();
+        if (installment_div.style.display === "block") {
+            if(installment_amount === ""){
+                document.getElementById('installment_amount_error').innerText = "Installment Amount Field is required.";
+                hasError = true;
+            } else {
+                document.getElementById('installment_amount_error').innerText = "";
+            }
+        }
+
         // Payment Type Field Validation
         const total_fees_amount = document.getElementById('total_fees_amount').value.trim();
-        if (duration === "") {
+        if (total_fees_amount === "") {
             document.getElementById('total_fees_amount_error').innerText = "Total Fees Amount Field is required.";
             hasError = true;
         } else {
@@ -1137,7 +1136,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
         if (validateSecondTab()) {
             // Here you can handle form submission, e.g., sending data to the server
-            alert('Form submitted successfully!');
             document.getElementById("enrollment_form").submit();
         } else {
             const firstErrorElement = document.querySelector('.error-div:not(:empty)');

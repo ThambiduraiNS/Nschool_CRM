@@ -197,8 +197,8 @@ class Enrollment(models.Model):
     
     designation = models.CharField(max_length=255, null=True, blank=True)
     company_name = models.CharField(max_length=255, null=True, blank=True)
-    work_experience = models.CharField(null=True, default=0)
-    nature_of_work = models.CharField(max_length=255, null=True)
+    work_experience = models.CharField(null=True, blank=True)
+    nature_of_work = models.CharField(max_length=255, null=True, blank=True)
 
     course_name = models.ForeignKey('Course', on_delete=models.CASCADE)
     inplant_technology = models.CharField(max_length=100, null=True, blank=True)

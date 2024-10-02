@@ -210,7 +210,7 @@
                                                         <select class="form-select select" id="courseName" name="course_name" onchange="handleCourseNameChange()">
                                                             <option value="select" selected>Select Your Course</option>
                                                             {% for course in courses %}
-                                                            <option value="{{ course.id }}" {% if course_name == course.id %}selected{% endif %}>{{ course.course_name|title }}</option>
+                                                            <option value="{{ course.id }}" {% if course_name == course.id %}selected{% endif %}>{{ course.course_name }}</option>
                                                             {% endfor %}
                                                         </select>
                                                         <label for="courseName" class="floating-label float">&nbsp;Course Name <span class="required">*</span> &nbsp;</label>

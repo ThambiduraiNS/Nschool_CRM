@@ -4,7 +4,7 @@
 {% load bootstrap_icons %}
 
 
-{% block title %}User Module{% endblock %}
+{% block title %}Enrollment Module{% endblock %}
 
 {% block css %}
 <link rel="stylesheet" href="{% static '/css/new_user.css' %}">
@@ -233,7 +233,7 @@
                                 <!-- Father email field -->
                                 <div class="col-12 col-md-6 p-0">
                                     <div class="user-input-wrp ms-md-5 me-md-2">
-                                        <input type="email" name="father_email" id="father_email" value="{{enrollment.father_email_id}}" class="form-control" placeholder=" "
+                                        <input type="email" name="father_email_id" id="father_email" value="{{enrollment.fathers_email_id}}" class="form-control" placeholder=" "
                                             autocomplete="off" autofocus>
                                         <label class="floating-label">&nbsp;Father / Guardian's E-Mail-ID&nbsp;</label>
                                         <span id="father_email_error" class="error-div error-right">
@@ -457,7 +457,7 @@
                                             <select class="form-select select" id="course_name" name="course_name" onclick="handleCourseNameChange()">
                                                 <option value="" selected>Select Your Course</option>
                                                 {% for course in courses %}
-                                                    <option value="{{ course.id }}" {% if course.course_name == course.id %}selected{% endif %}>{{ course.course_name }}</option>
+                                                    <option value="{{ course.id }}" {% if course.id == enrollment.course_name_id %}selected{% endif %}>{{ course.course_name }}</option>
                                                 {% endfor %}
                                             </select>
                                             <label for="course_name" class="floating-label float">&nbsp;Course Name <span class="required">*</span> &nbsp;</label>
@@ -1134,7 +1134,6 @@
 
             if (validateSecondTab()) {
                 // Here you can handle form submission, e.g., sending data to the server
-                alert('Form submitted successfully!');
                 document.getElementById("enrollment_form").submit();
             } else {
                 const firstErrorElement = document.querySelector('.error-div:not(:empty)');
