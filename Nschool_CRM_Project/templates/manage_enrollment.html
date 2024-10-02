@@ -2,7 +2,7 @@
 
 {% load static %}
 {% load bootstrap_icons %}
-
+{% load custom_filters %}
 
 {% block title %}User Module{% endblock %}
 
@@ -170,7 +170,7 @@
                                                 value="{{ user.id }}" id="user{{ user.id }}">
                                         </td>
                                         <td class="tdata">{{ user.registration_no }}</td>
-                                        <td class="tdata">{{ user.registration_date }}</td>
+                                        <td class="tdata">{{ user.registration_date|format_date }}</td>
                                         <td class="tdata">{{ user.name }}</td>
                                         <td class="tdata">{{ user.phonenumber }}</td>
                                         <!-- <td class="tdata">{{ user.course_name }}</td> -->

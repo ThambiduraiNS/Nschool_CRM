@@ -11,6 +11,8 @@
 <link rel="stylesheet" href="{% static '/css/header.css' %}">
 <link rel="stylesheet" href="{% static '/css/new_enquiry.css' %}">
 <link rel="stylesheet" href="{% static '/css/new_enrollment.css' %}">
+<!-- Flatpickr CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 {% endblock %}
 
 {% block header %}
@@ -108,7 +110,7 @@
                                     <!-- Registration Date Field -->
                                     <div class="col-12 col-md-6 ps-0 ms-2 pe-2">
                                         <div class="user-input-wrp ms-md-3">
-                                            <input type="date" name="registration_date" id="registration_date" value="{{registration_date}}" class="form-control"
+                                            <input type="date" name="registration_date" id="registration_date" value="{{registration_date}}" class="form-control bg-white"
                                                 aria-label="registration_date" placeholder=" " autocomplete="off" autofocus>
                                             <label class="floating-label">&nbsp;Registration Date <span class="required">*</span> &nbsp;</label>
                                             <span id="registration_date_error" class="error-div">
@@ -157,7 +159,7 @@
                                 <!-- student date of birth field -->
                                 <div class="col-12 col-md-6 p-0">
                                     <div class="user-input-wrp ms-4">
-                                        <input type="date" name="date_of_birth" id="date_of_birth" value="{{date_of_birth}}" class="form-control" placeholder=" "
+                                        <input type="date" name="date_of_birth" id="date_of_birth" class="form-control bg-white" placeholder=" "
                                             autocomplete="off" autofocus>
                                         <label class="floating-label">&nbsp;Date Of Birth&nbsp;</label>
                                         <span id="date_of_birth_error" class="error-div error-right">
@@ -246,7 +248,7 @@
                                     <div class="col-6 d-flex justify-content-md-end p-0 pe-4 pe-lg-4">
                                     </div>
                                     <div class="col-6 d-flex justify-content-lg-end ps-lg-4 p-0 ps-4 gap-5">
-                                        <button class="btn login-btn" id="next-tab">Next</button>
+                                        <button class="btn login-btn" id="next-tab" onclick="next(event)">Next</button>
                                     </div>
                                 </div>
                             
@@ -619,7 +621,7 @@
                                     </div>
                                     <div class="col-6 d-flex justify-content-lg-end ps-lg-4 p-0 ps-4 gap-5">
                                         <button class="btn login-btn nav-link active " id="student-tab" data-bs-toggle="tab" data-bs-target="#home" type="button" role="tab" aria-controls="home" aria-selected="true">Back</button>
-                                        <input type="submit" value="submit" class="btn login-btn">
+                                        <button class="btn login-btn" onclick="submitForm(event)">Submit</button>
                                     </div>
                                 </div>
                             </div>
@@ -636,6 +638,9 @@
 
 
 {% block scripts %}
+
+<!-- Flatpickr JavaScript -->
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script>
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -726,18 +731,18 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-    // tab functionality
-    document.getElementById('next-tab').addEventListener('click', function () {
-        event.preventDefault();
-        var profileTab = new bootstrap.Tab(document.getElementById('profile-tab'));
-        profileTab.show();
-    });
+    // // tab functionality
+    // document.getElementById('next-tab').addEventListener('click', function () {
+    //     event.preventDefault();
+    //     var profileTab = new bootstrap.Tab(document.getElementById('profile-tab'));
+    //     profileTab.show();
+    // });
     
-    document.getElementById('student-tab').addEventListener('click', function () {
-        event.preventDefault();
-        var profileTab = new bootstrap.Tab(document.getElementById('home-tab'));
-        profileTab.show();
-    });
+    // document.getElementById('student-tab').addEventListener('click', function () {
+    //     event.preventDefault();
+    //     var profileTab = new bootstrap.Tab(document.getElementById('home-tab'));
+    //     profileTab.show();
+    // });
 
     // dropdown functionality
     function toggleDropdown(element) {
@@ -873,7 +878,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         console.log("Work Experience Yes:", workExperienceYes);
 
-        clearErrors(); // Clear previous error messages
+        // clearErrors(); // Clear previous error messages
 
         // Show or hide fields based on the selection
         let displayStyle = workExperienceYes ? 'block' : 'none';
@@ -883,141 +888,282 @@ document.addEventListener('DOMContentLoaded', function() {
         nature_of_work_div.style.display = displayStyle;
     }
 
-    // document.getElementById('enrollment_form').addEventListener('submit', function(event) {
-    //     event.preventDefault();
-    //     let hasError = false;
+    function validateFirstTab() {
+        let hasError = false;
 
-    //     // Field error IDs
-    //     const fieldErrorIds = {
-    //         enquiry_no: "enquiry_no_error",
-    //         registration_no: "registration_no_error",
-    //         registration_date: "registration_date_error",
-    //         name: "name_error",
-    //         phonenumber: "phonenumber_error",
-    //         email_id: "email_error",
-    //         fathers_contact_no: "father_contact_no_error",
-    //         gender: "gender_error",
-    //         degree: "degree_error",
-    //         institution: "institution_error",
-    //         subject: "subject_error",
-    //         grade_percentage: "grade_percentage_error",
-    //         year_of_passed_out: "year_of_passed_out_error",
-    //         duration: "duration_error",
-    //         course_name: "course_name_error",
-    //         payment_type: "payment_type_error",
-    //         total_fees_amount: "total_fees_amount_error",
-    //         designation: "designation_error",
-    //         company_name: "company_name_error",
-    //         work_experience: "work_experience_error",
-    //         nature_of_work: "nature_of_work_error",
-    //         technology: "technology_error",
-    //         inplant_no_of_days: "inplant_no_of_days_error",
-    //         inplant_no_of_students: "inplant_no_of_students_error",
-    //         internship_technology: "internship_technology_error",
-    //         internship_no_of_days: "internship_no_of_days_error",
-    //         internship_no_of_students: "internship_no_of_students_error"
-    //     };
+        const enquiry_no = document.getElementById('enquiry_no');
+        if (enquiry_no.value.trim() === "") {
+            document.getElementById('enquiry_no_error').innerText = "Enquiry Number Field is required.";
+            hasError = true;
+        } else {
+            document.getElementById('enquiry_no_error').innerText = "";
+        }
 
-    //     const getFieldValue = (id) => document.getElementById(id)?.value.trim() || '';
-    //     const getFieldElement = (id) => document.getElementById(id);
-    //     const getFieldError = (id) => document.getElementById(fieldErrorIds[id]);
+        const name = document.getElementById('name');
+        if (name.value.trim() === "") {
+            document.getElementById('name_error').innerText = "Student Name Field is required.";
+            hasError = true;
+        } else {
+            document.getElementById('name_error').innerText = "";
+        }
 
-    //     function validateField(value, errorElement) {
-    //         if (value === "") {
-    //             errorElement.innerText = "This field is required.";
-    //             console.log(`Validation error on field: ${errorElement.id}. Error: This field is required.`);
-    //             return true;
-    //         } else {
-    //             errorElement.innerText = "";
-    //             return false;
-    //         }
-    //     }
+        const phonenumber = document.getElementById('phonenumber');
+        const phoneValue = phonenumber.value.trim();
+        if (phoneValue === "") {
+            document.getElementById('phonenumber_error').innerText = "Contact Field is required.";
+            hasError = true;
+        } else if (phoneValue.length !== 10 || isNaN(phoneValue)) {
+            document.getElementById('phonenumber_error').innerText = "Please enter a valid 10-digit contact number.";
+            hasError = true;
+        } else {
+            document.getElementById('phonenumber_error').innerText = "";
+        }
 
-    //     function validateContactNumber(value, errorElement) {
-    //         if (value === "") {
-    //             errorElement.innerText = "This field is required.";
-    //             console.log(`Validation error on field: ${errorElement.id}. Error: This field is required.`);
-    //             return true;
-    //         } else if (value.length != 10 || isNaN(value)) {
-    //             errorElement.innerText = "Please enter a valid 10-digit contact number.";
-    //             console.log(`Validation error on field: ${errorElement.id}. Error: Please enter a valid 10-digit contact number.`);
-    //             return true;
-    //         } else {
-    //             errorElement.innerText = "";
-    //             return false;
-    //         }
-    //     }
+        const fathers_contact_no = document.getElementById('fathers_contact_no');
+        const fathers_contact = fathers_contact_no.value.trim();
+        if (fathers_contact === "") {
+            document.getElementById('father_contact_no_error').innerText = "Contact Field is required.";
+            hasError = true;
+        } else if (fathers_contact.length !== 10 || isNaN(phoneValue)) {
+            document.getElementById('father_contact_no_error').innerText = "Please enter a valid 10-digit contact number.";
+            hasError = true;
+        } else {
+            document.getElementById('father_contact_no_error').innerText = "";
+        }
 
-    //     function validateEmail(value, errorElement) {
-    //         let emailPattern = /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/;
-    //         if (value === "") {
-    //             errorElement.innerText = "This field is required.";
-    //             console.log(`Validation error on field: ${errorElement.id}. Error: This field is required.`);
-    //             return true;
-    //         } else if (!emailPattern.test(value)) {
-    //             errorElement.innerText = "Please enter a valid email address.";
-    //             console.log(`Validation error on field: ${errorElement.id}. Error: Please enter a valid email address.`);
-    //             return true;
-    //         } else {
-    //             errorElement.innerText = "";
-    //             return false;
-    //         }
-    //     }
+        const gender = document.getElementById('gender');
+        if (gender.value.trim() === "") {
+            document.getElementById('gender_error').innerText = "Gender Field is required.";
+            hasError = true;
+        } else {
+            document.getElementById('gender_error').innerText = "";
+        }
 
-    //     // Perform validations
-    //     for (const [key, errorId] of Object.entries(fieldErrorIds)) {
-    //         const fieldValue = getFieldValue(key);
-    //         const errorElement = getFieldError(key);
+        // Email Validation
+        const emailField = document.getElementById('email_id');
+        const emailError = document.getElementById('email_error');
+        const emailValue = emailField.value.trim();
+        const emailPattern = /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/;
+
+        if (emailValue === "") {
+            emailError.textContent = "Email field is required.";
+            hasError = true;
+        } else if (!emailPattern.test(emailValue)) {
+            emailError.textContent = "Please enter a valid email address.";
+            hasError = true;
+        } else {
+            emailError.textContent = "";
+        }
+
+        console.log("Error : ", !hasError);
+        return !hasError;
+    }
+
+    function validateSecondTab() {
+        console.log("Validate Second Tab!!!")
+        let hasError = false;
+
+        // Degree Validation
+        const degree = document.getElementById('degree');
+        if (degree.value.trim() === "") {
+            document.getElementById('degree_error').innerText = "Degree Field is required.";
+            hasError = true;
+        } else {
+            document.getElementById('degree_error').innerText = "";
+        }
+
+        // Institution Field Validation
+        const college = document.getElementById('institution');
+        if (college.value.trim() === "") {
+            document.getElementById('institution_error').innerText = "Institution Field is required.";
+            hasError = true;
+        } else {
+            document.getElementById('institution_error').innerText = "";
+        }
+
+        // subject Field Validation
+        const subject = document.getElementById('subject');
+        if (subject.value.trim() === "") {
+            document.getElementById('subject_error').innerText = "Subject Field is required.";
+            hasError = true;
+        } else {
+            document.getElementById('subject_error').innerText = "";
+        }
+
+        // Grade Persentage Field Validation
+        const grade_percentage = document.getElementById('grade_percentage');
+        if (grade_percentage.value.trim() === "") {
+            document.getElementById('grade_percentage_error').innerText = "Grade Percentage Field is required.";
+            hasError = true;
+        } else {
+            document.getElementById('grade_percentage_error').innerText = "";
+        }
+
+        // Year of Passed out Field Validation
+        const year_of_passed_out = document.getElementById('year_of_passed_out').value.trim();
+        if (year_of_passed_out === "") {
+            document.getElementById('year_of_passed_out_error').innerText = "Year of Passed Out Field is required.";
+            hasError = true;
+        } else {
+            document.getElementById('year_of_passed_out_error').innerText = "";
+        }
+        
+        // Course Name Field Validation
+        const course_name = document.getElementById('course_name').value.trim();
+        if (course_name === "") {
+            document.getElementById('course_name_error').innerText = "Course Name Field is required.";
+            hasError = true;
+        } else {
+            document.getElementById('course_name_error').innerText = "";
+        }
+        
+        // Duration Field Validation
+        const duration = document.getElementById('duration').value.trim();
+        if (duration === "") {
+            document.getElementById('duration_error').innerText = "Duration Field is required.";
+            hasError = true;
+        } else {
+            document.getElementById('duration_error').innerText = "";
+        }
+        
+        // Payment Type Field Validation
+        const payment_type = document.getElementById('payment_type').value.trim();
+        if (duration === "") {
+            document.getElementById('payment_type_error').innerText = "Payment Type Field is required.";
+            hasError = true;
+        } else {
+            document.getElementById('payment_type_error').innerText = "";
+        }
+        
+        // Payment Type Field Validation
+        const installment_div = document.getElementById('installment_div');
+        const installment_amount = document.getElementById('installment_amount').value.trim();
+        if (installment_div.style.display === "block") {
+            if(installment_amount === ""){
+                document.getElementById('installment_amount_error').innerText = "Installment Amount Field is required.";
+                hasError = true;
+            } else {
+                document.getElementById('installment_amount_error').innerText = "";
+            }
+        }
+
+
+        // Payment Type Field Validation
+        const yes = document.getElementById('yes').checked;
+        const designation_div = document.getElementById('designation_div');
+        const company_name_div = document.getElementById('company_name_div');
+        const work_experience_div = document.getElementById('work_experience_div');
+        const nature_of_work_div = document.getElementById('nature_of_work_div');
+        const designation = document.getElementById('designation').value.trim();
+        const company_name = document.getElementById('company_name').value.trim();
+        const work_experience = document.getElementById('work_experience').value.trim();
+        const nature_of_work = document.getElementById('nature_of_work').value.trim();
+        if(yes){
+            console.log("Yes : ", yes === "true")
+            // Designation Field Validation
+            if (designation_div.style.display === "block") {
+                if(designation === ""){
+                    document.getElementById('designation_error').innerText = "Designation Field is required.";
+                    hasError = true;
+                } else {
+                    document.getElementById('designation_error').innerText = "";
+                }
+            }
             
-    //         if (!errorElement) {
-    //             console.error(`Error element not found for field: ${key}`);
-    //             continue;
-    //         }
+            // Company Name Field Validation
+            if (company_name_div.style.display === "block") {
+                if(company_name === ""){
+                    document.getElementById('company_name_error').innerText = "Company Name Field is required.";
+                    hasError = true;
+                } else {
+                    document.getElementById('company_name_error').innerText = "";
+                }
+            }
             
-    //         if (key === 'phonenumber') {
-    //             hasError = validateContactNumber(fieldValue, errorElement) || hasError;
-    //         } else if (key === 'email_id') {
-    //             hasError = validateEmail(fieldValue, errorElement) || hasError;
-    //         } else {
-    //             hasError = validateField(fieldValue, errorElement) || hasError;
-    //         }
-    //     }
+            // Work Experience Field Validation
+            if (work_experience_div.style.display === "block") {
+                if(work_experience === ""){
+                    document.getElementById('work_experience_error').innerText = "Work Experience Field is required.";
+                    hasError = true;
+                } else {
+                    document.getElementById('work_experience_error').innerText = "";
+                }
+            }
+            
+            // Nature of Work Field Validation
+            if (nature_of_work_div.style.display === "block") {
+                if(nature_of_work === ""){
+                    document.getElementById('nature_of_work_error').innerText = "Nature of Work Field is required.";
+                    hasError = true;
+                } else {
+                    document.getElementById('nature_of_work_error').innerText = "";
+                }
+            }
+        }
 
-    //     // Conditional validations based on the selected course name
-    //     const courseNameElement = getFieldElement('course_name');
-    //     const courseName = courseNameElement.options[courseNameElement.selectedIndex]?.text.trim().toLowerCase() || '';
+        // Payment Type Field Validation
+        const total_fees_amount = document.getElementById('total_fees_amount').value.trim();
+        if (duration === "") {
+            document.getElementById('total_fees_amount_error').innerText = "Total Fees Amount Field is required.";
+            hasError = true;
+        } else {
+            document.getElementById('total_fees_amount_error').innerText = "";
+        }
 
-    //     if (courseName === 'inplant training') {
-    //         ['technology', 'inplant_no_of_days', 'inplant_no_of_students'].forEach(field => {
-    //             const fieldValue = getFieldValue(field);
-    //             const errorElement = getFieldError(field);
-    //             if (!errorElement) {
-    //                 console.error(`Error element not found for field: ${field}`);
-    //                 return;
-    //             }
-    //             hasError = validateField(fieldValue, errorElement) || hasError;
-    //         });
-    //     } else if (courseName === 'internship training') {
-    //         ['internship_technology', 'internship_no_of_days', 'internship_no_of_students'].forEach(field => {
-    //             const fieldValue = getFieldValue(field);
-    //             const errorElement = getFieldError(field);
-    //             if (!errorElement) {
-    //                 console.error(`Error element not found for field: ${field}`);
-    //                 return;
-    //             }
-    //             hasError = validateField(fieldValue, errorElement) || hasError;
-    //         });
-    //     }
+        return !hasError; // Return true if no errors
+    }
 
-    //     console.log("Has Error:", hasError);
+    function next(event) {
+        event.preventDefault(); // Prevent default behavior
 
-    //     if (!hasError) {
-    //         document.getElementById("enrollment_form").submit();
-    //     }
-    // });
+        // Validate the first tab fields
+        if (validateFirstTab()) {
+            // Switch to the next tab if valid
+            console.log("Valid!!!");
+            document.querySelector('.tab-pane.active').classList.remove('show', 'active');
+            document.getElementById('profile').classList.add('show', 'active');
+        } else {
+            // Focus on the first invalid input
+            console.log("In Valid!!!");
+            const firstErrorElement = document.querySelector('.error-div');
+            if (firstErrorElement) {
+                firstErrorElement.previousElementSibling.focus();
+            }
+        }
+    }
 
+    function submitForm(event) {
+        event.preventDefault();
 
+        if (validateSecondTab()) {
+            // Here you can handle form submission, e.g., sending data to the server
+            alert('Form submitted successfully!');
+            document.getElementById("enrollment_form").submit();
+        } else {
+            const firstErrorElement = document.querySelector('.error-div:not(:empty)');
+            if (firstErrorElement) {
+                firstErrorElement.previousElementSibling.focus();
+            }
+        }
+    }
 
+    function prev() {
+        document.querySelector('.tab-pane.active').classList.remove('show', 'active');
+        document.getElementById('home').classList.add('show', 'active');
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        flatpickr("#registration_date", {
+            dateFormat: "d-m-Y", // Customize the format to "DD-MM-YYYY"
+            defaultDate: "today" // Optional: set default date
+        });
+
+        flatpickr("#date_of_birth", {
+            dateFormat: "d-m-Y", // Customize the format to "DD-MM-YYYY"
+            minDate: "today",          // Set the minimum date to today's date
+            defaultDate: "today" // Optional: set default date
+        });
+    });
 
     function validateFields(inputValue, errorElementId) {
         const errorElement = document.getElementById(errorElementId);
@@ -1050,11 +1196,12 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    function clearErrors() {
-        const errorElements = document.querySelectorAll('.error-div');
-        errorElements.forEach(element => {
-            element.innerText = "";
-        });
-    }
+    // function clearErrors() {
+    //     const errorElements = document.querySelectorAll('.error-div');
+    //     errorElements.forEach(element => {
+    //         element.innerText = "";
+    //     });
+    // }
+
 </script>
 {% endblock %}

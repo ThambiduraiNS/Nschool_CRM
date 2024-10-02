@@ -12,6 +12,8 @@
 <link rel="stylesheet" href="{% static '/css/header.css' %}">
 <link rel="stylesheet" href="{% static '/css/new_enquiry.css' %}">
 <link rel="stylesheet" href="{% static '/css/update_enquiry.css' %}">
+<!-- Flatpickr CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 {% endblock %}
 
 {% block header %}
@@ -81,7 +83,7 @@
                                     <div class="row d-flex justify-content-between pe-0">
                                         <div class="col-12 col-md-6">
                                             <div class="user-input-wrp mx-md-2">
-                                                <input type="date" name="enquiry_date" id="enquiry_date" value="{{enquiry.enquiry_date|date:'Y-m-d' }}" class="form-control"
+                                                <input type="date" name="enquiry_date" id="enquiry_date" value="{{enquiry.enquiry_date }}" class="form-control bg-white"
                                                     aria-label="date" placeholder=" " autocomplete="off" autofocus>
                                                 <label class="floating-label">&nbsp;Date <span class="required">*</span> &nbsp;</label>
                                                 <span id="date_error" class="error-div">
@@ -151,7 +153,7 @@
                                         <!-- student date of birth field -->
                                         <div class="col-12 col-md-6 p-0">
                                             <div class="user-input-wrp ms-4">
-                                                <input type="date" name="dob" id="dob" value="{{ enquiry.date_of_birth|date:'Y-m-d' }}" class="form-control" placeholder=" "
+                                                <input type="date" name="dob" id="dob" value="{{ enquiry.date_of_birth }}" class="form-control bg-white" placeholder=" "
                                                     autocomplete="off" autofocus>
                                                 <label class="floating-label">&nbsp;Date Of Birth&nbsp;</label>
                                                 <span id="dob_error" class="error-div error-right">
@@ -517,7 +519,7 @@
                                         <!-- Next Follow-Up Date field -->
                                         <div class="col-12 col-md-6">
                                             <div class="user-input-wrp">
-                                                <input type="date" name="next_follow_up_date" id="next_follow_up_date" value="{{enquiry.next_follow_up_date|date:'Y-m-d'}}" class="form-control"
+                                                <input type="date" name="next_follow_up_date" id="next_follow_up_date" value="{{enquiry.next_follow_up_date}}" class="form-control bg-white"
                                                     aria-label="date" placeholder=" " autocomplete="off" autofocus>
                                                 <label class="floating-label">&nbsp;Next Follow-Up Date <span class="required">*</span> &nbsp;</label>
                                                 <span id="next_follow_up_date_error" class="error-div">
@@ -533,10 +535,9 @@
                                             <div class="user-input-wrp me-md-4 mb-md-5">
                                                 <select name="lead_type" id="lead_type" class="form-select select" onchange="handleModeOfEnquiryChange()">
                                                     <option value="" selected>Select</option>
-                                                    <option value="Netural">Netural</option>
-                                                    <option value="Positive">Positive</option>
-                                                    <option value="Dead">Dead</option>
-                                        
+                                                    <option value="Netural" {% if enquiry.lead_type == 'Netural' %}selected {% endif %}>Netural</option>
+                                                    <option value="Positive" {% if enquiry.lead_type == 'Positive' %}selected {% endif %}>Positive</option>
+                                                    <option value="Dead" {% if enquiry.lead_type == 'Dead' %}selected {% endif %}>Dead</option>
                                                 </select>
                                                 <label class="floating-label">&nbsp;Lead Type <span class="required">*</span> &nbsp;</label>
                                                 <span id="lead_type_error" class="error-div">
@@ -667,6 +668,10 @@
 
 
 {% block scripts %}
+
+<!-- Flatpickr JavaScript -->
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
 <script>
     // tab functionality
     document.getElementById('next-tab').addEventListener('click', function () {
@@ -725,35 +730,172 @@
         return regex.test(dateString);
     }
 
-    document.getElementById('enquiry_form').addEventListener('submit', function(event) {
-        console.log("form function trigred")
-        event.preventDefault();
+    // document.getElementById('enquiry_form').addEventListener('submit', function(event) {
+    //     console.log("form function trigred")
+    //     event.preventDefault();
+    //     let hasError = false;
+
+    //     const today = new Date();
+            
+    //     // Get the entered date and today's date
+    //     const enteredDate = new Date(document.getElementById('enquiry_date').value);
+
+    //     const formattedToday = new Date(today.toISOString().split('T')[0]);
+
+    //     // Date Validation
+    //     var dateField = document.getElementById('enquiry_date');
+    //     if (dateField.value.trim() === "") {
+    //         document.getElementById('date_error').innerText = "Date Field is required.";
+    //         hasError = true;
+    //     } 
+    //     // else if (enteredDate < formattedToday) {
+    //     //     document.getElementById('date_error').innerText = "The date cannot be before today.";
+    //     //     dateField.value = today.toISOString().split('T')[0];
+    //     //     hasError = true;
+    //     // }
+    //     else {
+    //         document.getElementById('date_error').innerText = "";
+    //     }
+
+    //     // Student Name Validation
+    //     var studentName = document.getElementById('student_name');
+    //     if (studentName.value.trim() === "") {
+    //         document.getElementById('user_error').innerText = "Student Name Field is required.";
+    //         hasError = true;
+    //     } else {
+    //         document.getElementById('user_error').innerText = "";
+    //     }
+
+    //     // Contact Number Validation
+    //     var contactField = document.getElementById('contact');
+    //     if (contactField.value.trim() === "") {
+    //         document.getElementById('contact_error').innerText = "Contact Field is required.";
+    //         hasError = true;
+    //     }
+    //     else if (contactField.value.length != 10 || isNaN(contactField.value)) {
+    //         document.getElementById('contact_error').innerText = "Please enter a valid 10-digit contact number.";
+    //         hasError = true;
+    //     } else {
+    //         document.getElementById('contact_error').innerText = "";
+    //     }
+
+    //     // Email Validation
+    //     var emailField = document.getElementById('email');
+    //     var emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
+    //     if (emailField.value.trim() === "") {
+    //         document.getElementById('email_error').innerText = "Email Field is required.";
+    //         hasError = true;
+    //     }
+    //     else if (!emailRegex.test(emailField.value)) {
+    //         document.getElementById('email_error').innerText = "Please enter a valid email address.";
+    //         hasError = true;
+    //     } else {
+    //         document.getElementById('email_error').innerText = "";
+    //     }
+
+    //     // Father's Contact Number Validation
+    //     var fatherContactField = document.getElementById('father_contact');
+    //     if (fatherContactField.value.trim() === "") {
+    //         document.getElementById('father_contact_error').innerText = "Father contact Field is required.";
+    //     }
+    //     else if ( fatherContactField.value.length != 10 || isNaN(fatherContactField.value)) {
+    //         document.getElementById('father_contact_error').innerText = "Please enter a valid 10-digit contact number.";
+    //         hasError = true;
+    //     } else {
+    //         document.getElementById('father_contact_error').innerText = "";
+    //     }
+
+    //     // course name field validation
+    //     var courseName = document.getElementById('courseName');
+    //     if (courseName.value.trim() === "") {
+    //         document.getElementById('course_name_error').innerText = "Please select your course.";
+    //         hasError = true;
+    //     } else {
+    //         document.getElementById('course_name_error').innerText = "";
+    //     }
+        
+    //     const enteredFollowUpDate = new Date(document.getElementById('next_follow_up_date').value);
+
+    //     // Next follow-up field validation
+    //     var Next_follow_up = document.getElementById('next_follow_up_date');
+    //     if (Next_follow_up.value.trim() === "") {
+    //         document.getElementById('next_follow_up_date_error').innerText = "Next follow-up Field is required.";
+    //         hasError = true;
+    //     } 
+    //     // else if (enteredFollowUpDate < formattedToday) {
+    //     //     document.getElementById('next_follow_up_date_error').innerText = "The date cannot be before today.";
+    //     //     dateField.value = today.toISOString().split('T')[0];
+    //     //     hasError = true;
+    //     // } 
+    //     else {
+    //         document.getElementById('next_follow_up_date_error').innerText = "";
+    //     }
+
+    //     // Degree fields validation
+    //     var degree = document.getElementById('degree');
+    //     if (degree.value.trim() === "") {
+    //         document.getElementById('degree_error').innerText = "Degree Field is required.";
+    //         hasError = true;
+    //     } else {
+    //         document.getElementById('degree_error').innerText = "";
+    //     }
+        
+    //     // college fields validation
+    //     var college = document.getElementById('college');
+    //     if (college.value.trim() === "") {
+    //         document.getElementById('college_error').innerText = "College Field is required.";
+    //         hasError = true;
+    //     } else {
+    //         document.getElementById('college_error').innerText = "";
+    //     }
+        
+    //     // year_of_graduation fields validation
+    //     var year_of_graduation = document.getElementById('year_of_graduation');
+    //     if (year_of_graduation.value.trim() === "") {
+    //         document.getElementById('year_of_graduation_error').innerText = "Year of Graduation Field is required.";
+    //         hasError = true;
+    //     } else {
+    //         document.getElementById('year_of_graduation_error').innerText = "";
+    //     }
+        
+    //     // Mode of Enquiry fields validation
+    //     var mode_of_enquiry = document.getElementById('mode_of_enquiry');
+    //     if (mode_of_enquiry.value.trim() === "") {
+    //         document.getElementById('mode_of_enquiry_error').innerText = "Please Select Your Mode of Enquiry.";
+    //         hasError = true;
+    //     } else {
+    //         document.getElementById('mode_of_enquiry_error').innerText = "";
+    //     }
+        
+    //     // Lead Type fields validation
+    //     var lead_type = document.getElementById('lead_type').value.trim();
+    //     console.log("Lead Type : ", lead_type)
+    //     if (lead_type === "") {
+    //         document.getElementById('lead_type_error').innerText = "Please Select Your Lead Type.";
+    //         hasError = true;
+    //     } else {
+    //         document.getElementById('lead_type_error').innerText = "";
+    //     }
+
+    //     if (mode_of_enquiry.value.trim() === "" || courseName.value.trim() === "" || lead_type === "") {
+    //         document.getElementById('notes_error').innerText = "Previous page field's can't be empty.";
+    //         hasError = true;
+    //     } else {
+    //         document.getElementById('notes_error').innerText = "";
+    //     }
+
+    //     if (!hasError) {
+    //         document.getElementById("enquiry_form").submit();
+    //     }
+    // });
+
+
+    function validateFirstTab() {
+        // Student Name Validation
+
         let hasError = false;
 
-        const today = new Date();
-            
-        // Get the entered date and today's date
-        const enteredDate = new Date(document.getElementById('enquiry_date').value);
-
-        const formattedToday = new Date(today.toISOString().split('T')[0]);
-
-        // Date Validation
-        var dateField = document.getElementById('enquiry_date');
-        if (dateField.value.trim() === "") {
-            document.getElementById('date_error').innerText = "Date Field is required.";
-            hasError = true;
-        } 
-        // else if (enteredDate < formattedToday) {
-        //     document.getElementById('date_error').innerText = "The date cannot be before today.";
-        //     dateField.value = today.toISOString().split('T')[0];
-        //     hasError = true;
-        // }
-        else {
-            document.getElementById('date_error').innerText = "";
-        }
-
-        // Student Name Validation
-        var studentName = document.getElementById('student_name');
+        const studentName = document.getElementById('student_name');
         if (studentName.value.trim() === "") {
             document.getElementById('user_error').innerText = "Student Name Field is required.";
             hasError = true;
@@ -762,12 +904,11 @@
         }
 
         // Contact Number Validation
-        var contactField = document.getElementById('contact');
+        const contactField = document.getElementById('contact');
         if (contactField.value.trim() === "") {
             document.getElementById('contact_error').innerText = "Contact Field is required.";
             hasError = true;
-        }
-        else if (contactField.value.length != 10 || isNaN(contactField.value)) {
+        } else if (contactField.value.length !== 10 || isNaN(contactField.value)) {
             document.getElementById('contact_error').innerText = "Please enter a valid 10-digit contact number.";
             hasError = true;
         } else {
@@ -775,96 +916,91 @@
         }
 
         // Email Validation
-        var emailField = document.getElementById('email');
-        var emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
-        if (emailField.value.trim() === "") {
-            document.getElementById('email_error').innerText = "Email Field is required.";
+        const emailField = document.getElementById('email');
+        const emailError = document.getElementById('email_error');
+        const emailValue = emailField.value;
+        const emailPattern = /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/;
+
+        if (emailValue === "") {
+            emailError.textContent = "Email field is required.";
             hasError = true;
-        }
-        else if (!emailRegex.test(emailField.value)) {
-            document.getElementById('email_error').innerText = "Please enter a valid email address.";
+        } else if (!emailPattern.test(emailValue)) {
+            emailError.textContent = "Please enter a valid email address.";
             hasError = true;
         } else {
-            document.getElementById('email_error').innerText = "";
+            emailError.textContent = "";
         }
 
         // Father's Contact Number Validation
-        var fatherContactField = document.getElementById('father_contact');
+        const fatherContactField = document.getElementById('father_contact');
         if (fatherContactField.value.trim() === "") {
             document.getElementById('father_contact_error').innerText = "Father contact Field is required.";
-        }
-        else if ( fatherContactField.value.length != 10 || isNaN(fatherContactField.value)) {
+            hasError = true;
+        } else if (fatherContactField.value.length !== 10 || isNaN(fatherContactField.value)) {
             document.getElementById('father_contact_error').innerText = "Please enter a valid 10-digit contact number.";
             hasError = true;
         } else {
             document.getElementById('father_contact_error').innerText = "";
         }
 
-        // course name field validation
-        var courseName = document.getElementById('courseName');
-        if (courseName.value.trim() === "") {
+        // Course Name Validation
+        const courseName = document.getElementById('courseName').value.trim();
+        if (courseName === "select") {
             document.getElementById('course_name_error').innerText = "Please select your course.";
             hasError = true;
         } else {
             document.getElementById('course_name_error').innerText = "";
         }
-        
-        const enteredFollowUpDate = new Date(document.getElementById('next_follow_up_date').value);
 
-        // Next follow-up field validation
-        var Next_follow_up = document.getElementById('next_follow_up_date');
-        if (Next_follow_up.value.trim() === "") {
-            document.getElementById('next_follow_up_date_error').innerText = "Next follow-up Field is required.";
-            hasError = true;
-        } 
-        // else if (enteredFollowUpDate < formattedToday) {
-        //     document.getElementById('next_follow_up_date_error').innerText = "The date cannot be before today.";
-        //     dateField.value = today.toISOString().split('T')[0];
-        //     hasError = true;
-        // } 
-        else {
-            document.getElementById('next_follow_up_date_error').innerText = "";
-        }
+        // If there are no errors, return true
+        console.log("Validate First Tab : ", !hasError)
 
-        // Degree fields validation
-        var degree = document.getElementById('degree');
+        return !hasError;
+
+    }
+
+    function validateSecondTab() {
+        console.log("Validate Second Tab!!!")
+        let hasError = false;
+
+        // Degree Validation
+        const degree = document.getElementById('degree');
         if (degree.value.trim() === "") {
             document.getElementById('degree_error').innerText = "Degree Field is required.";
             hasError = true;
         } else {
             document.getElementById('degree_error').innerText = "";
         }
-        
-        // college fields validation
-        var college = document.getElementById('college');
+
+        // College Validation
+        const college = document.getElementById('college');
         if (college.value.trim() === "") {
             document.getElementById('college_error').innerText = "College Field is required.";
             hasError = true;
         } else {
             document.getElementById('college_error').innerText = "";
         }
-        
-        // year_of_graduation fields validation
-        var year_of_graduation = document.getElementById('year_of_graduation');
+
+        // Year of Graduation Validation
+        const year_of_graduation = document.getElementById('year_of_graduation');
         if (year_of_graduation.value.trim() === "") {
             document.getElementById('year_of_graduation_error').innerText = "Year of Graduation Field is required.";
             hasError = true;
         } else {
             document.getElementById('year_of_graduation_error').innerText = "";
         }
-        
-        // Mode of Enquiry fields validation
-        var mode_of_enquiry = document.getElementById('mode_of_enquiry');
+
+        // Mode of Enquiry Validation
+        const mode_of_enquiry = document.getElementById('mode_of_enquiry');
         if (mode_of_enquiry.value.trim() === "") {
             document.getElementById('mode_of_enquiry_error').innerText = "Please Select Your Mode of Enquiry.";
             hasError = true;
         } else {
             document.getElementById('mode_of_enquiry_error').innerText = "";
         }
-        
-        // Lead Type fields validation
-        var lead_type = document.getElementById('lead_type').value.trim();
-        console.log("Lead Type : ", lead_type)
+
+        // Lead Type Validation
+        const lead_type = document.getElementById('lead_type').value.trim();
         if (lead_type === "") {
             document.getElementById('lead_type_error').innerText = "Please Select Your Lead Type.";
             hasError = true;
@@ -872,17 +1008,50 @@
             document.getElementById('lead_type_error').innerText = "";
         }
 
-        if (mode_of_enquiry.value.trim() === "" || courseName.value.trim() === "" || lead_type === "") {
-            document.getElementById('notes_error').innerText = "Previous page field's can't be empty.";
-            hasError = true;
-        } else {
-            document.getElementById('notes_error').innerText = "";
-        }
+        return !hasError; // Return true if no errors
+    }
 
-        if (!hasError) {
-            document.getElementById("enquiry_form").submit();
+    function next(event) {
+
+        event.preventDefault();
+
+        // Validate the first tab fields
+        if (validateFirstTab()) {
+            // Switch to the next tab if valid
+            console.log("Valid!!!")
+            document.querySelector('.tab-pane.active').classList.remove('show', 'active');
+            document.getElementById('profile').classList.add('show', 'active');
+        } else {
+             // Optionally, you can focus on the first invalid input
+            console.log("In Valid!!!")
+            const firstErrorElement = document.querySelector('.error-div');
+            console.log(firstErrorElement)
+            if (firstErrorElement) {
+                firstErrorElement.previousElementSibling.focus();
+            }
         }
-    });
+    }
+
+    function submitForm(event) {
+        event.preventDefault();
+
+        if (validateSecondTab()) {
+            // Here you can handle form submission, e.g., sending data to the server
+            alert('Form submitted successfully!');
+            document.getElementById("enquiry_form").submit();
+        } else {
+            const firstErrorElement = document.querySelector('.error-div:not(:empty)');
+            if (firstErrorElement) {
+                firstErrorElement.previousElementSibling.focus();
+            }
+        }
+    }
+
+    function prev() {
+        document.querySelector('.tab-pane.active').classList.remove('show', 'active');
+        document.getElementById('home').classList.add('show', 'active');
+    }
+
 
     function permission(checkboxId) {
         // Get the checkbox
@@ -1031,6 +1200,25 @@
         const day = String(today.getDate()).padStart(2, '0');
         return `${year}-${month}-${day}`;
     }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        flatpickr("#dob", {
+            dateFormat: "d-m-Y", // Customize the format to "DD-MM-YYYY"
+            defaultDate: "today" // Optional: set default date
+        });
+
+        flatpickr("#enquiry_date", {
+            dateFormat: "d-m-Y", // Customize the format to "DD-MM-YYYY"
+            minDate: "today",          // Set the minimum date to today's date
+            defaultDate: "today" // Optional: set default date
+        });
+
+        flatpickr("#next_follow_up_date", {
+            dateFormat: "d-m-Y", // Customize the format to "DD-MM-YYYY"
+            minDate: "today",          // Set the minimum date to today's date
+            defaultDate: "today" // Optional: set default date
+        });
+    });
 
     // // Function to format the current date as YYYY-MM-DD
     // function getCurrentDateplusOne() {

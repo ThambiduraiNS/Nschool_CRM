@@ -415,7 +415,7 @@
                                         <div class="user-input-wrp me-md-4">
                                             <input type="text" name="college" id="college" value="{{college}}" class="form-control"
                                                 aria-label="college" placeholder=" " autocomplete="off" autofocus>
-                                            <label class="floating-label">&nbsp;Collage <span class="required">*</span> &nbsp;</label>
+                                            <label class="floating-label">&nbsp;College <span class="required">*</span> &nbsp;</label>
                                             <span id="college_error" class="error-div">
                                                 {% if errors.college %}
                                                     {{errors.college}}
@@ -756,8 +756,6 @@
 
     function next(event) {
 
-        event.preventDefault();
-
         // Validate the first tab fields
         if (validateFirstTab()) {
             // Switch to the next tab if valid
@@ -765,7 +763,8 @@
             document.querySelector('.tab-pane.active').classList.remove('show', 'active');
             document.getElementById('profile').classList.add('show', 'active');
         } else {
-             // Optionally, you can focus on the first invalid input
+            // Optionally, you can focus on the first invalid input
+            event.preventDefault();
             console.log("In Valid!!!")
             const firstErrorElement = document.querySelector('.error-div');
             console.log(firstErrorElement)

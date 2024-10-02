@@ -2453,7 +2453,7 @@ def new_enrollment_view(request):
         try:
             registration_date_str = request.POST.get('registration_date')
             if registration_date_str:
-                registration_date = datetime.strptime(registration_date_str, '%Y-%m-%d').strftime('%Y-%m-%d')
+                registration_date = datetime.strptime(registration_date_str, '%d-%m-%Y').strftime('%Y-%m-%d')
             else:
                 registration_date = None
         except ValueError:
@@ -2622,14 +2622,40 @@ def update_enrollment_view(request, id):
             'Authorization': f'Token {token.key}',
         }
         
+        # Get the registration date from the POST request
+        input_registration_date = request.POST.get('registration_date', enrollment.registration_date.strftime("%Y-%m-%d"))
+        print(f"Raw registration_date input: {input_registration_date}")
+
+        # Try to parse the registration date
+        try:
+            parsed_registration_date = datetime.strptime(input_registration_date, "%d-%m-%Y")  # Adjust if input format changes
+            registration_date = parsed_registration_date.strftime("%Y-%m-%d")
+        except ValueError:
+            registration_date = enrollment.registration_date.strftime("%Y-%m-%d")
+
+        print(f"Formatted registration_date: {registration_date}")
+
+        # Get the date of birth from the POST request
+        input_date_of_birth = request.POST.get('date_of_birth', enrollment.date_of_birth.strftime("%Y-%m-%d"))
+        print(f"Raw date_of_birth input: {input_date_of_birth}")
+
+        # Try to parse the date of birth
+        try:
+            parsed_date_of_birth = datetime.strptime(input_date_of_birth, "%d-%m-%Y")  # Adjust if input format changes
+            date_of_birth = parsed_date_of_birth.strftime("%Y-%m-%d")
+        except ValueError:
+            date_of_birth = enrollment.date_of_birth.strftime("%Y-%m-%d")
+
+        print(f"Formatted date_of_birth: {date_of_birth}")
+
         # Auto-populate fields based on the related Enquiry object
         enrollment_data = {
             'enquiry_no': request.POST.get('enquiry_no', enrollment.enquiry_no),
             'registration_no': request.POST.get('registration_no', enrollment.registration_no),
-            'registration_date': request.POST.get('registration_date', enrollment.registration_date),
+            'registration_date': registration_date,
             'name': request.POST.get('name', enrollment.name),
             'phonenumber': request.POST.get('phonenumber', enrollment.phonenumber),
-            'date_of_birth': request.POST.get('date_of_birth', enrollment.date_of_birth),
+            'date_of_birth': date_of_birth,
             'gender': request.POST.get('gender', enrollment.gender),
             'email_id': request.POST.get('email_id', enrollment.email_id),
             'father_name': request.POST.get('father_name', enrollment.father_name),
@@ -2672,7 +2698,7 @@ def update_enrollment_view(request, id):
             return render(request, 'manage_enrollment.html', context)
         
         if response.status_code in [200, 204]:  # 204 No Content is also a valid response for updates
-            print("Update successful")
+            messages.success(request, 'Successfully Updated')
             return redirect('manage_enrollment')
         else:
             context = {
@@ -2682,14 +2708,15 @@ def update_enrollment_view(request, id):
             return render(request, 'update_enrollment.html', context)
     
     courses = Course.objects.all()
-    
+    reg_date = enrollment.registration_date.strftime("%d-%m-%Y")
     context = {
         'courses': courses,
         "enrollment": enrollment,
+        "reg_date": reg_date,
         "enquiry_id": id,
     }
     
-    print("Registration Date : ", enrollment.registration_date)
+    print("Registration Date : ", enrollment.registration_date.strftime("%d-%m-%Y"))
         
     return render(request, 'update_enrollment.html', context)
 
