@@ -88,6 +88,8 @@
                                             <span id="enquiry_no_error" class="error-div">
                                                 {% if errors.enquiry_no %}
                                                     {{errors.enquiry_no}}
+                                                {% else %}
+                                                    {{error}}
                                                 {% endif %}
                                             </span>
                                         </div>
@@ -457,7 +459,7 @@
                                             <select class="form-select select" id="course_name" name="course_name" onclick="handleCourseNameChange()">
                                                 <option value="" selected>Select Your Course</option>
                                                 {% for course in courses %}
-                                                    <option value="{{ course.id }}" {% if course_name == course.id %}selected{% endif %}>{{ course.course_name }}</option>
+                                                    <option value="{{ course.id }}" {% if course.course_name == course.id %}selected{% endif %}>{{ course.course_name }}</option>
                                                 {% endfor %}
                                             </select>
                                             <label for="course_name" class="floating-label float">&nbsp;Course Name <span class="required">*</span> &nbsp;</label>

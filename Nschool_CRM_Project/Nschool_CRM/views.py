@@ -2443,6 +2443,13 @@ def new_enrollment_view(request):
                 'error': 'Enquiry with the provided Enquiry Number does not exist.',
             }
             return render(request, 'new_enrollment.html', context)
+        
+        # Check if the enquiry already exists
+        if Enrollment.objects.filter(enquiry_no=enquiry_no).exists():
+            context = {
+                'error': 'Provided Enquiry Number Already Exists.',
+            }
+            return render(request, 'new_enrollment.html', context)
 
         # Ensure that grade_percentage is not None
         grade_percentage = enquiry.grade_percentage if enquiry.grade_percentage is not None else request.POST.get('grade_percentage')

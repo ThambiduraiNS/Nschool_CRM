@@ -75,13 +75,13 @@ urlpatterns = [
     path('get-enquiry-details/', get_enquiry_details, name='get_enquiry_details'),
     
     # payment module
+    path('new-payment/', new_payment_info_view, name='new_payment_info'),
+    path('single-payment/', single_payment_view, name='single_payment'),
+    path('new_installment_payment/', new_installment_view, name='new_installment_info'),
+    path('new_installment_payment/<int:id>/', new_installment_update_view, name='new_installment_update_info'),
     path('delete_payment/<int:id>/', delete_payment_view, name='delete_payment'),
     path('delete_all_payment/', delete_all_payment_view, name='delete_all_payment'),
     path('get-enrollment-details/', get_enrollment_details, name='get_enrollment_details'),
-    path('new-payment/', new_payment_info_view, name='new_payment_info'),
-    path('new_installment_payment/', new_installment_view, name='new_installment_info'),
-    path('new_installment_payment/<int:id>/', new_installment_update_view, name='new_installment_update_info'),
-    path('single-payment/', single_payment_view, name='single_payment'),
     path('single-payment/<int:id>/', single_payment_update_view, name='single_payment'),
     path('single-payment/<int:id>/', single_payment_view, name='single_payment'),
     path('new_manage_payments/', new_manage_payment_info_view, name='new_manage_payments'),
