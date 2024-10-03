@@ -2447,7 +2447,7 @@ def new_enrollment_view(request):
         # Check if the enquiry already exists
         if Enrollment.objects.filter(enquiry_no=enquiry_no).exists():
             context = {
-                'error': 'Provided Enquiry Number Already Exists.',
+                'error': 'This Enquiry Number Already Exist.',
             }
             return render(request, 'new_enrollment.html', context)
 
@@ -4215,3 +4215,393 @@ class EMI_6DetailView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = EMI_6_Serializer
     permission_classes = [IsAuthenticated]
     lookup_field = 'pk'
+
+
+# def payment_view(request):
+#     if request.method == 'POST':
+#         registration_no = request.POST.get('registration_no')
+        
+#         # Debug print
+#         print(f"Received registration_no: {registration_no}")
+
+#         # Fetch the related Enrollment object
+#         try:
+#             enrollment = Enrollment.objects.get(registration_no=registration_no)
+#             print(f"Enrollment found: {enrollment}")
+#         except Enrollment.DoesNotExist:
+#             context = {
+#                 'error': 'Enrollment with the provided Registration Number does not exist.',
+#             }
+#             return render(request, 'new_payment_info.html', context)
+
+#         # Validate POST data
+#         duration = request.POST.get('duration')
+#         fees_type = request.POST.get('fees_type')
+#         monthly_payment_type = request.POST.get('montly_payment_type')
+#         payment_mode = request.POST.get('payment_mode')
+#         amount = request.POST.get('amount', 0)
+        
+#         print(f"duration : {duration}, fees_type : {fees_type}, monthly Payment type : {monthly_payment_type}, payment mode : {payment_mode}, amount : {amount}")
+
+#         if not all([duration, fees_type, monthly_payment_type, payment_mode, amount]):
+#             messages.error(request, "All fields are required.")
+#             return redirect('new_payment_info')
+
+#         # Prepare PaymentInfo data
+#         payment_info_data = {
+#             'registration_no': registration_no,
+#             'joining_date': enrollment.registration_date,
+#             'student_name': enrollment.name,
+#             'course_name': enrollment.course_name.course_name,
+#             'duration': duration,
+#             'fees_type': fees_type,
+#             'total_fees': Decimal(enrollment.total_fees_amount),
+#             'installment_amount': Decimal(enrollment.installment_amount),
+#         }
+
+#         # Create a PaymentInfo instance
+#         payment_info = PaymentInfo(**payment_info_data)
+#         payment_info.save()
+#         print(f"PaymentInfo created: {payment_info}")
+
+#         # Prepare SinglePayment data
+#         if fees_type == 'Regular':
+        
+#             single_payment_data = {
+#                 'payment_info': payment_info,
+#                 'date': request.POST.get('date'),
+#                 'payment_mode': request.POST.get('payment_mode'),
+#                 'amount': request.POST.get('amount'),
+#             }
+
+#             # Handle UPI and Bank Transfer specific fields
+#             if payment_mode == 'Bank Transfer':
+#                 single_payment_data['reference_no'] = request.POST.get('reference_no')
+#             elif payment_mode == 'UPI':
+#                 single_payment_data['upi_transaction_id'] = request.POST.get('upi_transaction_id')
+#                 single_payment_data['upi_app_name'] = request.POST.get('upi_app_name')
+
+#             # Create a SinglePayment instance
+#             single_payment = SinglePayment(**single_payment_data)
+#             single_payment.save()
+#             print(f"SinglePayment created: {single_payment}")
+
+#         # Calculate total paid amount and remaining fees
+#         total_paid_amount = sum(emi.amount for emi in EMI_MODELS['EMI_1'].objects.filter(payment_info=payment_info))
+#         total_remaining_fees = payment_info.total_fees - total_paid_amount
+#         print(f"Total paid amount: {total_paid_amount}, Total remaining fees: {total_remaining_fees}")
+
+#         # Validate payment amount
+#         payment_amount = Decimal(amount)
+#         if payment_amount <= 0:
+#             messages.error(request, "Invalid payment amount.")
+#             return redirect('new_payment_info')
+#         if payment_amount > total_remaining_fees:
+#             messages.error(request, f"Entered amount exceeds the remaining total fees of {total_remaining_fees}.")
+#             return redirect('new_payment_info')
+
+#         remaining_amount = payment_amount
+#         date = request.POST.get('date')
+
+#         # Process EMI payments
+#         try:
+#             next_emi = get_next_emi(payment_info, 'EMI_1')
+#             print(f"Next EMI: {next_emi}")
+#         except ValueError as e:
+#             messages.error(request, str(e))
+#             return redirect('new_installment_info')
+
+#         # Process EMI_1 explicitly
+#         emi_model = EMI_MODELS.get('EMI_1')
+#         if emi_model:
+#             next_emi_amount = payment_info.installment_amount
+#             status = "Pending" if remaining_amount < next_emi_amount else "Paid"
+
+#             paid_emi_instance = emi_model(
+#                 payment_info=payment_info,
+#                 registration_no=registration_no,
+#                 date=date,
+#                 payment_mode=payment_mode,
+#                 emi='EMI_1',
+#                 amount=min(next_emi_amount, remaining_amount),
+#                 status=status
+#             )
+
+#             # Set additional fields based on payment mode
+#             if payment_mode == 'Bank Transfer':
+#                 paid_emi_instance.reference_no = request.POST.get('reference_no')
+#             elif payment_mode == 'UPI':
+#                 paid_emi_instance.upi_transaction_id = request.POST.get('upi_transaction_id')
+#                 paid_emi_instance.upi_app_name = request.POST.get('upi_app_name')
+
+#             paid_emi_instance.save()
+#             remaining_amount -= next_emi_amount
+#             print(f"Processed EMI_1: Amount paid: {min(next_emi_amount, remaining_amount)}, Remaining Amount: {remaining_amount}")
+
+#         # Process subsequent EMIs
+#         while remaining_amount > 0:
+#             next_emi = get_next_emi(payment_info, next_emi.emi)
+#             if not next_emi:
+#                 print("No more EMIs to process.")
+#                 break
+
+#             emi_model = EMI_MODELS.get(next_emi.emi)
+#             if not emi_model:
+#                 messages.error(request, f"EMI model not found for {next_emi.emi}.")
+#                 return redirect('new_installment_info')
+
+#             next_emi_amount = payment_info.installment_amount
+#             print(f"Next EMI Amount: {next_emi_amount}, Remaining Amount: {remaining_amount}")
+
+#             if remaining_amount >= next_emi_amount:
+#                 # Full payment for the current EMI
+#                 paid_emi_instance = emi_model(
+#                     payment_info=payment_info,
+#                     registration_no=registration_no,
+#                     date=date,
+#                     payment_mode=payment_mode,
+#                     emi=next_emi.emi,
+#                     amount=next_emi_amount,
+#                     status="Paid"
+#                 )
+
+#                 # Set additional fields based on payment mode
+#                 if payment_mode == 'Bank Transfer':
+#                     paid_emi_instance.reference_no = request.POST.get('reference_no')
+#                 elif payment_mode == 'UPI':
+#                     paid_emi_instance.upi_transaction_id = request.POST.get('upi_transaction_id')
+#                     paid_emi_instance.upi_app_name = request.POST.get('upi_app_name')
+
+#                 paid_emi_instance.save()
+#                 remaining_amount -= next_emi_amount
+#                 print(f"Processed Full Payment for {next_emi.emi}: Remaining Amount: {remaining_amount}")
+
+#             else:
+#                 # Partial payment for the current EMI
+#                 partial_payment_instance = emi_model(
+#                     payment_info=payment_info,
+#                     registration_no=registration_no,
+#                     date=date,
+#                     payment_mode=payment_mode,
+#                     emi=next_emi.emi,
+#                     amount=remaining_amount,
+#                     status="Pending"
+#                 )
+
+#                 # Set additional fields based on payment mode
+#                 if payment_mode == 'Bank Transfer':
+#                     partial_payment_instance.reference_no = request.POST.get('reference_no')
+#                 elif payment_mode == 'UPI':
+#                     partial_payment_instance.upi_transaction_id = request.POST.get('upi_transaction_id')
+#                     partial_payment_instance.upi_app_name = request.POST.get('upi_app_name')
+
+#                 partial_payment_instance.save()
+#                 next_emi.amount -= remaining_amount
+#                 remaining_amount = 0  # All remaining amount is paid
+#                 print(f"Processed Partial Payment for {next_emi.emi}: Remaining Amount: {remaining_amount}")
+
+#         messages.success(request, 'Payment processed successfully!')
+#         return redirect('payment')
+    
+#     context = {
+#         'next_emi': "EMI_1",
+#     }
+
+#     return render(request, 'payment_info.html', context)
+
+def payment_view(request):
+    if request.method == 'POST':
+        registration_no = request.POST.get('registration_no')
+        
+        # Debug print
+        print(f"Received registration_no: {registration_no}")
+
+        # Fetch the related Enrollment object
+        try:
+            enrollment = Enrollment.objects.get(registration_no=registration_no)
+            print(f"Enrollment found: {enrollment}")
+        except Enrollment.DoesNotExist:
+            context = {
+                'error': 'Enrollment with the provided Registration Number does not exist.',
+            }
+            return render(request, 'new_payment_info.html', context)
+
+        # Validate POST data
+        duration = request.POST.get('duration')
+        fees_type = request.POST.get('fees_type')
+        monthly_payment_type = request.POST.get('montly_payment_type')
+        payment_mode = request.POST.get('payment_mode')
+        amount = request.POST.get('amount', 0)
+        
+        print(f"duration : {duration}, fees_type : {fees_type}, monthly Payment type : {monthly_payment_type}, payment mode : {payment_mode}, amount : {amount}")
+
+        if not all([duration, fees_type, monthly_payment_type, payment_mode, amount]):
+            messages.error(request, "All fields are required.")
+            return redirect('new_payment_info')
+
+        # Prepare PaymentInfo data
+        payment_info_data = {
+            'registration_no': registration_no,
+            'joining_date': enrollment.registration_date,
+            'student_name': enrollment.name,
+            'course_name': enrollment.course_name.course_name,
+            'duration': duration,
+            'fees_type': fees_type,
+            'total_fees': Decimal(enrollment.total_fees_amount),
+            'installment_amount': Decimal(enrollment.installment_amount),
+        }
+
+        # Create a PaymentInfo instance
+        payment_info = PaymentInfo(**payment_info_data)
+        payment_info.save()
+        print(f"PaymentInfo created: {payment_info}")
+
+        # Prepare SinglePayment data
+        if fees_type == 'Regular':
+        
+            single_payment_data = {
+                'payment_info': payment_info,
+                'date': request.POST.get('date'),
+                'payment_mode': request.POST.get('payment_mode'),
+                'amount': request.POST.get('amount'),
+            }
+
+            # Handle UPI and Bank Transfer specific fields
+            if payment_mode == 'Bank Transfer':
+                single_payment_data['reference_no'] = request.POST.get('reference_no')
+            elif payment_mode == 'UPI':
+                single_payment_data['upi_transaction_id'] = request.POST.get('upi_transaction_id')
+                single_payment_data['upi_app_name'] = request.POST.get('upi_app_name')
+
+            # Create a SinglePayment instance
+            single_payment = SinglePayment(**single_payment_data)
+            single_payment.save()
+            print(f"SinglePayment created: {single_payment}")
+
+        elif fees_type == 'Installment':
+            # Calculate total paid amount and remaining fees
+            total_paid_amount = sum(emi.amount for emi in EMI_MODELS['EMI_1'].objects.filter(payment_info=payment_info))
+            total_remaining_fees = payment_info.total_fees - total_paid_amount
+            print(f"Total paid amount: {total_paid_amount}, Total remaining fees: {total_remaining_fees}")
+
+            # Validate payment amount
+            payment_amount = Decimal(amount)
+            if payment_amount <= 0:
+                messages.error(request, "Invalid payment amount.")
+                return redirect('new_payment_info')
+            if payment_amount > total_remaining_fees:
+                messages.error(request, f"Entered amount exceeds the remaining total fees of {total_remaining_fees}.")
+                return redirect('new_payment_info')
+
+            remaining_amount = payment_amount
+            date = request.POST.get('date')
+
+            # Process EMI payments
+            try:
+                next_emi = get_next_emi(payment_info, 'EMI_1')
+                print(f"Next EMI: {next_emi}")
+            except ValueError as e:
+                messages.error(request, str(e))
+                return redirect('new_installment_info')
+
+            # Process EMI_1 explicitly
+            emi_model = EMI_MODELS.get('EMI_1')
+            if emi_model:
+                next_emi_amount = payment_info.installment_amount
+                status = "Pending" if remaining_amount < next_emi_amount else "Paid"
+
+                paid_emi_instance = emi_model(
+                    payment_info=payment_info,
+                    registration_no=registration_no,
+                    date=date,
+                    payment_mode=payment_mode,
+                    emi='EMI_1',
+                    amount=min(next_emi_amount, remaining_amount),
+                    monthly_payment_type = monthly_payment_type,
+                    status=status
+                )
+
+                # Set additional fields based on payment mode
+                if payment_mode == 'Bank Transfer':
+                    paid_emi_instance.reference_no = request.POST.get('reference_no')
+                elif payment_mode == 'UPI':
+                    paid_emi_instance.upi_transaction_id = request.POST.get('upi_transaction_id')
+                    paid_emi_instance.upi_app_name = request.POST.get('upi_app_name')
+
+                paid_emi_instance.save()
+                remaining_amount -= next_emi_amount
+                print(f"Processed EMI_1: Amount paid: {min(next_emi_amount, remaining_amount)}, Remaining Amount: {remaining_amount}")
+
+            # Process subsequent EMIs
+            while remaining_amount > 0:
+                next_emi = get_next_emi(payment_info, next_emi.emi)
+                if not next_emi:
+                    print("No more EMIs to process.")
+                    break
+
+                emi_model = EMI_MODELS.get(next_emi.emi)
+                if not emi_model:
+                    messages.error(request, f"EMI model not found for {next_emi.emi}.")
+                    return redirect('new_installment_info')
+
+                next_emi_amount = payment_info.installment_amount
+                print(f"Next EMI Amount: {next_emi_amount}, Remaining Amount: {remaining_amount}")
+
+                if remaining_amount >= next_emi_amount:
+                    # Full payment for the current EMI
+                    paid_emi_instance = emi_model(
+                        payment_info=payment_info,
+                        registration_no=registration_no,
+                        date=date,
+                        payment_mode=payment_mode,
+                        emi=next_emi.emi,
+                        amount=next_emi_amount,
+                        monthly_payment_type = 'Full payment',
+                        status="Paid"
+                    )
+
+                    # Set additional fields based on payment mode
+                    if payment_mode == 'Bank Transfer':
+                        paid_emi_instance.reference_no = request.POST.get('reference_no')
+                    elif payment_mode == 'UPI':
+                        paid_emi_instance.upi_transaction_id = request.POST.get('upi_transaction_id')
+                        paid_emi_instance.upi_app_name = request.POST.get('upi_app_name')
+
+                    paid_emi_instance.save()
+                    remaining_amount -= next_emi_amount
+                    print(f"Processed Full Payment for {next_emi.emi}: Remaining Amount: {remaining_amount}")
+
+                else:
+                    # Partial payment for the current EMI
+                    partial_payment_instance = emi_model(
+                        payment_info=payment_info,
+                        registration_no=registration_no,
+                        date=date,
+                        payment_mode=payment_mode,
+                        emi=next_emi.emi,
+                        amount=remaining_amount,
+                        monthly_payment_type = 'partial payment',
+                        status="Pending"
+                    )
+
+                    # Set additional fields based on payment mode
+                    if payment_mode == 'Bank Transfer':
+                        partial_payment_instance.reference_no = request.POST.get('reference_no')
+                    elif payment_mode == 'UPI':
+                        partial_payment_instance.upi_transaction_id = request.POST.get('upi_transaction_id')
+                        partial_payment_instance.upi_app_name = request.POST.get('upi_app_name')
+
+                    partial_payment_instance.save()
+                    next_emi.amount -= remaining_amount
+                    remaining_amount = 0  # All remaining amount is paid
+                    print(f"Processed Partial Payment for {next_emi.emi}: Remaining Amount: {remaining_amount}")
+
+        messages.success(request, 'Payment processed successfully!')
+        return redirect('payment')
+    
+    context = {
+        'next_emi': "EMI_1",
+    }
+
+    return render(request, 'payment_info.html', context)
+

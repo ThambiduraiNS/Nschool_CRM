@@ -231,14 +231,6 @@ class PaymentInfo(models.Model):
         (REGULAR, 'Single Payment'),
         (INSTALLMENT, 'Installment'),
     ]
-    
-    PARTIAL_PAYMENT = 'Partial Payment'
-    FULL_PAYMENT = 'Full Payment'
-    
-    MONTHLY_PAYMENT_CHOICES = [
-        (PARTIAL_PAYMENT, 'Partial Payment'),
-        (FULL_PAYMENT, 'Full Payment')
-    ]
 
     registration_no = models.CharField(max_length=20, unique=True)
     joining_date = models.DateField()
@@ -249,7 +241,6 @@ class PaymentInfo(models.Model):
     total_fees = models.DecimalField(max_digits=10, decimal_places=2)
     installment_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
     excess_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0.0)
-    monthly_payment_type = models.CharField(max_length=20, choices=MONTHLY_PAYMENT_CHOICES, default='Full Payment')
     balance = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
     
     created_at = models.DateTimeField(auto_now_add=True)
@@ -311,6 +302,14 @@ class BaseEMI(models.Model):
         (PENDING, 'Pending'),
         (PAID, 'Paid')
     ]
+    
+    PARTIAL_PAYMENT = 'Partial Payment'
+    FULL_PAYMENT = 'Full Payment'
+    
+    MONTHLY_PAYMENT_CHOICES = [
+        (PARTIAL_PAYMENT, 'Partial Payment'),
+        (FULL_PAYMENT, 'Full Payment')
+    ]
 
     payment_info = models.ForeignKey('PaymentInfo', on_delete=models.CASCADE, related_name='%(class)s_payments')
     registration_no = models.CharField(max_length=20)
@@ -318,6 +317,7 @@ class BaseEMI(models.Model):
     date = models.DateField(null=True, blank=True)
     payment_mode = models.CharField(max_length=50, choices=PAYMENT_MODE_CHOICES)
     emi = models.CharField(max_length=50)
+    monthly_payment_type = models.CharField(max_length=20, choices=MONTHLY_PAYMENT_CHOICES, default='Full Payment')
     status = models.CharField(max_length=20, choices=PAYMENT_MODE_STATUS, default=PENDING)
     
     # UPI specific fields

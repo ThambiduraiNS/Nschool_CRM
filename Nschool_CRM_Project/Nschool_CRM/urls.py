@@ -75,6 +75,7 @@ urlpatterns = [
     path('get-enquiry-details/', get_enquiry_details, name='get_enquiry_details'),
     
     # payment module
+    path('payment/', payment_view, name='payment'),
     path('new-payment/', new_payment_info_view, name='new_payment_info'),
     path('single-payment/', single_payment_view, name='single_payment'),
     path('new_installment_payment/', new_installment_view, name='new_installment_info'),
