@@ -12,6 +12,8 @@
 <link rel="stylesheet" href="{% static '/css/new_enquiry.css' %}">
 <link rel="stylesheet" href="{% static '/css/new_enrollment.css' %}">
 <link rel="stylesheet" href="{% static '/css/manage_payment.css' %}">
+<!-- Flatpickr CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 {% endblock %}
 
 {% block header %}
@@ -127,7 +129,7 @@
                                 <!-- EMI date -->
                                 <div class="col-12 col-md-6 pe-md-0">
                                     <div class="user-input-wrp ms-md-4 mt-md-4">
-                                        <input type="date" name="date" id="date-picker" value="{{ date }}" class="form-control"
+                                        <input type="date" name="date" id="date-picker" value="{{ date }}" class="form-control bg-white"
                                             aria-label="date" placeholder=" " autocomplete="off" autofocus onclick="setDatePickerLimits()">
                                         <label class="floating-label">&nbsp;EMI Date <span class="required">*</span> &nbsp;</label>
                                         <span id="date_error" class="error-div">
@@ -291,6 +293,8 @@
 
 
 {% block scripts %}
+<!-- Flatpickr JavaScript -->
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script>
 
 function setDatePickerLimits() {
@@ -365,6 +369,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const paymentMode = document.getElementById('payment_mode').value;
         const date = document.getElementById('date-picker').value;
         const amount = document.getElementById('amount').value.trim();
+        const montly_payment_type = document.getElementById('montly_payment_type').value.trim();
 
         if (!paymentInfo) {
             document.getElementById('payment_info_error').textContent = 'Payment Info ID is required.';
@@ -410,6 +415,11 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
 
+        if (!montly_payment_type) {
+            document.getElementById('montly_payment_type_error').textContent = 'Monthly Payment Type Field is required.';
+            isValid = false;
+        }
+
         return isValid;
     }
 
@@ -432,6 +442,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Initialize visibility on page load
     handlePaymentModeChange();
+});
+
+
+document.addEventListener('DOMContentLoaded', function() {
+    flatpickr("#date-picker", {
+        dateFormat: "d-m-Y", // Customize the format to "DD-MM-YYYY"
+        defaultDate: 'today',
+    });
 });
 
 
