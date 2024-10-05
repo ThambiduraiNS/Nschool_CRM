@@ -4958,182 +4958,6 @@ def payment_view(request):
 #     return render(request, 'new_installment_info.html', context)
 
 
-def new_installment_update_view(request, id):
-    payment_info = get_object_or_404(PaymentInfo, id=id)
-    print(f"Payment Info: {payment_info}")  # Debug
-
-    total_fees = payment_info.total_fees
-    
-    # Calculate total paid amount by summing over all EMI models
-    total_paid_amount = 0
-    total_pending_amount = 0  # To track pending amount
-    
-    # Calculate total paid amount by summing over all EMI models
-    for emi_model in EMI_MODELS.values():
-        # Sum amounts for paid EMIs
-        total_paid_amount += sum(emi.amount for emi in emi_model.objects.filter(payment_info=payment_info, status='Paid'))
-
-        # Sum amounts for pending EMIs
-        total_pending_amount += sum(emi.amount for emi in emi_model.objects.filter(payment_info=payment_info, status='Pending'))
-
-    remaining_balance = total_fees - (total_paid_amount + total_pending_amount) # Calculate remaining balance
-
-    print(f"remaining balance : {remaining_balance} , Total Paid Amount : {total_paid_amount} , total_pending_amount : {total_pending_amount}")
-    
-    
-    if request.method == 'POST':
-        payment_amount = Decimal(request.POST.get('amount', 0))
-        registration_no = request.POST.get('registration_no')
-        payment_mode = request.POST.get('payment_mode') 
-        input_date = request.POST.get('date')
-        
-        parsed_date = datetime.strptime(input_date, "%d-%m-%Y")  # Adjust if input format changes
-        date = parsed_date.strftime("%Y-%m-%d")
-
-        # Validation for payment amount
-        if payment_amount <= 0:
-            messages.error(request, "Invalid payment amount.")
-            return redirect('new_installment_update_info', id=payment_info.id)
-
-        # Ensure payment amount does not exceed remaining balance
-        if payment_amount > remaining_balance:
-            messages.error(request, f"Payment amount exceeds the remaining balance. Remaining balance: {remaining_balance}")
-            return redirect('new_installment_update_info', id=payment_info.id)
-
-        if not date:
-            messages.error(request, "Date is required.")
-            return redirect('new_installment_update_info', id=payment_info.id)
-
-        try:
-            parsed_date = datetime.strptime(date, '%Y-%m-%d')
-        except ValueError:
-            messages.error(request, "Invalid date format.")
-            return redirect('new_installment_update_info', id=payment_info.id)
-
-        last_pending_emi = get_last_pending_emi(payment_info)
-        emi_type = None
-        remaining_amount = 0
-
-        if isinstance(last_pending_emi, str):
-            emi_type = last_pending_emi
-        elif hasattr(last_pending_emi, 'emi'):
-            emi_type = last_pending_emi.emi
-            remaining_amount = last_pending_emi.amount
-
-        if not emi_type:
-            messages.error(request, "No EMIs available for processing.")
-            return redirect('new_installment_update_info', id=payment_info.id)
-        
-        installment = payment_info.installment_amount
-        print(f"Installment : {installment}")
-        
-        balance = installment
-        print(f"Initial Balance : {balance}")
-        #while start
-        while payment_amount > 0:
-            print(payment_amount)
-            next_emi = get_next_emi(payment_info, emi_type)
-            
-            if next_emi is None:
-                break
-
-            emi_model = EMI_MODELS.get(next_emi.emi)
-            
-            print(f"EMI Model --------------------> {emi_model}")
-            
-            if not emi_model:
-                messages.error(request, f"EMI model not found for {next_emi.emi}.")
-                return redirect('new_installment_update_info', id=payment_info.id)
-            
-            next_emi_amount = sum(emi.amount for emi in emi_model.objects.filter(payment_info=payment_info))
-            # next_emi_amount = next_emi.amount
-            print(f"Total EMI Amount --------------------------> {next_emi_amount}")
-            
-            balance = abs(balance - next_emi_amount)
-            print(f"Balance --------------------------> {balance} = {balance} - {next_emi_amount}")
-            
-            
-            print(f"Payment Amount --------------------------> {payment_amount}")
-            
-            if payment_amount < balance:
-                paid_emi_instance = emi_model(
-                    payment_info=payment_info,
-                    registration_no=registration_no,
-                    date=parsed_date,
-                    payment_mode=payment_mode,
-                    emi=next_emi.emi,
-                    amount=payment_amount,
-                    status="Pending"
-                )
-                paid_emi_instance.save()
-                payment_amount = 0
-                # next_emi.amount = 0
-                print(f"Paid Amount ------------------------> {paid_emi_instance.amount}")
-                print(f"Payment Amount ------------------------> {payment_amount}")
-            else:
-                paid_emi_instance = emi_model(
-                    payment_info=payment_info,
-                    registration_no=registration_no,
-                    date=parsed_date,
-                    payment_mode=payment_mode,
-                    emi=next_emi.emi,
-                    amount= balance,
-                    status="Paid"
-                )
-                paid_emi_instance.save()
-                payment_amount -= balance
-                balance = payment_amount
-                print(f"paid Amount -----------------> {paid_emi_instance.amount}")
-                print(f"Excess Amount --------------> {payment_amount}")
-                
-                
-
-                # next_emi.amount -= payment_amount
-#
-        # Add additional fields based on payment mode
-        if payment_mode == 'Bank Transfer':
-            paid_emi_instance.refference_no = request.POST.get('refference_no')
-        elif payment_mode == 'UPI':
-            paid_emi_instance.upi_transaction_id = request.POST.get('upi_transaction_id')
-            paid_emi_instance.upi_app_name = request.POST.get('upi_app_name')
-
-        try:
-            paid_emi_instance.save()
-            print("Paid EMI instance saved successfully.")  # Debug
-        except Exception as e:
-            print(f"Error saving instance: {e}")  # Debug
-            messages.error(request, "Error saving the payment information.")
-            return redirect('new_installment_update_info', id=payment_info.id)
-
-        messages.success(request, 'Payment processed successfully.')
-        return redirect('new_manage_payments')
-
-    # For GET requests or initial form rendering
-    last_pending_emi = get_last_pending_emi(payment_info)
-
-    if isinstance(last_pending_emi, str):
-        emi_type = last_pending_emi
-    elif hasattr(last_pending_emi, 'emi'):
-        emi_type = last_pending_emi.emi
-    else:
-        messages.error(request, "No EMIs available for processing.")
-        return redirect('new_installment_update_info', id=payment_info.id)
-
-    # Retrieve installments to display in the table
-    installments = []
-    for emi_model in EMI_MODELS.values():
-        installments.extend(emi_model.objects.filter(payment_info=payment_info))
-    
-    context = {
-        'next_emi': emi_type,
-        'payment_info': payment_info,
-        'remaining_balance': remaining_balance,  # Send remaining balance to template
-        'installments': installments  # Assuming this is how you fetch installments
-    }
-
-    return render(request, 'new_installment_info.html', context)
-
-
 # def new_installment_update_view(request, id):
 #     payment_info = get_object_or_404(PaymentInfo, id=id)
 #     print(f"Payment Info: {payment_info}")  # Debug
@@ -5226,7 +5050,8 @@ def new_installment_update_view(request, id):
 #             print(f"Total EMI Amount --------------------------> {next_emi_amount}")
             
 #             balance = abs(balance - next_emi_amount)
-#             print(f"Balance --------------------------> {balance} = {balance} - {next_emi_amount}")        
+#             print(f"Balance --------------------------> {balance} = {balance} - {next_emi_amount}")
+            
             
 #             print(f"Payment Amount --------------------------> {payment_amount}")
             
@@ -5245,23 +5070,6 @@ def new_installment_update_view(request, id):
 #                 # next_emi.amount = 0
 #                 print(f"Paid Amount ------------------------> {paid_emi_instance.amount}")
 #                 print(f"Payment Amount ------------------------> {payment_amount}")
-            
-#             elif payment_amount > installment:
-#                 paid_emi_instance = emi_model(
-#                     payment_info=payment_info,
-#                     registration_no=registration_no,
-#                     date=parsed_date,
-#                     payment_mode=payment_mode,
-#                     emi=next_emi.emi,
-#                     amount= installment,
-#                     status="Paid"
-#                 )
-#                 paid_emi_instance.save()
-#                 payment_amount -= paid_emi_instance.amount
-#                 balance = payment_amount
-#                 print(f"paid Amount -----------------> {paid_emi_instance.amount}")
-#                 print(f"Excess Amount --------------> {payment_amount}")
-            
 #             else:
 #                 paid_emi_instance = emi_model(
 #                     payment_info=payment_info,
@@ -5277,6 +5085,8 @@ def new_installment_update_view(request, id):
 #                 balance = payment_amount
 #                 print(f"paid Amount -----------------> {paid_emi_instance.amount}")
 #                 print(f"Excess Amount --------------> {payment_amount}")
+                
+                
 
 #                 # next_emi.amount -= payment_amount
 # #
@@ -5322,3 +5132,194 @@ def new_installment_update_view(request, id):
 #     }
 
 #     return render(request, 'new_installment_info.html', context)
+
+
+def new_installment_update_view(request, id):
+    payment_info = get_object_or_404(PaymentInfo, id=id)
+    print(f"Payment Info: {payment_info}")  # Debug
+
+    total_fees = payment_info.total_fees
+    
+    # Calculate total paid amount by summing over all EMI models
+    total_paid_amount = 0
+    total_pending_amount = 0  # To track pending amount
+    
+    # Calculate total paid amount by summing over all EMI models
+    for emi_model in EMI_MODELS.values():
+        # Sum amounts for paid EMIs
+        total_paid_amount += sum(emi.amount for emi in emi_model.objects.filter(payment_info=payment_info, status='Paid'))
+
+        # Sum amounts for pending EMIs
+        total_pending_amount += sum(emi.amount for emi in emi_model.objects.filter(payment_info=payment_info, status='Pending'))
+
+    remaining_balance = total_fees - (total_paid_amount + total_pending_amount) # Calculate remaining balance
+
+    print(f"remaining balance : {remaining_balance} , Total Paid Amount : {total_paid_amount} , total_pending_amount : {total_pending_amount}")
+    
+    
+    if request.method == 'POST':
+        payment_amount = Decimal(request.POST.get('amount', 0))
+        registration_no = request.POST.get('registration_no')
+        payment_mode = request.POST.get('payment_mode') 
+        input_date = request.POST.get('date')
+        
+        parsed_date = datetime.strptime(input_date, "%d-%m-%Y")  # Adjust if input format changes
+        date = parsed_date.strftime("%Y-%m-%d")
+
+        # Validation for payment amount
+        if payment_amount <= 0:
+            messages.error(request, "Invalid payment amount.")
+            return redirect('new_installment_update_info', id=payment_info.id)
+
+        # Ensure payment amount does not exceed remaining balance
+        if payment_amount > remaining_balance:
+            messages.error(request, f"Payment amount exceeds the remaining balance. Remaining balance: {remaining_balance}")
+            return redirect('new_installment_update_info', id=payment_info.id)
+
+        if not date:
+            messages.error(request, "Date is required.")
+            return redirect('new_installment_update_info', id=payment_info.id)
+
+        try:
+            parsed_date = datetime.strptime(date, '%Y-%m-%d')
+        except ValueError:
+            messages.error(request, "Invalid date format.")
+            return redirect('new_installment_update_info', id=payment_info.id)
+
+        last_pending_emi = get_last_pending_emi(payment_info)
+        emi_type = None
+        remaining_amount = 0
+
+        if isinstance(last_pending_emi, str):
+            emi_type = last_pending_emi
+        elif hasattr(last_pending_emi, 'emi'):
+            emi_type = last_pending_emi.emi
+            remaining_amount = last_pending_emi.amount
+
+        if not emi_type:
+            messages.error(request, "No EMIs available for processing.")
+            return redirect('new_installment_update_info', id=payment_info.id)
+        
+        installment = payment_info.installment_amount
+        print(f"Installment : {installment}")
+        
+        balance = installment
+        print(f"Initial Balance : {balance}")
+        #while start
+        while payment_amount > 0:
+            print(payment_amount)
+            next_emi = get_next_emi(payment_info, emi_type)
+            
+            if next_emi is None:
+                break
+
+            emi_model = EMI_MODELS.get(next_emi.emi)
+            
+            print(f"EMI Model --------------------> {emi_model}")
+            
+            if not emi_model:
+                messages.error(request, f"EMI model not found for {next_emi.emi}.")
+                return redirect('new_installment_update_info', id=payment_info.id)
+            
+            next_emi_amount = sum(emi.amount for emi in emi_model.objects.filter(payment_info=payment_info))
+            # next_emi_amount = next_emi.amount
+            print(f"Total EMI Amount --------------------------> {next_emi_amount}")
+            
+            balance = balance - next_emi_amount
+            print(f"Balance --------------------------> {balance} = {balance} - {next_emi_amount}")        
+            
+            print(f"Payment Amount --------------------------> {payment_amount}")
+            
+            if balance >= installment:
+                paid_emi_instance = emi_model(
+                    payment_info=payment_info,
+                    registration_no=registration_no,
+                    date=parsed_date,
+                    payment_mode=payment_mode,
+                    emi=next_emi.emi,
+                    amount= installment,
+                    status="Paid"
+                )
+                paid_emi_instance.save()
+                payment_amount -= paid_emi_instance.amount
+                balance = payment_amount
+                print(f"paid Amount -----------------> {paid_emi_instance.amount}")
+                print(f"Excess Amount --------------> {payment_amount}")
+            
+            if payment_amount < balance:
+                paid_emi_instance = emi_model(
+                    payment_info=payment_info,
+                    registration_no=registration_no,
+                    date=parsed_date,
+                    payment_mode=payment_mode,
+                    emi=next_emi.emi,
+                    amount=payment_amount,
+                    status="Pending"
+                )
+                paid_emi_instance.save()
+                payment_amount = 0
+                # next_emi.amount = 0
+                print(f"Paid Amount ------------------------> {paid_emi_instance.amount}")
+                print(f"Payment Amount ------------------------> {payment_amount}")
+            
+            else:
+                paid_emi_instance = emi_model(
+                    payment_info=payment_info,
+                    registration_no=registration_no,
+                    date=parsed_date,
+                    payment_mode=payment_mode,
+                    emi=next_emi.emi,
+                    amount= balance,
+                    status="Paid"
+                )
+                paid_emi_instance.save()
+                payment_amount -= balance
+                balance = payment_amount
+                print(f"paid Amount -----------------> {paid_emi_instance.amount}")
+                print(f"Excess Amount --------------> {payment_amount}")
+
+                # next_emi.amount -= payment_amount
+
+#           
+        # Add additional fields based on payment mode
+        if payment_mode == 'Bank Transfer':
+            paid_emi_instance.refference_no = request.POST.get('refference_no')
+        elif payment_mode == 'UPI':
+            paid_emi_instance.upi_transaction_id = request.POST.get('upi_transaction_id')
+            paid_emi_instance.upi_app_name = request.POST.get('upi_app_name')
+
+        try:
+            paid_emi_instance.save()
+            print("Paid EMI instance saved successfully.")  # Debug
+        except Exception as e:
+            print(f"Error saving instance: {e}")  # Debug
+            messages.error(request, "Error saving the payment information.")
+            return redirect('new_installment_update_info', id=payment_info.id)
+
+        messages.success(request, 'Payment processed successfully.')
+        return redirect('new_manage_payments')
+
+    # For GET requests or initial form rendering
+    last_pending_emi = get_last_pending_emi(payment_info)
+
+    if isinstance(last_pending_emi, str):
+        emi_type = last_pending_emi
+    elif hasattr(last_pending_emi, 'emi'):
+        emi_type = last_pending_emi.emi
+    else:
+        messages.error(request, "No EMIs available for processing.")
+        return redirect('new_installment_update_info', id=payment_info.id)
+
+    # Retrieve installments to display in the table
+    installments = []
+    for emi_model in EMI_MODELS.values():
+        installments.extend(emi_model.objects.filter(payment_info=payment_info))
+    
+    context = {
+        'next_emi': emi_type,
+        'payment_info': payment_info,
+        'remaining_balance': remaining_balance,  # Send remaining balance to template
+        'installments': installments  # Assuming this is how you fetch installments
+    }
+
+    return render(request, 'new_installment_info.html', context)
