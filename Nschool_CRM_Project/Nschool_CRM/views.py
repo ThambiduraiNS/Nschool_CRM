@@ -5225,7 +5225,7 @@ def new_installment_update_view(request, id):
             # next_emi_amount = next_emi.amount
             print(f"Total EMI Amount --------------------------> {next_emi_amount}")
             
-            balance = balance - next_emi_amount
+            balance = abs(balance - next_emi_amount)
             print(f"Balance --------------------------> {balance} = {balance} - {next_emi_amount}")        
             
             print(f"Payment Amount --------------------------> {payment_amount}")
@@ -5245,8 +5245,13 @@ def new_installment_update_view(request, id):
                 balance = payment_amount
                 print(f"paid Amount -----------------> {paid_emi_instance.amount}")
                 print(f"Excess Amount --------------> {payment_amount}")
+                
+                # Move to the next EMI
+                emi_type = next_emi.emi  # Update the emi_type for the next iteration
+                next_emi = get_next_emi(payment_info, emi_type)
+                emi_model = EMI_MODELS.get(next_emi.emi)
             
-            if payment_amount < balance:
+            elif payment_amount < balance:
                 paid_emi_instance = emi_model(
                     payment_info=payment_info,
                     registration_no=registration_no,
