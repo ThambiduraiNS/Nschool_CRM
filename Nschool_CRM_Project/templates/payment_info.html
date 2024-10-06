@@ -287,9 +287,9 @@
                                 <!-- amount field -->
                                 <div class="col-12 col-md-6 pe-md-0" id="amount_div" style="display: none;">
                                     <div class="user-input-wrp ms-md-4 mt-md-4">
-                                        <input type="text" name="amount" value="{{payment_info.total_fees}}" id="amount" class="form-control"
+                                        <input type="text" name="single_payment_amount" value="{{payment_info.total_fees}}" id="single_payment_amount" class="form-control"
                                             aria-label="amount" placeholder=" " autocomplete="off" autofocus>
-                                        <label class="floating-label">&nbsp;Enter Amount <span class="required">*</span> &nbsp;</label>
+                                        <label class="floating-label">&nbsp;Single Payment Amount <span class="required">*</span> &nbsp;</label>
                                         <span id="amount_error" class="error-div">
                                             {% if errors.amount %}
                                                     {{errors.amount}}
@@ -398,6 +398,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         document.getElementById('joining_date')._flatpickr.setDate(data.joining_date ? new Date(data.joining_date) : null);
         document.getElementById('total_fees').value = data.total_fees || '';
+        document.getElementById('single_payment_amount').value = data.total_fees || '';
         document.getElementById('installment_amount').value = data.installment_amount || '';
         document.getElementById('fees_type').value = data.payment_type || '';
     }
@@ -499,7 +500,7 @@ document.addEventListener('DOMContentLoaded', function() {
         let refference_no_div = document.getElementById("refference_no_div");
         
         // single payment fields
-        let amount = document.getElementById("amount").value;
+        let amount = document.getElementById("single_payment_amount").value;
         let amount_div = document.getElementById("amount_div");
         let single_payment_date = document.getElementById("date-picker").value;
         let payment_date_div = document.getElementById("payment_date_div");
@@ -728,6 +729,12 @@ document.addEventListener('DOMContentLoaded', function() {
         });
 
         flatpickr("#installment_date", {
+            dateFormat: "d-m-Y", // Customize the format to "DD-MM-YYYY"
+            minDate: "today",
+            defaultDate: "today" // Optional: set default date
+        });
+        
+        flatpickr("#date-picker", {
             dateFormat: "d-m-Y", // Customize the format to "DD-MM-YYYY"
             minDate: "today",
             defaultDate: "today" // Optional: set default date

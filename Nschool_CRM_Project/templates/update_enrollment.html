@@ -575,7 +575,7 @@
                                         <div class="user-input-wrp ms-md-3 me-md-2 mt-md-4">
                                             <select class="form-select select" name="payment_type" id="payment_type" onclick="handlePaymentTypeChange()">
                                                 <option value="" selected>Select Your Payment Type</option>
-                                                <option class="option" value="Single Payment" {% if enrollment.payment_type == "Single Payment" %} selected {% endif %}>Single Payment</option>
+                                                <option class="option" value="Regular" {% if enrollment.payment_type == "Regular" %} selected {% endif %}>Single Payment</option>
                                                 <option class="option" value="Installment" {% if enrollment.payment_type == "Installment" %} selected {% endif %} >Installment</option>
                                             </select>
                                             <label class="floating-label">&nbsp;Select Your Payment Type <span class="required">*</span> &nbsp;</label>

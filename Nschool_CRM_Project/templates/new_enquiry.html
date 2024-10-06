@@ -4,7 +4,7 @@
 {% load bootstrap_icons %}
 
 
-{% block title %}User Module{% endblock %}
+{% block title %}Enquiry Module{% endblock %}
 
 {% block css %}
 <link rel="stylesheet" href="{% static '/css/new_user.css' %}">
@@ -755,7 +755,7 @@
     }
 
     function next(event) {
-
+        event.preventDefault();
         // Validate the first tab fields
         if (validateFirstTab()) {
             // Switch to the next tab if valid
@@ -764,7 +764,6 @@
             document.getElementById('profile').classList.add('show', 'active');
         } else {
             // Optionally, you can focus on the first invalid input
-            event.preventDefault();
             console.log("In Valid!!!")
             const firstErrorElement = document.querySelector('.error-div');
             console.log(firstErrorElement)

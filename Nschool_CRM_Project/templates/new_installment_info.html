@@ -51,8 +51,8 @@
                                 <p class="user-para">Use the below form to update your profile</p>
                                 <span class="message" id="message">
                                     {% for message in messages %}
-                                    <div>
-                                        {{ message }}
+                                    <div class="text-danger">
+                                        {{ message|safe }}
                                     </div>
                                     {% endfor %}
                                 </span>
