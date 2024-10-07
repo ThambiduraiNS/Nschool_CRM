@@ -5,7 +5,7 @@
 {% load custom_filters %}
 
 
-{% block title %}User Module{% endblock %}
+{% block title %}Payment Module{% endblock %}
 
 {% block css %}
 <link rel="stylesheet" href="{% static '/css/new_user.css' %}">
@@ -210,7 +210,7 @@
                                         </td>
                                         
                                         <td class="tdata">{{ payment.registration_no }}</td>
-                                        <td class="tdata">{{ payment.joining_date }}</td>
+                                        <td class="tdata">{{ payment.joining_date|format_date }}</td>
                                         <td class="tdata">{{ payment.student_name }}</td>
                                         <td class="tdata">{{ payment.course_name }}</td>
                                         <td class="tdata">{{ payment.duration }}</td>
@@ -220,14 +220,18 @@
                                         <!-- Single Payment -->
                                         <td class="tdata">
                                             {% if payment.single_payment %}
-                                                {{ payment.single_payment.date }}
+                                                {% for single_payment in payment.single_payment %}
+                                                    {{ single_payment.date|format_date }}<br>
+                                                {% endfor %}
                                             {% else %}
                                                 N/A
                                             {% endif %}
                                         </td>
                                         <td class="tdata text-right">
                                             {% if payment.single_payment %}
-                                                {{ payment.single_payment.amount }}
+                                                {% for single_payment in payment.single_payment %}
+                                                    {{ single_payment.amount }}<br>
+                                                {% endfor %}
                                             {% else %}
                                                 N/A
                                             {% endif %}
@@ -236,7 +240,7 @@
                                         <td class="tdata">
                                             {% if payment.emi_1_payments %}
                                                 {% for emi in payment.emi_1_payments %}
-                                                    {{ emi.date }}{% if not forloop.last %} {% endif %}<br>
+                                                    {{ emi.date|format_date }}{% if not forloop.last %} {% endif %}<br>
                                                 {% endfor %}
                                             {% else %}
                                                 N/A
@@ -255,7 +259,7 @@
                                         <td class="tdata">
                                             {% if payment.emi_2_payments %}
                                                 {% for emi in payment.emi_2_payments %}
-                                                    {{ emi.date }}{% if not forloop.last %} {% endif %} <br>
+                                                    {{ emi.date|format_date }}{% if not forloop.last %} {% endif %} <br>
                                                 {% endfor %}
                                             {% else %}
                                                 N/A
@@ -274,7 +278,7 @@
                                         <td class="tdata">
                                             {% if payment.emi_3_payments %}
                                                 {% for emi in payment.emi_3_payments %}
-                                                    {{ emi.date }}{% if not forloop.last %} {% endif %} <br>
+                                                    {{ emi.date|format_date }}{% if not forloop.last %} {% endif %} <br>
                                                 {% endfor %}
                                             {% else %}
                                                 N/A
@@ -293,7 +297,7 @@
                                         <td class="tdata">
                                             {% if payment.emi_4_payments %}
                                                 {% for emi in payment.emi_4_payments %}
-                                                    {{ emi.date }}{% if not forloop.last %} {% endif %} <br>
+                                                    {{ emi.date|format_date }}{% if not forloop.last %} {% endif %} <br>
                                                 {% endfor %}
                                             {% else %}
                                                 N/A
@@ -312,7 +316,7 @@
                                         <td class="tdata">
                                             {% if payment.emi_5_payments %}
                                                 {% for emi in payment.emi_5_payments %}
-                                                    {{ emi.date }}{% if not forloop.last %} {% endif %} <br>
+                                                    {{ emi.date|format_date }}{% if not forloop.last %} {% endif %} <br>
                                                 {% endfor %}
                                             {% else %}
                                                 N/A
@@ -331,7 +335,7 @@
                                         <td class="tdata">
                                             {% if payment.emi_6_payments %}
                                                 {% for emi in payment.emi_6_payments %}
-                                                    {{ emi.date }}{% if not forloop.last %} {% endif %} <br>
+                                                    {{ emi.date|format_date }}{% if not forloop.last %} {% endif %} <br>
                                                 {% endfor %}
                                             {% else %}
                                                 N/A
@@ -349,7 +353,9 @@
 
                                         <!-- Balance Amount -->
                                         <td class="tdata balance-td text-right">
-                                            {% if final_amounts|get_item:payment.id %}
+                                            {% if payment.single_payment %}
+                                                {{payment.total_fees|subtract:total_single_payment|floatformat:2}} <br>
+                                            {% elif final_amounts|get_item:payment.id %}
                                                 {{ final_amounts|get_item:payment.id|floatformat:2 }}
                                             {% else %}
                                                 0.00

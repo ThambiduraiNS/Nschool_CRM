@@ -68,12 +68,18 @@
                                     <h5 class="fw-bold st-details">Enrollment</h5>
                                     <p class="user-para">Use the below form to update your profile</p>
                                     <span class="message" id="message">
+                                        <span class="text-danger">
+                                            {% if error_message %}
+                                                {{error_message}}
+                                            {% endif %}
+                                        </span>
                                         {% for message in messages %}
                                         <div>
                                             {{ message }}
                                         </div>
                                     {% endfor %}
                                     </span>
+                                    
                                 </div>
 
                                 <!-- date field -->

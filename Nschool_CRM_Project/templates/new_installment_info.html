@@ -444,10 +444,23 @@ document.addEventListener('DOMContentLoaded', function() {
     handlePaymentModeChange();
 });
 
+const dateConverter = (dateIn) => {
+    dateIn.setHours(12);
+    let dateIn10days = new Date(dateIn.setDate(dateIn.getDate() + 10));
+    let dateFor10days = new Date(dateIn.setDate(dateIn.getDate() - 20));
+    
+    let strIn10Days = dateIn10days.getFullYear() + '-' + ('0' +(dateIn10days.getMonth()+1)).slice(-2) + '-' + ('0' + dateIn10days.getDate()).slice(-2);
+    // let strFor10Days = dateFor10days.getFullYear() + '-' + ('0' +(dateFor10days.getMonth()+1)).slice(-2) + '-' + ('0' + dateFor10days.getDate()).slice(-2);
+    let strFor10Days = ('0' + dateFor10days.getDate()).slice(-2) + '-' + ('0' +(dateFor10days.getMonth()+1)).slice(-2) + '-' + dateFor10days.getFullYear();
+    return strFor10Days;
+}
 
 document.addEventListener('DOMContentLoaded', function() {
+    today = new Date()
     flatpickr("#date-picker", {
         dateFormat: "d-m-Y", // Customize the format to "DD-MM-YYYY"
+        minDate: dateConverter(today),
+        maxDate: "today",
         defaultDate: 'today',
     });
 });

@@ -186,7 +186,7 @@ class Enrollment(models.Model):
 
     father_name = models.CharField(max_length=255, blank=True, null=True)
     fathers_contact_no = models.CharField(max_length=15)
-    fathers_email_id = models.EmailField(null=True, blank=True)
+    fathers_email_id = models.CharField(null=True, blank=True)
 
     degree = models.CharField(max_length=255)
     institution = models.CharField(max_length=255)
@@ -265,7 +265,8 @@ class SinglePayment(models.Model):
         (BANK_TRANSFER, 'Bank Transfer'),
     ]
 
-    payment_info = models.OneToOneField(PaymentInfo, on_delete=models.CASCADE, related_name='single_payment')
+    payment_info = models.ForeignKey(PaymentInfo, on_delete=models.CASCADE, related_name='single_payment')
+    registration_no = models.CharField(max_length=20, default=None)
     date = models.DateField()
     payment_mode = models.CharField(max_length=50, choices=PAYMENT_MODE_CHOICES)
     amount = models.DecimalField(max_digits=10, decimal_places=2)

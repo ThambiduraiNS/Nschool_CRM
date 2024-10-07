@@ -2,7 +2,7 @@
 
 {% load static %}
 {% load bootstrap_icons %}
-
+{% load custom_filters %}
 
 {% block title %}Payment Module{% endblock %}
 
@@ -12,6 +12,8 @@
 <link rel="stylesheet" href="{% static '/css/new_enquiry.css' %}">
 <link rel="stylesheet" href="{% static '/css/new_enrollment.css' %}">
 <link rel="stylesheet" href="{% static '/css/manage_payment.css' %}">
+<!-- Flatpickr CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 {% endblock %}
 
 {% block header %}
@@ -48,9 +50,12 @@
                                 <h5 class="fw-bold st-details">Single Payment</h5>
                                 <p class="user-para">Use the below form to update your profile</p>
                                 <span class="message" id="message">
+                                    <span class="text-danger">
+                                        {{error}}
+                                    </span>
                                     {% for message in messages %}
-                                    <div>
-                                        {{ message }}
+                                    <div class="text-danger">
+                                        {{ message|safe }}
                                     </div>
                                 {% endfor %}
                                 </span>
@@ -68,6 +73,20 @@
                                         <span id="payment_info_error" class="error-div">
                                             {% if errors.payment_info %}
                                                     {{errors.payment_info}}
+                                            {% endif %}
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <!-- Registration Number Field -->
+                                <div class="col-12 col-md-6 p-md-0">
+                                    <div class="user-input-wrp ms-4 me-2 mt-4">
+                                        <input type="text" name="registration_no" id="registration_no" value="{{payment_info.registration_no}}" class="form-control"
+                                            aria-label="registration_no" placeholder=" " autocomplete="off" autofocus>
+                                        <label class="floating-label">&nbsp;Registration No <span class="required">*</span> &nbsp;</label>
+                                        <span id="registration_no_error" class="error-div">
+                                            {% if errors.registration_no %}
+                                                {{errors.registration_no}}
                                             {% endif %}
                                         </span>
                                     </div>
@@ -92,9 +111,9 @@
                                 </div>
 
                                 <!-- Payment date -->
-                                <div class="col-12 col-md-6 pe-md-0">
-                                    <div class="user-input-wrp ms-md-4 mt-md-4">
-                                        <input type="date" name="date" id="date-picker" value="{{date}}" class="form-control"
+                                <div class="col-12 col-md-6 p-md-0">
+                                    <div class="user-input-wrp ms-4 me-2 mt-4">
+                                        <input type="date" name="date" id="date-picker" value="{{date}}" class="form-control bg-white"
                                             aria-label="date" placeholder=" " autocomplete="off" autofocus onclick="setDatePickerLimits()">
                                         <label class="floating-label">&nbsp;Payment Date <span class="required">*</span> &nbsp;</label>
                                         <span id="date_error" class="error-div">
@@ -108,7 +127,7 @@
                                 <!-- amount field -->
                                 <div class="col-12 col-md-6 pe-md-0">
                                     <div class="user-input-wrp ms-md-4 mt-md-4">
-                                        <input type="text" name="amount" value="{{payment_info.total_fees}}" id="amount" class="form-control"
+                                        <input type="text" name="amount" id="amount" class="form-control"
                                             aria-label="amount" placeholder=" " autocomplete="off" autofocus>
                                         <label class="floating-label">&nbsp;Enter Amount <span class="required">*</span> &nbsp;</label>
                                         <span id="amount_error" class="error-div">
@@ -195,7 +214,7 @@
                             <tbody>
                                 {% for payment in payments %}
                                     <tr>
-                                        <td class="tdata">{{ payment.date|date:'Y-m-d' }}</td>
+                                        <td class="tdata">{{ payment.date|date:'d-m-Y' }}</td>
                                         <td class="tdata">{{ payment.payment_mode }}</td>
                                         <td class="tdata">{{ payment.upi_transaction_id }}</td>
                                         <td class="tdata">{{ payment.upi_app_name }}</td>
@@ -222,22 +241,18 @@
 
 
 {% block scripts %}
+<!-- Flatpickr JavaScript -->
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script>
-
-function setDatePickerLimits() {
-    const datePicker = document.getElementById('date-picker');
-    console.log(datePicker)
-    const today = new Date();
-    const tenDaysBeforeToday = new Date(today);
-    tenDaysBeforeToday.setDate(today.getDate() - 10);
-
-    // Format dates as YYYY-MM-DD
-    const todayString = today.toISOString().split('T')[0];
-    const tenDaysBeforeString = tenDaysBeforeToday.toISOString().split('T')[0];
-
-    // Set min and max attributes
-    datePicker.setAttribute('min', tenDaysBeforeString);
-    datePicker.setAttribute('max', todayString);
+const dateConverter = (dateIn) => {
+    dateIn.setHours(12);
+    let dateIn10days = new Date(dateIn.setDate(dateIn.getDate() + 10));
+    let dateFor10days = new Date(dateIn.setDate(dateIn.getDate() - 20));
+    
+    let strIn10Days = dateIn10days.getFullYear() + '-' + ('0' +(dateIn10days.getMonth()+1)).slice(-2) + '-' + ('0' + dateIn10days.getDate()).slice(-2);
+    // let strFor10Days = dateFor10days.getFullYear() + '-' + ('0' +(dateFor10days.getMonth()+1)).slice(-2) + '-' + ('0' + dateFor10days.getDate()).slice(-2);
+    let strFor10Days = ('0' + dateFor10days.getDate()).slice(-2) + '-' + ('0' +(dateFor10days.getMonth()+1)).slice(-2) + '-' + dateFor10days.getFullYear();
+    return strFor10Days;
 }
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -420,7 +435,15 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('payment_mode').addEventListener('change', handleCashChange);
 });
 
-
+document.addEventListener('DOMContentLoaded', function() {
+    today = new Date()
+    flatpickr("#date-picker", {
+        dateFormat: "d-m-Y", // Customize the format to "DD-MM-YYYY"
+        minDate: dateConverter(today),
+        maxDate: "today",
+        defaultDate: 'today',
+    });
+});
 
 </script>
 {% endblock %}

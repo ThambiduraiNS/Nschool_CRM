@@ -114,7 +114,7 @@ class EMI_6_Serializer(BaseEMISerializer):
         
 
 class PaymentInfoSerializer(serializers.ModelSerializer):
-    single_payment = SinglePaymentSerializer(read_only=True)
+    single_payment = SinglePaymentSerializer(many=True, read_only=True)
     # installments = InstallmentSerializer(many=True, read_only=True)
     emi_1_payments = EMI_1_Serializer(many=True, read_only=True)  # Assuming it's a related field
     emi_2_payments = EMI_2_Serializer(many=True, read_only=True)
