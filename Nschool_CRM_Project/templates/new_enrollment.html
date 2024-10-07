@@ -612,6 +612,11 @@
                                                     {{errors.installment_amount}}
                                                 {% endif %}
                                             </span>
+                                            <span id="installment_amount_error" class="error-div error-right">
+                                                {% if error_message %}
+                                                    {{error_message}}
+                                                {% endif %}
+                                            </span>
                                         </div>
                                     </div>
                                 </div>

@@ -2477,6 +2477,20 @@ def new_enrollment_view(request):
         else:
             installment_amount = 0.0  # Default to 0.0 if input is empty
 
+        total_fees_amount = request.POST.get('total_fees_amount')
+        
+       
+        installment = installment_amount * 6
+        
+        print(f"total Installment : {installment}")
+        
+        if installment > float(total_fees_amount):
+            error_message = "The total installment amount exceeds the total fees amount." 
+            context = {
+                'error_message' : error_message,
+            }
+            return render(request, 'new_enrollment.html', context)
+        
         # Auto-populate fields based on the related Enquiry object
         enrollment_data = {
             'enquiry_no': enquiry.enquiry_no,
@@ -2511,7 +2525,7 @@ def new_enrollment_view(request):
             'internship_no_of_students': internship_no_of_students,
             'duration': request.POST.get('duration'),
             'payment_type': request.POST.get('payment_type'),
-            'total_fees_amount': request.POST.get('total_fees_amount'),
+            'total_fees_amount': total_fees_amount,
             'installment_amount': installment_amount,
         }
 
@@ -4134,6 +4148,10 @@ def get_next_emi(payment_info, emi_type):
         return last_installment
 
     next_emi_number = int(last_installment.emi.split('_')[1]) + 1
+    
+    if next_emi_number > 6:
+        return None
+    
     print(f"Next EMI number: {next_emi_number}")
 
     if next_emi_number > 6:  # Assuming 6 installments
@@ -4788,13 +4806,24 @@ def new_installment_update_view(request, id):
                 print(f"Excess Amount --------------> {payment_amount}")
 
                 # next_emi.amount -= payment_amount
-                
+                if next_emi.emi is None:
+                    break
                 # Move to the next EMI
                 emi_type = next_emi.emi  # Update the emi_type for the next iteration
                 next_emi = get_next_emi(payment_info, emi_type)
+                
+                # Check if next_emi is None after fetching the next EMI
+                if next_emi is None:
+                    print("No more EMIs to process after update, breaking the loop.")
+                    break
+                
                 emi_model = EMI_MODELS.get(next_emi.emi)
 
-#           
+#               # Optionally, check if the emi_model is valid
+                if not emi_model:
+                    messages.error(request, f"EMI model not found for {next_emi.emi}.")
+                    return redirect('new_installment_update_info', id=payment_info.id)
+                
         # Add additional fields based on payment mode
         if payment_mode == 'Bank Transfer':
             paid_emi_instance.refference_no = request.POST.get('refference_no')
