@@ -5,7 +5,7 @@
 {% load custom_filters %}
 
 
-{% block title %}User Module{% endblock %}
+{% block title %}Payment Module{% endblock %}
 
 {% block css %}
 <link rel="stylesheet" href="{% static '/css/new_user.css' %}">
@@ -99,7 +99,7 @@
                     <p class="user-para p-0">Use the below tabel to update your profile</p>
                 </div>
 
-                <!-- Pagination controls -->
+                <!-- Pagination controls
                 <div class="row">
                     <div class="col d-flex justify-content-end py-3 gap-2">
                         <form id="perPageForm" method="get" class="d-flex">
@@ -153,7 +153,7 @@
 
                         </span>
                     </div>
-                </div>
+                </div> -->
 
                 <div class="row">
                     <div class="col my-2">
@@ -210,7 +210,7 @@
                                         </td>
                                         
                                         <td class="tdata">{{ payment.registration_no }}</td>
-                                        <td class="tdata">{{ payment.joining_date }}</td>
+                                        <td class="tdata">{{ payment.joining_date|format_date }}</td>
                                         <td class="tdata">{{ payment.student_name }}</td>
                                         <td class="tdata">{{ payment.course_name }}</td>
                                         <td class="tdata">{{ payment.duration }}</td>
@@ -219,15 +219,19 @@
                                         
                                         <!-- Single Payment -->
                                         <td class="tdata">
-                                            {% if payment.single_payment %}
-                                                {{ payment.single_payment.date }}
+                                            {% if payment.single_payment.all %}
+                                                {% for single_payment in payment.single_payment.all %}
+                                                    {{ single_payment.date|format_date }}<br>
+                                                {% endfor %}
                                             {% else %}
                                                 N/A
                                             {% endif %}
                                         </td>
                                         <td class="tdata text-right">
-                                            {% if payment.single_payment %}
-                                                {{ payment.single_payment.amount }}
+                                            {% if payment.single_payment.all %}
+                                                {% for single_payment in payment.single_payment.all %}
+                                                    {{ single_payment.amount }}<br>
+                                                {% endfor %}
                                             {% else %}
                                                 N/A
                                             {% endif %}
@@ -236,7 +240,7 @@
                                         <td class="tdata">
                                             {% if payment.emi_1_payments %}
                                                 {% for emi in payment.emi_1_payments %}
-                                                    {{ emi.date }}{% if not forloop.last %} {% endif %}<br>
+                                                    {{ emi.date|format_date }}{% if not forloop.last %} {% endif %}<br>
                                                 {% endfor %}
                                             {% else %}
                                                 N/A
@@ -255,7 +259,7 @@
                                         <td class="tdata">
                                             {% if payment.emi_2_payments %}
                                                 {% for emi in payment.emi_2_payments %}
-                                                    {{ emi.date }}{% if not forloop.last %} {% endif %} <br>
+                                                    {{ emi.date|format_date }}{% if not forloop.last %} {% endif %} <br>
                                                 {% endfor %}
                                             {% else %}
                                                 N/A
@@ -274,7 +278,7 @@
                                         <td class="tdata">
                                             {% if payment.emi_3_payments %}
                                                 {% for emi in payment.emi_3_payments %}
-                                                    {{ emi.date }}{% if not forloop.last %} {% endif %} <br>
+                                                    {{ emi.date|format_date }}{% if not forloop.last %} {% endif %} <br>
                                                 {% endfor %}
                                             {% else %}
                                                 N/A
@@ -293,7 +297,7 @@
                                         <td class="tdata">
                                             {% if payment.emi_4_payments %}
                                                 {% for emi in payment.emi_4_payments %}
-                                                    {{ emi.date }}{% if not forloop.last %} {% endif %} <br>
+                                                    {{ emi.date|format_date }}{% if not forloop.last %} {% endif %} <br>
                                                 {% endfor %}
                                             {% else %}
                                                 N/A
@@ -312,7 +316,7 @@
                                         <td class="tdata">
                                             {% if payment.emi_5_payments %}
                                                 {% for emi in payment.emi_5_payments %}
-                                                    {{ emi.date }}{% if not forloop.last %} {% endif %} <br>
+                                                    {{ emi.date|format_date }}{% if not forloop.last %} {% endif %} <br>
                                                 {% endfor %}
                                             {% else %}
                                                 N/A
@@ -331,7 +335,7 @@
                                         <td class="tdata">
                                             {% if payment.emi_6_payments %}
                                                 {% for emi in payment.emi_6_payments %}
-                                                    {{ emi.date }}{% if not forloop.last %} {% endif %} <br>
+                                                    {{ emi.date|format_date }}{% if not forloop.last %} {% endif %} <br>
                                                 {% endfor %}
                                             {% else %}
                                                 N/A
@@ -348,8 +352,18 @@
                                         </td>
 
                                         <!-- Balance Amount -->
-                                        <td class="tdata balance-td">
-                                            {% if final_amounts|get_item:payment.id %}
+                                        <td class="tdata balance-td text-right">
+                                            {% if payment.single_payment %}
+                                                {% for payment_info_id, total in total_by_payment_info.items %}
+                                                    {% if payment_info_id == payment.id %}
+                                                        {{ payment.total_fees|subtract:total }}
+                                                    {% endif %}
+                                                {% endfor %}
+                                                {% if not total_by_payment_info%}
+                                                    No item found
+                                                {% endif %}
+                                                    
+                                            {% elif final_amounts|get_item:payment.id %}
                                                 {{ final_amounts|get_item:payment.id|floatformat:2 }}
                                             {% else %}
                                                 0.00
@@ -390,7 +404,9 @@
                                         <!-- Total Fees Amount -->
                                         <td colspan="7"></td>
                                         <td class="tdata">
-                                            <p class="total_pending_amount mb-0 py-2 text-right">{{ total_fees }}</p>
+                                            <p class="total_pending_amount mb-0 py-2 text-right">
+                                                {{ total_fees_sum }}
+                                            </p>
                                         </td>
                                         
                                         <!-- Total Single payment Amount -->
@@ -399,8 +415,42 @@
                                             <p class="total_pending_amount mb-0 py-2 text-right">{{ total_single_payment }}</p>
                                         </td>
 
+                                        <!-- Total EMI_1 amount -->
+                                        <td colspan="1"></td>
                                         <td class="tdata">
-                                            <p class="total_pending_amount mb-0 py-2 text-right">{{ total_pending_amount }}</p>
+                                            <p class="total_pending_amount mb-0 py-2 text-right">{{ total_emi_sums.emi_1 }}</p>
+                                        </td>
+                                        
+                                        <!-- Total EMI_2 amount -->
+                                        <td colspan="1"></td>
+                                        <td class="tdata">
+                                            <p class="total_pending_amount mb-0 py-2 text-right">{{ total_emi_sums.emi_2 }}</p>
+                                        </td>
+                                        <!-- Total EMI_3 amount -->
+                                        <td colspan="1"></td>
+                                        <td class="tdata">
+                                            <p class="total_pending_amount mb-0 py-2 text-right">{{ total_emi_sums.emi_3 }}</p>
+                                        </td>
+                                        <!-- Total EMI_4 amount -->
+                                        <td colspan="1"></td>
+                                        <td class="tdata">
+                                            <p class="total_pending_amount mb-0 py-2 text-right">{{ total_emi_sums.emi_4 }}</p>
+                                        </td>
+
+                                        <!-- Total EMI_5 amount -->
+                                        <td colspan="1"></td>
+                                        <td class="tdata">
+                                            <p class="total_pending_amount mb-0 py-2 text-right">{{ total_emi_sums.emi_5 }}</p>
+                                        </td>
+
+                                        <!-- Total EMI_6 amount -->
+                                        <td colspan="1"></td>
+                                        <td class="tdata">
+                                            <p class="total_pending_amount mb-0 py-2 text-right">{{ total_emi_sums.emi_6 }}</p>
+                                        </td>
+
+                                        <td class="tdata">
+                                            <p class="total_pending_amount mb-0 py-2 text-right">{{ total_final_amount_sum }}</p>
                                         </td>
                                     </tr>
                                 </tbody>

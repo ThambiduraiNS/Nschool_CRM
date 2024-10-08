@@ -2483,13 +2483,13 @@ def new_enrollment_view(request):
         installment = installment_amount * 6
         
         print(f"total Installment ---------> {installment}")
-        
-        if installment < float(total_fees_amount):
-            error_message = "The installment amount exceed's the 6 EMI's." 
-            context = {
-                'error_message' : error_message,
-            }
-            return render(request, 'new_enrollment.html', context)
+        if installment:
+            if installment < float(total_fees_amount):
+                error_message = "The installment amount exceed's the 6 EMI's." 
+                context = {
+                    'error_message' : error_message,
+                }
+                return render(request, 'new_enrollment.html', context)
         
         # Auto-populate fields based on the related Enquiry object
         enrollment_data = {
@@ -3391,6 +3391,59 @@ def export_payment_pdf(request):
     content = {'payment_list': attribute_list}
     return renderers.render_to_pdf('payment_data_list.html', content)
 
+# class SearchPaymentResultsView(ListView):
+#     model = PaymentInfo
+#     template_name = 'search_payment_result.html'
+#     context_object_name = 'payments'
+#     paginate_by = 10
+
+#     def get_queryset(self):
+#         start_date = self.request.GET.get("start_date", "")
+#         end_date = self.request.GET.get("end_date", "")
+#         query = self.request.GET.get("q", "")
+
+#         object_list = PaymentInfo.objects.prefetch_related('single_payment', 'emi_1_payments', 'emi_2_payments', 'emi_3_payments', 'emi_4_payments', 'emi_5_payments', 'emi_6_payments').all()
+
+#         # Apply text search if query is provided
+#         if query:
+#             emi_filters = Q()
+#             for i in range(1, 7):  # Loop through EMI payments
+#                 emi_filters |= Q(**{f'emi_{i}_payments__payment_mode__icontains': query}) | \
+#                                Q(**{f'emi_{i}_payments__emi__icontains': query}) | \
+#                                Q(**{f'emi_{i}_payments__upi_transaction_id__icontains': query}) | \
+#                                Q(**{f'emi_{i}_payments__upi_app_name__icontains': query}) | \
+#                                Q(**{f'emi_{i}_payments__refference_no__icontains': query})
+
+#             # Combine all filters
+#             object_list = object_list.filter(
+#                 Q(registration_no__icontains=query) |
+#                 Q(joining_date__icontains=query) |
+#                 Q(student_name__icontains=query) |
+#                 Q(course_name__icontains=query) |
+#                 Q(duration__icontains=query) |
+#                 Q(total_fees__icontains=query) |
+#                 Q(fees_type__icontains=query) |
+#                 Q(single_payment__payment_info_id__icontains=query) |
+#                 Q(single_payment__payment_mode__icontains=query) |
+#                 Q(single_payment__upi_transaction_id__icontains=query) |
+#                 Q(single_payment__upi_app_name__icontains=query) |
+#                 emi_filters
+#             ).distinct()
+
+#         # Apply date range filter if valid dates are provided
+#         if start_date and end_date:
+#             try:
+#                 start_date = datetime.strptime(start_date, '%Y-%m-%d').date()
+#                 end_date = datetime.strptime(end_date, '%Y-%m-%d').date()
+#                 object_list = object_list.filter(joining_date__range=(start_date, end_date))
+#             except ValueError:
+#                 messages.error(self.request, "Invalid date format. Please use YYYY-MM-DD.")
+
+#         # Optimize query by selecting related objects; ensure these are also correct
+#         object_list = object_list.select_related('single_payment')
+
+#         return object_list
+
 class SearchPaymentResultsView(ListView):
     model = PaymentInfo
     template_name = 'search_payment_result.html'
@@ -3402,18 +3455,13 @@ class SearchPaymentResultsView(ListView):
         end_date = self.request.GET.get("end_date", "")
         query = self.request.GET.get("q", "")
 
-        object_list = PaymentInfo.objects.prefetch_related('single_payment', 'emi_1_payments', 'emi_2_payments', 'emi_3_payments', 'emi_4_payments', 'emi_5_payments', 'emi_6_payments').all()
+        object_list = PaymentInfo.objects.prefetch_related(
+            'single_payment', 'emi_1_payments', 'emi_2_payments', 
+            'emi_3_payments', 'emi_4_payments', 'emi_5_payments', 'emi_6_payments'
+        ).all()
 
         # Apply text search if query is provided
         if query:
-            emi_filters = Q()
-            for i in range(1, 7):  # Loop through EMI payments
-                emi_filters |= Q(**{f'emi_{i}_payments__payment_mode__icontains': query}) | \
-                               Q(**{f'emi_{i}_payments__emi__icontains': query}) | \
-                               Q(**{f'emi_{i}_payments__upi_transaction_id__icontains': query}) | \
-                               Q(**{f'emi_{i}_payments__upi_app_name__icontains': query}) | \
-                               Q(**{f'emi_{i}_payments__refference_no__icontains': query})
-
             # Combine all filters
             object_list = object_list.filter(
                 Q(registration_no__icontains=query) |
@@ -3422,11 +3470,7 @@ class SearchPaymentResultsView(ListView):
                 Q(course_name__icontains=query) |
                 Q(duration__icontains=query) |
                 Q(total_fees__icontains=query) |
-                Q(fees_type__icontains=query) |
-                Q(single_payment__payment_mode__icontains=query) |
-                Q(single_payment__upi_transaction_id__icontains=query) |
-                Q(single_payment__upi_app_name__icontains=query) |
-                emi_filters
+                Q(fees_type__icontains=query)
             ).distinct()
 
         # Apply date range filter if valid dates are provided
@@ -3437,10 +3481,7 @@ class SearchPaymentResultsView(ListView):
                 object_list = object_list.filter(joining_date__range=(start_date, end_date))
             except ValueError:
                 messages.error(self.request, "Invalid date format. Please use YYYY-MM-DD.")
-
-        # Optimize query by selecting related objects; ensure these are also correct
-        object_list = object_list.select_related('single_payment')
-
+        
         return object_list
 
     def get_context_data(self, **kwargs):
@@ -3634,7 +3675,7 @@ def single_payment_update_view(request, id):
         return render(request, 'single_payment.html', {'payment_info': payment_info})
     
     if existing_payments_count == 2:
-        error =  f"You have made {existing_payments_count} payments. Only 1 payment is allowed."
+        messages.error(request, f"You have made {existing_payments_count} payments. Only 1 payment is allowed.")
         if remaining_amount <= 0:
             messages.error(request, "You have already made 2 payments. No further payments are allowed.")
             return render(request, 'single_payment.html', {'payment_info': payment_info})
@@ -3708,7 +3749,6 @@ def single_payment_update_view(request, id):
     context = {
         'payments': payments,
         'payment_info':payment_info,
-        'error': error
     }
     return render(request, 'single_payment.html', context)
 
@@ -3878,6 +3918,8 @@ def new_manage_payment_info_view(request):
         response.raise_for_status()
         response_data = response.json()
         
+        print(f"Response Data ------> {json.dumps(response_data, indent=4)}")
+        
     except requests.exceptions.RequestException as err:
         context = {
             'error': f'Request error occurred: {err}',
@@ -3979,7 +4021,34 @@ def new_manage_payment_info_view(request):
             for single_payment in single_payments:
                 if 'amount' in single_payment:  # Ensure 'amount' exists
                     total_single_payment += float(single_payment['amount'])
+    
+    print(f"Single Payment -----> {total_single_payment}")
+    total_single_payment_by_id = {}  # Dictionary to hold total amounts by single payment ID
+    total_by_payment_info = {}  # Dictionary to hold totals by payment_info ID
+    
+    # Calculate totals for single payments
+    for single_payment in response_data:
+        single_payments = single_payment.get('single_payment', [])
+        for sp in single_payments:
+            sp_id = sp.get('id')
+            amount = float(sp.get('amount', 0))  # Convert to float
             
+            # Sum by single_payment ID
+            if sp_id not in total_single_payment_by_id:
+                total_single_payment_by_id[sp_id] = 0.0
+            total_single_payment_by_id[sp_id] += amount  # Accumulate the amount
+            
+            # Sum by payment_info ID
+            payment_info_id = sp.get('payment_info')  # Get payment_info ID from single_payment
+            if payment_info_id is not None:
+                if payment_info_id not in total_by_payment_info:
+                    total_by_payment_info[payment_info_id] = 0.0
+                total_by_payment_info[payment_info_id] += amount  # Accumulate for payment_info ID
+
+    # Print debug information
+    print(f"Total Single Payments by ID: {total_single_payment_by_id}")
+    print(f"Total Payments by Payment Info ID: {total_by_payment_info}")
+    
     context = {
         'page_obj': page_obj,
         'per_page': per_page,
@@ -3990,6 +4059,8 @@ def new_manage_payment_info_view(request):
         'total_emi_sums': total_emi_sums,
         'total_final_amount_sum': total_final_amount_sum,
         'total_single_payment': total_single_payment,
+        'total_by_payment_info': total_by_payment_info,
+        'total_single_payment_by_id': total_single_payment_by_id,
         'emi_range': range(1, 7),
     }
 

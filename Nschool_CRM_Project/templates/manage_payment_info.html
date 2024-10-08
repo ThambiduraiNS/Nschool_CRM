@@ -202,7 +202,7 @@
                                         <th class="thead">Balance Amount</th>
                                         <th class="action">Action</th>
                                     </tr>
-                                    {% for payment in payment_data %}
+                                    {% for payment in page_obj %}
                                     <tr class="trow">
                                         <td class="check1">
                                             <input type="checkbox" class="form-check-input user-checkbox checked-row" name="user_ids"
@@ -354,7 +354,15 @@
                                         <!-- Balance Amount -->
                                         <td class="tdata balance-td text-right">
                                             {% if payment.single_payment %}
-                                                {{payment.total_fees|subtract:total_single_payment|floatformat:2}} <br>
+                                                {% for payment_info_id, total in total_by_payment_info.items %}
+                                                    {% if payment_info_id == payment.id %}
+                                                        {{ payment.total_fees|subtract:total }}
+                                                    {% endif %}
+                                                {% endfor %}
+                                                {% if not total_by_payment_info%}
+                                                    No item found
+                                                {% endif %}
+                                                    
                                             {% elif final_amounts|get_item:payment.id %}
                                                 {{ final_amounts|get_item:payment.id|floatformat:2 }}
                                             {% else %}

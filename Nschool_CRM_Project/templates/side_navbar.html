@@ -81,7 +81,22 @@
                 </div>
             </li>
             {% endif %}
-
+            
+            {% if user.payment %}
+            <li class="nav-item">
+                <div class="dropdown">
+                    <a class="btn btn-div w-100 text-start" href="#" role="button"
+                        onclick="toggleDropdown(this)">
+                        {% bs_icon 'currency-rupee' %} <span class="menus">Payment</span> <span
+                            class="right_arrow">{% bs_icon 'caret-right-fill' %}</span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-content">
+                        <li><a class="dropdown-item new" href="/payment/"><span class="slash">|</span> New Payment</a></li>
+                        <li><a class="dropdown-item manage" href="/new_manage_payments/"><span class="slash">|</span> Manage Payment</a></li>
+                    </ul>
+                </div>
+            </li>
+            {% endif %}
 
             {% if user.attendance %}
             <li class="nav-item">
@@ -94,22 +109,6 @@
                     <ul class="dropdown-menu dropdown-content">
                         <li><a class="dropdown-item new" href="#"><span class="slash">|</span> New Attendance</a></li>
                         <li><a class="dropdown-item manage" href="#"><span class="slash">|</span> Manage Attendance</a></li>
-                    </ul>
-                </div>
-            </li>
-            {% endif %}
-
-            {% if user.payment %}
-            <li class="nav-item">
-                <div class="dropdown">
-                    <a class="btn btn-div w-100 text-start" href="#" role="button"
-                        onclick="toggleDropdown(this)">
-                        {% bs_icon 'currency-rupee' %} <span class="menus">Payment</span> <span
-                            class="right_arrow">{% bs_icon 'caret-right-fill' %}</span>
-                    </a>
-                    <ul class="dropdown-menu dropdown-content">
-                        <li><a class="dropdown-item new" href="/payment/"><span class="slash">|</span> New Payment</a></li>
-                        <li><a class="dropdown-item manage" href="/new_manage_payments/"><span class="slash">|</span> Manage Payment</a></li>
                     </ul>
                 </div>
             </li>

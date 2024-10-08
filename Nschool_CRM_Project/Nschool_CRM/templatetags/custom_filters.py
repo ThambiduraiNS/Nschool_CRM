@@ -28,6 +28,10 @@ def custom_timesince(value):
 @register.filter
 def typeof(value):
     return type(value).__name__
+
+@register.filter()
+def to_float(value):
+    return float(value)
     
 @register.filter
 def range_filter(value):
