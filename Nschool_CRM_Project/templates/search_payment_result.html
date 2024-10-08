@@ -99,7 +99,7 @@
                     <p class="user-para p-0">Use the below tabel to update your profile</p>
                 </div>
 
-                <!-- Pagination controls
+                <!-- Pagination controls -->
                 <div class="row">
                     <div class="col d-flex justify-content-end py-3 gap-2">
                         <form id="perPageForm" method="get" class="d-flex">
@@ -153,7 +153,7 @@
 
                         </span>
                     </div>
-                </div> -->
+                </div>
 
                 <div class="row">
                     <div class="col my-2">
@@ -200,7 +200,7 @@
                                         <th class="thead">EMI 6</th>
                                         
                                         <th class="thead">Balance Amount</th>
-                                        <th class="action">Action</th>
+                                        <th class="thead action">Action</th>
                                     </tr>
                                     {% for payment in object_list %}
                                     <tr class="trow">
@@ -210,7 +210,7 @@
                                         </td>
                                         
                                         <td class="tdata">{{ payment.registration_no }}</td>
-                                        <td class="tdata">{{ payment.joining_date|format_date }}</td>
+                                        <td class="tdata">{{ payment.joining_date|date:'d-m-Y' }}</td>
                                         <td class="tdata">{{ payment.student_name }}</td>
                                         <td class="tdata">{{ payment.course_name }}</td>
                                         <td class="tdata">{{ payment.duration }}</td>
@@ -221,7 +221,7 @@
                                         <td class="tdata">
                                             {% if payment.single_payment.all %}
                                                 {% for single_payment in payment.single_payment.all %}
-                                                    {{ single_payment.date|format_date }}<br>
+                                                    {{ single_payment.date|date:'d-m-Y' }}<br>
                                                 {% endfor %}
                                             {% else %}
                                                 N/A
@@ -238,17 +238,36 @@
                                         </td>
                                         
                                         <td class="tdata">
-                                            {% if payment.emi_1_payments %}
-                                                {% for emi in payment.emi_1_payments %}
-                                                    {{ emi.date|format_date }}{% if not forloop.last %} {% endif %}<br>
+                                            {% if payment.emi_1_payments.all %}
+                                                {% for emi_1_payments in payment.emi_1_payments.all %}
+                                                    {{ emi_1_payments.date|date:'d-m-Y' }}{% if not forloop.last %} {% endif %}<br>
                                                 {% endfor %}
                                             {% else %}
                                                 N/A
                                             {% endif %}
                                         </td>
                                         <td class="tdata">
-                                            {% if payment.emi_1_payments %}
-                                                {% for emi in payment.emi_1_payments %}
+                                            {% if payment.emi_1_payments.all %}
+                                                {% for emi_1_payments in payment.emi_1_payments.all %}
+                                                    {{emi_1_payments.amount}} <br>
+                                                {% endfor %}
+                                            {% else %}
+                                                N/A
+                                            {% endif %}
+                                        </td>
+                        
+                                        <td class="tdata">
+                                            {% if payment.emi_2_payments.all %}
+                                                {% for emi in payment.emi_2_payments.all %}
+                                                    {{ emi.date|date:'d-m-Y' }}{% if not forloop.last %} {% endif %} <br>
+                                                {% endfor %}
+                                            {% else %}
+                                                N/A
+                                            {% endif %}
+                                        </td>
+                                        <td class="tdata">
+                                            {% if payment.emi_2_payments.all %}
+                                                {% for emi in payment.emi_2_payments.all %}
                                                     {{emi.amount}} <br>
                                                 {% endfor %}
                                             {% else %}
@@ -257,17 +276,17 @@
                                         </td>
                         
                                         <td class="tdata">
-                                            {% if payment.emi_2_payments %}
-                                                {% for emi in payment.emi_2_payments %}
-                                                    {{ emi.date|format_date }}{% if not forloop.last %} {% endif %} <br>
+                                            {% if payment.emi_3_payments.all %}
+                                                {% for emi in payment.emi_3_payments.all %}
+                                                    {{ emi.date|date:'d-m-Y' }}{% if not forloop.last %} {% endif %} <br>
                                                 {% endfor %}
                                             {% else %}
                                                 N/A
                                             {% endif %}
                                         </td>
                                         <td class="tdata">
-                                            {% if payment.emi_2_payments %}
-                                                {% for emi in payment.emi_2_payments %}
+                                            {% if payment.emi_3_payments.all %}
+                                                {% for emi in payment.emi_3_payments.all %}
                                                     {{emi.amount}} <br>
                                                 {% endfor %}
                                             {% else %}
@@ -276,17 +295,17 @@
                                         </td>
                         
                                         <td class="tdata">
-                                            {% if payment.emi_3_payments %}
-                                                {% for emi in payment.emi_3_payments %}
-                                                    {{ emi.date|format_date }}{% if not forloop.last %} {% endif %} <br>
+                                            {% if payment.emi_4_payments.all %}
+                                                {% for emi in payment.emi_4_payments.all %}
+                                                    {{ emi.date|date:'d-m-Y' }}{% if not forloop.last %} {% endif %} <br>
                                                 {% endfor %}
                                             {% else %}
                                                 N/A
                                             {% endif %}
                                         </td>
                                         <td class="tdata">
-                                            {% if payment.emi_3_payments %}
-                                                {% for emi in payment.emi_3_payments %}
+                                            {% if payment.emi_4_payments.all %}
+                                                {% for emi in payment.emi_4_payments.all %}
                                                     {{emi.amount}} <br>
                                                 {% endfor %}
                                             {% else %}
@@ -295,17 +314,17 @@
                                         </td>
                         
                                         <td class="tdata">
-                                            {% if payment.emi_4_payments %}
-                                                {% for emi in payment.emi_4_payments %}
-                                                    {{ emi.date|format_date }}{% if not forloop.last %} {% endif %} <br>
+                                            {% if payment.emi_5_payments.all %}
+                                                {% for emi in payment.emi_5_payments.all %}
+                                                    {{ emi.date|date:'d-m-Y' }}{% if not forloop.last %} {% endif %} <br>
                                                 {% endfor %}
                                             {% else %}
                                                 N/A
                                             {% endif %}
                                         </td>
                                         <td class="tdata">
-                                            {% if payment.emi_4_payments %}
-                                                {% for emi in payment.emi_4_payments %}
+                                            {% if payment.emi_5_payments.all %}
+                                                {% for emi in payment.emi_5_payments.all %}
                                                     {{emi.amount}} <br>
                                                 {% endfor %}
                                             {% else %}
@@ -314,36 +333,17 @@
                                         </td>
                         
                                         <td class="tdata">
-                                            {% if payment.emi_5_payments %}
-                                                {% for emi in payment.emi_5_payments %}
-                                                    {{ emi.date|format_date }}{% if not forloop.last %} {% endif %} <br>
+                                            {% if payment.emi_6_payments.all %}
+                                                {% for emi in payment.emi_6_payments.all %}
+                                                    {{ emi.date|date:'d-m-Y' }}{% if not forloop.last %} {% endif %} <br>
                                                 {% endfor %}
                                             {% else %}
                                                 N/A
                                             {% endif %}
                                         </td>
                                         <td class="tdata">
-                                            {% if payment.emi_5_payments %}
-                                                {% for emi in payment.emi_5_payments %}
-                                                    {{emi.amount}} <br>
-                                                {% endfor %}
-                                            {% else %}
-                                                N/A
-                                            {% endif %}
-                                        </td>
-                        
-                                        <td class="tdata">
-                                            {% if payment.emi_6_payments %}
-                                                {% for emi in payment.emi_6_payments %}
-                                                    {{ emi.date|format_date }}{% if not forloop.last %} {% endif %} <br>
-                                                {% endfor %}
-                                            {% else %}
-                                                N/A
-                                            {% endif %}
-                                        </td>
-                                        <td class="tdata">
-                                            {% if payment.emi_6_payments %}
-                                                {% for emi in payment.emi_6_payments %}
+                                            {% if payment.emi_6_payments.all %}
+                                                {% for emi in payment.emi_6_payments.all %}
                                                     {{emi.amount}} <br>
                                                 {% endfor %}
                                             {% else %}
@@ -353,7 +353,7 @@
 
                                         <!-- Balance Amount -->
                                         <td class="tdata balance-td text-right">
-                                            {% if payment.single_payment %}
+                                            {% if payment.single_payment.all %}
                                                 {% for payment_info_id, total in total_by_payment_info.items %}
                                                     {% if payment_info_id == payment.id %}
                                                         {{ payment.total_fees|subtract:total }}

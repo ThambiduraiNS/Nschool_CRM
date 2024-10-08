@@ -3485,17 +3485,68 @@ class SearchPaymentResultsView(ListView):
         return object_list
 
     def get_context_data(self, **kwargs):
-        # Get the existing context data
         context = super().get_context_data(**kwargs)
 
-        # Get the queryset and calculate totals
-        payments = context['payments']
-        totals = calculate_payment_totals(payments)
+        # Initialize variables
+        emi_data = []
+        total_emi_sums = {f'emi_{i}': 0 for i in range(1, 7)}
+        payment_totals = {}
+        final_amounts = {}
+        total_single_payment = 0
+        total_by_payment_info = {}
 
-        # Add the calculated totals to the context
-        context.update(totals)
+        # Get the filtered queryset
+        payments = self.get_queryset()
+
+        # Calculate values based on the payments queryset
+        for payment in payments:
+            for i in range(1, 7):
+                emi_payments = getattr(payment, f'emi_{i}_payments').all()  # Use related manager correctly
+                total_amount = sum(float(emi.amount) for emi in emi_payments)
+                total_emi_sums[f'emi_{i}'] += total_amount
+                
+                payment_ids = {emi.payment_info.id for emi in emi_payments if emi.payment_info}
+                emi_data.append({
+                    'emi_key': f'emi_{i}_payments',
+                    'total_amount': total_amount,
+                    'payment_ids': list(payment_ids),
+                })
+
+                for payment_id in payment_ids:
+                    payment_totals[payment_id] = payment_totals.get(payment_id, 0) + total_amount
+
+        # Calculate final amounts
+        for payment_id, total_amount in payment_totals.items():
+            try:
+                payment_info = PaymentInfo.objects.get(id=payment_id)
+                total_fees = Decimal(payment_info.total_fees)
+            except PaymentInfo.DoesNotExist:
+                total_fees = Decimal(0)
+
+            final_amounts[payment_id] = total_fees - Decimal(total_amount)
+
+        # Handle single payments
+        total_single_payment = sum(
+            float(sp.amount) for payment in payments for sp in payment.single_payment.all()
+        )
+
+        for payment in payments:
+            for sp in payment.single_payment.all():
+                payment_info_id = sp.payment_info.id if sp.payment_info else None
+                if payment_info_id:
+                    total_by_payment_info[payment_info_id] = total_by_payment_info.get(payment_info_id, 0) + float(sp.amount)
+
+        # Update the context with calculated values
+        context.update({
+            'emi_data': emi_data,
+            'final_amounts': final_amounts,
+            'total_emi_sums': total_emi_sums,
+            'total_single_payment': total_single_payment,
+            'total_by_payment_info': total_by_payment_info,
+        })
 
         return context
+
 
 # def new_payment_info_view(request):
 #     if request.method == 'POST':
@@ -3900,6 +3951,173 @@ from .config import EMI_MODELS  # Import the dictionary mapping
 #         }
 #         return render(request, 'new_installment_info.html', context)
 
+# def new_manage_payment_info_view(request):
+#     try:
+#         token = Token.objects.get(user=request.user)
+#     except Token.DoesNotExist:
+#         context = {'error': 'Authentication token not found'}
+#         return render(request, 'manage_payment_info.html', context)
+
+#     api_url = 'http://127.0.0.1:8000/api/payment_info/'
+#     headers = {
+#         'Authorization': f'Token {token.key}',
+#         'Content-Type': 'application/json'
+#     }
+
+#     try:
+#         response = requests.get(api_url, headers=headers)
+#         response.raise_for_status()
+#         response_data = response.json()
+        
+#         print(f"Response Data ------> {json.dumps(response_data, indent=4)}")
+        
+#     except requests.exceptions.RequestException as err:
+#         context = {
+#             'error': f'Request error occurred: {err}',
+#             'response_data': []
+#         }
+#         return render(request, 'manage_payment_info.html', context)
+
+#     per_page = request.GET.get('per_page', '10')
+#     paginator = Paginator(response_data, per_page)
+#     page_number = request.GET.get('page')
+#     page_obj = paginator.get_page(page_number)
+
+#     emi_data = []  # List to store EMI details
+#     payment_totals = {}  # Dictionary to hold total amounts for each payment_info_id
+#     total_emi_sums = {f'emi_{i}': 0 for i in range(1, 7)}  # Dictionary to hold totals for emi_1 to emi_6
+    
+#     for payment in response_data:
+#         for i in range(1, 7):
+#             emi_key = f'emi_{i}_payments'
+#             emi_payments = payment.get(emi_key, [])
+
+#             if not isinstance(emi_payments, list):
+#                 # print(f"Expected a list for {emi_key}, but got: {emi_payments}")
+#                 continue
+
+#             total_amount = 0  # Initialize total_amount for this emi_key
+#             dates = []  # Initialize dates list for this emi_key
+#             payment_info_ids = set()  # Use a set to avoid duplicates
+
+#             for emi in emi_payments:
+#                 if isinstance(emi, dict):
+#                     payment_info_id = emi.get('payment_info', None)
+
+#                     if payment_info_id is not None:
+#                         payment_info_ids.add(payment_info_id)  # Collect unique payment IDs
+#                         total_amount += float(emi.get('amount', 0))
+#                         if emi['date']:
+#                             formatted_date = datetime.strptime(emi['date'], '%Y-%m-%d').strftime('%d-%m-%Y')
+#                             dates.append(formatted_date)
+#                         else:
+#                             print("Date is None for EMI:", emi)
+#             # Append to emi_data after processing all EMI payments for the current payment
+#             emi_data.append({
+#                 'emi_key': emi_key,
+#                 'total_amount': total_amount,
+#                 'dates': dates,
+#                 'payment_ids': list(payment_info_ids),  # Convert set to list for context
+#             })
+
+#             # Sum the total for each emi payments
+#             total_emi_sums[f'emi_{i}'] += total_amount
+            
+#     # Initialize a dictionary to hold total amounts per payment_info_id
+#     payment_totals = {}
+#     # First pass to collect total amounts
+#     for emi in emi_data:
+#         total_amount = emi['total_amount']
+#         for payment_id in emi['payment_ids']:
+#             if payment_id not in payment_totals:
+#                 payment_totals[payment_id] = 0
+#             payment_totals[payment_id] += total_amount  # Aggregate the total for this payment ID
+
+#     # Now calculate the final amounts using the payment_totals
+#     final_amounts = {}
+#     total_final_amount_sum = 0
+#     for payment_id in payment_totals:
+#         total_amount = payment_totals[payment_id]
+#         # print(f"Total amount for payment_info_id {payment_id}: {total_amount}")
+
+#         # Get total fees from PaymentInfo based on payment_id
+#         try:
+#             payment_info = PaymentInfo.objects.get(id=payment_id)
+#             total_fees = Decimal(payment_info.total_fees)
+#         except PaymentInfo.DoesNotExist:
+#             total_fees = Decimal(0)
+#             # print(f"No fees found for payment_info_id {payment_id}, setting total fees to 0")
+
+#         # print(f"Total Fees for payment_info_id {payment_id}: {total_fees}")
+
+#         # Calculate final amount as total_fees - total_amount
+#         final_amount = total_fees - Decimal(total_amount)
+#         final_amounts[payment_id] = final_amount
+#         # print(f"Final Amount for payment_info_id {payment_id}: {final_amount}")
+
+#         # Accumulate the sum of final amounts
+#         total_final_amount_sum += final_amount
+    
+#     # Calculate total fees sum from response_data
+#     total_fees_sum = sum(
+#         Decimal(entry.get('total_fees', 0)) if entry.get('total_fees') else 0
+#         for entry in response_data
+#     )
+    
+#     total_single_payment = 0.0
+    
+#     for single_payment in response_data:
+#         single_payments = single_payment['single_payment']
+#         if single_payments:  # Check if the list is not empty
+#             for single_payment in single_payments:
+#                 if 'amount' in single_payment:  # Ensure 'amount' exists
+#                     total_single_payment += float(single_payment['amount'])
+    
+#     print(f"Single Payment -----> {total_single_payment}")
+#     total_single_payment_by_id = {}  # Dictionary to hold total amounts by single payment ID
+#     total_by_payment_info = {}  # Dictionary to hold totals by payment_info ID
+    
+#     # Calculate totals for single payments
+#     for single_payment in response_data:
+#         single_payments = single_payment.get('single_payment', [])
+#         for sp in single_payments:
+#             sp_id = sp.get('id')
+#             amount = float(sp.get('amount', 0))  # Convert to float
+            
+#             # Sum by single_payment ID
+#             if sp_id not in total_single_payment_by_id:
+#                 total_single_payment_by_id[sp_id] = 0.0
+#             total_single_payment_by_id[sp_id] += amount  # Accumulate the amount
+            
+#             # Sum by payment_info ID
+#             payment_info_id = sp.get('payment_info')  # Get payment_info ID from single_payment
+#             if payment_info_id is not None:
+#                 if payment_info_id not in total_by_payment_info:
+#                     total_by_payment_info[payment_info_id] = 0.0
+#                 total_by_payment_info[payment_info_id] += amount  # Accumulate for payment_info ID
+
+#     # Print debug information
+#     print(f"Total Single Payments by ID: {total_single_payment_by_id}")
+#     print(f"Total Payments by Payment Info ID: {total_by_payment_info}")
+    
+#     context = {
+#         'page_obj': page_obj,
+#         'per_page': per_page,
+#         'payment_data': response_data,
+#         'emi_data': emi_data,  # Include emi_data in context
+#         'final_amounts': final_amounts,  # Include final amounts in context
+#         'total_fees_sum': total_fees_sum,  # Include final amounts in context
+#         'total_emi_sums': total_emi_sums,
+#         'total_final_amount_sum': total_final_amount_sum,
+#         'total_single_payment': total_single_payment,
+#         'total_by_payment_info': total_by_payment_info,
+#         'total_single_payment_by_id': total_single_payment_by_id,
+#         'emi_range': range(1, 7),
+#     }
+
+#     return render(request, 'manage_payment_info.html', context)
+
+
 def new_manage_payment_info_view(request):
     try:
         token = Token.objects.get(user=request.user)
@@ -3917,9 +4135,6 @@ def new_manage_payment_info_view(request):
         response = requests.get(api_url, headers=headers)
         response.raise_for_status()
         response_data = response.json()
-        
-        print(f"Response Data ------> {json.dumps(response_data, indent=4)}")
-        
     except requests.exceptions.RequestException as err:
         context = {
             'error': f'Request error occurred: {err}',
@@ -3927,144 +4142,63 @@ def new_manage_payment_info_view(request):
         }
         return render(request, 'manage_payment_info.html', context)
 
-    per_page = request.GET.get('per_page', '10')
+    per_page = int(request.GET.get('per_page', '10'))
     paginator = Paginator(response_data, per_page)
-    page_number = request.GET.get('page')
-    page_obj = paginator.get_page(page_number)
+    page_obj = paginator.get_page(request.GET.get('page'))
 
-    emi_data = []  # List to store EMI details
-    payment_totals = {}  # Dictionary to hold total amounts for each payment_info_id
-    total_emi_sums = {f'emi_{i}': 0 for i in range(1, 7)}  # Dictionary to hold totals for emi_1 to emi_6
-    
+    emi_data = []
+    total_emi_sums = {f'emi_{i}': 0 for i in range(1, 7)}
+    payment_totals = {}
+    final_amounts = {}
+
     for payment in response_data:
         for i in range(1, 7):
-            emi_key = f'emi_{i}_payments'
-            emi_payments = payment.get(emi_key, [])
-
-            if not isinstance(emi_payments, list):
-                # print(f"Expected a list for {emi_key}, but got: {emi_payments}")
-                continue
-
-            total_amount = 0  # Initialize total_amount for this emi_key
-            dates = []  # Initialize dates list for this emi_key
-            payment_info_ids = set()  # Use a set to avoid duplicates
-
-            for emi in emi_payments:
-                if isinstance(emi, dict):
-                    payment_info_id = emi.get('payment_info', None)
-
-                    if payment_info_id is not None:
-                        payment_info_ids.add(payment_info_id)  # Collect unique payment IDs
-                        total_amount += float(emi.get('amount', 0))
-                        if emi['date']:
-                            formatted_date = datetime.strptime(emi['date'], '%Y-%m-%d').strftime('%d-%m-%Y')
-                            dates.append(formatted_date)
-                        else:
-                            print("Date is None for EMI:", emi)
-            # Append to emi_data after processing all EMI payments for the current payment
-            emi_data.append({
-                'emi_key': emi_key,
-                'total_amount': total_amount,
-                'dates': dates,
-                'payment_ids': list(payment_info_ids),  # Convert set to list for context
-            })
-
-            # Sum the total for each emi payments
+            emi_payments = payment.get(f'emi_{i}_payments', [])
+            total_amount = sum(float(emi.get('amount', 0)) for emi in emi_payments if isinstance(emi, dict))
             total_emi_sums[f'emi_{i}'] += total_amount
             
-    # Initialize a dictionary to hold total amounts per payment_info_id
-    payment_totals = {}
-    # First pass to collect total amounts
-    for emi in emi_data:
-        total_amount = emi['total_amount']
-        for payment_id in emi['payment_ids']:
-            if payment_id not in payment_totals:
-                payment_totals[payment_id] = 0
-            payment_totals[payment_id] += total_amount  # Aggregate the total for this payment ID
+            payment_ids = {emi.get('payment_info') for emi in emi_payments if isinstance(emi, dict) and emi.get('payment_info')}
+            emi_data.append({
+                'emi_key': f'emi_{i}_payments',
+                'total_amount': total_amount,
+                'payment_ids': list(payment_ids),
+            })
 
-    # Now calculate the final amounts using the payment_totals
-    final_amounts = {}
-    total_final_amount_sum = 0
-    for payment_id in payment_totals:
-        total_amount = payment_totals[payment_id]
-        # print(f"Total amount for payment_info_id {payment_id}: {total_amount}")
+            for payment_id in payment_ids:
+                payment_totals[payment_id] = payment_totals.get(payment_id, 0) + total_amount
 
-        # Get total fees from PaymentInfo based on payment_id
+    for payment_id, total_amount in payment_totals.items():
         try:
             payment_info = PaymentInfo.objects.get(id=payment_id)
             total_fees = Decimal(payment_info.total_fees)
         except PaymentInfo.DoesNotExist:
             total_fees = Decimal(0)
-            # print(f"No fees found for payment_info_id {payment_id}, setting total fees to 0")
 
-        # print(f"Total Fees for payment_info_id {payment_id}: {total_fees}")
+        final_amounts[payment_id] = total_fees - Decimal(total_amount)
 
-        # Calculate final amount as total_fees - total_amount
-        final_amount = total_fees - Decimal(total_amount)
-        final_amounts[payment_id] = final_amount
-        # print(f"Final Amount for payment_info_id {payment_id}: {final_amount}")
-
-        # Accumulate the sum of final amounts
-        total_final_amount_sum += final_amount
-    
-    # Calculate total fees sum from response_data
-    total_fees_sum = sum(
-        Decimal(entry.get('total_fees', 0)) if entry.get('total_fees') else 0
-        for entry in response_data
+    # Handle single payments
+    total_single_payment = sum(
+        float(sp.get('amount', 0)) for payment in response_data for sp in payment.get('single_payment', [])
     )
-    
-    total_single_payment = 0.0
-    
-    for single_payment in response_data:
-        single_payments = single_payment['single_payment']
-        if single_payments:  # Check if the list is not empty
-            for single_payment in single_payments:
-                if 'amount' in single_payment:  # Ensure 'amount' exists
-                    total_single_payment += float(single_payment['amount'])
-    
-    print(f"Single Payment -----> {total_single_payment}")
-    total_single_payment_by_id = {}  # Dictionary to hold total amounts by single payment ID
-    total_by_payment_info = {}  # Dictionary to hold totals by payment_info ID
-    
-    # Calculate totals for single payments
-    for single_payment in response_data:
-        single_payments = single_payment.get('single_payment', [])
-        for sp in single_payments:
-            sp_id = sp.get('id')
-            amount = float(sp.get('amount', 0))  # Convert to float
-            
-            # Sum by single_payment ID
-            if sp_id not in total_single_payment_by_id:
-                total_single_payment_by_id[sp_id] = 0.0
-            total_single_payment_by_id[sp_id] += amount  # Accumulate the amount
-            
-            # Sum by payment_info ID
-            payment_info_id = sp.get('payment_info')  # Get payment_info ID from single_payment
-            if payment_info_id is not None:
-                if payment_info_id not in total_by_payment_info:
-                    total_by_payment_info[payment_info_id] = 0.0
-                total_by_payment_info[payment_info_id] += amount  # Accumulate for payment_info ID
 
-    # Print debug information
-    print(f"Total Single Payments by ID: {total_single_payment_by_id}")
-    print(f"Total Payments by Payment Info ID: {total_by_payment_info}")
-    
+    total_by_payment_info = {}
+    for payment in response_data:
+        for sp in payment.get('single_payment', []):
+            payment_info_id = sp.get('payment_info')
+            if payment_info_id:
+                total_by_payment_info[payment_info_id] = total_by_payment_info.get(payment_info_id, 0) + float(sp.get('amount', 0))
+
     context = {
         'page_obj': page_obj,
-        'per_page': per_page,
-        'payment_data': response_data,
-        'emi_data': emi_data,  # Include emi_data in context
-        'final_amounts': final_amounts,  # Include final amounts in context
-        'total_fees_sum': total_fees_sum,  # Include final amounts in context
+        'emi_data': emi_data,
+        'final_amounts': final_amounts,
         'total_emi_sums': total_emi_sums,
-        'total_final_amount_sum': total_final_amount_sum,
         'total_single_payment': total_single_payment,
         'total_by_payment_info': total_by_payment_info,
-        'total_single_payment_by_id': total_single_payment_by_id,
-        'emi_range': range(1, 7),
     }
 
     return render(request, 'manage_payment_info.html', context)
+
 
 # def new_installment_update_view(request, id):
 #     payment_info = get_object_or_404(PaymentInfo, id=id)
