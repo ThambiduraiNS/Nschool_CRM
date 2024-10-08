@@ -3069,6 +3069,124 @@ def delete_all_payment_view(request):
             return JsonResponse({'success': False, 'error': 'Invalid JSON'})
     return JsonResponse({'success': False, 'error': 'Invalid request method'})
 
+# @csrf_exempt
+# def export_payment_csv(request):
+#     if request.method == 'POST':
+#         try:
+#             ids = request.POST.get('ids', '').split(',')  # Get the ids from AJAX request
+
+#             # Fetch selected payments based on IDs
+#             selected_payments = PaymentInfo.objects.filter(id__in=ids)
+
+#             if not selected_payments:
+#                 logging.error("No Payment available for the provided IDs.")
+#                 return JsonResponse({'error': 'No Payment available.'}, status=404)
+
+#             # Create the HttpResponse object with the appropriate CSV header
+#             response = HttpResponse(content_type='text/csv')
+#             response['Content-Disposition'] = 'attachment; filename="payment_list_csv.csv"'
+
+#             writer = csv.writer(response)
+
+#             # Write the header row
+#             writer.writerow([
+#                 'Registration No', 'Joining Date', 'Student Name', 'Course Name', 'Course Duration',
+#                 'Fees Type', 'Total Fees', 'Single Payment Amount', 'Single Payment Paid Date',
+#                 'EMI 1 Date', 'EMI 1 Amount',
+#                 'EMI 2 Date', 'EMI 2 Amount',
+#                 'EMI 3 Date', 'EMI 3 Amount',
+#                 'EMI 4 Date', 'EMI 4 Amount',
+#                 'EMI 5 Date', 'EMI 5 Amount',
+#                 'EMI 6 Date', 'EMI 6 Amount',
+#                 'Balance Amount'
+#             ])
+
+#             for payment in selected_payments:
+#                 print(f"Processing payment: {payment}")
+
+#                 # Fetch single payment if exists
+#                 single_payment = SinglePayment.objects.filter(payment_info=payment).first()
+
+#                 # Get all subclasses of BaseEMI
+#                 emi_subclasses = [model for model in apps.get_models() if issubclass(model, BaseEMI)]
+
+#                 # Fetch installments from all subclasses
+#                 installments = []
+#                 for subclass in emi_subclasses:
+#                     installments += list(subclass.objects.filter(payment_info=payment))
+
+#                 # Sort installments by payment date to ensure the latest date is kept
+#                 installments.sort(key=lambda x: x.date if x.date else datetime.min)
+
+#                 emi_dates = ['N/A'] * 6  # Initialize 6 EMI dates (one for each EMI)
+#                 emi_amounts = [Decimal(0)] * 6  # Initialize 6 EMI amounts (one for each EMI)
+
+#                 # Dictionary to store summed amounts by installment type
+#                 emi_amounts_dict = {}
+#                 emi_last_date_dict = {}
+
+#                 # Loop through all installments
+#                 for installment in installments:
+#                     emi_type = installment.__class__.__name__  # Identify the EMI type by its class name
+#                     emi_index = int(emi_type[-1]) - 1  # Get the EMI number (1-6) and convert to index (0-5)
+
+#                     # Sum the amounts for the same EMI and retain the last date
+#                     if emi_index in emi_amounts_dict:
+#                         emi_amounts_dict[emi_index] += Decimal(installment.amount or 0)
+#                     else:
+#                         emi_amounts_dict[emi_index] = Decimal(installment.amount or 0)
+
+#                     # Update the last date for the EMI
+#                     emi_last_date_dict[emi_index] = installment.date
+
+#                 # Now that all installments are processed, populate the emi_dates and emi_amounts lists
+#                 for emi_index in range(6):
+#                     if emi_index in emi_last_date_dict:
+#                         emi_dates[emi_index] = emi_last_date_dict[emi_index].strftime('%d-%m-%Y') if emi_last_date_dict[emi_index] else 'N/A'
+#                     if emi_index in emi_amounts_dict:
+#                         emi_amounts[emi_index] = emi_amounts_dict[emi_index] if emi_amounts_dict[emi_index] > 0 else 'N/A'
+
+#                 # Convert total_fees to Decimal to ensure compatibility
+#                 try:
+#                     total_fees = Decimal(payment.total_fees)
+#                 except Exception as e:
+#                     total_fees = Decimal(0)
+
+#                 # Calculate balance amount
+#                 total_amount_paid = sum([amt if isinstance(amt, Decimal) else Decimal(0) for amt in emi_amounts])
+#                 balance_amount = total_fees - total_amount_paid
+
+#                 # Write data row
+#                 writer.writerow([
+#                     payment.registration_no,
+#                     payment.joining_date,
+#                     payment.student_name,
+#                     payment.course_name,
+#                     payment.duration,
+#                     payment.get_fees_type_display(),  # Get readable label of fees type
+#                     payment.total_fees,
+#                     single_payment.amount if single_payment else 'N/A',  # Single payment amount
+#                     single_payment.paid_date if single_payment else 'N/A',  # Single payment paid date
+#                     emi_dates[0], emi_amounts[0],
+#                     emi_dates[1], emi_amounts[1],
+#                     emi_dates[2], emi_amounts[2],
+#                     emi_dates[3], emi_amounts[3],
+#                     emi_dates[4], emi_amounts[4],
+#                     emi_dates[5], emi_amounts[5],
+#                     balance_amount  # Balance amount
+#                 ])
+
+#             return response
+
+#         except Exception as e:
+#             return JsonResponse({'error': str(e)}, status=500)
+
+#     return HttpResponse(status=400)  # Bad request if not POST or AJAX
+
+import logging
+logger = logging.getLogger(__name__)
+
+
 @csrf_exempt
 def export_payment_csv(request):
     if request.method == 'POST':
@@ -3091,7 +3209,7 @@ def export_payment_csv(request):
             # Write the header row
             writer.writerow([
                 'Registration No', 'Joining Date', 'Student Name', 'Course Name', 'Course Duration',
-                'Fees Type', 'Total Fees', 'Single Payment Amount', 'Single Payment Paid Date',
+                'Fees Type', 'Total Fees', 'Single Payment Amount', 'Single Payment Date',
                 'EMI 1 Date', 'EMI 1 Amount',
                 'EMI 2 Date', 'EMI 2 Amount',
                 'EMI 3 Date', 'EMI 3 Amount',
@@ -3139,7 +3257,7 @@ def export_payment_csv(request):
                     # Update the last date for the EMI
                     emi_last_date_dict[emi_index] = installment.date
 
-                # Now that all installments are processed, populate the emi_dates and emi_amounts lists
+                # Populate the emi_dates and emi_amounts lists
                 for emi_index in range(6):
                     if emi_index in emi_last_date_dict:
                         emi_dates[emi_index] = emi_last_date_dict[emi_index].strftime('%d-%m-%Y') if emi_last_date_dict[emi_index] else 'N/A'
@@ -3147,41 +3265,168 @@ def export_payment_csv(request):
                         emi_amounts[emi_index] = emi_amounts_dict[emi_index] if emi_amounts_dict[emi_index] > 0 else 'N/A'
 
                 # Convert total_fees to Decimal to ensure compatibility
-                try:
-                    total_fees = Decimal(payment.total_fees)
-                except Exception as e:
-                    total_fees = Decimal(0)
+                total_fees = Decimal(payment.total_fees) if payment.total_fees else Decimal(0)
+
+                # Get single payment amount and date
+                single_payment_amount = single_payment.amount if single_payment else Decimal(0)
+                single_payment_date = single_payment.date.strftime('%d-%m-%Y') if single_payment else 'N/A'
+
+                # Calculate total amount paid including EMI amounts and single payment
+                total_amount_paid = sum(amt if isinstance(amt, Decimal) else Decimal(0) for amt in emi_amounts) + single_payment_amount
 
                 # Calculate balance amount
-                total_amount_paid = sum([amt if isinstance(amt, Decimal) else Decimal(0) for amt in emi_amounts])
                 balance_amount = total_fees - total_amount_paid
 
                 # Write data row
                 writer.writerow([
                     payment.registration_no,
-                    payment.joining_date,
+                    payment.joining_date.strftime('%d-%m-%Y'),
                     payment.student_name,
                     payment.course_name,
                     payment.duration,
                     payment.get_fees_type_display(),  # Get readable label of fees type
-                    payment.total_fees,
-                    single_payment.amount if single_payment else 'N/A',  # Single payment amount
-                    single_payment.paid_date if single_payment else 'N/A',  # Single payment paid date
+                    total_fees,
+                    single_payment_amount,  # Single payment amount
+                    single_payment_date,  # Single payment date
                     emi_dates[0], emi_amounts[0],
                     emi_dates[1], emi_amounts[1],
                     emi_dates[2], emi_amounts[2],
                     emi_dates[3], emi_amounts[3],
                     emi_dates[4], emi_amounts[4],
                     emi_dates[5], emi_amounts[5],
-                    balance_amount  # Balance amount
+                    balance_amount  # Updated balance amount
                 ])
 
             return response
 
         except Exception as e:
+            logging.error(f"Error exporting payment CSV: {str(e)}")
             return JsonResponse({'error': str(e)}, status=500)
 
     return HttpResponse(status=400)  # Bad request if not POST or AJAX
+
+
+
+# @csrf_exempt
+# def export_payment_excel(request):
+#     if request.method == 'POST':
+#         try:
+#             ids = request.POST.get('ids', '').split(',')  # Get the ids from AJAX request
+
+#             # Fetch selected payments based on IDs
+#             selected_payments = PaymentInfo.objects.filter(id__in=ids)
+            
+#             if not selected_payments:
+#                 return JsonResponse({'error': 'No Payment available.'}, status=404)
+
+#             # Create an Excel workbook
+#             wb = openpyxl.Workbook()
+#             ws = wb.active
+
+#             # Define header row
+#             headers = [
+#                 'Registration No', 'Joining Date', 'Student Name', 'Course Name', 'Course Duration', 
+#                 'Fees Type', 'Total Fees', 'Single Payment Date', 'Single Payment Mode', 'Single Payment Amount',
+#                 'EMI 1 Date', 'EMI 1 Amount', 'EMI 2 Date', 'EMI 2 Amount', 
+#                 'EMI 3 Date', 'EMI 3 Amount', 'EMI 4 Date', 'EMI 4 Amount',
+#                 'EMI 5 Date', 'EMI 5 Amount', 'EMI 6 Date', 'EMI 6 Amount', 
+#                 'Balance Amount'
+#             ]
+            
+#             # Append the header row to the sheet
+#             ws.append(headers)
+
+#             for payment in selected_payments:
+#                 # Fetch single payment if exists
+#                 single_payment = SinglePayment.objects.filter(payment_info=payment).first()
+
+#                 # Get all subclasses of BaseEMI
+#                 emi_subclasses = [model for model in apps.get_models() if issubclass(model, BaseEMI)]
+
+#                 # Fetch installments from all subclasses
+#                 installments = []
+#                 for subclass in emi_subclasses:
+#                     installments += list(subclass.objects.filter(payment_info=payment))
+
+#                 # Sort installments by payment date to ensure the latest date is kept
+#                 installments.sort(key=lambda x: x.date if x.date else datetime.min)
+
+#                 emi_dates = ['N/A'] * 6  # Initialize 6 EMI dates
+#                 emi_amounts = ['N/A'] * 6  # Initialize 6 EMI amounts
+
+#                 # Dictionary to store summed amounts by installment type
+#                 emi_amounts_dict = {}
+#                 emi_last_date_dict = {}
+
+#                 # Loop through all installments
+#                 for installment in installments:
+#                     emi_type = installment.__class__.__name__  # Identify the EMI type by its class name
+#                     emi_index = int(emi_type[-1]) - 1  # Get the EMI number (1-6) and convert to index (0-5)
+
+#                     # Sum the amounts for the same EMI and retain the last date
+#                     if emi_index in emi_amounts_dict:
+#                         emi_amounts_dict[emi_index] += Decimal(installment.amount or 0)
+#                     else:
+#                         emi_amounts_dict[emi_index] = Decimal(installment.amount or 0)
+
+#                     # Update the last date for the EMI
+#                     emi_last_date_dict[emi_index] = installment.date
+
+#                 # Populate the emi_dates and emi_amounts lists
+#                 for emi_index in range(6):
+#                     if emi_index in emi_last_date_dict:
+#                         emi_dates[emi_index] = emi_last_date_dict[emi_index].strftime('%d-%m-%Y') if emi_last_date_dict[emi_index] else 'N/A'
+#                     if emi_index in emi_amounts_dict:
+#                         # If amount is 0 or None, return 'N/A'
+#                         emi_amounts[emi_index] = emi_amounts_dict[emi_index] if emi_amounts_dict[emi_index] > 0 else 'N/A'
+
+#                 # Convert total_fees to Decimal to ensure compatibility
+#                 try:
+#                     total_fees = Decimal(payment.total_fees)
+#                 except Exception as e:
+#                     total_fees = Decimal(0)
+
+#                 # Calculate balance amount
+#                 total_amount_paid = sum([amt if isinstance(amt, Decimal) else Decimal(0) for amt in emi_amounts])
+#                 balance_amount = total_fees - total_amount_paid
+
+#                 # Write data row
+#                 ws.append([
+#                     payment.registration_no,
+#                     payment.joining_date,
+#                     payment.student_name,
+#                     payment.course_name,
+#                     payment.duration,
+#                     payment.get_fees_type_display(),  # Get readable label of fees type
+#                     payment.total_fees,
+#                     single_payment.date.strftime('%d-%m-%Y') if single_payment else 'N/A',  # Single payment date
+#                     single_payment.get_payment_mode_display() if single_payment else 'N/A',  # Single payment mode
+#                     single_payment.amount if single_payment and single_payment.amount else 'N/A',  # Single payment amount
+#                     emi_dates[0], emi_amounts[0],
+#                     emi_dates[1], emi_amounts[1],
+#                     emi_dates[2], emi_amounts[2],
+#                     emi_dates[3], emi_amounts[3],
+#                     emi_dates[4], emi_amounts[4],
+#                     emi_dates[5], emi_amounts[5],
+#                     balance_amount  # Balance amount
+#                 ])
+
+#             # Create an in-memory file-like object to save the workbook
+#             output = BytesIO()
+#             wb.save(output)
+#             output.seek(0)
+
+#             # Create the HTTP response with Excel content type and attachment header
+#             response = HttpResponse(output, content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+#             response['Content-Disposition'] = 'attachment; filename="payment_list.xlsx"'
+            
+#             return response
+
+#         except Exception as e:
+#             return JsonResponse({'error': str(e)}, status=500)
+
+#     # Handle GET request or non-AJAX POST request here if needed
+#     return HttpResponse(status=400)  # Bad request if not POST or AJAX
 
 @csrf_exempt
 def export_payment_excel(request):
@@ -3259,25 +3504,29 @@ def export_payment_excel(request):
                 # Convert total_fees to Decimal to ensure compatibility
                 try:
                     total_fees = Decimal(payment.total_fees)
-                except Exception as e:
+                except Exception:
                     total_fees = Decimal(0)
 
-                # Calculate balance amount
+                # Calculate total amount paid including EMI amounts and single payment
                 total_amount_paid = sum([amt if isinstance(amt, Decimal) else Decimal(0) for amt in emi_amounts])
+                single_payment_amount = single_payment.amount if single_payment and single_payment.amount else Decimal(0)
+                total_amount_paid += single_payment_amount
+
+                # Calculate balance amount
                 balance_amount = total_fees - total_amount_paid
 
                 # Write data row
                 ws.append([
                     payment.registration_no,
-                    payment.joining_date,
+                    payment.joining_date.strftime('%d-%m-%Y'),  # Format the joining date
                     payment.student_name,
                     payment.course_name,
                     payment.duration,
                     payment.get_fees_type_display(),  # Get readable label of fees type
-                    payment.total_fees,
+                    total_fees,
                     single_payment.date.strftime('%d-%m-%Y') if single_payment else 'N/A',  # Single payment date
                     single_payment.get_payment_mode_display() if single_payment else 'N/A',  # Single payment mode
-                    single_payment.amount if single_payment and single_payment.amount else 'N/A',  # Single payment amount
+                    single_payment_amount,  # Single payment amount
                     emi_dates[0], emi_amounts[0],
                     emi_dates[1], emi_amounts[1],
                     emi_dates[2], emi_amounts[2],
@@ -3293,7 +3542,10 @@ def export_payment_excel(request):
             output.seek(0)
 
             # Create the HTTP response with Excel content type and attachment header
-            response = HttpResponse(output, content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+            response = HttpResponse(
+                output,
+                content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+            )
             response['Content-Disposition'] = 'attachment; filename="payment_list.xlsx"'
             
             return response
@@ -3301,10 +3553,93 @@ def export_payment_excel(request):
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=500)
 
-    # Handle GET request or non-AJAX POST request here if needed
-    return HttpResponse(status=400)  # Bad request if not POST or AJAX
-
 from django.utils import timezone
+
+# @csrf_protect
+# @require_POST
+# def export_payment_pdf(request):
+#     ids = request.POST.get('ids', '').split(',')
+#     selected_payments = PaymentInfo.objects.filter(id__in=ids)
+
+#     if not selected_payments:
+#         return JsonResponse({'error': 'No Payment available.'}, status=404)
+
+#     attribute_list = []
+#     for payment in selected_payments:
+#         # Fetch single payment if exists
+#         single_payment = SinglePayment.objects.filter(payment_info=payment).first()
+
+#         # Get all subclasses of BaseEMI
+#         emi_subclasses = [model for model in apps.get_models() if issubclass(model, BaseEMI)]
+
+#         # Fetch installments from all subclasses
+#         installments = []
+#         for subclass in emi_subclasses:
+#             installments += list(subclass.objects.filter(payment_info=payment))
+
+#         # Sort installments by payment date to ensure the latest date is kept
+#         installments.sort(key=lambda x: x.date if x.date else timezone.datetime.min)
+
+#         emi_dates = ['N/A'] * 6  # Initialize 6 EMI dates
+#         emi_amounts = ['N/A'] * 6  # Initialize 6 EMI amounts
+
+#         # Dictionary to store summed amounts by installment type
+#         emi_amounts_dict = {}
+#         emi_last_date_dict = {}
+
+#         # Loop through all installments
+#         for installment in installments:
+#             emi_type = installment.__class__.__name__  # Identify the EMI type by its class name
+#             emi_index = int(emi_type[-1]) - 1  # Get the EMI number (1-6) and convert to index (0-5)
+
+#             # Sum the amounts for the same EMI and retain the last date
+#             if emi_index in emi_amounts_dict:
+#                 emi_amounts_dict[emi_index] += Decimal(installment.amount or 0)
+#             else:
+#                 emi_amounts_dict[emi_index] = Decimal(installment.amount or 0)
+
+#             # Update the last date for the EMI
+#             emi_last_date_dict[emi_index] = installment.date
+
+#         # Populate the emi_dates and emi_amounts lists
+#         for emi_index in range(6):
+#             if emi_index in emi_last_date_dict:
+#                 emi_dates[emi_index] = emi_last_date_dict[emi_index].strftime('%d-%m-%Y') if emi_last_date_dict[emi_index] else 'N/A'
+#             if emi_index in emi_amounts_dict:
+#                 # If amount is 0 or None, return 'N/A'
+#                 emi_amounts[emi_index] = emi_amounts_dict[emi_index] if emi_amounts_dict[emi_index] > 0 else 'N/A'
+
+#         # Convert total_fees to Decimal to ensure compatibility
+#         try:
+#             total_fees = Decimal(payment.total_fees)
+#         except Exception as e:
+#             total_fees = Decimal(0)
+
+#         # Calculate balance amount
+#         total_amount_paid = sum([amt if isinstance(amt, Decimal) else Decimal(0) for amt in emi_amounts])
+#         balance_amount = total_fees - total_amount_paid
+
+#         # Append payment details to attribute_list
+#         attribute_list.append({
+#             'registration_no': payment.registration_no,
+#             'joining_date': payment.joining_date,
+#             'student_name': payment.student_name,
+#             'course_name': payment.course_name,
+#             'duration': payment.duration,
+#             'total_fees': payment.total_fees,
+#             'fees_type': payment.get_fees_type_display(),
+#             'single_payment_date': single_payment.date.strftime('%Y-%m-%d') if single_payment else '',
+#             'single_payment_mode': single_payment.get_payment_mode_display() if single_payment else '',
+#             'single_payment_amount': single_payment.amount if single_payment else 'N/A',
+#             'emi_dates': emi_dates,
+#             'emi_amounts': emi_amounts,
+#             'total_payment': total_amount_paid,
+#             'balance': balance_amount
+#         })
+
+#     content = {'payment_list': attribute_list}
+#     return renderers.render_to_pdf('payment_data_list.html', content)
+
 
 @csrf_protect
 @require_POST
@@ -3363,24 +3698,28 @@ def export_payment_pdf(request):
         # Convert total_fees to Decimal to ensure compatibility
         try:
             total_fees = Decimal(payment.total_fees)
-        except Exception as e:
+        except Exception:
             total_fees = Decimal(0)
 
-        # Calculate balance amount
+        # Calculate total amount paid including EMI amounts and single payment
         total_amount_paid = sum([amt if isinstance(amt, Decimal) else Decimal(0) for amt in emi_amounts])
+        single_payment_amount = single_payment.amount if single_payment and single_payment.amount else Decimal(0)
+        total_amount_paid += single_payment_amount
+
+        # Calculate balance amount
         balance_amount = total_fees - total_amount_paid
 
         # Append payment details to attribute_list
         attribute_list.append({
             'registration_no': payment.registration_no,
-            'joining_date': payment.joining_date,
+            'joining_date': payment.joining_date.strftime('%d-%m-%Y'),  # Format joining date
             'student_name': payment.student_name,
             'course_name': payment.course_name,
             'duration': payment.duration,
-            'total_fees': payment.total_fees,
+            'total_fees': total_fees,
             'fees_type': payment.get_fees_type_display(),
-            'single_payment_date': single_payment.date.strftime('%Y-%m-%d') if single_payment else '',
-            'single_payment_mode': single_payment.get_payment_mode_display() if single_payment else '',
+            'single_payment_date': single_payment.date.strftime('%d-%m-%Y') if single_payment and single_payment.date else 'N/A',  # Format single payment date
+            'single_payment_mode': single_payment.get_payment_mode_display() if single_payment else 'N/A',
             'single_payment_amount': single_payment.amount if single_payment else 'N/A',
             'emi_dates': emi_dates,
             'emi_amounts': emi_amounts,
@@ -3390,6 +3729,7 @@ def export_payment_pdf(request):
 
     content = {'payment_list': attribute_list}
     return renderers.render_to_pdf('payment_data_list.html', content)
+
 
 # class SearchPaymentResultsView(ListView):
 #     model = PaymentInfo
@@ -3536,6 +3876,9 @@ class SearchPaymentResultsView(ListView):
                 if payment_info_id:
                     total_by_payment_info[payment_info_id] = total_by_payment_info.get(payment_info_id, 0) + float(sp.amount)
 
+        # Calculate total_final_amount_sum
+        total_final_amount_sum = sum(final_amounts.values())
+        
         # Update the context with calculated values
         context.update({
             'emi_data': emi_data,
@@ -3543,6 +3886,7 @@ class SearchPaymentResultsView(ListView):
             'total_emi_sums': total_emi_sums,
             'total_single_payment': total_single_payment,
             'total_by_payment_info': total_by_payment_info,
+            'total_final_amount_sum': total_final_amount_sum,
         })
 
         return context
@@ -3706,6 +4050,8 @@ class SearchPaymentResultsView(ListView):
 def single_payment_update_view(request, id):
     payment_info = get_object_or_404(PaymentInfo, id=id)
     
+    custom_errors = [] # Initialize a custom error list
+    
     # Count existing payments
     existing_payments = SinglePayment.objects.filter(
         payment_info=payment_info,
@@ -3726,10 +4072,10 @@ def single_payment_update_view(request, id):
         return render(request, 'single_payment.html', {'payment_info': payment_info})
     
     if existing_payments_count == 2:
-        messages.error(request, f"You have made {existing_payments_count} payments. Only 1 payment is allowed.")
+        custom_errors.append(f"You have made {existing_payments_count} payments. Only 1 payment is allowed.")
         if remaining_amount <= 0:
-            messages.error(request, "You have already made 2 payments. No further payments are allowed.")
-            return render(request, 'single_payment.html', {'payment_info': payment_info})
+            custom_errors.append(f"You have already made 2 payments. No further payments are allowed.")
+            return render(request, 'single_payment.html', {'payment_info': payment_info, 'custom_errors': custom_errors})
     
     # if existing_payments_count == 2:
     #     messages.warning(request, "You have made 1 payments. Only 1 payment is allowed.")
@@ -3744,6 +4090,10 @@ def single_payment_update_view(request, id):
         # Ensure the payment amount does not exceed the remaining amount
         if float(payment_amount) > remaining_amount:
             messages.error(request, f"You cannot exceed the remaining amount {remaining_amount}.")
+            return render(request, 'single_payment.html', {'payment_info': payment_info})
+        
+        if existing_payments_count == 2 and float(payment_amount) != remaining_amount:
+            messages.error(request, f"You must pay the remaining amount {remaining_amount}.")
             return render(request, 'single_payment.html', {'payment_info': payment_info})
         
         payment_data = {    
