@@ -14,6 +14,8 @@
 <link rel="stylesheet" href="{% static '/css/manage_enquiry.css' %}">
 <link rel="stylesheet" href="{% static '/css/manage_enrollment.css' %}">
 <link rel="stylesheet" href="{% static '/css/manage_payment.css' %}">
+<!-- Flatpickr CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 {% endblock %}
 
 {% block header %}
@@ -66,8 +68,8 @@
                     <div class="col-7 d-flex pe-0">
                         <form class="search-form" action="{% url 'search_payment' %}" method="get">
                             <input type="text" name="q" class="search-input" placeholder="Search" autocomplete="off">
-                            <input type="date" name="start_date" class="start_date">
-                            <input type="date" name="end_date" class="end_date">
+                            <input type="date" id="start_date" name="start_date" class="start_date">
+                            <input type="date" id="end_date" name="end_date" class="end_date">
                             <input type="submit" value="submit" class="btn submit-btn">
                             <button type="submit" class="search-button">
                                 {% bs_icon 'search' %}
@@ -404,7 +406,7 @@
                                         <!-- Total Fees Amount -->
                                         <td colspan="7"></td>
                                         <td class="tdata">
-                                            <p class="total_pending_amount mb-0 py-2 text-right">
+                                            <p class="total_pending_amount mb-0 py-2 text-right tfess fw-bold">
                                                 {{ total_fees_sum }}
                                             </p>
                                         </td>
@@ -412,45 +414,45 @@
                                         <!-- Total Single payment Amount -->
                                         <td colspan="1"></td>
                                         <td class="tdata">
-                                            <p class="total_pending_amount mb-0 py-2 text-right">{{ total_single_payment }}</p>
+                                            <p class="total_pending_amount mb-0 py-2 text-right text-success fw-bold">{{ total_single_payment }}</p>
                                         </td>
 
                                         <!-- Total EMI_1 amount -->
                                         <td colspan="1"></td>
                                         <td class="tdata">
-                                            <p class="total_pending_amount mb-0 py-2 text-right">{{ total_emi_sums.emi_1 }}</p>
+                                            <p class="total_pending_amount mb-0 py-2 text-right text-success fw-bold">{{ total_emi_sums.emi_1 }}</p>
                                         </td>
                                         
                                         <!-- Total EMI_2 amount -->
                                         <td colspan="1"></td>
                                         <td class="tdata">
-                                            <p class="total_pending_amount mb-0 py-2 text-right">{{ total_emi_sums.emi_2 }}</p>
+                                            <p class="total_pending_amount mb-0 py-2 text-right text-success fw-bold ">{{ total_emi_sums.emi_2 }}</p>
                                         </td>
                                         <!-- Total EMI_3 amount -->
                                         <td colspan="1"></td>
                                         <td class="tdata">
-                                            <p class="total_pending_amount mb-0 py-2 text-right">{{ total_emi_sums.emi_3 }}</p>
+                                            <p class="total_pending_amount mb-0 py-2 text-right text-success fw-bold">{{ total_emi_sums.emi_3 }}</p>
                                         </td>
                                         <!-- Total EMI_4 amount -->
                                         <td colspan="1"></td>
                                         <td class="tdata">
-                                            <p class="total_pending_amount mb-0 py-2 text-right">{{ total_emi_sums.emi_4 }}</p>
+                                            <p class="total_pending_amount mb-0 py-2 text-right text-success fw-bold ">{{ total_emi_sums.emi_4 }}</p>
                                         </td>
 
                                         <!-- Total EMI_5 amount -->
                                         <td colspan="1"></td>
                                         <td class="tdata">
-                                            <p class="total_pending_amount mb-0 py-2 text-right">{{ total_emi_sums.emi_5 }}</p>
+                                            <p class="total_pending_amount mb-0 py-2 text-right text-success fw-bold ">{{ total_emi_sums.emi_5 }}</p>
                                         </td>
 
                                         <!-- Total EMI_6 amount -->
                                         <td colspan="1"></td>
                                         <td class="tdata">
-                                            <p class="total_pending_amount mb-0 py-2 text-right">{{ total_emi_sums.emi_6 }}</p>
+                                            <p class="total_pending_amount mb-0 py-2 text-right text-success fw-bold ">{{ total_emi_sums.emi_6 }}</p>
                                         </td>
 
                                         <td class="tdata">
-                                            <p class="total_pending_amount mb-0 py-2 text-right">{{ total_final_amount_sum }}</p>
+                                            <p class="total_pending_amount mb-0 py-2 text-right fw-bold">{{ total_final_amount_sum }}</p>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -475,6 +477,8 @@
 
 
 {% block scripts %}
+<!-- Flatpickr JavaScript -->
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script>
 
     function showMessage() {
@@ -874,6 +878,30 @@
             textDisplay.title = ''; // No tooltip if text is 100 characters or less
         }
     }
+
+    document.addEventListener('DOMContentLoaded', function() {
+
+        flatpickr("#start_date", {
+            dateFormat: "d-m-Y", // Customize the format to "DD-MM-YYYY"
+            altInput: true,       // Use an alternative input for display
+            altFormat: "d/m/Y",   // Format for the alternative input
+            allowInput: true,
+            onReady: function() {
+                // Set placeholder directly after initializing Flatpickr
+                this.altInput.placeholder = "dd/mm/yyyy"; 
+            },
+        });
+        flatpickr("#end_date", {
+            dateFormat: "d-m-Y", // Customize the format to "DD-MM-YYYY"
+            altInput: true,       // Use an alternative input for display
+            altFormat: "d/m/Y",   // Format for the alternative input
+            allowInput: true,
+            onReady: function() {
+                // Set placeholder directly after initializing Flatpickr
+                this.altInput.placeholder = "dd/mm/yyyy"; 
+            },
+        });
+    });
 
 </script>
 {% endblock %}

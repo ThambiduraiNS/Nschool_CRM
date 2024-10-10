@@ -164,6 +164,21 @@
                                         </span>
                                     </div>
                                 </div>
+
+                                <!-- total fees -->
+                                <div class="col-12 col-md-6 pe-md-0" id="duration_div">
+                                    <div class="user-input-wrp ms-4 mt-md-4">
+                                        <input type="text" name="total_fees" value="{{total_fees}}" id="total_fees" class="form-control"
+                                            aria-label="total_fees" placeholder=" " autocomplete="off" autofocus>
+                                        <label class="floating-label">&nbsp;Total Fees <span class="required">*</span> &nbsp;</label>
+                                        <span id="total_fees_error" class="error-div">
+                                            {% if errors.total_fees %}
+                                                    {{errors.total_fees}}
+                                            {% endif %}
+                                        </span>
+                                    </div>
+                                </div>
+
                                 <!-- single payment -->
                                 <!-- Payment date -->
                                 <div class="col-12 col-md-6 pe-md-0" id="payment_date_div" style="display: none;">
@@ -239,7 +254,7 @@
                                 </div>
                                 
                                 <!-- total fees -->
-                                <div class="col-12 col-md-6 pe-md-0" id="duration_div">
+                                <!-- <div class="col-12 col-md-6 pe-md-0" id="duration_div">
                                     <div class="user-input-wrp ms-4 mt-md-4">
                                         <input type="text" name="total_fees" value="{{total_fees}}" id="total_fees" class="form-control"
                                             aria-label="total_fees" placeholder=" " autocomplete="off" autofocus>
@@ -250,7 +265,7 @@
                                             {% endif %}
                                         </span>
                                     </div>
-                                </div>
+                                </div> -->
                                 
                                 <!-- EMI AMount -->
                                 <div class="col-12 col-md-6 p-md-0" id="installment_amount_div" style="display: none;">

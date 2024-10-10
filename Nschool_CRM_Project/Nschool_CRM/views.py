@@ -60,6 +60,10 @@ from django.core.exceptions import ValidationError
 
 from django.conf import settings
 
+import logging
+
+logger = logging.getLogger(__name__)
+
 EMI_MODELS = getattr(settings, 'EMI_MODELS', {})
 
 @csrf_protect
@@ -459,10 +463,6 @@ def update_user_view(request, id):
 # create APIS
 
 # user login api
-
-import logging
-
-logger = logging.getLogger(__name__)
 
 @api_view(['POST'])
 @permission_classes([AllowAny])
@@ -3183,8 +3183,7 @@ def delete_all_payment_view(request):
 
 #     return HttpResponse(status=400)  # Bad request if not POST or AJAX
 
-import logging
-logger = logging.getLogger(__name__)
+
 
 
 @csrf_exempt
@@ -3555,92 +3554,6 @@ def export_payment_excel(request):
 
 from django.utils import timezone
 
-# @csrf_protect
-# @require_POST
-# def export_payment_pdf(request):
-#     ids = request.POST.get('ids', '').split(',')
-#     selected_payments = PaymentInfo.objects.filter(id__in=ids)
-
-#     if not selected_payments:
-#         return JsonResponse({'error': 'No Payment available.'}, status=404)
-
-#     attribute_list = []
-#     for payment in selected_payments:
-#         # Fetch single payment if exists
-#         single_payment = SinglePayment.objects.filter(payment_info=payment).first()
-
-#         # Get all subclasses of BaseEMI
-#         emi_subclasses = [model for model in apps.get_models() if issubclass(model, BaseEMI)]
-
-#         # Fetch installments from all subclasses
-#         installments = []
-#         for subclass in emi_subclasses:
-#             installments += list(subclass.objects.filter(payment_info=payment))
-
-#         # Sort installments by payment date to ensure the latest date is kept
-#         installments.sort(key=lambda x: x.date if x.date else timezone.datetime.min)
-
-#         emi_dates = ['N/A'] * 6  # Initialize 6 EMI dates
-#         emi_amounts = ['N/A'] * 6  # Initialize 6 EMI amounts
-
-#         # Dictionary to store summed amounts by installment type
-#         emi_amounts_dict = {}
-#         emi_last_date_dict = {}
-
-#         # Loop through all installments
-#         for installment in installments:
-#             emi_type = installment.__class__.__name__  # Identify the EMI type by its class name
-#             emi_index = int(emi_type[-1]) - 1  # Get the EMI number (1-6) and convert to index (0-5)
-
-#             # Sum the amounts for the same EMI and retain the last date
-#             if emi_index in emi_amounts_dict:
-#                 emi_amounts_dict[emi_index] += Decimal(installment.amount or 0)
-#             else:
-#                 emi_amounts_dict[emi_index] = Decimal(installment.amount or 0)
-
-#             # Update the last date for the EMI
-#             emi_last_date_dict[emi_index] = installment.date
-
-#         # Populate the emi_dates and emi_amounts lists
-#         for emi_index in range(6):
-#             if emi_index in emi_last_date_dict:
-#                 emi_dates[emi_index] = emi_last_date_dict[emi_index].strftime('%d-%m-%Y') if emi_last_date_dict[emi_index] else 'N/A'
-#             if emi_index in emi_amounts_dict:
-#                 # If amount is 0 or None, return 'N/A'
-#                 emi_amounts[emi_index] = emi_amounts_dict[emi_index] if emi_amounts_dict[emi_index] > 0 else 'N/A'
-
-#         # Convert total_fees to Decimal to ensure compatibility
-#         try:
-#             total_fees = Decimal(payment.total_fees)
-#         except Exception as e:
-#             total_fees = Decimal(0)
-
-#         # Calculate balance amount
-#         total_amount_paid = sum([amt if isinstance(amt, Decimal) else Decimal(0) for amt in emi_amounts])
-#         balance_amount = total_fees - total_amount_paid
-
-#         # Append payment details to attribute_list
-#         attribute_list.append({
-#             'registration_no': payment.registration_no,
-#             'joining_date': payment.joining_date,
-#             'student_name': payment.student_name,
-#             'course_name': payment.course_name,
-#             'duration': payment.duration,
-#             'total_fees': payment.total_fees,
-#             'fees_type': payment.get_fees_type_display(),
-#             'single_payment_date': single_payment.date.strftime('%Y-%m-%d') if single_payment else '',
-#             'single_payment_mode': single_payment.get_payment_mode_display() if single_payment else '',
-#             'single_payment_amount': single_payment.amount if single_payment else 'N/A',
-#             'emi_dates': emi_dates,
-#             'emi_amounts': emi_amounts,
-#             'total_payment': total_amount_paid,
-#             'balance': balance_amount
-#         })
-
-#     content = {'payment_list': attribute_list}
-#     return renderers.render_to_pdf('payment_data_list.html', content)
-
-
 @csrf_protect
 @require_POST
 def export_payment_pdf(request):
@@ -3730,60 +3643,6 @@ def export_payment_pdf(request):
     content = {'payment_list': attribute_list}
     return renderers.render_to_pdf('payment_data_list.html', content)
 
-
-# class SearchPaymentResultsView(ListView):
-#     model = PaymentInfo
-#     template_name = 'search_payment_result.html'
-#     context_object_name = 'payments'
-#     paginate_by = 10
-
-#     def get_queryset(self):
-#         start_date = self.request.GET.get("start_date", "")
-#         end_date = self.request.GET.get("end_date", "")
-#         query = self.request.GET.get("q", "")
-
-#         object_list = PaymentInfo.objects.prefetch_related('single_payment', 'emi_1_payments', 'emi_2_payments', 'emi_3_payments', 'emi_4_payments', 'emi_5_payments', 'emi_6_payments').all()
-
-#         # Apply text search if query is provided
-#         if query:
-#             emi_filters = Q()
-#             for i in range(1, 7):  # Loop through EMI payments
-#                 emi_filters |= Q(**{f'emi_{i}_payments__payment_mode__icontains': query}) | \
-#                                Q(**{f'emi_{i}_payments__emi__icontains': query}) | \
-#                                Q(**{f'emi_{i}_payments__upi_transaction_id__icontains': query}) | \
-#                                Q(**{f'emi_{i}_payments__upi_app_name__icontains': query}) | \
-#                                Q(**{f'emi_{i}_payments__refference_no__icontains': query})
-
-#             # Combine all filters
-#             object_list = object_list.filter(
-#                 Q(registration_no__icontains=query) |
-#                 Q(joining_date__icontains=query) |
-#                 Q(student_name__icontains=query) |
-#                 Q(course_name__icontains=query) |
-#                 Q(duration__icontains=query) |
-#                 Q(total_fees__icontains=query) |
-#                 Q(fees_type__icontains=query) |
-#                 Q(single_payment__payment_info_id__icontains=query) |
-#                 Q(single_payment__payment_mode__icontains=query) |
-#                 Q(single_payment__upi_transaction_id__icontains=query) |
-#                 Q(single_payment__upi_app_name__icontains=query) |
-#                 emi_filters
-#             ).distinct()
-
-#         # Apply date range filter if valid dates are provided
-#         if start_date and end_date:
-#             try:
-#                 start_date = datetime.strptime(start_date, '%Y-%m-%d').date()
-#                 end_date = datetime.strptime(end_date, '%Y-%m-%d').date()
-#                 object_list = object_list.filter(joining_date__range=(start_date, end_date))
-#             except ValueError:
-#                 messages.error(self.request, "Invalid date format. Please use YYYY-MM-DD.")
-
-#         # Optimize query by selecting related objects; ensure these are also correct
-#         object_list = object_list.select_related('single_payment')
-
-#         return object_list
-
 class SearchPaymentResultsView(ListView):
     model = PaymentInfo
     template_name = 'search_payment_result.html'
@@ -3791,8 +3650,30 @@ class SearchPaymentResultsView(ListView):
     paginate_by = 10
 
     def get_queryset(self):
-        start_date = self.request.GET.get("start_date", "")
-        end_date = self.request.GET.get("end_date", "")
+        start = self.request.GET.get("start_date", "")
+        print(f"start Date : {start}")
+        end = self.request.GET.get("end_date", "")
+        
+        print(f"End Date : {end}")
+        
+        # Initialize dates to None
+        start_date = None
+        end_date = None
+        
+        if start:
+            try:
+                start_date = datetime.strptime(start, '%d-%m-%Y').date()  # Adjusted format
+            except ValueError:
+                messages.error(self.request, "Invalid start date format. Please use DD-MM-YYYY.")
+        
+        if end:
+            try:
+                end_date = datetime.strptime(end, '%d-%m-%Y').date()  # Adjusted format
+            except ValueError:
+                messages.error(self.request, "Invalid end date format. Please use DD-MM-YYYY.")
+        
+        start_date = start_date
+        end_date = end_date
         query = self.request.GET.get("q", "")
 
         object_list = PaymentInfo.objects.prefetch_related(
@@ -3815,25 +3696,21 @@ class SearchPaymentResultsView(ListView):
 
         # Apply date range filter if valid dates are provided
         if start_date and end_date:
-            try:
-                start_date = datetime.strptime(start_date, '%Y-%m-%d').date()
-                end_date = datetime.strptime(end_date, '%Y-%m-%d').date()
-                object_list = object_list.filter(joining_date__range=(start_date, end_date))
-            except ValueError:
-                messages.error(self.request, "Invalid date format. Please use YYYY-MM-DD.")
+            object_list = object_list.filter(joining_date__range=(start_date, end_date))
         
-        return object_list
+        return object_list.order_by('-joining_date')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
         # Initialize variables
         emi_data = []
-        total_emi_sums = {f'emi_{i}': 0 for i in range(1, 7)}
+        total_emi_sums = {f'emi_{i}': Decimal(0) for i in range(1, 7)}  # Start with Decimal(0)
         payment_totals = {}
         final_amounts = {}
-        total_single_payment = 0
+        total_single_payment = Decimal(0)  # Initialize as Decimal(0)
         total_by_payment_info = {}
+        balance = Decimal(0)
 
         # Get the filtered queryset
         payments = self.get_queryset()
@@ -3841,10 +3718,10 @@ class SearchPaymentResultsView(ListView):
         # Calculate values based on the payments queryset
         for payment in payments:
             for i in range(1, 7):
-                emi_payments = getattr(payment, f'emi_{i}_payments').all()  # Use related manager correctly
-                total_amount = sum(float(emi.amount) for emi in emi_payments)
-                total_emi_sums[f'emi_{i}'] += total_amount
-                
+                emi_payments = getattr(payment, f'emi_{i}_payments').all()
+                total_amount = sum(Decimal(emi.amount) for emi in emi_payments)  # Ensure all amounts are Decimal
+                total_emi_sums[f'emi_{i}'] += total_amount  # This now works
+
                 payment_ids = {emi.payment_info.id for emi in emi_payments if emi.payment_info}
                 emi_data.append({
                     'emi_key': f'emi_{i}_payments',
@@ -3853,13 +3730,13 @@ class SearchPaymentResultsView(ListView):
                 })
 
                 for payment_id in payment_ids:
-                    payment_totals[payment_id] = payment_totals.get(payment_id, 0) + total_amount
+                    payment_totals[payment_id] = payment_totals.get(payment_id, Decimal(0)) + total_amount
 
         # Calculate final amounts
         for payment_id, total_amount in payment_totals.items():
             try:
                 payment_info = PaymentInfo.objects.get(id=payment_id)
-                total_fees = Decimal(payment_info.total_fees)
+                total_fees = Decimal(payment_info.total_fees)  # Convert total fees to Decimal
             except PaymentInfo.DoesNotExist:
                 total_fees = Decimal(0)
 
@@ -3867,18 +3744,79 @@ class SearchPaymentResultsView(ListView):
 
         # Handle single payments
         total_single_payment = sum(
-            float(sp.amount) for payment in payments for sp in payment.single_payment.all()
+            Decimal(sp.amount) for payment in payments for sp in payment.single_payment.all()
         )
 
         for payment in payments:
             for sp in payment.single_payment.all():
                 payment_info_id = sp.payment_info.id if sp.payment_info else None
                 if payment_info_id:
-                    total_by_payment_info[payment_info_id] = total_by_payment_info.get(payment_info_id, 0) + float(sp.amount)
+                    total_by_payment_info[payment_info_id] = total_by_payment_info.get(payment_info_id, Decimal(0)) + Decimal(sp.amount)
 
         # Calculate total_final_amount_sum
         total_final_amount_sum = sum(final_amounts.values())
         
+        print(f"total_final_amount_sum -------------> {total_final_amount_sum}")
+        
+        # Calculate total fees sum from response_data
+        total_fees_sum = sum(
+            Decimal(entry.total_fees) if entry.total_fees else Decimal(0)
+            for entry in payments
+        )
+
+        # Initialize variables for single payment totals
+        total_single_payment_by_id = {}
+        single_payment_balances = {}
+
+        # Calculate totals and balances for single payments
+        for payment in payments:
+            single_payments = payment.single_payment.all()
+            for sp in single_payments:
+                sp_id = sp.id
+                amount = Decimal(sp.amount)  # Convert to Decimal
+
+                # Sum by single_payment ID
+                if sp_id not in total_single_payment_by_id:
+                    total_single_payment_by_id[sp_id] = Decimal(0)
+                total_single_payment_by_id[sp_id] += amount  # Accumulate the amount as Decimal
+
+                # Sum by payment_info ID
+                payment_info_id = sp.payment_info.id if sp.payment_info else None
+                if payment_info_id is not None:
+                    # total_by_payment_info[payment_info_id] = total_by_payment_info.get(payment_info_id, Decimal(0)) + amount
+                    balance = Decimal(0)  # Initialize to a default value
+                    # Update balance
+                    try:
+                        payment_info = PaymentInfo.objects.get(id=payment_info_id)
+                        print(f"payment_info ------------> {payment_info}")
+                        total_fees = Decimal(payment_info.total_fees)  # Convert to Decimal
+                        print(f"Total Fees --------> {total_fees}")
+                        
+                        single_payments = payment_info.single_payment.all()  # Access related single payments
+
+                        # If you want to subtract the amount of the first single payment:
+                        if single_payments.exists():
+                            balance = total_fees - single_payments.first().amount
+                        else:
+                            balance = total_fees  # If no single payments, balance remains total_fees
+
+                        # If you want to subtract the total amount of all single payments:
+                        total_single_payments = sum(sp.amount for sp in single_payments)
+                        balance = total_fees - total_single_payments
+                        
+                        print(f"total_by_payment_info -------> {total_by_payment_info[payment_info_id]}")
+                        print(f"balance --------> {balance}")
+                        single_payment_balances[payment_info_id] = balance  # Store balance for this payment_info_id
+                    except PaymentInfo.DoesNotExist:
+                        total_fees = Decimal(0)
+                        balance = Decimal(0) # Default to total_fees if no payment info exists
+                        
+        # Update total_final_amount_sum with balances
+        total_final_amount_sum += sum(single_payment_balances.values())
+        
+        print(f"total_final_amount_sum ---------> {total_final_amount_sum}")
+        print(f"total_by_payment_info ---------> {total_by_payment_info}")
+
         # Update the context with calculated values
         context.update({
             'emi_data': emi_data,
@@ -3887,164 +3825,11 @@ class SearchPaymentResultsView(ListView):
             'total_single_payment': total_single_payment,
             'total_by_payment_info': total_by_payment_info,
             'total_final_amount_sum': total_final_amount_sum,
+            'total_fees_sum': total_fees_sum,
+            'balance': balance,
         })
 
         return context
-
-
-# def new_payment_info_view(request):
-#     if request.method == 'POST':
-        
-#         registration_no = request.POST.get('registration_no')
-        
-#         # Fetch the related Enquiry object
-#         try:
-#             enrollment = Enrollment.objects.get(registration_no=registration_no)
-#         except Enrollment.DoesNotExist:
-#             context = {
-#                 'error': 'Enrollment with the provided Registration Number does not exist.',
-#             }
-#             return render(request, 'new_payment_info.html', context)
-        
-#         # Auto-populate fields based on the related Enquiry object
-        
-#         payment_data = {
-#             'registration_no' : request.POST.get('registration_no'),
-#             'joining_date': enrollment.registration_date.strftime('%Y-%m-%d'),
-#             'student_name': enrollment.name,
-#             'course_name': enrollment.course_name.course_name,
-#             'duration': request.POST.get('duration'),
-#             'fees_type': request.POST.get('fees_type'),
-#             'total_fees': float(enrollment.total_fees_amount),  # Convert Decimal to float
-#             'installment_amount': float(enrollment.installment_amount),  # Convert Decimal to float
-#             'montly_payment_type': request.POST.get('montly_payment_type'),
-#         }
-        
-#         print("Payment Data : ", payment_data)
-        
-
-#         # Validate and process the form data
-#         if not (payment_data.get('registration_no') and payment_data.get('student_name') and payment_data.get('course_name') and payment_data.get('duration') and payment_data.get('total_fees') and payment_data.get('fees_type') and payment_data.get('joining_date')):
-#             messages.error(request, "All fields are required.")
-#             return render(request, 'new_payment_info.html')
-
-#         try:
-#             token = Token.objects.get(user=request.user)
-#         except Token.DoesNotExist:
-#             context = {
-#                 'error': 'Authentication Token not Found',
-#                 **payment_data,
-#             }
-#             return render(request, 'new_payment_info.html', context)
-
-#         api_url = 'http://127.0.0.1:8000/api/payment_info/'
-        
-#         headers = {
-#             'Authorization': f'Token {token.key}',
-#             'Content-Type': 'application/json',
-#         }
-
-#         try:
-#             response = requests.post(api_url, json=payment_data, headers=headers)
-#             response_data = response.json()
-            
-#             print("Response Data : ",response_data)
-
-#         except requests.exceptions.RequestException:
-#             context = {
-#                 'error': 'An Error Occurred While Creating an Enrollment',
-#                 **payment_data,
-#             }
-#             return render(request, 'new_payment_info.html', context)
-
-#         if response.status_code in [200, 201]:
-#             messages.success(request, 'Created Successfully')
-#             if payment_data.get('fees_type') == 'Regular':
-#                 return redirect('single_payment')  # Redirect to a success page or another view
-#             else:
-#                 return redirect('new_installment_info')
-#         else:
-#             error_message = response_data.get('error', 'An Error Occurred During Creation.')
-#             errors = response_data
-#             context = {
-#                 'error': error_message,
-#                 'errors': errors,
-#                 **payment_data,
-#             }
-#         return render(request, 'new_payment_info.html', context)
-
-#     return render(request, 'new_payment_info.html')
-
-# def single_payment_view(request):
-#     if request.method == 'POST':
-#         payment_mode = request.POST.get('payment_mode')
-#         payment_data = {    
-#             'payment_info': request.POST.get('payment_info'),
-#             'date': request.POST.get('date'),
-#             'payment_mode': payment_mode,
-#             'amount': request.POST.get('amount'),
-#         }
-
-#         # Handle conditional fields based on payment_mode
-#         if payment_mode == 'UPI':
-#             payment_data.update({
-#                 'upi_transaction_id': request.POST.get('upi_transaction_id'),
-#                 'upi_app_name': request.POST.get('upi_app_name'),
-#             })
-#         elif payment_mode == 'Bank Transfer':
-#             payment_data.update({
-#                 'refference_no': request.POST.get('refference_no'),
-#             })
-
-#         # Validate required fields based on payment_mode
-#         if not all(payment_data.values()):
-#             messages.error(request, "All fields are required.")
-#             return render(request, 'single_payment.html', {'payment_data': payment_data})
-        
-#         # Authentication token (if needed) and API call logic
-#         try:
-#             token = Token.objects.get(user=request.user)
-#         except Token.DoesNotExist:
-#             return render(request, 'single_payment.html', {'error': 'Authentication Token not Found', 'payment_data': payment_data})
-
-#         api_url = 'http://127.0.0.1:8000/api/single_payment/'
-        
-#         headers = {
-#             'Authorization': f'Token {token.key}',
-#             'Content-Type': 'application/json',
-#         }
-
-#         try:
-#             response = requests.post(api_url, json=payment_data, headers=headers)
-#             response_data = response.json()
-            
-#             print("Response Data : ",response_data)
-
-#         except requests.exceptions.RequestException:
-#             context = {
-#                 'error': 'An Error Occurred While Creating an Enrollment',
-#                 **payment_data,
-#             }
-#             return render(request, 'single_payment.html', context)
-
-#         if response.status_code in [200, 201]:
-#             messages.success(request, 'Created Successfully')
-#             return redirect('manage_payments')  # Redirect to a success page or another view
-#         else:
-#             error_message = response_data.get('error', 'An Error Occurred During Creation.')
-#             errors = response_data
-#             context = {
-#                 'error': error_message,
-#                 'errors': errors,
-#                 **payment_data,
-#             }
-#         return render(request, 'single_payment.html', context)
-#     # For GET requests or initial form rendering
-#     payment_info = PaymentInfo.objects.last()
-#     context = {
-#         'payment_info': payment_info
-#     }
-#     return render(request, 'single_payment.html', context)
 
 
 def single_payment_update_view(request, id):
@@ -4155,319 +3940,6 @@ def single_payment_update_view(request, id):
 
 from .config import EMI_MODELS  # Import the dictionary mapping
 
-# def new_installment_view(request):
-#     print("New Installment!!!!")
-    
-#     payment_info = PaymentInfo.objects.last()
-#     if not payment_info:
-#         messages.error(request, "Payment information not found.")
-#         return redirect('new_installment_info')
-
-#     # Calculate the total paid amount by summing all EMI amounts
-#     total_paid_amount = sum(emi.amount for emi in EMI_MODELS['EMI_1'].objects.filter(payment_info=payment_info))
-#     total_remaining_fees = payment_info.total_fees - total_paid_amount
-#     print(f"Total Remaining Fees: {total_remaining_fees}")
-
-#     if request.method == 'POST':
-#         try:
-#             next_emi = get_next_emi(payment_info, 'EMI_1')
-#             print(f"EMI : {next_emi}")
-#         except ValueError as e:
-#             messages.error(request, str(e))
-#             return redirect('new_installment_info')
-
-#         if not next_emi:
-#             messages.error(request, "All EMIs are completed.")
-#             return redirect('new_installment_info')
-
-#         payment_mode = request.POST.get('payment_mode')
-#         payment_amount = Decimal(request.POST.get('amount', 0))
-        
-#         # Condition 1: Ensure payment amount is not greater than remaining fees
-#         if payment_amount <= 0:
-#             messages.error(request, "Invalid payment amount.")
-#             return redirect('new_installment_info')
-#         if payment_amount > total_remaining_fees:
-#             messages.error(request, f"Entered amount exceeds the remaining total fees of {total_remaining_fees}.")
-#             return redirect('new_installment_info')
-
-#         remaining_amount = payment_amount
-#         print(f"Remaining Amount : {remaining_amount}")
-
-#         registration_no = request.POST.get('registration_no')
-#         date = request.POST.get('date')
-#         print(f"Registration No: {registration_no}, Date: {date}")
-
-#         # Process EMI_1 explicitly
-#         emi_model = EMI_MODELS.get('EMI_1')
-#         if emi_model:
-#             next_emi_amount = payment_info.installment_amount
-#             print(f"Processing full payment for EMI_1, Installment : {next_emi_amount}")
-            
-#             status = "Pending" if remaining_amount < next_emi_amount else "Paid"
-#             print(f"Status : {status}")
-            
-#             paid_emi_instance = emi_model(
-#                 payment_info=payment_info,
-#                 registration_no=registration_no,
-#                 date=date,
-#                 payment_mode=payment_mode,
-#                 emi='EMI_1',
-#                 amount=min(next_emi_amount, remaining_amount),
-#                 status=status
-#             )
-            
-#             # Set additional fields based on payment mode
-#             if payment_mode == 'Bank Transfer':
-#                 paid_emi_instance.refference_no = request.POST.get('refference_no')
-#             elif payment_mode == 'UPI':
-#                 paid_emi_instance.upi_transaction_id = request.POST.get('upi_transaction_id')
-#                 paid_emi_instance.upi_app_name = request.POST.get('upi_app_name')
-
-#             paid_emi_instance.save()  # Save after setting all fields
-#             remaining_amount -= next_emi_amount
-#             print(f"Processed Full Payment for EMI_1: Status: {paid_emi_instance.status}, Remaining Amount: {remaining_amount}")
-
-#         # Process subsequent EMIs
-#         while remaining_amount > 0:
-#             next_emi = get_next_emi(payment_info, next_emi.emi)  # Get the next EMI for processing
-#             if not next_emi:
-#                 break  # No more EMIs to process
-
-#             emi_model = EMI_MODELS.get(next_emi.emi)
-#             if not emi_model:
-#                 messages.error(request, f"EMI model not found for {next_emi.emi}.")
-#                 return redirect('new_installment_info')
-
-#             next_emi_amount = payment_info.installment_amount
-#             print(f"Next EMI Amount : {next_emi_amount}, Remaining Amount : {remaining_amount}")
-
-#             if remaining_amount >= next_emi_amount:
-#                 # Full payment for the current EMI
-#                 print(f"Processing full payment for {next_emi.emi}")
-#                 paid_emi_instance = emi_model(
-#                     payment_info=payment_info,
-#                     registration_no=registration_no,
-#                     date=date,
-#                     payment_mode=payment_mode,
-#                     emi=next_emi.emi,
-#                     amount=next_emi_amount,
-#                     status="Paid"
-#                 )
-                
-#                 # Set additional fields based on payment mode
-#                 if payment_mode == 'Bank Transfer':
-#                     paid_emi_instance.refference_no = request.POST.get('refference_no')
-#                 elif payment_mode == 'UPI':
-#                     paid_emi_instance.upi_transaction_id = request.POST.get('upi_transaction_id')
-#                     paid_emi_instance.upi_app_name = request.POST.get('upi_app_name')
-
-#                 paid_emi_instance.save()
-#                 remaining_amount -= next_emi_amount
-#                 print(f"Processed Full Payment for {next_emi.emi}: Status: {paid_emi_instance.status}, Remaining Amount: {remaining_amount}")
-
-#             else:
-#                 # Partial payment for the current EMI
-#                 print(f"Processing partial payment for {next_emi.emi}")
-#                 partial_payment_instance = emi_model(
-#                     payment_info=payment_info,
-#                     registration_no=registration_no,
-#                     date=date,
-#                     payment_mode=payment_mode,
-#                     emi=next_emi.emi,
-#                     amount=remaining_amount,
-#                     status="Pending"
-#                 )
-                
-#                 # Set additional fields based on payment mode
-#                 if payment_mode == 'Bank Transfer':
-#                     partial_payment_instance.refference_no = request.POST.get('refference_no')
-#                 elif payment_mode == 'UPI':
-#                     partial_payment_instance.upi_transaction_id = request.POST.get('upi_transaction_id')
-#                     partial_payment_instance.upi_app_name = request.POST.get('upi_app_name')
-
-#                 partial_payment_instance.save()
-#                 next_emi.amount -= remaining_amount
-#                 remaining_amount = 0  # All remaining amount is paid
-#                 print(f"Processed Partial Payment for {next_emi.emi}: Status: {partial_payment_instance.status}")
-
-#         messages.success(request, 'Installment created successfully.')
-#         return redirect('new_manage_payments')
-
-#     else:
-#         context = {
-#             'next_emi': "EMI_1",
-#             'payment_info': payment_info,
-#         }
-#         return render(request, 'new_installment_info.html', context)
-
-# def new_manage_payment_info_view(request):
-#     try:
-#         token = Token.objects.get(user=request.user)
-#     except Token.DoesNotExist:
-#         context = {'error': 'Authentication token not found'}
-#         return render(request, 'manage_payment_info.html', context)
-
-#     api_url = 'http://127.0.0.1:8000/api/payment_info/'
-#     headers = {
-#         'Authorization': f'Token {token.key}',
-#         'Content-Type': 'application/json'
-#     }
-
-#     try:
-#         response = requests.get(api_url, headers=headers)
-#         response.raise_for_status()
-#         response_data = response.json()
-        
-#         print(f"Response Data ------> {json.dumps(response_data, indent=4)}")
-        
-#     except requests.exceptions.RequestException as err:
-#         context = {
-#             'error': f'Request error occurred: {err}',
-#             'response_data': []
-#         }
-#         return render(request, 'manage_payment_info.html', context)
-
-#     per_page = request.GET.get('per_page', '10')
-#     paginator = Paginator(response_data, per_page)
-#     page_number = request.GET.get('page')
-#     page_obj = paginator.get_page(page_number)
-
-#     emi_data = []  # List to store EMI details
-#     payment_totals = {}  # Dictionary to hold total amounts for each payment_info_id
-#     total_emi_sums = {f'emi_{i}': 0 for i in range(1, 7)}  # Dictionary to hold totals for emi_1 to emi_6
-    
-#     for payment in response_data:
-#         for i in range(1, 7):
-#             emi_key = f'emi_{i}_payments'
-#             emi_payments = payment.get(emi_key, [])
-
-#             if not isinstance(emi_payments, list):
-#                 # print(f"Expected a list for {emi_key}, but got: {emi_payments}")
-#                 continue
-
-#             total_amount = 0  # Initialize total_amount for this emi_key
-#             dates = []  # Initialize dates list for this emi_key
-#             payment_info_ids = set()  # Use a set to avoid duplicates
-
-#             for emi in emi_payments:
-#                 if isinstance(emi, dict):
-#                     payment_info_id = emi.get('payment_info', None)
-
-#                     if payment_info_id is not None:
-#                         payment_info_ids.add(payment_info_id)  # Collect unique payment IDs
-#                         total_amount += float(emi.get('amount', 0))
-#                         if emi['date']:
-#                             formatted_date = datetime.strptime(emi['date'], '%Y-%m-%d').strftime('%d-%m-%Y')
-#                             dates.append(formatted_date)
-#                         else:
-#                             print("Date is None for EMI:", emi)
-#             # Append to emi_data after processing all EMI payments for the current payment
-#             emi_data.append({
-#                 'emi_key': emi_key,
-#                 'total_amount': total_amount,
-#                 'dates': dates,
-#                 'payment_ids': list(payment_info_ids),  # Convert set to list for context
-#             })
-
-#             # Sum the total for each emi payments
-#             total_emi_sums[f'emi_{i}'] += total_amount
-            
-#     # Initialize a dictionary to hold total amounts per payment_info_id
-#     payment_totals = {}
-#     # First pass to collect total amounts
-#     for emi in emi_data:
-#         total_amount = emi['total_amount']
-#         for payment_id in emi['payment_ids']:
-#             if payment_id not in payment_totals:
-#                 payment_totals[payment_id] = 0
-#             payment_totals[payment_id] += total_amount  # Aggregate the total for this payment ID
-
-#     # Now calculate the final amounts using the payment_totals
-#     final_amounts = {}
-#     total_final_amount_sum = 0
-#     for payment_id in payment_totals:
-#         total_amount = payment_totals[payment_id]
-#         # print(f"Total amount for payment_info_id {payment_id}: {total_amount}")
-
-#         # Get total fees from PaymentInfo based on payment_id
-#         try:
-#             payment_info = PaymentInfo.objects.get(id=payment_id)
-#             total_fees = Decimal(payment_info.total_fees)
-#         except PaymentInfo.DoesNotExist:
-#             total_fees = Decimal(0)
-#             # print(f"No fees found for payment_info_id {payment_id}, setting total fees to 0")
-
-#         # print(f"Total Fees for payment_info_id {payment_id}: {total_fees}")
-
-#         # Calculate final amount as total_fees - total_amount
-#         final_amount = total_fees - Decimal(total_amount)
-#         final_amounts[payment_id] = final_amount
-#         # print(f"Final Amount for payment_info_id {payment_id}: {final_amount}")
-
-#         # Accumulate the sum of final amounts
-#         total_final_amount_sum += final_amount
-    
-#     # Calculate total fees sum from response_data
-#     total_fees_sum = sum(
-#         Decimal(entry.get('total_fees', 0)) if entry.get('total_fees') else 0
-#         for entry in response_data
-#     )
-    
-#     total_single_payment = 0.0
-    
-#     for single_payment in response_data:
-#         single_payments = single_payment['single_payment']
-#         if single_payments:  # Check if the list is not empty
-#             for single_payment in single_payments:
-#                 if 'amount' in single_payment:  # Ensure 'amount' exists
-#                     total_single_payment += float(single_payment['amount'])
-    
-#     print(f"Single Payment -----> {total_single_payment}")
-#     total_single_payment_by_id = {}  # Dictionary to hold total amounts by single payment ID
-#     total_by_payment_info = {}  # Dictionary to hold totals by payment_info ID
-    
-#     # Calculate totals for single payments
-#     for single_payment in response_data:
-#         single_payments = single_payment.get('single_payment', [])
-#         for sp in single_payments:
-#             sp_id = sp.get('id')
-#             amount = float(sp.get('amount', 0))  # Convert to float
-            
-#             # Sum by single_payment ID
-#             if sp_id not in total_single_payment_by_id:
-#                 total_single_payment_by_id[sp_id] = 0.0
-#             total_single_payment_by_id[sp_id] += amount  # Accumulate the amount
-            
-#             # Sum by payment_info ID
-#             payment_info_id = sp.get('payment_info')  # Get payment_info ID from single_payment
-#             if payment_info_id is not None:
-#                 if payment_info_id not in total_by_payment_info:
-#                     total_by_payment_info[payment_info_id] = 0.0
-#                 total_by_payment_info[payment_info_id] += amount  # Accumulate for payment_info ID
-
-#     # Print debug information
-#     print(f"Total Single Payments by ID: {total_single_payment_by_id}")
-#     print(f"Total Payments by Payment Info ID: {total_by_payment_info}")
-    
-#     context = {
-#         'page_obj': page_obj,
-#         'per_page': per_page,
-#         'payment_data': response_data,
-#         'emi_data': emi_data,  # Include emi_data in context
-#         'final_amounts': final_amounts,  # Include final amounts in context
-#         'total_fees_sum': total_fees_sum,  # Include final amounts in context
-#         'total_emi_sums': total_emi_sums,
-#         'total_final_amount_sum': total_final_amount_sum,
-#         'total_single_payment': total_single_payment,
-#         'total_by_payment_info': total_by_payment_info,
-#         'total_single_payment_by_id': total_single_payment_by_id,
-#         'emi_range': range(1, 7),
-#     }
-
-#     return render(request, 'manage_payment_info.html', context)
-
-
 def new_manage_payment_info_view(request):
     try:
         token = Token.objects.get(user=request.user)
@@ -4485,6 +3957,9 @@ def new_manage_payment_info_view(request):
         response = requests.get(api_url, headers=headers)
         response.raise_for_status()
         response_data = response.json()
+        
+        # print(f"Response Data ------> {json.dumps(response_data, indent=4)}")
+        
     except requests.exceptions.RequestException as err:
         context = {
             'error': f'Request error occurred: {err}',
@@ -4492,227 +3967,179 @@ def new_manage_payment_info_view(request):
         }
         return render(request, 'manage_payment_info.html', context)
 
-    per_page = int(request.GET.get('per_page', '10'))
+    per_page = request.GET.get('per_page', '10')
     paginator = Paginator(response_data, per_page)
-    page_obj = paginator.get_page(request.GET.get('page'))
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
 
-    emi_data = []
-    total_emi_sums = {f'emi_{i}': 0 for i in range(1, 7)}
-    payment_totals = {}
-    final_amounts = {}
-
-    for payment in response_data:
+    emi_data = []  # List to store EMI details
+    payment_totals = {}  # Dictionary to hold total amounts for each payment_info_id
+    total_emi_sums = {f'emi_{i}': 0 for i in range(1, 7)}  # Dictionary to hold totals for emi_1 to emi_6
+    
+    for payment in page_obj:
         for i in range(1, 7):
-            emi_payments = payment.get(f'emi_{i}_payments', [])
-            total_amount = sum(float(emi.get('amount', 0)) for emi in emi_payments if isinstance(emi, dict))
-            total_emi_sums[f'emi_{i}'] += total_amount
-            
-            payment_ids = {emi.get('payment_info') for emi in emi_payments if isinstance(emi, dict) and emi.get('payment_info')}
+            emi_key = f'emi_{i}_payments'
+            emi_payments = payment.get(emi_key, [])
+
+            if not isinstance(emi_payments, list):
+                # print(f"Expected a list for {emi_key}, but got: {emi_payments}")
+                continue
+
+            total_amount = 0  # Initialize total_amount for this emi_key
+            dates = []  # Initialize dates list for this emi_key
+            payment_info_ids = set()  # Use a set to avoid duplicates
+
+            for emi in emi_payments:
+                if isinstance(emi, dict):
+                    payment_info_id = emi.get('payment_info', None)
+
+                    if payment_info_id is not None:
+                        payment_info_ids.add(payment_info_id)  # Collect unique payment IDs
+                        total_amount += float(emi.get('amount', 0))
+                        if emi['date']:
+                            formatted_date = datetime.strptime(emi['date'], '%Y-%m-%d').strftime('%d-%m-%Y')
+                            dates.append(formatted_date)
+                        else:
+                            print("Date is None for EMI:", emi)
+            # Append to emi_data after processing all EMI payments for the current payment
             emi_data.append({
-                'emi_key': f'emi_{i}_payments',
+                'emi_key': emi_key,
                 'total_amount': total_amount,
-                'payment_ids': list(payment_ids),
+                'dates': dates,
+                'payment_ids': list(payment_info_ids),  # Convert set to list for context
             })
 
-            for payment_id in payment_ids:
-                payment_totals[payment_id] = payment_totals.get(payment_id, 0) + total_amount
+            # Sum the total for each emi payments
+            total_emi_sums[f'emi_{i}'] += total_amount
+            
+    # Initialize a dictionary to hold total amounts per payment_info_id
+    payment_totals = {}
+    # First pass to collect total amounts
+    for emi in emi_data:
+        total_amount = emi['total_amount']
+        for payment_id in emi['payment_ids']:
+            if payment_id not in payment_totals:
+                payment_totals[payment_id] = 0
+            payment_totals[payment_id] += total_amount  # Aggregate the total for this payment ID
 
-    for payment_id, total_amount in payment_totals.items():
+    # Now calculate the final amounts using the payment_totals
+    final_amounts = {}
+    total_final_amount_sum = 0
+    for payment_id in payment_totals:
+        total_amount = payment_totals[payment_id]
+        # print(f"Total amount for payment_info_id {payment_id}: {total_amount}")
+
+        # Get total fees from PaymentInfo based on payment_id
         try:
             payment_info = PaymentInfo.objects.get(id=payment_id)
             total_fees = Decimal(payment_info.total_fees)
         except PaymentInfo.DoesNotExist:
             total_fees = Decimal(0)
+            # print(f"No fees found for payment_info_id {payment_id}, setting total fees to 0")
 
-        final_amounts[payment_id] = total_fees - Decimal(total_amount)
+        # print(f"Total Fees for payment_info_id {payment_id}: {total_fees}")
 
-    # Handle single payments
-    total_single_payment = sum(
-        float(sp.get('amount', 0)) for payment in response_data for sp in payment.get('single_payment', [])
+        # Calculate final amount as total_fees - total_amount
+
+        # print(f"total_amount ------> {total_amount}")
+
+        final_amount = total_fees - Decimal(total_amount)
+        final_amounts[payment_id] = final_amount
+        # print(f"Final Amount for payment_info_id {payment_id} --------> {final_amount}")
+
+        # Accumulate the sum of final amounts
+        total_final_amount_sum += final_amount
+        
+        # print(f"total_final_amount_sum -------------> {total_final_amount_sum}")
+    
+    # Calculate total fees sum from response_data
+    total_fees_sum = sum(
+        Decimal(entry.get('total_fees', 0)) if entry.get('total_fees') else 0
+        for entry in page_obj
     )
+    
+    total_single_payment_amount = 0.0
+    
+    for single_payment in page_obj:
+        single_payments = single_payment['single_payment']
+        if single_payments:  # Check if the list is not empty
+            for single_payment in single_payments:
+                if 'amount' in single_payment:  # Ensure 'amount' exists
+                    total_single_payment_amount += float(single_payment['amount'])
+    
+    print(f"Single Payment -----> {total_single_payment_amount}")
+    
+    # Initialize dictionaries for totals and balances
+    total_single_payment_by_id = {}  # Dictionary to hold total amounts by single payment ID
+    total_by_payment_info = {}  # Dictionary to hold totals by payment_info ID
+    single_payment_balances = {}  # Dictionary to hold the balance for each single payment
+    balance_by_payment_info = 0
+    
+    # Calculate totals for single payments
+    for single_payment in page_obj:
+        single_payments = single_payment.get('single_payment', [])
+        for sp in single_payments:
+            sp_id = sp.get('id')
+            amount = float(sp.get('amount', 0))  # Convert to float
+            
+            print(f"Single Payment Amount --------> {amount}")
+            
+            # Sum by single_payment ID
+            if sp_id not in total_single_payment_by_id:
+                total_single_payment_by_id[sp_id] = 0.0
+            total_single_payment_by_id[sp_id] += amount  # Accumulate the amount
+            
+            # print(f"total_single_payment_by_id ------> {total_single_payment_by_id}")
+            
+            # Sum by payment_info ID
+            payment_info_id = sp.get('payment_info')  # Get payment_info ID from single_payment
+            if payment_info_id is not None:
+                if payment_info_id not in total_by_payment_info:
+                    total_by_payment_info[payment_info_id] = 0.0
+                    try:
+                        payment_info = PaymentInfo.objects.get(id=payment_info_id)
+                        total_fees = Decimal(payment_info.total_fees)
+                        # Calculate total single payment for this payment_info
+                        total_single_payment = sum(Decimal(sp['amount']) for sp in single_payment.get('single_payment', []))
+                        balance = total_fees - total_single_payment
+                        # Accumulate balance
+                        balance_by_payment_info += balance
+                        print(f"sum of the single payment -----> {total_single_payment}")
+                        print(f"total_fees single payment : {total_fees}")
+                        print(f"total single payment balance : {balance}")
+                    except PaymentInfo.DoesNotExist:
+                        total_fees = Decimal(0)  # Handle case where PaymentInfo does not exist
+                
+                total_by_payment_info[payment_info_id] += amount  # Accumulate for payment_info ID
 
-    total_by_payment_info = {}
-    for payment in response_data:
-        for sp in payment.get('single_payment', []):
-            payment_info_id = sp.get('payment_info')
-            if payment_info_id:
-                total_by_payment_info[payment_info_id] = total_by_payment_info.get(payment_info_id, 0) + float(sp.get('amount', 0))
+                # Calculate the balance for this single payment
+                if sp_id not in single_payment_balances:
+                    single_payment_balances[sp_id] = total_fees - Decimal(total_single_payment_by_id[sp_id])
+                    # print(f"Balance for single payment ID {sp_id} is {single_payment_balances[sp_id]}")
 
+    
+    total_final_amount_sum += balance_by_payment_info
+    print(f"total_final_amount_sum ------> {total_final_amount_sum}")
+    # Print debug information
+    # print(f"Total Single Payments by ID: {total_single_payment_by_id}")
+    # print(f"Total Payments by Payment Info ID: {total_by_payment_info}")
+    
     context = {
         'page_obj': page_obj,
-        'emi_data': emi_data,
-        'final_amounts': final_amounts,
+        'per_page': per_page,
+        'payment_data': response_data,
+        'emi_data': emi_data,  # Include emi_data in context
+        'final_amounts': final_amounts,  # Include final amounts in context
+        'total_fees_sum': total_fees_sum,  # Include final amounts in context
         'total_emi_sums': total_emi_sums,
-        'total_single_payment': total_single_payment,
+        'total_final_amount_sum': total_final_amount_sum,
+        'total_single_payment': total_single_payment_amount,
         'total_by_payment_info': total_by_payment_info,
+        'total_single_payment_by_id': total_single_payment_by_id,
+        'emi_range': range(1, 7),
     }
 
     return render(request, 'manage_payment_info.html', context)
-
-
-# def new_installment_update_view(request, id):
-#     payment_info = get_object_or_404(PaymentInfo, id=id)
-#     print(f"Payment Info: {payment_info}")  # Debug
-
-#     total_fees = payment_info.total_fees
-    
-#     # Calculate total paid amount by summing over all EMI models
-#     total_paid_amount = 0
-#     total_pending_amount = 0  # To track pending amount
-    
-#     # Calculate total paid amount by summing over all EMI models
-#     for emi_model in EMI_MODELS.values():
-#         # Sum amounts for paid EMIs
-#         total_paid_amount += sum(emi.amount for emi in emi_model.objects.filter(payment_info=payment_info, status='Paid'))
-
-#         # Sum amounts for pending EMIs
-#         total_pending_amount += sum(emi.amount for emi in emi_model.objects.filter(payment_info=payment_info, status='Pending'))
-
-#     remaining_balance = total_fees - (total_paid_amount + total_pending_amount) # Calculate remaining balance
-
-#     print(f"remaining balance : {remaining_balance} , Total Paid Amount : {total_paid_amount} , total_pending_amount : {total_pending_amount}")
-    
-    
-#     if request.method == 'POST':
-#         payment_amount = Decimal(request.POST.get('amount', 0))
-#         registration_no = request.POST.get('registration_no')
-#         payment_mode = request.POST.get('payment_mode') 
-#         input_date = request.POST.get('date')
-        
-#         parsed_date = datetime.strptime(input_date, "%d-%m-%Y")  # Adjust if input format changes
-#         date = parsed_date.strftime("%Y-%m-%d")
-
-#         # Validation for payment amount
-#         if payment_amount <= 0:
-#             messages.error(request, "Invalid payment amount.")
-#             return redirect('new_installment_update_info', id=payment_info.id)
-
-#         # Ensure payment amount does not exceed remaining balance
-#         if payment_amount > remaining_balance:
-#             messages.error(request, f"Payment amount exceeds the remaining balance. Remaining balance: {remaining_balance}")
-#             return redirect('new_installment_update_info', id=payment_info.id)
-
-#         if not date:
-#             messages.error(request, "Date is required.")
-#             return redirect('new_installment_update_info', id=payment_info.id)
-
-#         try:
-#             parsed_date = datetime.strptime(date, '%Y-%m-%d')
-#         except ValueError:
-#             messages.error(request, "Invalid date format.")
-#             return redirect('new_installment_update_info', id=payment_info.id)
-
-#         last_pending_emi = get_last_pending_emi(payment_info)
-#         emi_type = None
-#         remaining_amount = 0
-
-#         if isinstance(last_pending_emi, str):
-#             emi_type = last_pending_emi
-#         elif hasattr(last_pending_emi, 'emi'):
-#             emi_type = last_pending_emi.emi
-#             remaining_amount = last_pending_emi.amount
-
-#         if not emi_type:
-#             messages.error(request, "No EMIs available for processing.")
-#             return redirect('new_installment_update_info', id=payment_info.id)
-
-#         while payment_amount > 0:
-#             next_emi = get_next_emi(payment_info, emi_type)
-            
-#             print(f"Next EMI : {next_emi}")
-            
-#             if next_emi is None:
-#                 break
-
-#             emi_model = EMI_MODELS.get(next_emi.emi)
-            
-#             print(f"EMI Model : {emi_model}")
-            
-#             if not emi_model:
-#                 messages.error(request, f"EMI model not found for {next_emi.emi}.")
-#                 return redirect('new_installment_update_info', id=payment_info.id)
-
-#             next_emi_amount = next_emi.amount
-#             print(f"Pending Amount : {next_emi_amount}")
-            
-#             installment = payment_info.installment_amount
-#             print(f"Installment : {installment}")
-            
-#             remaining_amount = installment - next_emi_amount
-#             print(f"Processing EMI: {next_emi.emi}, Amount: {next_emi_amount}, Remaining Payment Amount: {remaining_amount}")  # Debug
-            
-#             if payment_amount >= next_emi_amount:
-#                 paid_emi_instance = emi_model(
-#                     payment_info=payment_info,
-#                     registration_no=registration_no,
-#                     date=parsed_date,
-#                     payment_mode=payment_mode,
-#                     emi=next_emi.emi,
-#                     amount= remaining_amount if get_last_emi_status(payment_info, next_emi.emi) == "Pending" else payment_info.installment_amount,
-#                     status="Paid"
-#                 )
-#                 paid_emi_instance.save()
-#                 payment_amount -= paid_emi_instance.amount
-#                 print(f"Payment Amount After Saving : {payment_amount}, Payment paid Amount : {paid_emi_instance.amount}")
-                
-#                 # next_emi.amount = 0
-#             else:
-#                 paid_emi_instance = emi_model(
-#                     payment_info=payment_info,
-#                     registration_no=registration_no,
-#                     date=parsed_date,
-#                     payment_mode=payment_mode,
-#                     emi=next_emi.emi,
-#                     amount=payment_amount,
-#                     status="Pending"
-#                 )
-#                 paid_emi_instance.save()
-
-#                 # next_emi.amount -= payment_amount
-#                 payment_amount = 0
-
-#         # Add additional fields based on payment mode
-#         if payment_mode == 'Bank Transfer':
-#             paid_emi_instance.refference_no = request.POST.get('refference_no')
-#         elif payment_mode == 'UPI':
-#             paid_emi_instance.upi_transaction_id = request.POST.get('upi_transaction_id')
-#             paid_emi_instance.upi_app_name = request.POST.get('upi_app_name')
-
-#         try:
-#             paid_emi_instance.save()
-#             print("Paid EMI instance saved successfully.")  # Debug
-#         except Exception as e:
-#             print(f"Error saving instance: {e}")  # Debug
-#             messages.error(request, "Error saving the payment information.")
-#             return redirect('new_installment_update_info', id=payment_info.id)
-
-#         messages.success(request, 'Payment processed successfully.')
-#         return redirect('new_manage_payments')
-
-#     # For GET requests or initial form rendering
-#     last_pending_emi = get_last_pending_emi(payment_info)
-
-#     if isinstance(last_pending_emi, str):
-#         emi_type = last_pending_emi
-#     elif hasattr(last_pending_emi, 'emi'):
-#         emi_type = last_pending_emi.emi
-#     else:
-#         messages.error(request, "No EMIs available for processing.")
-#         return redirect('new_installment_update_info', id=payment_info.id)
-
-#     # Retrieve installments to display in the table
-#     installments = []
-#     for emi_model in EMI_MODELS.values():
-#         installments.extend(emi_model.objects.filter(payment_info=payment_info))
-    
-#     context = {
-#         'next_emi': emi_type,
-#         'payment_info': payment_info,
-#         'remaining_balance': remaining_balance,  # Send remaining balance to template
-#         'installments': installments  # Assuming this is how you fetch installments
-#     }
-
-#     return render(request, 'new_installment_info.html', context)
 
 
 def get_last_emi_status(payment_info, emi_value):
@@ -4858,199 +4285,6 @@ class EMI_6DetailView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = EMI_6_Serializer
     permission_classes = [IsAuthenticated]
     lookup_field = 'pk'
-
-
-# def payment_view(request):
-#     if request.method == 'POST':
-#         registration_no = request.POST.get('registration_no')
-        
-#         # Debug print
-#         print(f"Received registration_no: {registration_no}")
-
-#         # Fetch the related Enrollment object
-#         try:
-#             enrollment = Enrollment.objects.get(registration_no=registration_no)
-#             print(f"Enrollment found: {enrollment}")
-#         except Enrollment.DoesNotExist:
-#             context = {
-#                 'error': 'Enrollment with the provided Registration Number does not exist.',
-#             }
-#             return render(request, 'new_payment_info.html', context)
-
-#         # Validate POST data
-#         duration = request.POST.get('duration')
-#         fees_type = request.POST.get('fees_type')
-#         monthly_payment_type = request.POST.get('montly_payment_type')
-#         payment_mode = request.POST.get('payment_mode')
-#         amount = request.POST.get('amount', 0)
-        
-#         print(f"duration : {duration}, fees_type : {fees_type}, monthly Payment type : {monthly_payment_type}, payment mode : {payment_mode}, amount : {amount}")
-
-#         if not all([duration, fees_type, monthly_payment_type, payment_mode, amount]):
-#             messages.error(request, "All fields are required.")
-#             return redirect('new_payment_info')
-
-#         # Prepare PaymentInfo data
-#         payment_info_data = {
-#             'registration_no': registration_no,
-#             'joining_date': enrollment.registration_date,
-#             'student_name': enrollment.name,
-#             'course_name': enrollment.course_name.course_name,
-#             'duration': duration,
-#             'fees_type': fees_type,
-#             'total_fees': Decimal(enrollment.total_fees_amount),
-#             'installment_amount': Decimal(enrollment.installment_amount),
-#         }
-
-#         # Create a PaymentInfo instance
-#         payment_info = PaymentInfo(**payment_info_data)
-#         payment_info.save()
-#         print(f"PaymentInfo created: {payment_info}")
-
-#         # Prepare SinglePayment data
-#         if fees_type == 'Regular':
-        
-#             single_payment_data = {
-#                 'payment_info': payment_info,
-#                 'date': request.POST.get('date'),
-#                 'payment_mode': request.POST.get('payment_mode'),
-#                 'amount': request.POST.get('amount'),
-#             }
-
-#             # Handle UPI and Bank Transfer specific fields
-#             if payment_mode == 'Bank Transfer':
-#                 single_payment_data['reference_no'] = request.POST.get('reference_no')
-#             elif payment_mode == 'UPI':
-#                 single_payment_data['upi_transaction_id'] = request.POST.get('upi_transaction_id')
-#                 single_payment_data['upi_app_name'] = request.POST.get('upi_app_name')
-
-#             # Create a SinglePayment instance
-#             single_payment = SinglePayment(**single_payment_data)
-#             single_payment.save()
-#             print(f"SinglePayment created: {single_payment}")
-
-#         # Calculate total paid amount and remaining fees
-#         total_paid_amount = sum(emi.amount for emi in EMI_MODELS['EMI_1'].objects.filter(payment_info=payment_info))
-#         total_remaining_fees = payment_info.total_fees - total_paid_amount
-#         print(f"Total paid amount: {total_paid_amount}, Total remaining fees: {total_remaining_fees}")
-
-#         # Validate payment amount
-#         payment_amount = Decimal(amount)
-#         if payment_amount <= 0:
-#             messages.error(request, "Invalid payment amount.")
-#             return redirect('new_payment_info')
-#         if payment_amount > total_remaining_fees:
-#             messages.error(request, f"Entered amount exceeds the remaining total fees of {total_remaining_fees}.")
-#             return redirect('new_payment_info')
-
-#         remaining_amount = payment_amount
-#         date = request.POST.get('date')
-
-#         # Process EMI payments
-#         try:
-#             next_emi = get_next_emi(payment_info, 'EMI_1')
-#             print(f"Next EMI: {next_emi}")
-#         except ValueError as e:
-#             messages.error(request, str(e))
-#             return redirect('new_installment_info')
-
-#         # Process EMI_1 explicitly
-#         emi_model = EMI_MODELS.get('EMI_1')
-#         if emi_model:
-#             next_emi_amount = payment_info.installment_amount
-#             status = "Pending" if remaining_amount < next_emi_amount else "Paid"
-
-#             paid_emi_instance = emi_model(
-#                 payment_info=payment_info,
-#                 registration_no=registration_no,
-#                 date=date,
-#                 payment_mode=payment_mode,
-#                 emi='EMI_1',
-#                 amount=min(next_emi_amount, remaining_amount),
-#                 status=status
-#             )
-
-#             # Set additional fields based on payment mode
-#             if payment_mode == 'Bank Transfer':
-#                 paid_emi_instance.reference_no = request.POST.get('reference_no')
-#             elif payment_mode == 'UPI':
-#                 paid_emi_instance.upi_transaction_id = request.POST.get('upi_transaction_id')
-#                 paid_emi_instance.upi_app_name = request.POST.get('upi_app_name')
-
-#             paid_emi_instance.save()
-#             remaining_amount -= next_emi_amount
-#             print(f"Processed EMI_1: Amount paid: {min(next_emi_amount, remaining_amount)}, Remaining Amount: {remaining_amount}")
-
-#         # Process subsequent EMIs
-#         while remaining_amount > 0:
-#             next_emi = get_next_emi(payment_info, next_emi.emi)
-#             if not next_emi:
-#                 print("No more EMIs to process.")
-#                 break
-
-#             emi_model = EMI_MODELS.get(next_emi.emi)
-#             if not emi_model:
-#                 messages.error(request, f"EMI model not found for {next_emi.emi}.")
-#                 return redirect('new_installment_info')
-
-#             next_emi_amount = payment_info.installment_amount
-#             print(f"Next EMI Amount: {next_emi_amount}, Remaining Amount: {remaining_amount}")
-
-#             if remaining_amount >= next_emi_amount:
-#                 # Full payment for the current EMI
-#                 paid_emi_instance = emi_model(
-#                     payment_info=payment_info,
-#                     registration_no=registration_no,
-#                     date=date,
-#                     payment_mode=payment_mode,
-#                     emi=next_emi.emi,
-#                     amount=next_emi_amount,
-#                     status="Paid"
-#                 )
-
-#                 # Set additional fields based on payment mode
-#                 if payment_mode == 'Bank Transfer':
-#                     paid_emi_instance.reference_no = request.POST.get('reference_no')
-#                 elif payment_mode == 'UPI':
-#                     paid_emi_instance.upi_transaction_id = request.POST.get('upi_transaction_id')
-#                     paid_emi_instance.upi_app_name = request.POST.get('upi_app_name')
-
-#                 paid_emi_instance.save()
-#                 remaining_amount -= next_emi_amount
-#                 print(f"Processed Full Payment for {next_emi.emi}: Remaining Amount: {remaining_amount}")
-
-#             else:
-#                 # Partial payment for the current EMI
-#                 partial_payment_instance = emi_model(
-#                     payment_info=payment_info,
-#                     registration_no=registration_no,
-#                     date=date,
-#                     payment_mode=payment_mode,
-#                     emi=next_emi.emi,
-#                     amount=remaining_amount,
-#                     status="Pending"
-#                 )
-
-#                 # Set additional fields based on payment mode
-#                 if payment_mode == 'Bank Transfer':
-#                     partial_payment_instance.reference_no = request.POST.get('reference_no')
-#                 elif payment_mode == 'UPI':
-#                     partial_payment_instance.upi_transaction_id = request.POST.get('upi_transaction_id')
-#                     partial_payment_instance.upi_app_name = request.POST.get('upi_app_name')
-
-#                 partial_payment_instance.save()
-#                 next_emi.amount -= remaining_amount
-#                 remaining_amount = 0  # All remaining amount is paid
-#                 print(f"Processed Partial Payment for {next_emi.emi}: Remaining Amount: {remaining_amount}")
-
-#         messages.success(request, 'Payment processed successfully!')
-#         return redirect('payment')
-    
-#     context = {
-#         'next_emi': "EMI_1",
-#     }
-
-#     return render(request, 'payment_info.html', context)
 
 def payment_view(request):
     if request.method == 'POST':

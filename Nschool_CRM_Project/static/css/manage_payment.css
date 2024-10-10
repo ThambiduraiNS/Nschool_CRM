@@ -30,3 +30,39 @@
 .tdata {
     font-size: 13px;
 }
+
+.tfess {
+    color: #c72571;
+}
+
+/* search style */
+
+.search-input {
+    width: 550px;
+}
+
+.start_date {
+    left: 245px;
+    padding: 0px 0px 0px 12px;
+}
+
+.end_date {
+    right: 95px;
+    padding: 0px 0px 0px 12px;
+}
+
+.search-input {
+    width: 550px;
+    font-size: 12px;
+}
+
+.start_date:focus-visible, .end_date:focus-visible {
+    outline: #fcddec;
+}
+
+.form-control:focus {
+    border: none;
+    border-left: 2px solid #888 !important;
+    outline: none;
+    background-color: #fcddec;
+}
