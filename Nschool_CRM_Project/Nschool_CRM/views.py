@@ -60,6 +60,8 @@ from django.core.exceptions import ValidationError
 
 from django.conf import settings
 
+from django.core.files.base import ContentFile
+
 import logging
 
 logger = logging.getLogger(__name__)
@@ -3642,6 +3644,196 @@ def export_payment_pdf(request):
 
     content = {'payment_list': attribute_list}
     return renderers.render_to_pdf('payment_data_list.html', content)
+
+# @csrf_protect
+# @require_POST
+# def export_payment_pdf(request):
+#     ids = request.POST.get('ids', '').split(',')
+#     selected_payments = PaymentInfo.objects.filter(id__in=ids)
+
+#     if not selected_payments:
+#         return JsonResponse({'error': 'No Payment available.'}, status=404)
+
+#     attribute_list = []
+#     for payment in selected_payments:
+#         # Fetch single payment if exists
+#         single_payment = SinglePayment.objects.filter(payment_info=payment).first()
+
+#         # Get all subclasses of BaseEMI
+#         emi_subclasses = [model for model in apps.get_models() if issubclass(model, BaseEMI)]
+
+#         # Fetch installments from all subclasses
+#         installments = []
+#         for subclass in emi_subclasses:
+#             installments += list(subclass.objects.filter(payment_info=payment))
+
+#         # Sort installments by payment date to ensure the latest date is kept
+#         installments.sort(key=lambda x: x.date if x.date else timezone.datetime.min)
+
+#         emi_dates = ['N/A'] * 6  # Initialize 6 EMI dates
+#         emi_amounts = ['N/A'] * 6  # Initialize 6 EMI amounts
+
+#         # Dictionary to store summed amounts by installment type
+#         emi_amounts_dict = {}
+#         emi_last_date_dict = {}
+
+#         # Loop through all installments
+#         for installment in installments:
+#             emi_type = installment.__class__.__name__  # Identify the EMI type by its class name
+#             emi_index = int(emi_type[-1]) - 1  # Get the EMI number (1-6) and convert to index (0-5)
+
+#             # Sum the amounts for the same EMI and retain the last date
+#             if emi_index in emi_amounts_dict:
+#                 emi_amounts_dict[emi_index] += Decimal(installment.amount or 0)
+#             else:
+#                 emi_amounts_dict[emi_index] = Decimal(installment.amount or 0)
+
+#             # Update the last date for the EMI
+#             emi_last_date_dict[emi_index] = installment.date
+
+#         # Populate the emi_dates and emi_amounts lists
+#         for emi_index in range(6):
+#             if emi_index in emi_last_date_dict:
+#                 emi_dates[emi_index] = emi_last_date_dict[emi_index].strftime('%d-%m-%Y') if emi_last_date_dict[emi_index] else 'N/A'
+#             if emi_index in emi_amounts_dict:
+#                 # If amount is 0 or None, return 'N/A'
+#                 emi_amounts[emi_index] = emi_amounts_dict[emi_index] if emi_amounts_dict[emi_index] > 0 else 'N/A'
+
+#         # Convert total_fees to Decimal to ensure compatibility
+#         try:
+#             total_fees = Decimal(payment.total_fees)
+#         except Exception:
+#             total_fees = Decimal(0)
+
+#         # Calculate total amount paid including EMI amounts and single payment
+#         total_amount_paid = sum([amt if isinstance(amt, Decimal) else Decimal(0) for amt in emi_amounts])
+#         single_payment_amount = single_payment.amount if single_payment and single_payment.amount else Decimal(0)
+#         total_amount_paid += single_payment_amount
+
+#         # Calculate balance amount
+#         balance_amount = total_fees - total_amount_paid
+
+#         # Prepare the details
+#         attribute_list.append({
+#             'registration_no': payment.registration_no,
+#             'joining_date': payment.joining_date.strftime('%d-%m-%Y'),
+#             'student_name': payment.student_name,
+#             'course_name': payment.course_name,
+#             'duration': payment.duration,
+#             'total_fees': payment.total_fees,
+#             'fees_type': payment.get_fees_type_display(),
+#             'single_payment_date': single_payment.date.strftime('%d-%m-%Y') if single_payment else 'N/A',
+#             'single_payment_amount': single_payment.amount if single_payment else 'N/A',
+#             'emi_dates': emi_dates,
+#             'emi_amounts': emi_amounts,
+#             'total_payment': total_amount_paid,
+#             'balance': balance_amount
+#         })
+
+#     # Generate PDF
+#     return generate_pdf(attribute_list)
+
+# from reportlab.lib.pagesizes import A4  # Import A4 size
+
+# def generate_pdf(payment_list):
+#     buffer = BytesIO()
+#     c = canvas.Canvas(buffer, pagesize=A4)  # Use A4 page size
+#     width, height = A4  # Get the dimensions of the A4 size
+
+#     # Set initial position
+#     x_position = 10
+#     y_position = height - 50  # Start at the top of the page but adjust for headers
+
+#     row_height = 20
+    
+#     c.setFont("Helvetica", 8)  # Set font size to 10
+
+#     # Define headers and their widths
+#     headers = [
+#         ("Reg No", 60), 
+#         ("Joining Date", 60), 
+#         ("Student Name", 60), 
+#         ("Course Name", 90), 
+#         ("Duration", 40), 
+#         ("Total Fees", 50), 
+#         # ("Fees Type", 60), 
+#         ("SP Date", 50), 
+#         ("SP Amount", 50), 
+#         ("EMI Dates", 50), 
+#         ("EMI Amounts", 50), 
+#         ("Total Payment", 50), 
+#         ("Balance", 50)
+#     ]
+
+#     # Draw headers
+#     for header, width in headers:
+#         c.drawString(x_position, y_position, header)
+#         x_position += width
+#     y_position -= row_height
+
+#     for index, payment in enumerate(payment_list):
+#         if index % 20 == 0 and index > 0:  # Assuming 20 rows per page
+#             c.showPage()  # Start a new page
+#             y_position = height - 70  # Reset y position for new page
+#             x_position = 10  # Reset x position for new page
+
+#             # Redraw header on new page
+#             for header, width in headers:
+#                 c.drawString(x_position, y_position, header)
+#                 x_position += width
+#             y_position -= row_height
+
+#         # Draw each payment row
+#         x_position = 10  # Reset x position for each row
+#         c.drawString(x_position, y_position, payment['registration_no'])
+#         x_position += 60
+#         c.drawString(x_position, y_position, payment['joining_date'])
+#         x_position += 60
+#         c.drawString(x_position, y_position, payment['student_name'])
+#         x_position += 60
+#         c.drawString(x_position, y_position, payment['course_name'])
+#         x_position += 90
+#         c.drawString(x_position, y_position, payment['duration'])
+#         x_position += 40
+#         c.drawString(x_position, y_position, str(payment['total_fees']))
+#         x_position += 50
+#         # c.drawString(x_position, y_position, payment['fees_type'])
+#         # x_position += 60
+#         c.drawString(x_position, y_position, payment['single_payment_date'])
+#         x_position += 50
+#         c.drawString(x_position, y_position, str(payment['single_payment_amount']))
+#         x_position += 50
+#         emi_y_position = y_position  # Start at the same y position
+#         for emi_date in payment['emi_dates']:
+#             c.drawString(x_position, emi_y_position, emi_date)
+#             emi_y_position -= row_height  # Move down for the next EMI date
+
+#         # Draw EMI Amounts vertically
+#         x_position += 50
+#         emi_y_position = y_position  # Reset to the original y position
+#         for emi_amount in payment['emi_amounts']:
+#             c.drawString(x_position, emi_y_position, str(emi_amount))
+#             emi_y_position -= row_height  # Move down for the next EMI amount
+
+#         # Draw Total Payment and Balance
+#         x_position += 50
+#         c.drawString(x_position, y_position, str(payment['total_payment']))
+#         x_position += 50
+#         c.drawString(x_position, y_position, str(payment['balance']))
+
+#         y_position -= row_height
+
+#     c.save()
+
+#     buffer.seek(0)
+#     pdf_file = ContentFile(buffer.read(), name="payment_data_list.pdf")
+#     response = JsonResponse({'message': 'PDF generated successfully!'}, status=200)
+#     response['Content-Disposition'] = 'attachment; filename="payment_data_list.pdf"'
+#     response['Content-Type'] = 'application/pdf'
+#     response.content = pdf_file.read()
+
+#     return response
+
 
 class SearchPaymentResultsView(ListView):
     model = PaymentInfo

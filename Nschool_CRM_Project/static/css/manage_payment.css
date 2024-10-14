@@ -44,11 +44,13 @@
 .start_date {
     left: 245px;
     padding: 0px 0px 0px 12px;
+    border-radius: 0px;
 }
 
 .end_date {
     right: 95px;
     padding: 0px 0px 0px 12px;
+    border-radius: 0px;
 }
 
 .search-input {
@@ -65,4 +67,9 @@
     border-left: 2px solid #888 !important;
     outline: none;
     background-color: #fcddec;
+}
+
+.active {
+    background-color: #fcddec;
+    color: #c72571;
 }

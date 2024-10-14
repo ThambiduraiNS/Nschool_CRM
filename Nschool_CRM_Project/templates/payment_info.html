@@ -179,21 +179,24 @@
                                     </div>
                                 </div>
 
-                                <!-- single payment -->
-                                <!-- Payment date -->
-                                <div class="col-12 col-md-6 pe-md-0" id="payment_date_div" style="display: none;">
-                                    <div class="user-input-wrp ms-md-4 mt-md-4">
-                                        <input type="date" name="date" id="date-picker" value="{{date}}" class="form-control bg-white"
+                               
+                            
+                                
+                                <!-- installment -->
+                                <!-- EMI date -->
+                                <div class="col-12 col-md-6 p-md-0" id="emi_date_div" style="display: none;">
+                                    <div class="user-input-wrp ms-4 me-2 mt-4">
+                                        <input type="date" name="date" id="installment_date" value="{{ date }}" class="form-control bg-white"
                                             aria-label="date" placeholder=" " autocomplete="off" autofocus onclick="setDatePickerLimits()">
-                                        <label class="floating-label">&nbsp;Payment Date <span class="required">*</span> &nbsp;</label>
+                                        <label class="floating-label">&nbsp;EMI Date <span class="required">*</span> &nbsp;</label>
                                         <span id="date_error" class="error-div">
                                             {% if errors.date %}
-                                                {{errors.date}}
+                                                {{ errors.date }}
                                             {% endif %}
                                         </span>
                                     </div>
                                 </div>
-                            
+
                                 <!-- installment -->
                                 <!-- emi -->
                                 <div class="col-12 col-md-6 pe-md-0" id="emi_div" style="display: none;">
@@ -211,23 +214,16 @@
                                         </span>
                                     </div>
                                 </div>
-                                
-                                <!-- installment -->
-                                <!-- EMI date -->
-                                <div class="col-12 col-md-6 p-md-0" id="emi_date_div" style="display: none;">
-                                    <div class="user-input-wrp ms-4 me-2 mt-4">
-                                        <input type="date" name="date" id="installment_date" value="{{ date }}" class="form-control bg-white"
-                                            aria-label="date" placeholder=" " autocomplete="off" autofocus onclick="setDatePickerLimits()">
-                                        <label class="floating-label">&nbsp;EMI Date <span class="required">*</span> &nbsp;</label>
-                                        <span id="date_error" class="error-div">
-                                            {% if errors.date %}
-                                                {{ errors.date }}
-                                            {% endif %}
-                                        </span>
-                                    </div>
-                                </div>
                             
                                 <!-- UPI Fields -->
+                                <div class="col-12 col-md-6 p-md-0" id="app_name_div" style="display: none;">
+                                    <div class="user-input-wrp ms-4 me-2 mt-4">
+                                        <input type="text" name="upi_app_name" id="app_name" class="form-control" aria-label="app_name" placeholder=" " autocomplete="off">
+                                        <label class="floating-label">Enter App Name <span class="required">*</span></label>
+                                        <span id="app_name_error" class="error-div"></span>
+                                    </div>
+                                </div>
+
                                 <div class="col-12 col-md-6 pe-md-0" id="transaction_id_div" style="display: none;">
                                     <div class="user-input-wrp ms-md-4 mt-md-4">
                                         <input type="text" name="upi_transaction_id" id="transaction_id" class="form-control" aria-label="transaction_id" placeholder=" " autocomplete="off">
@@ -236,11 +232,65 @@
                                     </div>
                                 </div>
 
-                                <div class="col-12 col-md-6 p-md-0" id="app_name_div" style="display: none;">
+                                <!-- single payment -->
+                                <!-- Payment date -->
+                                <div class="col-12 col-md-6 p-md-0" id="payment_date_div" style="display: none;">
                                     <div class="user-input-wrp ms-4 me-2 mt-4">
-                                        <input type="text" name="upi_app_name" id="app_name" class="form-control" aria-label="app_name" placeholder=" " autocomplete="off">
-                                        <label class="floating-label">Enter App Name <span class="required">*</span></label>
-                                        <span id="app_name_error" class="error-div"></span>
+                                        <input type="date" name="date" id="date-picker" value="{{date}}" class="form-control bg-white"
+                                            aria-label="date" placeholder=" " autocomplete="off" autofocus onclick="setDatePickerLimits()">
+                                        <label class="floating-label">&nbsp;Payment Date <span class="required">*</span> &nbsp;</label>
+                                        <span id="date_error" class="error-div">
+                                            {% if errors.date %}
+                                                {{errors.date}}
+                                            {% endif %}
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <!-- EMI AMount -->
+                                <div class="col-12 col-md-6 p-md-0" id="installment_amount_div" style="display: none;">
+                                    <div class="user-input-wrp ms-4 me-2 mt-4">
+                                        <input type="text" name="installment_amount" value="{{installment_amount}}" id="installment_amount" class="form-control"
+                                            aria-label="installment_amount" placeholder=" " autocomplete="off" autofocus>
+                                        <label class="floating-label">&nbsp;Installment Amount <span class="required">*</span> &nbsp;</label>
+                                        <span id="installment_amount_error" class="error-div">
+                                            {% if errors.installment_amount %}
+                                                    {{errors.installment_amount}}
+                                            {% endif %}
+                                        </span>
+                                    </div>
+                                </div>
+
+                                
+                                <!-- Fees Type Field -->
+                                <div class="col-12 col-md-6 pe-md-0" id="fees_type_div" style="display: none;">
+                                    <div class="user-input-wrp ms-md-4 mt-md-4">
+                                        <select name="montly_payment_type" id="montly_payment_type" class="form-select select">
+                                            <option value="" selected>Select Any One</option>
+                                            <option value="partial payment">partial payment</option>
+                                            <option value="Full payment">Full payment</option>
+                                        </select>
+                                        <label class="floating-label">&nbsp; Monthly Installment Payment Type <span class="required">*</span> &nbsp;</label>
+                                        <span id="montly_payment_type_error" class="error-div">
+                                            {% if errors.montly_payment_type %}
+                                                    {{errors.montly_payment_type}}
+                                            {% endif %}
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <!-- installment -->
+                                <!-- amount field -->
+                                <div class="col-12 col-md-6 p-md-0" id="insta_amount_div" style="display: none;">
+                                    <div class="user-input-wrp ms-4 me-2 mt-4">
+                                        <input type="text" name="amount" value="{{amount}}" id="insta_amount" class="form-control"
+                                            aria-label="amount" placeholder=" " autocomplete="off" autofocus>
+                                        <label class="floating-label">&nbsp;Enter Amount <span class="required">*</span> &nbsp;</label>
+                                        <span id="insta_amount_error" class="error-div">
+                                            {% if errors.amount %}
+                                                    {{errors.amount}}
+                                            {% endif %}
+                                        </span>
                                     </div>
                                 </div>
 
@@ -266,40 +316,14 @@
                                         </span>
                                     </div>
                                 </div> -->
-                                
-                                <!-- EMI AMount -->
-                                <div class="col-12 col-md-6 p-md-0" id="installment_amount_div" style="display: none;">
-                                    <div class="user-input-wrp ms-4 me-2 mt-4">
-                                        <input type="text" name="installment_amount" value="{{installment_amount}}" id="installment_amount" class="form-control"
-                                            aria-label="installment_amount" placeholder=" " autocomplete="off" autofocus>
-                                        <label class="floating-label">&nbsp;Installment Amount <span class="required">*</span> &nbsp;</label>
-                                        <span id="installment_amount_error" class="error-div">
-                                            {% if errors.installment_amount %}
-                                                    {{errors.installment_amount}}
-                                            {% endif %}
-                                        </span>
-                                    </div>
-                                </div>
 
-                                <!-- Fees Type Field -->
-                                <div class="col-12 col-md-6 pe-md-0" id="fees_type_div" style="display: none;">
-                                    <div class="user-input-wrp ms-md-4 mt-md-4">
-                                        <select name="montly_payment_type" id="montly_payment_type" class="form-select select">
-                                            <option value="" selected>Select Any One</option>
-                                            <option value="partial payment">partial payment</option>
-                                            <option value="Full payment">Full payment</option>
-                                        </select>
-                                        <label class="floating-label">&nbsp; Monthly Installment Payment Type <span class="required">*</span> &nbsp;</label>
-                                        <span id="montly_payment_type_error" class="error-div">
-                                            {% if errors.montly_payment_type %}
-                                                    {{errors.montly_payment_type}}
-                                            {% endif %}
-                                        </span>
-                                    </div>
-                                </div>
 
                                 <!-- single payment -->
                                 <!-- amount field -->
+                                <div class="col-12 col-md-6 pe-md-0" id="empty_div" style="display: none;">
+                                    <div class="user-input-wrp ms-md-4 mt-md-4">
+                                    </div>
+                                </div>
                                 <div class="col-12 col-md-6 pe-md-0" id="amount_div" style="display: none;">
                                     <div class="user-input-wrp ms-md-4 mt-md-4">
                                         <input type="text" name="single_payment_amount" value="{{payment_info.total_fees}}" id="single_payment_amount" class="form-control"
@@ -313,20 +337,6 @@
                                     </div>
                                 </div>
 
-                                <!-- installment -->
-                                <!-- amount field -->
-                                <div class="col-12 col-md-6 p-md-0" id="insta_amount_div" style="display: none;">
-                                    <div class="user-input-wrp ms-4 me-2 mt-4">
-                                        <input type="text" name="amount" value="{{amount}}" id="insta_amount" class="form-control"
-                                            aria-label="amount" placeholder=" " autocomplete="off" autofocus>
-                                        <label class="floating-label">&nbsp;Enter Amount <span class="required">*</span> &nbsp;</label>
-                                        <span id="insta_amount_error" class="error-div">
-                                            {% if errors.amount %}
-                                                    {{errors.amount}}
-                                            {% endif %}
-                                        </span>
-                                    </div>
-                                </div>
                             </div>
                             <div class="row">
                                 <div class="row d-flex justify-content-between">
@@ -688,6 +698,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const emi_div = document.getElementById("emi_div");
         const fees_type_div = document.getElementById("fees_type_div");
         const insta_amount_div = document.getElementById("insta_amount_div");
+        const empty_div = document.getElementById("empty_div");
 
         if (feesType === "Regular") {
             paymentDateDiv.style.display = "block";
@@ -704,6 +715,7 @@ document.addEventListener('DOMContentLoaded', function() {
             fees_type_div.style.display = "block";
             emi_date_div.style.display = "block";
             fees_type_div.style.display = "block";
+            empty_div.style.display = "none";
         } else {
             installment_amount_div.style.display = "none";
             insta_amount_div.style.display = "none";
@@ -711,14 +723,17 @@ document.addEventListener('DOMContentLoaded', function() {
             fees_type_div.style.display = "none";
             emi_date_div.style.display = "none";
             fees_type_div.style.display = "none";
+            empty_div.style.display = "block";
         }
     }
 
     function handleCashChange() {
+        const feesType = document.getElementById("fees_type").value;
         const payment_mode = document.getElementById("payment_mode").value;
         const transaction_id_div = document.getElementById("transaction_id_div");
         const app_name_div = document.getElementById("app_name_div");
         const refference_no_div = document.getElementById("refference_no_div");
+        const empty_div = document.getElementById("empty_div");
 
         if (payment_mode === "UPI") {
             transaction_id_div.style.display = "block";
@@ -730,8 +745,14 @@ document.addEventListener('DOMContentLoaded', function() {
         
         if (payment_mode === "Bank Transfer") {
             refference_no_div.style.display = "block";
+            if(feesType === "Installment") {
+                empty_div.style.display = "none";
+            } else if(feesType === "Regular") {
+                empty_div.style.display = "block";
+            }
         } else {
             refference_no_div.style.display = "none";
+            empty_div.style.display = "none";
         }
     }
 

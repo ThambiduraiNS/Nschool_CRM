@@ -8,20 +8,19 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            margin: 20px;
+            /* margin: 20px; */
         }
         .table-container {
-            overflow-x: auto;  /* Enable horizontal scrolling */
-            margin-bottom: 20px;  /* Space below the table */
+            overflow-x: auto; 
+            margin-bottom: 20px;  
         }
         table {
             width: 100%;
             border-collapse: collapse;
-            min-width: 800px;  /* Ensure a minimum width for the table */
         }
         th, td {
             border: 1px solid #ddd;
-            padding: 5px;  /* Increased padding for better spacing */
+            padding: 5px;
             text-align: left;
         }
         th {
@@ -36,12 +35,20 @@
             margin-bottom: 5px;
         }
         ul {
-            padding-left: 5px;  /* Add padding for list alignment */
-            margin: 0;           /* Remove default margin */
-            list-style-type: none; /* Remove bullet points */
+            padding-left: 0px; 
+            margin: 0;           
+            list-style-type: none; 
         }
         li {
-            margin-bottom: 5px;  /* Space between list items */
+            margin-bottom: 5px;  
+        }
+
+        .reg_no {
+            width: 11%;
+        }
+
+        .EMI_date {
+            padding-right: 5px;
         }
     </style>
 </head>
@@ -50,18 +57,18 @@
     <table>
         <thead>
             <tr>
-                <th>Registration No</th>
+                <th class="reg_no">Reg No</th>
                 <th>Joining Date</th>
                 <th>Student Name</th>
                 <th>Course Name</th>
                 <th>Duration</th>
                 <th>Total Fees</th>
-                <th>Fees Type</th>
-                <th>Single Payment Date</th>
-                <th>Single Payment Amount</th>
-                <th>EMI Dates</th>
+                <!-- <th>Fees Type</th> -->
+                <th>SP Date</th>
+                <th>SP Amount</th>
+                <th class="EMI_date">EMI Dates</th>
                 <th>EMI Amounts</th>
-                <th>Total Payment</th>
+                <!-- <th>Total Payment</th> -->
                 <th>Balance</th>
             </tr>
         </thead>
@@ -69,19 +76,19 @@
             {% for payment in payment_list %}
             <tr>
                 <td>{{ payment.registration_no }}</td>
-                <td>{{ payment.joining_date|date:"d-m-Y" }}</td>
+                <td>{{ payment.joining_date }}</td>
                 <td>{{ payment.student_name }}</td>
                 <td>{{ payment.course_name }}</td>
                 <td>{{ payment.duration }}</td>
                 <td>{{ payment.total_fees }}</td>
-                <td>{{ payment.fees_type }}</td>
+                <!-- <td>{{ payment.fees_type }}</td> -->
                 <td>{{ payment.single_payment_date }}</td>
                 <td>{{ payment.single_payment_amount }}</td>
 
                 <td>
-                    <ul>
+                    <ul class="EMI_date">
                         {% for date in payment.emi_dates %}
-                            <li>{{ date }}</li>
+                            <li class="EMI_date">{{ date }}</li>
                         {% endfor %}
                     </ul>
                 </td>
@@ -93,7 +100,7 @@
                     </ul>
                 </td>
 
-                <td>{{ payment.total_payment }}</td>
+                <!-- <td>{{ payment.total_payment }}</td> -->
                 <td>{{ payment.balance }}</td>
             </tr>
             {% endfor %}
