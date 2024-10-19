@@ -98,3 +98,18 @@ def format_date(value):
         return value.strftime('%d-%m-%Y')  # Format the date
 
     return ''  # Return empty string if value is None or not a date
+
+@register.filter
+def last_class_status(payment):
+    for option in [
+        payment.single_payment,
+        payment.emi_1_payments,
+        payment.emi_2_payments,
+        payment.emi_3_payments,
+        payment.emi_4_payments,
+        payment.emi_5_payments,
+        payment.emi_6_payments,
+    ]:
+        if option:
+            return option[-1].class_status
+    return "N/A"

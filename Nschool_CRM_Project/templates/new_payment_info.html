@@ -133,7 +133,7 @@
                                     <div class="user-input-wrp ms-4 mt-md-4">
                                         <select name="fees_type" id="fees_type" class="form-select select">
                                             <option value="" selected>Select Any One</option>
-                                            <option value="Regular">Single Payment</option>
+                                            <option value="Single Payment">Single Payment</option>
                                             <option value="Installment">Installment</option>
                                         </select>
                                         <label class="floating-label">&nbsp; Fees Type <span class="required">*</span> &nbsp;</label>
@@ -275,6 +275,7 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('joining_date').value = data.joining_date || '';
         document.getElementById('total_fees').value = data.total_fees || '';
         document.getElementById('installment_amount').value = data.installment_amount || '';
+        console.log("fees type : ", data.payment_type)
         document.getElementById('fees_type').value = data.payment_type || '';
     }
     

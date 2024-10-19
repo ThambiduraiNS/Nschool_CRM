@@ -224,12 +224,24 @@ class Enrollment(models.Model):
 
 class PaymentInfo(models.Model):
     # Fees type choices
-    REGULAR = 'Regular'
+    SINGLE_PAYMENT = 'Single Payment'
     INSTALLMENT = 'Installment'
     
     FEES_TYPE_CHOICES = [
-        (REGULAR, 'Single Payment'),
+        (SINGLE_PAYMENT, 'Single Payment'),
         (INSTALLMENT, 'Installment'),
+    ]
+    
+    YET_TO_START = "Yet To Start"
+    ON_GOING = "On Going"
+    DISCONTINUE = "Discontinue"
+    COMPLETED = "Completed"
+    
+    CLASS_STATUS_CHOISE = [
+        (YET_TO_START , "Yet To Start"),
+        (ON_GOING , "On Going"),
+        (DISCONTINUE , "Discontinue"),
+        (COMPLETED , "Completed"),
     ]
 
     registration_no = models.CharField(max_length=20, unique=True)
@@ -240,8 +252,9 @@ class PaymentInfo(models.Model):
     fees_type = models.CharField(max_length=20, choices=FEES_TYPE_CHOICES)
     total_fees = models.DecimalField(max_digits=10, decimal_places=2)
     installment_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
-    excess_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0.0)
-    balance = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    
+    class_status = models.CharField(max_length=20, choices=CLASS_STATUS_CHOISE, default=ON_GOING)
+    remark = models.CharField(blank=True, null=True)
     
     created_at = models.DateTimeField(auto_now_add=True)
     modified_at = models.DateTimeField(auto_now=True)
@@ -264,12 +277,24 @@ class SinglePayment(models.Model):
         (UPI, 'UPI'),
         (BANK_TRANSFER, 'Bank Transfer'),
     ]
+    
+    YET_TO_START = "Yet To Start"
+    ON_GOING = "On Going"
+    DISCONTINUE = "Discontinue"
+    COMPLETED = "Completed"
+    
+    CLASS_STATUS_CHOISE = [
+        (YET_TO_START , "Yet To Start"),
+        (ON_GOING , "On Going"),
+        (DISCONTINUE , "Discontinue"),
+        (COMPLETED , "Completed"),
+    ]
 
     payment_info = models.ForeignKey(PaymentInfo, on_delete=models.CASCADE, related_name='single_payment')
     registration_no = models.CharField(max_length=20, default=None)
-    date = models.DateField()
-    payment_mode = models.CharField(max_length=50, choices=PAYMENT_MODE_CHOICES)
-    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    date = models.DateField(blank=True, null=True)
+    payment_mode = models.CharField(max_length=50, choices=PAYMENT_MODE_CHOICES, blank=True, null=True)
+    amount = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True, default=0)
 
     # UPI specific fields
     upi_transaction_id = models.CharField(max_length=100, blank=True, null=True)
@@ -277,6 +302,10 @@ class SinglePayment(models.Model):
 
     # Bank Transfer specific fields
     refference_no = models.CharField(max_length=100, blank=True, null=True)
+    
+    class_status = models.CharField(max_length=20, choices=CLASS_STATUS_CHOISE, default=ON_GOING)
+    class_date = models.DateField(null=True, blank=True)
+    remark = models.CharField(blank=True, null=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
     modified_at = models.DateTimeField(auto_now=True)
@@ -311,13 +340,25 @@ class BaseEMI(models.Model):
         (PARTIAL_PAYMENT, 'Partial Payment'),
         (FULL_PAYMENT, 'Full Payment')
     ]
+    
+    YET_TO_START = "Yet To Start"
+    ON_GOING = "On Going"
+    DISCONTINUE = "Discontinue"
+    COMPLETED = "Completed"
+    
+    CLASS_STATUS_CHOISE = [
+        (YET_TO_START , "Yet To Start"),
+        (ON_GOING , "On Going"),
+        (DISCONTINUE , "Discontinue"),
+        (COMPLETED , "Completed"),
+    ]
 
     payment_info = models.ForeignKey('PaymentInfo', on_delete=models.CASCADE, related_name='%(class)s_payments')
     registration_no = models.CharField(max_length=20)
-    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    amount = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True, default=0.00)
     date = models.DateField(null=True, blank=True)
-    payment_mode = models.CharField(max_length=50, choices=PAYMENT_MODE_CHOICES)
-    emi = models.CharField(max_length=50)
+    payment_mode = models.CharField(max_length=50, choices=PAYMENT_MODE_CHOICES, blank=True, null=True)
+    emi = models.CharField(max_length=50, blank=True, null=True)
     monthly_payment_type = models.CharField(max_length=20, choices=MONTHLY_PAYMENT_CHOICES, default='Full Payment')
     status = models.CharField(max_length=20, choices=PAYMENT_MODE_STATUS, default=PENDING)
     
@@ -327,6 +368,10 @@ class BaseEMI(models.Model):
 
     # Bank Transfer specific fields
     refference_no = models.CharField(max_length=100, blank=True, null=True)
+    
+    class_status = models.CharField(max_length=20, choices=CLASS_STATUS_CHOISE, default=ON_GOING)
+    class_date = models.DateField(null=True, blank=True)
+    remark = models.CharField(blank=True, null=True)
     
     created_at = models.DateTimeField(auto_now_add=True)
     modified_at = models.DateTimeField(auto_now=True)

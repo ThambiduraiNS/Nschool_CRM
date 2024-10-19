@@ -135,7 +135,7 @@
                                     <div class="user-input-wrp ms-4 mt-md-4">
                                         <select name="fees_type" id="fees_type" class="form-select select" onclick="payment_type()">
                                             <option value="" selected>Select Any One</option>
-                                            <option value="Regular">Single Payment</option>
+                                            <option value="Single Payment">Single Payment</option>
                                             <option value="Installment">Installment</option>
                                         </select>
                                         <label class="floating-label">&nbsp; Fees Type <span class="required">*</span> &nbsp;</label>
@@ -617,7 +617,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         // fees type field validation
-        if (feesType === 'Regular') {
+        if (feesType === 'Single Payment') {
             if(amount_div.style.display === 'block'){
                 if(!amount) {
                     showError("amount_error", "Amount Field is required");
@@ -700,12 +700,14 @@ document.addEventListener('DOMContentLoaded', function() {
         const insta_amount_div = document.getElementById("insta_amount_div");
         const empty_div = document.getElementById("empty_div");
 
-        if (feesType === "Regular") {
+        if (feesType === "Single Payment") {
             paymentDateDiv.style.display = "block";
             amountDiv.style.display = "block";
+            empty_div.style.display = "none";
         } else {
             paymentDateDiv.style.display = "none";
             amountDiv.style.display = "none";
+            empty_div.style.display = "none";
         }
 
         if(feesType === "Installment"){
@@ -723,7 +725,7 @@ document.addEventListener('DOMContentLoaded', function() {
             fees_type_div.style.display = "none";
             emi_date_div.style.display = "none";
             fees_type_div.style.display = "none";
-            empty_div.style.display = "block";
+            empty_div.style.display = "none";
         }
     }
 
@@ -747,7 +749,7 @@ document.addEventListener('DOMContentLoaded', function() {
             refference_no_div.style.display = "block";
             if(feesType === "Installment") {
                 empty_div.style.display = "none";
-            } else if(feesType === "Regular") {
+            } else if(feesType === "Single Payment") {
                 empty_div.style.display = "block";
             }
         } else {

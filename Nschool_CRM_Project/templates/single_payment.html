@@ -99,8 +99,55 @@
                                     </div>
                                 </div>
 
-                                <!-- Payment Mode Field -->
+                                <!-- class status -->
                                 <div class="col-12 col-md-6 pe-md-0">
+                                    <div class="user-input-wrp ms-md-4 mt-md-4">
+                                        <select name="class_status" id="class_status" class="form-select select" onclick="class_status_change()">
+                                            <option value="">Select Any One</option>
+                                            <option value="Yet To Start" >Yet To Start</option>
+                                            <option value="On Going">On Going</option>
+                                            <option value="Discontinue">Discontinue</option>
+                                            <option value="Completed">Completed</option>
+                                        </select>
+                                        <label class="floating-label">&nbsp;Class Status <span class="required">*</span> &nbsp;</label>
+                                        <span id="class_status_error" class="error-div">
+                                            {% if errors.payment_mode %}
+                                                    {{errors.payment_mode}}
+                                            {% endif %}
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <!-- Payment date -->
+                                <div class="col-12 col-md-6 p-md-0" style="display: none;" id="payment_date_div">
+                                    <div class="user-input-wrp ms-4 me-2 mt-4">
+                                        <input type="date" name="date" id="date-picker" value="{{date}}" class="form-control bg-white"
+                                            aria-label="date" placeholder=" " autocomplete="off" autofocus onclick="setDatePickerLimits()">
+                                        <label class="floating-label">&nbsp;Payment Date <span class="required">*</span> &nbsp;</label>
+                                        <span id="date_error" class="error-div">
+                                            {% if errors.date %}
+                                                {{errors.date}}
+                                            {% endif %}
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <!-- class start date -->
+                                <div class="col-12 col-md-6 p-md-0" style="display: none;" id="class_date_div">
+                                    <div class="user-input-wrp ms-4 me-2 mt-4">
+                                        <input type="date" name="class_date" id="class_date" value="{{class_date}}" class="form-control bg-white"
+                                            aria-label="class_date" placeholder=" " autocomplete="off" autofocus onclick="setDatePickerLimits()">
+                                        <label class="floating-label">&nbsp;Class Start Date <span class="required">*</span> &nbsp;</label>
+                                        <span id="class_date_error" class="error-div">
+                                            {% if errors.class_date %}
+                                                {{errors.class_date}}
+                                            {% endif %}
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <!-- Payment Mode Field -->
+                                <div class="col-12 col-md-6 pe-md-0" style="display: none;" id="payment_mode_div">
                                     <div class="user-input-wrp ms-md-4 mt-md-4">
                                         <select name="payment_mode" id="payment_mode" class="form-select select" onchange="handleCashChange()">
                                             <option value="" selected>Select Any One</option>
@@ -117,23 +164,9 @@
                                     </div>
                                 </div>
 
-                                <!-- Payment date -->
-                                <div class="col-12 col-md-6 p-md-0">
-                                    <div class="user-input-wrp ms-4 me-2 mt-4">
-                                        <input type="date" name="date" id="date-picker" value="{{date}}" class="form-control bg-white"
-                                            aria-label="date" placeholder=" " autocomplete="off" autofocus onclick="setDatePickerLimits()">
-                                        <label class="floating-label">&nbsp;Payment Date <span class="required">*</span> &nbsp;</label>
-                                        <span id="date_error" class="error-div">
-                                            {% if errors.date %}
-                                                {{errors.date}}
-                                            {% endif %}
-                                        </span>
-                                    </div>
-                                </div>
-
                                 <!-- amount field -->
-                                <div class="col-12 col-md-6 pe-md-0">
-                                    <div class="user-input-wrp ms-md-4 mt-md-4">
+                                <div class="col-12 col-md-6 p-md-0" style="display: none;" id="amount_div">
+                                    <div class="user-input-wrp ms-4 me-2 mt-4">
                                         <input type="text" name="amount" id="amount" class="form-control"
                                             aria-label="amount" placeholder=" " autocomplete="off" autofocus>
                                         <label class="floating-label">&nbsp;Enter Amount <span class="required">*</span> &nbsp;</label>
@@ -171,6 +204,19 @@
                                     </div>
                                 </div>
                             </div>
+
+                            <!-- remark -->
+                            <div class="col-12 col-md-6 p-md-0" style="display: none;" id="remark_div">
+                                <div class="user-input-wrp ms-4 me-2 mt-4">
+                                    <textarea name="remark" id="remark" class="form-control text-area" rows="5" cols="1" placeholder=" " autocomplete="off" autofocus>{{remark}}</textarea>
+                                    <label class="floating-label">&nbsp;Remark&nbsp;</label>
+                                    <span id="remark_error" class="error-div">
+                                        {% if errors.remark %}
+                                                {{errors.remark}}
+                                        {% endif %}
+                                    </span>
+                                </div>
+                            </div>
                         
                             <div class="row">
                                 <div class="row d-flex justify-content-between">
@@ -178,7 +224,7 @@
                                     </div>
                                     <div class="col-6 d-flex justify-content-lg-end ps-lg-4 p-0 ps-4 gap-5">
                                         <input type="reset" value="Cancel" class="btn login-btn">
-                                        <input type="submit" value="submit" class="btn login-btn">
+                                        <button class="btn login-btn" onclick="submitForm(event)">Submit</button>
                                     </div>
                                 </div>
                             </div>
@@ -348,9 +394,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     document.addEventListener('DOMContentLoaded', () => showMessage());
 
-    document.addEventListener('DOMContentLoaded', function() {
-    const form = document.getElementById('payment_form');
-
     function validateForm() {
         let isValid = true;
 
@@ -361,34 +404,129 @@ document.addEventListener('DOMContentLoaded', function() {
         const paymentMode = document.getElementById('payment_mode').value;
         const date = document.getElementById('date-picker').value; // Corrected the ID
         const amount = document.getElementById('amount').value.trim();
+        const class_status = document.getElementById('class_status').value.trim();
+        const class_date = document.getElementById('class_date').value.trim();
+        const remark = document.getElementById('remark').value.trim();
 
-        // Validate Payment Info
-        if (!paymentInfo) {
-            document.getElementById('payment_info_error').textContent = 'Payment Info ID is required.';
+        if (class_status === "") {
+            document.getElementById('class_status_error').textContent = 'Class Status is required.';
             isValid = false;
-            document.getElementById('payment_info').focus();
         }
 
-        // Validate Payment Mode
-        if (!paymentMode) {
-            document.getElementById('payment_mode_error').textContent = 'Payment Mode is required.';
-            isValid = false;
-            document.getElementById('payment_mode').focus();
+        if (class_status === "Yet To Start") {
+            // Validate Payment Mode
+            if (!paymentMode) {
+                document.getElementById('payment_mode_error').textContent = 'Payment Mode is required.';
+                isValid = false;
+                document.getElementById('payment_mode').focus();
+            }
+
+            // Validate Payment Date
+            if (!class_date) {
+                document.getElementById('class_date_error').textContent = 'Class Start Date is required.';
+                isValid = false;
+                document.getElementById('class_date').focus();
+            }
+
+            // Validate Amount
+            if (!amount) {
+                document.getElementById('amount_error').textContent = 'Amount is required.';
+                isValid = false;
+                document.getElementById('amount').focus();
+            }
         }
 
-        // Validate Payment Date
-        if (!date) {
-            document.getElementById('date_error').textContent = 'Payment Date is required.';
-            isValid = false;
-            document.getElementById('date-picker').focus();
+        if(class_status === "On Going") {
+            // Validate Payment Mode
+            if (!paymentMode) {
+                document.getElementById('payment_mode_error').textContent = 'Payment Mode is required.';
+                isValid = false;
+                document.getElementById('payment_mode').focus();
+            }
+
+            // Validate Payment Date
+            if (!date) {
+                document.getElementById('date_error').textContent = 'Payment Date is required.';
+                isValid = false;
+                document.getElementById('date-picker').focus();
+            }
+
+            // Validate Amount
+            if (!amount) {
+                document.getElementById('amount_error').textContent = 'Amount is required.';
+                isValid = false;
+                document.getElementById('amount').focus();
+            }
         }
 
-        // Validate Amount
-        if (!amount) {
-            document.getElementById('amount_error').textContent = 'Amount is required.';
-            isValid = false;
-            document.getElementById('amount').focus();
+        if (class_status === "Discontinue") {
+            // Validate Amount
+            if (!remark) {
+                document.getElementById('remark_error').textContent = 'Remark is required.';
+                isValid = false;
+                document.getElementById('remark').focus();
+            }
         }
+
+        if (class_status === "Completed") {
+
+            // Validate Payment Info
+            if (!paymentInfo) {
+                document.getElementById('payment_info_error').textContent = 'Payment Info ID is required.';
+                isValid = false;
+                document.getElementById('payment_info').focus();
+            }
+
+            // Validate Payment Mode
+            if (!paymentMode) {
+                document.getElementById('payment_mode_error').textContent = 'Payment Mode is required.';
+                isValid = false;
+                document.getElementById('payment_mode').focus();
+            }
+
+            // Validate Payment Date
+            if (!date) {
+                document.getElementById('date_error').textContent = 'Payment Date is required.';
+                isValid = false;
+                document.getElementById('date-picker').focus();
+            }
+
+            // Validate Amount
+            if (!amount) {
+                document.getElementById('amount_error').textContent = 'Amount is required.';
+                isValid = false;
+                document.getElementById('amount').focus();
+            }
+
+        }
+
+        // // Validate Payment Info
+        // if (!paymentInfo) {
+        //     document.getElementById('payment_info_error').textContent = 'Payment Info ID is required.';
+        //     isValid = false;
+        //     document.getElementById('payment_info').focus();
+        // }
+
+        // // Validate Payment Mode
+        // if (!paymentMode) {
+        //     document.getElementById('payment_mode_error').textContent = 'Payment Mode is required.';
+        //     isValid = false;
+        //     document.getElementById('payment_mode').focus();
+        // }
+
+        // // Validate Payment Date
+        // if (!date) {
+        //     document.getElementById('date_error').textContent = 'Payment Date is required.';
+        //     isValid = false;
+        //     document.getElementById('date-picker').focus();
+        // }
+
+        // // Validate Amount
+        // if (!amount) {
+        //     document.getElementById('amount_error').textContent = 'Amount is required.';
+        //     isValid = false;
+        //     document.getElementById('amount').focus();
+        // }
 
         // Additional validations for UPI
         if (paymentMode === 'UPI') {
@@ -432,15 +570,15 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Submit event listener
-    form.addEventListener('submit', function(event) {
-        if (!validateForm()) {
-            event.preventDefault(); // Prevent form submission if validation fails
-        }
-    });
+    function submitForm(event) {
+        event.preventDefault();
 
-    // Payment mode change event listener
-    document.getElementById('payment_mode').addEventListener('change', handleCashChange);
-});
+        if (validateForm()) {
+            // Here you can handle form submission, e.g., sending data to the server
+            document.getElementById("payment_form").submit();
+        }
+    }
+
 
 document.addEventListener('DOMContentLoaded', function() {
     today = new Date()
@@ -450,7 +588,49 @@ document.addEventListener('DOMContentLoaded', function() {
         maxDate: "today",
         defaultDate: 'today',
     });
+
+    flatpickr("#class_date", {
+        dateFormat: "d-m-Y", // Customize the format to "DD-MM-YYYY"
+        minDate: dateConverter(today),
+        maxDate: "today",
+        defaultDate: 'today',
+    });
 });
+
+function class_status_change() {
+    console.log("class status")
+    status = document.getElementById('class_status').value;
+
+    console.log(status)
+
+    if (status === "On Going") {
+        // Toggle visibility for UPI and Bank Transfer fields
+        document.getElementById('payment_mode_div').style.display = status === "On Going" ? 'block' : 'none';
+        document.getElementById('payment_date_div').style.display = status === "On Going" ? 'block' : 'none';
+        document.getElementById('class_date_div').style.display = status === "On Going" ? 'none' : 'block';
+        document.getElementById('amount_div').style.display = status === "On Going" ? 'block' : 'none'; 
+        document.getElementById('remark_div').style.display = status === "On Going" ? 'none' : 'block'; 
+    } else if(status === "Yet To Start") {
+        document.getElementById('payment_mode_div').style.display = status === "Yet To Start" ? 'block' : 'none';
+        document.getElementById('payment_date_div').style.display = status === "Yet To Start" ? 'none' : 'block';
+        document.getElementById('class_date_div').style.display = status === "Yet To Start" ? 'block' : 'none';
+        document.getElementById('amount_div').style.display = status === "Yet To Start" ? 'block' : 'none';
+        document.getElementById('remark_div').style.display = status === "Yet To Start" ? 'none' : 'block'; 
+    } else if(status === "Discontinue") {
+        document.getElementById('payment_mode_div').style.display = status === "Discontinue" ? 'none' : 'block';
+        document.getElementById('payment_date_div').style.display = status === "Discontinue" ? 'none' : 'block';
+        document.getElementById('class_date_div').style.display = status === "Discontinue" ? 'none' : 'block';
+        document.getElementById('amount_div').style.display = status === "Discontinue" ? 'none' : 'block';
+        document.getElementById('remark_div').style.display = status === "Discontinue" ? 'block' : 'none';
+    } else if (status === "Completed"){
+        document.getElementById('payment_mode_div').style.display = status === "Completed" ? 'block' : 'none';
+        document.getElementById('payment_date_div').style.display = status === "Completed" ? 'block' : 'none';
+        document.getElementById('class_date_div').style.display = status === "Completed" ? 'none' : 'block';
+        document.getElementById('amount_div').style.display = status === "Completed" ? 'block' : 'none'; 
+        document.getElementById('remark_div').style.display = status === "Completed" ? 'none' : 'block';
+    }
+
+}
 
 </script>
 {% endblock %}

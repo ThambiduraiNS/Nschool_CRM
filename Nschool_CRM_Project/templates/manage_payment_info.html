@@ -171,6 +171,8 @@
                                         <th class="thead">Student Name</th>
                                         <th class="thead">Course Name</th>
                                         <th class="thead">Course Duration</th>
+                                        <th class="thead">Class Status</th>
+
                                         <th class="thead">Fees Type </th>
                                         
                                         
@@ -202,10 +204,18 @@
                                         <th class="thead">EMI 6</th>
                                         
                                         <th class="thead">Balance Amount</th>
+                                        <th class="thead">Remark</th>
                                         <th class="action">Action</th>
                                     </tr>
                                     {% for payment in page_obj %}
-                                    <tr class="trow">
+                                    {% with last_item=payment.single_payment|last %}
+                                        {% if last_item.class_status == "Discontinue" or payment.class_status == "Discontinue"  %}
+                                            <tr class="trow text-danger">
+                                        {% else %}
+                                            <tr class="trow">
+                                        {% endif %}
+                                    {% endwith %}
+                                    <!-- <tr class="trow"> -->
                                         <td class="check1">
                                             <input type="checkbox" class="form-check-input user-checkbox checked-row" name="user_ids"
                                                 value="{{ payment.id }}" id="user{{ payment.id }}">
@@ -216,14 +226,76 @@
                                         <td class="tdata">{{ payment.student_name }}</td>
                                         <td class="tdata">{{ payment.course_name }}</td>
                                         <td class="tdata">{{ payment.duration }}</td>
+                                        <td class="tdata">
+                                            {% if payment.single_payment %}
+                                                {% with last_item=payment.single_payment|last %}
+                                                    {{ last_item.class_status }}
+                                                {% endwith %}
+
+                                            {% elif payment.emi_1_payments %}
+                                                {% with last_item=payment.emi_1_payments|last %}
+                                                    {% if payment.class_status == "Discontinue" %}
+                                                        {{payment.class_status}}
+                                                    {% else %}
+                                                        {{ last_item.class_status }}
+                                                    {% endif %}
+                                                {% endwith %}
+                                            {% elif payment.emi_2_payments %}
+                                                {% with last_item=payment.emi_2_payments|last %}
+                                                    {% if payment.class_status == "Discontinue" %}
+                                                        {{payment.class_status}}
+                                                    {% else %}
+                                                        {{ last_item.class_status }}
+                                                    {% endif %}
+                                                {% endwith %}
+                                            {% elif payment.emi_3_payments %}
+                                                {% with last_item=payment.emi_3_payments|last %}
+                                                    {% if payment.class_status == "Discontinue" %}
+                                                        {{payment.class_status}}
+                                                    {% else %}
+                                                        {{ last_item.class_status }}
+                                                    {% endif %}
+                                                {% endwith %}
+                                            {% elif payment.emi_4_payments %}
+                                                {% with last_item=payment.emi_4_payments|last %}
+                                                    {% if payment.class_status == "Discontinue" %}
+                                                        {{payment.class_status}}
+                                                    {% else %}
+                                                        {{ last_item.class_status }}
+                                                    {% endif %}
+                                                {% endwith %}
+                                            {% elif payment.emi_5_payments %}
+                                                {% with last_item=payment.emi_5_payments|last %}
+                                                    {% if payment.class_status == "Discontinue" %}
+                                                        {{payment.class_status}}
+                                                    {% else %}
+                                                        {{ last_item.class_status }}
+                                                    {% endif %}
+                                                {% endwith %}
+                                            {% elif payment.emi_6_payments %}
+                                                {% with last_item=payment.emi_6_payments|last %}
+                                                    {% if payment.class_status == "Discontinue" %}
+                                                        {{payment.class_status}}
+                                                    {% else %}
+                                                        {{ last_item.class_status }}
+                                                    {% endif %}
+                                                {% endwith %}
+                                            {% else %}
+                                                N/A
+                                            {% endif %}
+                                        </td>
                                         <td class="tdata">{{ payment.fees_type }}</td>
                                         <td class="tdata text-right">{{ payment.total_fees }}</td>
                                         
                                         <!-- Single Payment -->
-                                        <td class="tdata">
+                                        <td class="tdata align-middle">
                                             {% if payment.single_payment %}
                                                 {% for single_payment in payment.single_payment %}
-                                                    {{ single_payment.date|format_date }}<br>
+                                                    {% if single_payment.date %}
+                                                        {{ single_payment.date|format_date }}<br>
+                                                    {% else %}
+                                                       
+                                                    {% endif %}
                                                 {% endfor %}
                                             {% else %}
                                                 N/A
@@ -239,7 +311,7 @@
                                             {% endif %}
                                         </td>
                                         
-                                        <td class="tdata">
+                                        <td class="tdata align-middle">
                                             {% if payment.emi_1_payments %}
                                                 {% for emi in payment.emi_1_payments %}
                                                     {{ emi.date|format_date }}{% if not forloop.last %} {% endif %}<br>
@@ -267,6 +339,7 @@
                                                 N/A
                                             {% endif %}
                                         </td>
+                                        
                                         <td class="tdata">
                                             {% if payment.emi_2_payments %}
                                                 {% for emi in payment.emi_2_payments %}
@@ -371,6 +444,22 @@
                                                 0.00
                                             {% endif %}
                                         </td>
+
+                                        <td class="tdata">
+                                            {% if payment.single_payment %}
+                                                {% with last_item=payment.single_payment|last %}
+                                                    {% if  last_item.class_status == "Discontinue" %}
+                                                        {{last_item.remark}}
+                                                    {% else %}
+                                                        N/A
+                                                    {% endif %}
+                                                {% endwith %} 
+                                            {% elif payment.class_status == "Discontinue" %}
+                                                {{payment.remark}}
+                                            {% else %}
+                                                N/A
+                                            {% endif %}
+                                        </td>
                                         
                                         <!-- Action buttons -->
                                         <td class="tdata">
@@ -381,7 +470,7 @@
                                                         <?xml version="1.0" ?><svg class="edit-icon action-div" id="Outlined" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg"><title/><g id="Fill"><path d="M29.12,6.05,26,2.88a3,3,0,0,0-4.24,0L6.29,18.29a3.06,3.06,0,0,0-.72,1.18L2.08,29.92l10.46-3.49a3.15,3.15,0,0,0,1.17-.72L29.12,10.29a3,3,0,0,0,0-4.24Zm-21,13.28,8.75-8.74,1.58,1.58L9.67,20.92ZM18.24,9.17l1.59-1.58,4.58,4.58-1.58,1.59ZM7.1,21.19l3.72,3.71L5.25,26.75Zm5.57,2.73-1.59-1.59,8.75-8.74,1.58,1.58Zm15-15-1.88,1.88L21.24,6.17l1.88-1.88A1,1,0,0,1,23.83,4a1,1,0,0,1,.71.29l3.17,3.18a1,1,0,0,1,.29.7A1,1,0,0,1,27.71,8.88Z"/></g></svg>
                                                     </span>
                                                 </a>
-                                                {% elif payment.fees_type == 'Regular' and payment.single_payment %}
+                                                {% elif payment.fees_type == 'Single Payment' and payment.single_payment %}
                                                 <a href="/single-payment/{{payment.id}}">
                                                     <span class="edit">
                                                         <?xml version="1.0" ?><svg class="edit-icon action-div" id="Outlined" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg"><title/><g id="Fill"><path d="M29.12,6.05,26,2.88a3,3,0,0,0-4.24,0L6.29,18.29a3.06,3.06,0,0,0-.72,1.18L2.08,29.92l10.46-3.49a3.15,3.15,0,0,0,1.17-.72L29.12,10.29a3,3,0,0,0,0-4.24Zm-21,13.28,8.75-8.74,1.58,1.58L9.67,20.92ZM18.24,9.17l1.59-1.58,4.58,4.58-1.58,1.59ZM7.1,21.19l3.72,3.71L5.25,26.75Zm5.57,2.73-1.59-1.59,8.75-8.74,1.58,1.58Zm15-15-1.88,1.88L21.24,6.17l1.88-1.88A1,1,0,0,1,23.83,4a1,1,0,0,1,.71.29l3.17,3.18a1,1,0,0,1,.29.7A1,1,0,0,1,27.71,8.88Z"/></g></svg>
@@ -404,7 +493,7 @@
                                     <!-- Row for Total Pending Amount -->
                                     <tr>
                                         <!-- Total Fees Amount -->
-                                        <td colspan="7"></td>
+                                        <td colspan="8"></td>
                                         <td class="tdata">
                                             <p class="total_pending_amount mb-0 py-2 text-right tfess fw-bold">
                                                 {{ total_fees_sum }}
